@@ -86,6 +86,15 @@ content_bar:
   tension_min_sources: 2
   digest_max_chars: 2000        # ~500 tokens
 
+# Exports (guide Step 3.6, PRD 6.7, 11.2). Token counts are estimated as chars / chars_per_token.
+exports:
+  chars_per_token: 3.0          # conservative for Dutch/German (English is nearer 4)
+  digest_view_max_tokens: 500   # PRD 11.2 digest view
+  prompt_block_max_tokens: 1800
+  skill_body_max_tokens: 2000   # PRD 6.7 (Anthropic allows < 5k; ours is stricter)
+  skill_name_max_chars: 64      # Anthropic SKILL.md rules (checked 2026-10-05)
+  skill_description_max_chars: 1024
+
 # Collection tools (guide Step 1.6, B8). Same for every mode.
 collection:
   actor_timeout_secs: 180       # actor stops itself; partial items are kept

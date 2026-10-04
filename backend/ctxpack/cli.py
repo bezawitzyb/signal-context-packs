@@ -457,6 +457,8 @@ def research(
     asyncio.run(go())
     final = db.get_run(run.id)
     _print_summary(final)
+    if final.pack_id:
+        _print_exports(db.get_pack(final.pack_id))
     console.print(f"took {time.monotonic() - started:.0f} s")
     if final.status == RunStatus.failed:
         raise typer.Exit(1)
@@ -816,6 +818,43 @@ def pack(
                   f"{' | reused saved playbook' if out.reused_playbook else ''}", highlight=False)
     console.print(f"[bold]COST[/bold] this step ${spent:.4f} in {out.calls} calls | run analysis "
                   f"${t.budget_spent_usd:.3f} of ${limit_usd:.2f}", highlight=False)
+    _print_exports(p)
+
+
+def _print_exports(p: dict) -> None:
+    """Write every export of a pack to data/packs/<pack_id>/ and list the files."""
+    from collections import Counter
+
+    from ctxpack.exports import write_exports
+    from ctxpack.exports.common import tokens
+    from ctxpack.synthesis.write import INSIGHT_SECTIONS
+
+    paths = write_exports(p, get_settings().data_path / "packs" / p["pack_id"])
+    items = [it for name in INSIGHT_SECTIONS if name not in ("lexicon", "phrases", "culture", "themes")
+             for it in p.get(name, [])] + p["voice"]["lexicon"] + p["voice"]["phrases"] + p["landscape"]["themes"]
+    items += [c for part in p["culture"].values() for c in part]
+    labels = Counter(it["confidence"]["label"] for it in items)
+    console.print("[bold]LABELS[/bold] " + " | ".join(f"{k} {labels.get(k, 0)}"
+                                                     for k in ("strong", "moderate", "emerging", "speculative")),
+                  highlight=False)
+    console.print("[bold]EXPORTS[/bold]")
+    for kind, path in paths.items():
+        size = path.stat().st_size
+        extra = f" (~{tokens(path.read_text(encoding='utf-8'))} tokens)" if path.suffix in (".txt", ".md") else ""
+        console.print(f"  {kind:<13} {path} ({size:,} bytes){extra}", highlight=False)
+
+
+@app.command()
+def export(pack_id: str = typer.Argument(..., help="A saved pack id")) -> None:
+    """Write every export of a saved pack to data/packs/<pack_id>/ (free: no model calls)."""
+    from ctxpack import db
+
+    db.init_engine()
+    p = db.get_pack(pack_id)
+    if p is None:
+        console.print(f"{BAD} pack {pack_id} not found")
+        raise typer.Exit(1)
+    _print_exports(p)
 
 
 @app.command()

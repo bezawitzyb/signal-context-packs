@@ -1214,6 +1214,25 @@ WHAT  exports/markdown.py: brief.md in pack-page order ("Copy for Notion /
       instructions_for_agents always included.
       CLI: pack "<brief>" --mode ... [--from-run ID] [--fixtures] ->
       data/packs/<pack_id>/ with every export.
+      As built: SKILL.md rules checked 2026-10-05 (name: lowercase
+      letters, numbers, hyphens, <= 64 chars, no "anthropic"/"claude";
+      description: <= 1024 chars, no XML tags, says what AND when; body
+      kept <= ~2,000 tokens although Anthropic allows < 5k). Skill name =
+      <short topic>-<market>-audience. Token counts are estimated as
+      characters / 3 (modes.yaml exports); lists shrink until each export
+      fits, guardrails and agent rules are never trimmed. Scraped text
+      reaches the skill and prompt block without angle brackets;
+      evidence.json marks every item untrusted. brief.md follows the pack
+      page (PRD S3), shows confidence in words with counts, one quote per
+      claim, and collapses speculative items into one line per section
+      (everything stays in context_pack.json). Files: context_pack.json,
+      digest.json, brief.md, prompt_block.txt, <skill-name>.zip. The pack
+      command writes them; "export PACK_ID" re-exports a saved pack for
+      free; research exports its pack at the end. claude.ai uploads
+      custom skills as a zip under Settings > Features.
+      Built: NL (pk_SNDEclHQ85zi, brand voice) and Gen Z meal prep
+      (pk_CamfAsJ7Zbdr; extract -> pack in 284 s for USD 0.69; 76
+      relevant posts < 200, so a thin-evidence run capped at emerging).
 PROMPT
   Read CLAUDE.md and Step 3.6. Implement with tests: é/ë/ij survive in
   Markdown, the prompt block and the skill; SKILL.md body under
