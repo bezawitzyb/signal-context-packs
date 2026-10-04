@@ -1,0 +1,46 @@
+# Model roles (guide B7). Code reads model names ONLY from this file.
+# Prices: USD per million tokens, Anthropic first-party API.
+# Checked: 2026-10-04 (Anthropic pricing table, cached 2026-09-25).
+# Re-check https://www.anthropic.com/pricing before a big paid run.
+
+roles:
+  reasoner: claude-sonnet-5-5     # interpret + plan, agent loop, clustering, baseline, synthesis, playbook, compliance
+  worker: claude-haiku-4-5-20251001  # relevance, web discovery, segmenting, extraction, membership, claim checks
+  evaluator: claude-sonnet-5-5    # eval-only entailment re-check
+  synth: claude-sonnet-5-5        # synthesis only; switch to claude-opus-5-5 if justified (decision log)
+
+prices_usd_per_mtok:
+  claude-sonnet-5-5:
+    input: 2.00
+    output: 10.00
+    cache_write_5m: 2.50          # 1.25 x input
+    cache_read: 0.20
+  claude-haiku-4-5-20251001:
+    input: 1.00
+    output: 5.00
+    cache_write_5m: 1.25
+    cache_read: 0.10
+  claude-opus-5-5:
+    input: 4.00
+    output: 20.00
+    cache_write_5m: 5.00
+    cache_read: 0.20
+
+# Server-side tools (run on Anthropic's servers).
+# The 2026-02-09 variants (dynamic filtering) need Sonnet 5.5 / Opus;
+# Haiku 4.5 (the worker) must use the basic variants.
+server_tools:
+  web_search:
+    name: web_search
+    type_by_model:
+      claude-sonnet-5-5: web_search_20260209
+      claude-opus-5-5: web_search_20260209
+      claude-haiku-4-5-20251001: web_search_20250305
+    usd_per_1000_uses: 10.00      # plus normal token costs for results
+  web_fetch:
+    name: web_fetch
+    type_by_model:
+      claude-sonnet-5-5: web_fetch_20260209
+      claude-opus-5-5: web_fetch_20260209
+      claude-haiku-4-5-20251001: web_fetch_20250910
+    usd_per_1000_uses: 0.00       # no per-use fee; fetched content is billed as input tokens

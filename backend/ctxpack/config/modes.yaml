@@ -1,0 +1,30 @@
+# Per-run limits (guide B8d, PRD 8.5). THIS FILE IS THE SOURCE OF TRUTH.
+# Enforced in collect/tools.py - never only in a prompt.
+
+modes:
+  quick:
+    max_tool_calls: 15
+    collection_secs: 300
+    apify_usd: 1.80
+    llm_usd: 1.40               # whole run
+    unit_share_max: 0.30        # share of item_budget per source unit
+    min_relevant: 60
+    item_budget: 600            # raw items per run
+    items_per_call_max: 40
+    web_pages_per_call_max: 5
+  standard:
+    max_tool_calls: 30
+    collection_secs: 600
+    apify_usd: 4.00
+    llm_usd: 3.50
+    unit_share_max: 0.30
+    min_relevant: 200
+    item_budget: 2000
+    items_per_call_max: 80
+    web_pages_per_call_max: 8
+
+default_mode: quick
+parallel_tool_calls_max: 3      # concurrent tool calls from one model turn
+queue_max: 3                    # runs waiting behind the live one (FIFO)
+time_window_days_options: [30, 90, 180, 365]
+default_time_window_days: 180

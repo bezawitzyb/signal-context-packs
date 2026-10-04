@@ -1,0 +1,12 @@
+# Tool catalogue. Typical latencies are PRD 8.3 defaults; Step 1.6
+# replaces them with measured values. Tool descriptions quote them.
+
+tool_latency:
+  web_search: "usually 10-20 s"
+  fetch_and_segment: "usually 20-60 s"
+  search_reddit: "usually 30-90 s"
+  search_youtube: "usually 60-180 s"
+  search_tiktok: "usually 60-180 s"
+  search_instagram: "usually 60-180 s"
+  get_trends: "usually 30-60 s"
+  coverage_report: "instant"
