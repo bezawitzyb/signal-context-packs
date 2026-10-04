@@ -44,6 +44,14 @@ cleaning:
   relevance_batch_size: 30      # docs per worker call (F4-5)
   relevance_parallel_max: 5     # worker calls at once
 
+# Extraction (guide Step 3.1, PRD FR-C3, prompt F4-6). Same for every mode.
+extraction:
+  batch_docs_max: 30            # relevant docs per worker call (guide: 20-40)
+  batch_chars_max: 8000         # long forum posts: fewer per call, so text_en fits the answer
+  parallel_max: 5               # worker calls at once
+  max_tokens: 12000             # one call's answer (fields + English translations)
+  phrases_max: 6                # verbatim phrases kept per doc (exact substrings only)
+
 # Collection tools (guide Step 1.6, B8). Same for every mode.
 collection:
   actor_timeout_secs: 180       # actor stops itself; partial items are kept

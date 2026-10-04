@@ -11,8 +11,9 @@ with what exists -> "partial".
 Collection is finished once runs.finish_reason is set; a resumed run then
 starts at extracting from its saved corpus (the same path as --from-run).
 
-Collection is the agent loop (Step 2.4, collect/loop.py); extracting..
-verifying and the pack itself are placeholders filled in by later steps.
+Collection is the agent loop (Step 2.4, collect/loop.py); extracting is
+analysis/extract.py (Step 3.1); clustering..verifying and the pack itself
+are placeholders filled in by later steps.
 """
 
 from __future__ import annotations
@@ -148,11 +149,21 @@ def record_memory(run_id: str, stage: RunStage) -> float:
 # --------------------------------------------------------------------------
 
 
+def brief_context(run: db.Run) -> Any:
+    """What the worker calls (relevance, extraction) need to know about a planned run's brief."""
+    from ctxpack.collect.relevance import BriefContext
+
+    interp = Interpretation.model_validate(run.interpretation)
+    plan = Plan.model_validate(run.plan)
+    return BriefContext(topic=interp.topic, market=interp.market, languages=interp.languages,
+                        audience=interp.audience,
+                        research_questions={q.id: q.text for q in plan.research_questions})
+
+
 def loop_state(run_id: str, record: bool = False, no_apify: bool = False,
                apify_usd_cap: float | None = None) -> Any:
     """The loop's state for a planned run: RunContext from the interpretation and plan."""
     from ctxpack.collect.loop import LoopState
-    from ctxpack.collect.relevance import BriefContext
     from ctxpack.collect.tools import RunContext, db_store
 
     run = db.get_run(run_id)
@@ -160,10 +171,7 @@ def loop_state(run_id: str, record: bool = False, no_apify: bool = False,
     plan = Plan.model_validate(run.plan)
     ctx = RunContext(
         run_id=run_id, mode=str(run.mode), window_days=interp.time_window_days, store=db_store(run_id),
-        brief_text=run.brief_text, record=record,
-        brief=BriefContext(topic=interp.topic, market=interp.market, languages=interp.languages,
-                           audience=interp.audience,
-                           research_questions={q.id: q.text for q in plan.research_questions}))
+        brief_text=run.brief_text, record=record, brief=brief_context(run))
     ctx.llm_usd = run.cost_llm_usd
     ctx.apify_unavailable, ctx.apify_usd_cap = no_apify, apify_usd_cap
     return LoopState(ctx=ctx, interp=interp, plan=plan, check_stop=lambda: check_stop(run_id))
@@ -178,8 +186,15 @@ async def collect_agent(run_id: str) -> None:
 
 
 # --------------------------------------------------------------------------
-# Later stages (placeholders until Steps 3.x)
+# Analysis stages (Steps 3.x; the rest are placeholders until their step)
 # --------------------------------------------------------------------------
+
+
+async def extract_stage(run_id: str) -> None:
+    """Extraction (Step 3.1): relevant docs without an extraction yet, saved batch by batch."""
+    from ctxpack.analysis.extract import extract_run
+
+    await extract_run(run_id, brief_context(db.get_run(run_id)))
 
 
 async def _placeholder(run_id: str) -> None:
@@ -192,7 +207,7 @@ async def build_pack_placeholder(run_id: str, partial: bool) -> str | None:
 
 
 ANALYSIS_STAGES: list[tuple[RunStage, StageFn]] = [
-    (RunStage.extracting, _placeholder),
+    (RunStage.extracting, extract_stage),
     (RunStage.clustering, _placeholder),
     (RunStage.writing, _placeholder),
     (RunStage.verifying, _placeholder),

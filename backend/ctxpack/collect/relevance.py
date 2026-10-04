@@ -43,7 +43,7 @@ class RelevanceOutcome:
     usd: float = 0.0
 
 
-def _brief_block(ctx: BriefContext) -> str:
+def brief_block(ctx: BriefContext) -> str:
     rqs = "\n".join(f"- {rid}: {q}" for rid, q in ctx.research_questions.items()) or "- (none yet)"
     return (f"Topic: {ctx.topic}\nMarket: {ctx.market}\nLanguages: {', '.join(ctx.languages)}\n"
             f"Audience: {ctx.audience or 'not specified'}\nResearch questions:\n{rqs}")
@@ -74,7 +74,7 @@ async def classify(texts: dict[str, str], ctx: BriefContext) -> RelevanceOutcome
     system = load_prompt("relevance")
 
     async def run(batch: list[str]):
-        user = _brief_block(ctx) + "\n\nItems:\n\n" + "\n\n".join(untrusted(i, texts[i]) for i in batch)
+        user = brief_block(ctx) + "\n\nItems:\n\n" + "\n\n".join(untrusted(i, texts[i]) for i in batch)
         return await structured("worker", system, user, RelevanceBatch, "record_relevance",
                                 description="Record a relevance verdict for every item.",
                                 fake=_fake_answer(ctx))

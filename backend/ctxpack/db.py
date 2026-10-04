@@ -350,6 +350,21 @@ def get_documents(run_id: str, relevant_only: bool = False) -> list[DocumentRow]
         return list(s.exec(stmt))
 
 
+def save_extractions(results: dict[str, tuple[dict, str | None]]) -> int:
+    """Store extractor output per document id: {id: (extraction, text_en)}. Saved batch by batch."""
+    with session() as s:
+        for doc_id, (extraction, text_en) in results.items():
+            row = s.get(DocumentRow, doc_id)
+            if row is None:
+                continue
+            row.extraction = extraction
+            if text_en is not None:
+                row.text_en = text_en
+            s.add(row)
+        s.commit()
+    return len(results)
+
+
 def save_clusters(run_id: str, clusters: list[ClusterRow]) -> None:
     with session() as s:
         for cluster in clusters:

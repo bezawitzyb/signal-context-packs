@@ -463,6 +463,70 @@ def research(
 
 
 @app.command()
+def extract(
+    from_run: str = typer.Option(..., "--from-run", help="Run id whose saved corpus is extracted"),
+    show: int = typer.Option(5, help="Enriched docs to print afterwards"),
+    limit: int = typer.Option(0, help="Only this many docs (0 = all still to do)"),
+    redo: bool = typer.Option(False, "--redo", help="Extract docs again even if already done"),
+    yes: bool = typer.Option(False, "--yes", help="Do not wait for Enter before the paid calls"),
+) -> None:
+    """Step 3.1 on a saved corpus: extraction for every relevant doc, then a few enriched docs + cost.
+
+    The cost is added to that run (its LLM budget applies) and to today's spend.
+    """
+    import asyncio
+    import json
+
+    from ctxpack import db, orchestrator
+    from ctxpack.analysis.extract import estimate_usd, extract_run, pending
+    from ctxpack.config import mode_limits
+    from ctxpack.llm.client import tracking
+
+    db.init_engine()
+    run = db.get_run(from_run)
+    if run is None or not run.plan:
+        console.print(f"{BAD} run {from_run} not found or never planned")
+        raise typer.Exit(1)
+    if run.finish_reason is None:
+        console.print(f"{BAD} run {from_run} has not finished collecting")
+        raise typer.Exit(1)
+
+    relevant = db.get_documents(from_run, relevant_only=True)
+    todo = pending(from_run, redo=redo, limit=limit or None)
+    limit_usd = mode_limits(run.mode)["llm_usd"]
+    console.print(f"run {run.id} ({run.brief_text[:50]}) | relevant docs {len(relevant)} | to extract {len(todo)} "
+                  f"({sum(len(d.text) for d in todo)} chars)", highlight=False)
+    console.print(f"estimated max cost ${estimate_usd(todo):.2f} | run LLM spend so far ${run.cost_llm_usd:.2f} "
+                  f"of ${limit_usd:.2f}", highlight=False)
+    if todo and not yes and not get_settings().llm_fake:
+        typer.prompt("Press Enter to start (Ctrl-C to cancel)", default="", show_default=False)
+
+    with tracking(run.id, llm_limit_usd=limit_usd) as t:
+        before = t.spent_usd
+        outcome = asyncio.run(extract_run(run.id, orchestrator.brief_context(run), redo=redo, limit=limit or None))
+        spent = t.spent_usd - before
+
+    done = [d for d in db.get_documents(from_run, relevant_only=True) if d.extraction is not None]
+    done.sort(key=lambda d: d.id)
+    step = max(1, len(done) // show) if show else 0
+    for d in done[::step][:show] if show else []:
+        console.rule(f"{d.id} | {d.source_unit} | {d.language}", style="dim")
+        console.print(f"[bold]text[/bold]    {d.text[:400]}", highlight=False)
+        if d.text_en:
+            console.print(f"[bold]text_en[/bold] {d.text_en[:400]}", highlight=False)
+        console.print_json(json.dumps(d.extraction, ensure_ascii=False))
+
+    console.print(f"\n[bold]EXTRACT[/bold] docs {outcome.extracted} | missing {len(outcome.missing)} | "
+                  f"untranslated {outcome.untranslated} | "
+                  f"phrases kept {outcome.phrases_kept} dropped (not exact) {outcome.phrases_dropped} | "
+                  f"done {len(done)} of {len(relevant)} relevant", highlight=False)
+    console.print(f"[bold]COST[/bold] this step ${spent:.4f} in {outcome.calls} calls | tokens in {t.input_tokens} "
+                  f"out {t.output_tokens} | run LLM total now ${t.spent_usd:.3f}", highlight=False)
+    if outcome.missing:
+        raise typer.Exit(1)
+
+
+@app.command()
 def overlap(run_ids: list[str] = typer.Argument(..., help="Two or more run ids")) -> None:
     """How much the runs' source units overlap (eval: briefs share < 50%)."""
     from ctxpack import db

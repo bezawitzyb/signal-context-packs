@@ -74,6 +74,15 @@ class Emotion(StrEnum):
     indifference = "indifference"
 
 
+class Stance(StrEnum):
+    """A document's stance toward the topic or a brand (extraction, F4-6; PRD 5.5 uses it)."""
+
+    positive = "positive"
+    negative = "negative"
+    mixed = "mixed"
+    neutral = "neutral"
+
+
 class ComplianceCategory(StrEnum):
     food_nutrition = "food_nutrition"
     health_supplements = "health_supplements"
