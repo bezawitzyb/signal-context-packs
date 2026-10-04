@@ -204,8 +204,10 @@ async def test_low_evidence_finish_tops_up_from_kept_units_only(offline, monkeyp
     out = await run(run_id, scripted([[REDDIT, TIKTOK], [COVERAGE], [finish]]))
     assert out.finish_reason == FinishReason.finish and out.top_up_used and not out.fallback_used
     after_finish = calls(run_id)[4:]
-    assert after_finish == [("search_reddit", "reddit:search:subreddit:mealprepsunday cheap lunches"),
-                            ("search_reddit", "reddit:r/MealPrepSunday")]          # fuller page of the kept unit
+    assert after_finish == [("search_reddit", "reddit:r/MealPrepSunday"),       # follow-up searched INSIDE it
+                            ("search_reddit", "reddit:r/MealPrepSunday")]       # fuller page of the kept unit
+    top_up_reasons = [e["reason"] for e in out.collection["decision_log"][4:]]
+    assert top_up_reasons[0] == "top-up: follow-up proposed for reddit:r/MealPrepSunday"
     assert not any(tool == "search_tiktok" for tool, _ in after_finish)          # dropped: never again
     assert events(run_id, EventType.fallback)[-1].payload["kind"] == "top_up"
     assert db.get_run(run_id).top_up_used
@@ -384,3 +386,82 @@ async def test_no_apify_credit_switches_the_run_to_web_sources(offline, monkeypa
         assert (await refused)["reason"] == tools.NO_APIFY_CREDIT
     assert len(actor_calls) == 1 and ctx.calls == 1    # refused at once: no actor, no call used
     assert (await tools.web_search(ctx, "snacks", "NL", "nl", "web instead"))["status"] == "ok"
+
+
+# --- Reddit: search inside a subreddit -----------------------------------------------
+
+async def test_reddit_query_searches_inside_the_subreddit(offline, monkeypatch):
+    inputs = []
+
+    async def fake_actor(spec, run_input, limit, timeout=None):
+        inputs.append((spec["id"], run_input))
+        return apify.ActorResult(spec["id"], [], 0.0, "SUCCEEDED")
+
+    monkeypatch.setattr(apify, "run_actor", fake_actor)
+    run_id = await approved_run()
+    ctx = orchestrator.loop_state(run_id).ctx
+    out = await tools.search_reddit(ctx, "r/de", 20, "national subreddit", query="Wärmepumpe Erfahrungen")
+    assert out["source_unit"] == "reddit:r/de"                     # still the community's unit
+    main, backup = inputs                                          # nothing came back: backup tried too
+    assert main[1]["searchTerms"] == ["Wärmepumpe Erfahrungen"] and main[1]["withinCommunity"] == "de"
+    assert "subredditUrls" not in main[1]
+    assert backup[1]["searches"] == ["Wärmepumpe Erfahrungen"] and backup[1]["searchCommunityName"] == "de"
+    # browsing the same subreddit is a different call, not a duplicate
+    assert (await tools.search_reddit(ctx, "r/de", 20, "browse"))["status"] != "duplicate_call"
+    assert "subredditUrls" in inputs[2][1]
+
+
+def test_fallback_searches_a_planned_subreddit_with_its_query():
+    from ctxpack.collect.fallback import starting_call
+    from ctxpack.schemas.plan import Interpretation, StartingSourceUnit
+    unit = StartingSourceUnit.model_validate({"platform": "reddit", "kind": "subreddit", "target": "r/de",
+                                              "reason": "national", "queries": [
+                                                  {"language": "de", "query": "Wärmepumpe Erfahrungen"}]})
+    interp = Interpretation.model_validate({"topic": "heat pumps", "market": "DE", "languages": ["de"],
+                                            "audience": "owners", "category": "heating",
+                                            "compliance_category": "energy_environmental",
+                                            "intent": "launch", "time_window_days": 180})
+    name, args, unit_name = starting_call(unit, interp)
+    assert (name, args["query"], unit_name) == ("search_reddit", "Wärmepumpe Erfahrungen", "reddit:r/de")
+
+
+# --- cost breakdown per call type -------------------------------------------------------
+
+async def test_cost_breakdown_per_call_type_is_saved_on_the_run(offline, monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr("ctxpack.guards.check_daily_cap", lambda: None)
+    run_id = await approved_run()
+    usage = SimpleNamespace(input_tokens=1000, output_tokens=200, cache_read_input_tokens=500,
+                            cache_creation_input_tokens=0)
+    with llm.tracking(run_id):
+        for _ in range(2):
+            await llm._after_paid_call("worker", "record_relevance", "claude-haiku-4-5-20251001", usage, 1.0)
+        await llm._after_paid_call("reasoner", "collector", "claude-sonnet-5-5", usage, 1.0)
+    part = db.get_run(run_id).cost_breakdown["anthropic"]
+    assert part["worker/record_relevance"]["calls"] == 2
+    assert part["worker/record_relevance"]["input_tokens"] == 2000
+    assert part["worker/record_relevance"]["cache_read_tokens"] == 1000
+    assert part["reasoner/collector"]["usd"] > part["worker/record_relevance"]["usd"] / 2
+
+    with llm.tracking(run_id):                       # a resumed run adds to what was saved
+        await llm._after_paid_call("worker", "record_relevance", "claude-haiku-4-5-20251001", usage, 1.0)
+    assert db.get_run(run_id).cost_breakdown["anthropic"]["worker/record_relevance"]["calls"] == 3
+
+
+async def test_apify_spend_per_actor_is_saved_and_listed_biggest_first(offline, monkeypatch):
+    with_limits(monkeypatch, min_relevant=1)
+
+    async def paid_actor(spec, run_input, limit, timeout=None):
+        items = json.loads(apify.fixture_path(spec["id"]).read_text())[:limit]
+        return apify.ActorResult(spec["id"], items, 0.05, "SUCCEEDED")
+
+    monkeypatch.setattr(apify, "run_actor", paid_actor)
+    run_id = await approved_run()
+    await run(run_id, scripted([[REDDIT], [COVERAGE], finish_all()]))
+    run_ = db.get_run(run_id)
+    assert run_.cost_breakdown["apify"]["harshmaur/reddit-scraper"] == {"runs": 1, "usd": 0.05, "items": 10}
+    run_.cost_breakdown["anthropic"] = {"worker/record_relevance": {
+        "calls": 1, "usd": 0.01, "input_tokens": 9, "output_tokens": 9, "cache_read_tokens": 0}}
+    lines = orchestrator.cost_lines(run_)
+    assert "apify     harshmaur/reddit-scraper" in lines[0] and "83%" in lines[0]   # biggest first
+    assert "anthropic worker/record_relevance" in lines[1]

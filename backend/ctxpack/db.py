@@ -74,6 +74,8 @@ class Run(SQLModel, table=True):
     stop_requested_at: datetime | None = Field(default=None, sa_type=TZ)  # Stop button; read by the worker
     # Agent loop record (Step 2.4): decision_log, sources_used, sources_dropped, gaps, summary
     collection: dict | None = Field(default=None, sa_type=JSON)
+    # Spend per call type: {"anthropic": {"worker/record_relevance": {calls, usd, tokens...}}, "apify": {actor: ...}}
+    cost_breakdown: dict | None = Field(default=None, sa_type=JSON)
 
 
 class EventRow(SQLModel, table=True):
@@ -225,6 +227,13 @@ def update_run(run_id: str, **fields: Any) -> Run:
 
 def set_status(run_id: str, status: RunStatus, **fields: Any) -> Run:
     return update_run(run_id, status=status, **fields)
+
+
+def set_cost_breakdown(run_id: str, part: str, values: dict) -> None:
+    """Replace one part ("anthropic" or "apify") of the run's cost breakdown, keeping the other."""
+    run = get_run(run_id)
+    if run is not None:
+        update_run(run_id, cost_breakdown={**(run.cost_breakdown or {}), part: values})
 
 
 def set_stage(run_id: str, stage: RunStage) -> Run:

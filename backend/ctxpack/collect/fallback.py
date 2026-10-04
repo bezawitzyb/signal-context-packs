@@ -49,6 +49,8 @@ def starting_call(unit: StartingSourceUnit, interp: Interpretation) -> tuple[str
     platform, reason = unit.platform.value, unit.reason
     if platform == "reddit":
         args = {"target": unit.target, "reason": reason}
+        if unit.kind.value == "subreddit" and unit.queries:   # search inside it, never browse blind
+            args["query"] = unit.queries[0].query
         return "search_reddit", args, tools.unit_for("search_reddit", args)
     if platform == "tiktok":
         args = {"target": unit.target, "reason": reason}
@@ -157,8 +159,9 @@ def _follow_up_call(unit: str, query: str, interp: Interpretation) -> tuple[str,
     reason = f"top-up: follow-up proposed for {unit}"
     family, _, rest = unit.partition(":")
     if family == "reddit":
-        target = f"subreddit:{rest[2:]} {query}" if rest.startswith("r/") else query
-        return "search_reddit", {"target": target, "reason": reason}
+        if rest.startswith("r/"):
+            return "search_reddit", {"target": rest, "query": query, "reason": reason}
+        return "search_reddit", {"target": query, "reason": reason}
     if family == "tiktok":
         return "search_tiktok", {"target": query, "reason": reason}
     if family == "youtube":
@@ -196,7 +199,7 @@ async def top_up(state: Any) -> bool:
     if ctx.relevant_total >= ctx.limits["min_relevant"] or tools._general_limit(ctx):
         return False
     started = False
-    for name, args in _candidates(state):
+    for name, args in list(_candidates(state)):     # planned from the agent's calls, before any top-up call
         if ctx.relevant_total >= ctx.limits["min_relevant"]:
             break
         if name != "web_search" and tools.unit_for(name, args) in ctx.dropped_units:

@@ -23,7 +23,7 @@ from pydantic import BaseModel, Field
 from ctxpack.collect.apify import FIXTURE_DIR
 from ctxpack.collect.cleaning import Draft, make_draft, redact
 from ctxpack.config import get_settings, load_yaml
-from ctxpack.llm.client import load_prompt, structured
+from ctxpack.llm.client import load_prompt, structured, untrusted
 from ctxpack.schemas.enums import Platform
 
 DISCOVER_FIXTURE = FIXTURE_DIR / "web_discover.json"
@@ -46,7 +46,11 @@ class Discovery(BaseModel):
 
 
 class Segment(BaseModel):
-    text: str
+    """One visitor post. Short posts come as `text`; long ones as `start` + `end` words, and
+    code cuts the exact text out of the page (fewer output tokens, quotes always exact)."""
+    text: str | None = Field(default=None, description="The whole post, exactly as on the page (short posts).")
+    start: str | None = Field(default=None, description="Long posts: the first words, exactly as on the page.")
+    end: str | None = Field(default=None, description="Long posts: the last words, exactly as on the page.")
     author: str | None = None
     date: str | None = None
     likes: float | None = None
@@ -182,6 +186,57 @@ def text_fragment_url(url: str, start: str | None, end: str | None) -> str:
 
 
 # --------------------------------------------------------------------------
+# Pointer segments: start/end words -> the exact post
+# --------------------------------------------------------------------------
+
+def _phrase_matches(phrase: str, page: str) -> list[re.Match]:
+    parts = phrase.split()
+    return list(re.finditer(r"\s+".join(map(re.escape, parts)), page)) if parts else []
+
+
+def resolve_pointer(seg: Segment, page: str) -> str | None:
+    """The post from its start words to its end words - only if BOTH appear exactly once on
+    the page, in that order, within segment_max_chars. Otherwise None (copied in full instead)."""
+    starts, ends = _phrase_matches(seg.start or "", page), _phrase_matches(seg.end or "", page)
+    if len(starts) != 1 or len(ends) != 1:
+        return None
+    a, b = starts[0], ends[0]
+    if b.start() < a.start() or b.end() - a.start() > load_yaml("modes")["collection"]["segment_max_chars"]:
+        return None
+    return page[a.start():b.end()]
+
+
+async def _copy_in_full(page_text: str, segs: list[Segment]) -> tuple[list[Segment], float]:
+    """Posts whose start/end words were not unique: one worker call copies them in full from
+    the text we already have (no second fetch). Metadata stays from the first answer."""
+    wanted = "\n".join(f"- position {s.position}: starts with \"{s.start}\", ends with \"{s.end}\"" for s in segs)
+    user = (f"Posts to copy:\n{wanted}\n\nThe page:\n" + untrusted("page", page_text))
+    res = await structured("worker", load_prompt("web_segment_copy"), user, Segmentation, "record_segments",
+                           description="Record the listed posts in full.", max_tokens=8000)
+    by_position = {s.position: s for s in res.data.segments if s.text}
+    return [s.model_copy(update={"text": by_position[s.position].text}) for s in segs
+            if s.position in by_position], res.usd
+
+
+async def resolve_segments(page_text: str, segs: list[Segment]) -> tuple[list[Segment], float, int]:
+    """Every segment with its text: short posts as given, pointers cut from the page, and the
+    ones that could not be cut safely copied in full. Returns (segments, usd, copied)."""
+    done, missing = [], []
+    for s in segs:
+        if s.text:
+            done.append(s)
+        elif s.start and s.end and (span := resolve_pointer(s, page_text)):
+            done.append(s.model_copy(update={"text": span}))
+        else:
+            missing.append(s)
+    usd = 0.0
+    if missing:
+        copied, usd = await _copy_in_full(page_text, missing)
+        done += copied
+    return sorted(done, key=lambda s: s.position), usd, len(missing)
+
+
+# --------------------------------------------------------------------------
 # Fetch + segment
 # --------------------------------------------------------------------------
 
@@ -209,7 +264,7 @@ def build_drafts(url: str, page_type: str, page_text: str, segments: list[Segmen
     domain = urlparse(url).netloc.removeprefix("www.")
     drafts, not_exact = [], 0
     for seg in segments:
-        original = locate(seg.text, page_text)
+        original = locate(seg.text or "", page_text)
         if original is None:
             not_exact += 1
             continue
@@ -245,9 +300,11 @@ async def fetch_and_segment(url: str, page_type: str, fetched_at: datetime) -> P
     page_text, error = _fetched_text(res.blocks)
     if page_text is None:
         return PageResult(url, usd=res.usd, error=error)
-    segs = res.data.segments
+    returned = len(res.data.segments)
+    segs, copy_usd, _ = await resolve_segments(page_text, res.data.segments)
     drafts, not_exact = build_drafts(url, page_type, page_text, segs, fetched_at)
-    return PageResult(url, drafts, res.usd, len(segs), not_exact, _page_text=page_text, _segments=segs)
+    not_exact += returned - len(segs)              # pointers that could not be resolved or copied
+    return PageResult(url, drafts, res.usd + copy_usd, returned, not_exact, _page_text=page_text, _segments=segs)
 
 
 def sanitize_page_fixture(result: PageResult) -> dict:

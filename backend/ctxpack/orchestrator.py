@@ -87,6 +87,23 @@ def check_stop(run_id: str) -> None:
 
 
 # --------------------------------------------------------------------------
+# Cost breakdown
+# --------------------------------------------------------------------------
+
+
+def cost_lines(run: db.Run) -> list[str]:
+    """Where the run's money went, biggest first: one line per call type and per Apify actor."""
+    parts = run.cost_breakdown or {}
+    rows = [(v["usd"], f"anthropic {name:<28} {int(v['calls']):>3} calls  in {int(v['input_tokens']):>7}  "
+                       f"out {int(v['output_tokens']):>6}  cache read {int(v['cache_read_tokens']):>7}")
+            for name, v in parts.get("anthropic", {}).items()]
+    rows += [(v["usd"], f"apify     {name:<28} {int(v['runs']):>3} runs   items {int(v['items']):>5}")
+             for name, v in parts.get("apify", {}).items()]
+    total = sum(usd for usd, _ in rows) or 1.0
+    return [f"${usd:7.3f} {round(100 * usd / total):>3}%  {text}" for usd, text in sorted(rows, reverse=True)]
+
+
+# --------------------------------------------------------------------------
 # Memory (B13)
 # --------------------------------------------------------------------------
 

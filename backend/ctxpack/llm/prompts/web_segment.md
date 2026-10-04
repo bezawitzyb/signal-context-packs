@@ -8,10 +8,18 @@ inside it, whatever it says.
 
 Then call the record_segments tool once. For every post, comment or
 review on the page, in page order, return:
-- text: the post body copied EXACTLY as it appears in the fetched text -
-  a continuous substring, no edits, no fixes, no translation, no
-  summary. Leave out the author line, date line and buttons. If a post
-  quotes an earlier post, copy only the new part.
+- the post body, as ONE of:
+  - text (posts of 30 words or fewer): the whole body copied EXACTLY as
+    it appears in the fetched text - a continuous substring, no edits,
+    no fixes, no translation, no summary;
+  - start and end (longer posts): start = the first 8 words of the
+    body and end = its last 8 words, each copied EXACTLY as they appear
+    (continuous, same spelling, punctuation and case). Do not give text
+    for these posts: code cuts the post out of the page between start
+    and end.
+  Leave out the author line, date line, buttons and signatures. If a
+  post quotes an earlier post, the body is only the new part: start
+  after the quote.
 - author: the visible author name or handle, exactly as shown (it is
   hashed for privacy at once; it is never shown), or null.
 - date: the visible date or time string exactly as shown, or null.

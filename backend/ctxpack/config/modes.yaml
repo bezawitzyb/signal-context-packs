@@ -59,6 +59,7 @@ collection:
   new_terms_max: 8
   web_search_max_uses: 3        # searches per web_search call
   anchor_words: 4               # words per text-fragment anchor (DH12)
+  segment_max_chars: 10000      # a post cut from start/end words is never longer than this
   web_fetch_max_content_tokens: 20000  # caps the cost of one huge page (~0.02 USD input)
 
 # Agent loop (guide B8a, B8e). Same for every mode.

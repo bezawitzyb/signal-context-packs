@@ -29,6 +29,10 @@ HOW TO WORK
   never call a source you dropped again.
 - Use coverage_report to see which research questions have little
   evidence, and fill those gaps with targeted calls.
+- Reddit: for a broad subreddit (a country, city or general one such as
+  r/de) always pass a query, so search_reddit searches inside it;
+  browsing without a query returns the newest posts on every subject.
+  Browse only subreddits that are entirely about the topic.
 - Keep any one source unit under 30% of the item budget; tools refuse
   calls over that share.
 - Each tool states its typical latency. Batch independent calls in ONE

@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import asyncio
+import copy
 import json
 import logging
 import time
@@ -117,6 +118,8 @@ class Tracker:
     output_tokens: int = 0
     cache_read_tokens: int = 0
     cache_write_tokens: int = 0
+    # "role/name" -> {calls, usd, input_tokens, output_tokens, cache_read_tokens, cache_write_tokens, web_searches}
+    by_call: dict[str, dict[str, float]] = field(default_factory=dict)
     _last_event_usd: float = 0.0
     _lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
@@ -135,13 +138,15 @@ def tracking(run_id: str | None = None, llm_limit_usd: float | None = None) -> I
     Needs the database (spend table, runs, events). Calls outside any
     tracking() block are only logged (tests, one-off tools).
     """
-    spent = 0.0
+    spent, by_call = 0.0, {}
     if run_id:
         from ctxpack import db
 
         run = db.get_run(run_id)
         spent = run.cost_llm_usd if run else 0.0
-    tracker = Tracker(run_id=run_id, llm_limit_usd=llm_limit_usd, spent_usd=spent, _last_event_usd=spent)
+        by_call = copy.deepcopy(((run.cost_breakdown or {}) if run else {}).get("anthropic", {}))  # a resume adds on
+    tracker = Tracker(run_id=run_id, llm_limit_usd=llm_limit_usd, spent_usd=spent, by_call=by_call,
+                      _last_event_usd=spent)
     token = _tracker.set(tracker)
     try:
         yield tracker
@@ -149,6 +154,10 @@ def tracking(run_id: str | None = None, llm_limit_usd: float | None = None) -> I
         _tracker.reset(token)
         if run_id and tracker.spent_usd > tracker._last_event_usd:
             _emit_cost(tracker)  # the last few cents since the previous event
+        if run_id and tracker.by_call:
+            from ctxpack import db
+
+            db.set_cost_breakdown(run_id, "anthropic", tracker.by_call)
 
 
 async def _before_paid_call() -> None:
@@ -179,6 +188,10 @@ async def _after_paid_call(role: str, name: str, model: str, usage: Any, seconds
         tracker.cache_write_tokens += cw
         tracker.cache_read_tokens += cr
         tracker.spent_usd += usd
+        row = tracker.by_call.setdefault(f"{role}/{name}", {})
+        for key, value in (("calls", 1), ("usd", usd), ("input_tokens", inp), ("output_tokens", out),
+                           ("cache_read_tokens", cr), ("cache_write_tokens", cw), ("web_searches", searches)):
+            row[key] = row.get(key, 0) + value
         await asyncio.to_thread(_record_spend, tracker, usd)
     return usd
 

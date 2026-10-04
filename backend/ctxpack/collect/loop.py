@@ -339,6 +339,8 @@ def save_progress(state: LoopState) -> None:
     """Every call lands in the decision log on the run, so a cut-off run keeps it."""
     db.update_run(state.run_id, tool_calls=state.ctx.calls,
                   collection={"decision_log": list(state.decision_log)})
+    if state.ctx.apify_by_actor:
+        db.set_cost_breakdown(state.run_id, "apify", state.ctx.apify_by_actor)
 
 
 # --------------------------------------------------------------------------
@@ -379,6 +381,8 @@ async def run_loop(state: LoopState, model: ModelFn | None = None) -> LoopOutcom
         reason = FinishReason.budget_limit
 
     record = collection_record(state)
+    if state.ctx.apify_by_actor:
+        db.set_cost_breakdown(state.run_id, "apify", state.ctx.apify_by_actor)
     db.update_run(state.run_id, tool_calls=state.ctx.calls, collection=record, finish_reason=reason,
                   fallback_used=state.fallback_used, top_up_used=state.top_up_used)
     return LoopOutcome(reason, state.fallback_used, state.top_up_used, record)

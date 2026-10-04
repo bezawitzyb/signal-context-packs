@@ -86,6 +86,7 @@ class RunContext:
     finished: dict | None = None
     extra_secs: int = 0                                  # crash fallback after a timeout (modes.yaml agent)
     apify_unavailable: bool = False                      # Apify credit used up: no more actor calls this run
+    apify_by_actor: dict[str, dict[str, float]] = field(default_factory=dict)   # actor -> {runs, usd, items}
     # Reserved by calls still running, so concurrent calls cannot jointly overshoot a limit.
     pending_items: int = 0
     pending_unit_items: Counter = field(default_factory=Counter)
@@ -114,6 +115,14 @@ class RunContext:
     def left(self) -> dict[str, Any]:
         return {"budget_left": self.budget_left(), "calls_left": self.calls_left(),
                 "seconds_left": self.seconds_left()}
+
+
+def _count_actor(ctx: RunContext, result: apify.ActorResult) -> None:
+    """Apify spend per actor, for the run's cost breakdown."""
+    row = ctx.apify_by_actor.setdefault(result.actor_id, {"runs": 0, "usd": 0.0, "items": 0})
+    row["runs"] += 1
+    row["usd"] += result.usd
+    row["items"] += len(result.items)
 
 
 def _limit_reached(ctx: RunContext, why: str) -> dict[str, Any]:
@@ -279,6 +288,7 @@ async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int]
         result.items = result.items[:limit]
     ctx.apify_unavailable |= result.status == apify.NO_CREDIT
     ctx.apify_usd += result.usd
+    _count_actor(ctx, result)
     _record(ctx, result)
     return result
 
@@ -309,6 +319,7 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
     result.items = result.items[:total]
     result.context = {"parent_urls": urls, "parent_by_id": {str(p.get("thread_id")): p["url"] for p in parents}}
     ctx.apify_usd += result.usd
+    _count_actor(ctx, result)
     _record(ctx, result)
     return result
 
@@ -423,9 +434,13 @@ def unit_for(tool: str, args: dict[str, Any]) -> str | None:
             }.get(tool, lambda: None)()
 
 
-async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
+async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: str = "",
+                        query: str = "") -> dict[str, Any]:
+    """target 'r/<name>' browses the subreddit; with `query` it searches INSIDE it (same unit);
+    any other target is a Reddit-wide search."""
     sub = _sub(target)
     unit = reddit_unit(target)
+    query = query.strip() if sub else ""
 
     def inputs(spec: dict, n: int) -> dict:
         posts = max(1, round(n * _modes()["collection"]["chain_posts_share"]))
@@ -434,15 +449,20 @@ async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: st
             base = {"crawlCommentsPerPost": True, "maxPostsCount": posts, "maxCommentsPerPost": per_post,
                     "maxCommentsCount": n - posts, "postedAfter": _cutoff(ctx), "aiAnalysis": False,
                     "includeNSFW": False}
+            if sub and query:
+                return {**base, "searchTerms": [query], "withinCommunity": sub, "searchSort": "relevance"}
             return {**base, "subredditUrls": [f"r/{sub}"]} if sub else \
                    {**base, "searchTerms": [target], "searchSort": "relevance"}
         base = {"maxItems": max(n, spec.get("min_items", 0)), "maxPostCount": posts, "maxComments": per_post,
                 "skipComments": False, "skipUserPosts": True, "skipCommunity": True, "searchCommunities": False,
                 "searchUsers": False, "includeNSFW": False, "proxy": {"useApifyProxy": True}}
+        if sub and query:
+            return {**base, "searches": [query], "searchCommunityName": sub, "sort": "relevance"}
         return {**base, "startUrls": [{"url": f"https://www.reddit.com/r/{sub}/"}]} if sub else \
                {**base, "searches": [target], "sort": "relevance"}
 
-    return await _apify_tool(ctx, "search_reddit", "reddit", Platform.reddit, unit, target, limit, reason,
+    call_target = f"{target.strip()} {query}" if query else target   # call key, cache key, seen words
+    return await _apify_tool(ctx, "search_reddit", "reddit", Platform.reddit, unit, call_target, limit, reason,
                              inputs, with_comments=False)
 
 
@@ -721,9 +741,14 @@ def tool_definitions() -> list[dict[str, Any]]:
     per_call = max(m["items_per_call_max"] for m in lim.values())
     limit = {"type": "integer", "description": f"Items wanted (posts + comments), at most {per_call}."}
     defs = [
-        ("search_reddit", f"Reddit posts and comments from one subreddit (target 'r/<name>') or a search "
-                          f"query. Latency {_latency('search_reddit')}.",
-         {"target": {"type": "string"}, "limit": limit, "reason": _reason()}, ["target", "reason"]),
+        ("search_reddit", f"Reddit posts and comments: from one subreddit (target 'r/<name>'), searched inside "
+                          f"that subreddit when you give a query, or from a Reddit-wide search (target = the "
+                          f"query). Latency {_latency('search_reddit')}.",
+         {"target": {"type": "string"}, "limit": limit, "reason": _reason(),
+          "query": {"type": "string", "description": "With an 'r/<name>' target: search inside that subreddit. "
+                    "Always use it for broad subreddits (country, city, general); without it you get the "
+                    "newest posts on every subject."}},
+         ["target", "reason"]),
         ("search_tiktok", f"TikTok videos for a hashtag ('#tag') or query, plus comments on the most-discussed "
                           f"videos. Latency {_latency('search_tiktok')}.",
          {"target": {"type": "string"}, "limit": limit, "reason": _reason()}, ["target", "reason"]),

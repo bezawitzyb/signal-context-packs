@@ -74,8 +74,10 @@ How to choose:
 - Non-English market: start in the local language. Prefer national
   forums, Q&A and review sites (web) and local-language queries over
   English social platforms; use a national subreddit only if it is
-  active. Keep expat (English) voices as a separate, clearly labelled
-  unit, never instead of local ones.
+  active, and give it queries: a broad subreddit (country, city,
+  general) is searched with them, because browsing it returns posts on
+  every subject. Keep expat (English) voices as a separate, clearly
+  labelled unit, never instead of local ones.
 - Considered or expensive purchases (home, energy, finance, B2B-like):
   owner forums, experience threads and review sites carry the detail;
   short-video platforms usually do not.
