@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
@@ -28,6 +29,14 @@ log = logging.getLogger(__name__)
 
 FIXTURE_DIR = BACKEND_DIR / "tests" / "fixtures" / "tools"
 OK_STATUSES = {"SUCCEEDED", "TIMED-OUT"}  # a timed-out run keeps its partial items
+NO_CREDIT = "NO_CREDIT"    # the account's monthly usage is used up: no actor can run until it resets
+NO_TIME = "NO_TIME"        # the run's collection time is (nearly) up: the actor was not started
+_NO_CREDIT_RE = re.compile(r"remaining usage|monthly usage|usage limit|isn't enough for this run", re.I)
+
+
+def is_no_credit(message: str) -> bool:
+    """Apify refused the run because the account's monthly usage is used up."""
+    return bool(_NO_CREDIT_RE.search(message))
 
 
 def _cfg() -> dict[str, Any]:
@@ -90,9 +99,10 @@ async def run_actor(spec: dict[str, Any], run_input: dict[str, Any], limit: int,
             run_timeout=timedelta(seconds=timeout_secs or _cfg()["actor_timeout_secs"]),
             logger=None,
         )
-    except Exception as exc:  # the API refused the run (bad input, cap too low, ...)
+    except Exception as exc:  # the API refused the run (bad input, cap too low, no credit, ...)
         # Apify's message says what was wrong with the input; it never contains the token.
-        return ActorResult(actor_id, status="ERROR", seconds=time.monotonic() - started,
+        status = NO_CREDIT if is_no_credit(str(exc)) else "ERROR"
+        return ActorResult(actor_id, status=status, seconds=time.monotonic() - started,
                            error=f"{type(exc).__name__}: {str(exc)[:200]}")
     run = _d(run)
     items = (await client.dataset(run["defaultDatasetId"]).list_items(limit=limit)).items
@@ -103,18 +113,32 @@ async def run_actor(spec: dict[str, Any], run_input: dict[str, Any], limit: int,
     return ActorResult(actor_id, items, round(usd, 4), run.get("status", "?"), time.monotonic() - started)
 
 
-async def run_with_fallback(attempts: list[tuple], limit: int, timeout_secs: int | None = None) -> ActorResult:
+async def run_with_fallback(attempts: list[tuple], limit: int, timeout_secs: int | None = None,
+                            deadline: float | None = None) -> ActorResult:
     """Try the actor, then its fallback, if it failed or returned nothing usable.
 
     attempts: (spec, input) or (spec, input, own_limit) when actors count items differently.
+    deadline (time.monotonic): each actor gets at most the time left, so it stops itself on time
+    (partial items are kept); with less than actor_min_secs left it is not started at all.
+    No credit left on the account: the fallback is not tried (it would be refused the same way).
     """
     spent, result = 0.0, ActorResult("none", status="ERROR")
     for n, attempt in enumerate(attempts):
         spec, run_input = attempt[0], attempt[1]
-        result = await run_actor(spec, run_input, attempt[2] if len(attempt) > 2 else limit, timeout_secs)
+        timeout = timeout_secs or _cfg()["actor_timeout_secs"]
+        if deadline is not None:
+            left = int(deadline - time.monotonic())
+            if left < _cfg()["actor_min_secs"]:
+                result = ActorResult(spec["id"], status=NO_TIME, usd=spent, used_fallback=n > 0)
+                break
+            timeout = min(timeout, left)
+        result = await run_actor(spec, run_input, attempt[2] if len(attempt) > 2 else limit, timeout)
         spent += result.usd
         result.usd, result.used_fallback = spent, n > 0
         if result.status in OK_STATUSES and result.items:
+            return result
+        if result.status == NO_CREDIT:
+            log.warning("actor %s refused: Apify credit for this month is used up", spec["id"])
             return result
         log.warning("actor %s gave status %s with %d items (%s)", spec["id"], result.status,
                     len(result.items), result.error or "-")

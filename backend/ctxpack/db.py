@@ -72,6 +72,8 @@ class Run(SQLModel, table=True):
     peak_mem_mb: float | None = None
     queued_at: datetime | None = Field(default=None, sa_type=TZ)          # FIFO order of the queue
     stop_requested_at: datetime | None = Field(default=None, sa_type=TZ)  # Stop button; read by the worker
+    # Agent loop record (Step 2.4): decision_log, sources_used, sources_dropped, gaps, summary
+    collection: dict | None = Field(default=None, sa_type=JSON)
 
 
 class EventRow(SQLModel, table=True):

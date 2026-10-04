@@ -14,6 +14,10 @@ class BudgetExceeded(RuntimeError):
     """A spend limit was reached. The orchestrator turns this into a partial pack."""
 
 
+class StopRequested(Exception):
+    """The Stop button was pressed; package what exists."""
+
+
 class DailyCapReached(BudgetExceeded):
     """DAILY_SPEND_CAP_USD reached for today (all runs, Apify + Anthropic)."""
 

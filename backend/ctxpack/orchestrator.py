@@ -11,9 +11,8 @@ with what exists -> "partial".
 Collection is finished once runs.finish_reason is set; a resumed run then
 starts at extracting from its saved corpus (the same path as --from-run).
 
-Step 2.3: collection runs each enabled starting unit once (the agent loop
-replaces it in Step 2.4); extracting..verifying and the pack itself are
-placeholders filled in by later steps.
+Collection is the agent loop (Step 2.4, collect/loop.py); extracting..
+verifying and the pack itself are placeholders filled in by later steps.
 """
 
 from __future__ import annotations
@@ -21,15 +20,14 @@ from __future__ import annotations
 import logging
 import resource
 import sys
-from collections import Counter
 from typing import Any, Awaitable, Callable
 
 from ctxpack import db
-from ctxpack.config import load_yaml, mode_limits
-from ctxpack.guards import BudgetExceeded
+from ctxpack.config import mode_limits
+from ctxpack.guards import BudgetExceeded, StopRequested
 from ctxpack.llm.client import tracking
 from ctxpack.schemas.enums import EventType, FinishReason, RunStage, RunStatus
-from ctxpack.schemas.plan import Interpretation, Plan, StartingSourceUnit
+from ctxpack.schemas.plan import Interpretation, Plan
 
 log = logging.getLogger(__name__)
 
@@ -40,10 +38,6 @@ PackFn = Callable[[str, bool], Awaitable[str | None]]
 PARTIAL_REASONS = {FinishReason.stopped, FinishReason.budget_limit, FinishReason.time_limit, FinishReason.error}
 TERMINAL = {RunStatus.complete, RunStatus.partial, RunStatus.failed, RunStatus.stopped}
 NOT_STARTED = {RunStatus.created, RunStatus.needs_clarification, RunStatus.awaiting_approval, RunStatus.queued}
-
-
-class StopRequested(Exception):
-    """The Stop button was pressed; package what exists."""
 
 
 # --------------------------------------------------------------------------
@@ -113,70 +107,13 @@ def record_memory(run_id: str, stage: RunStage) -> float:
 
 
 # --------------------------------------------------------------------------
-# Collection (Step 2.3 placeholder; the agent loop replaces it in Step 2.4)
+# Collection: the agent loop (collect/loop.py, guide B8)
 # --------------------------------------------------------------------------
 
 
-def _first_call(unit: StartingSourceUnit, market: str, language: str) -> tuple[str, dict[str, Any]] | None:
-    """One tool call for a starting unit, using its first query when it has one."""
-    query = unit.queries[0].query if unit.queries else unit.target
-    platform = unit.platform.value
-    if platform == "reddit":
-        return "search_reddit", {"target": unit.target, "reason": unit.reason}
-    if platform == "tiktok":
-        return "search_tiktok", {"target": unit.target, "reason": unit.reason}
-    if platform == "youtube":
-        return "search_youtube", {"query": unit.target, "reason": unit.reason}
-    if platform == "instagram":
-        return "search_instagram", {"hashtag": unit.target.lstrip("#"), "reason": unit.reason}
-    if platform == "web":
-        country = market if market != "global" else ""
-        return "web_search", {"query": query, "country": country, "language": language, "reason": unit.reason}
-    return None
-
-
-async def run_tool(ctx: Any, seq: int, name: str, args: dict[str, Any], source_unit: str,
-                   counters: Counter) -> dict[str, Any]:
-    """Run one agent tool with its agent_call / agent_result / counters / cost events.
-
-    Records Apify spend (the tools only count it on the RunContext).
-    """
-    from ctxpack.collect import tools
-
-    db.append_event(ctx.run_id, EventType.agent_call,
-                    {"seq": seq, "tool": name, "source_unit": source_unit, "reason": args.get("reason", "")})
-    apify_before = ctx.apify_usd
-    result = await tools.call_tool(ctx, name, args)
-    if ctx.apify_usd > apify_before:
-        db.add_spend(apify_usd=ctx.apify_usd - apify_before, run_id=ctx.run_id)
-        run = db.get_run(ctx.run_id)
-        db.append_event(ctx.run_id, EventType.cost, {"apify_usd": round(run.cost_apify_usd, 4),
-                                                     "llm_usd": round(run.cost_llm_usd, 4)})
-    db.append_event(ctx.run_id, EventType.agent_result, {
-        "seq": seq, "tool": name, "source_unit": result.get("source_unit", source_unit),
-        "collected": result.get("collected", 0), "kept": result.get("kept", 0),
-        "relevant_share": result.get("relevant_share", 0.0), "new_terms": result.get("new_terms", []),
-        "status": result.get("status", "error")})
-    if "collected" in result:
-        dropped = result.get("dropped", {})
-        counters.update({"collected": result["collected"], "duplicates": dropped.get("duplicate", 0),
-                         "spam": dropped.get("spam", 0), "out_of_window": dropped.get("out_of_window", 0),
-                         "relevant": result.get("relevant", 0), "kept": result.get("kept", 0)})
-        db.append_event(ctx.run_id, EventType.counters, {k: counters[k] for k in (
-            "collected", "duplicates", "spam", "out_of_window", "undated", "relevant", "kept")})
-    return result
-
-
-_LIMIT_REASONS = {"max_tool_calls reached": FinishReason.tool_call_limit,
-                  "collection time is up": FinishReason.time_limit,
-                  "llm budget spent": FinishReason.budget_limit}
-
-
-async def collect_starting_units(run_id: str) -> None:
-    """Placeholder collection: each enabled starting unit once, in plan order.
-
-    Sets runs.finish_reason when done (that marks collection as finished).
-    """
+def loop_state(run_id: str, record: bool = False) -> Any:
+    """The loop's state for a planned run: RunContext from the interpretation and plan."""
+    from ctxpack.collect.loop import LoopState
     from ctxpack.collect.relevance import BriefContext
     from ctxpack.collect.tools import RunContext, db_store
 
@@ -185,25 +122,20 @@ async def collect_starting_units(run_id: str) -> None:
     plan = Plan.model_validate(run.plan)
     ctx = RunContext(
         run_id=run_id, mode=str(run.mode), window_days=interp.time_window_days, store=db_store(run_id),
+        brief_text=run.brief_text, record=record,
         brief=BriefContext(topic=interp.topic, market=interp.market, languages=interp.languages,
                            audience=interp.audience,
                            research_questions={q.id: q.text for q in plan.research_questions}))
     ctx.llm_usd = run.cost_llm_usd
-    counters: Counter = Counter()
-    reason = FinishReason.finish
-    try:
-        for seq, unit in enumerate((u for u in plan.starting_units if u.enabled), start=1):
-            check_stop(run_id)
-            call = _first_call(unit, interp.market, interp.languages[0])
-            if call is None:
-                continue
-            result = await run_tool(ctx, seq, *call, unit.source_unit, counters)
-            if result.get("status") == "limit_reached":
-                reason = _LIMIT_REASONS.get(result.get("reason", ""), FinishReason.finish)
-                break
-    finally:
-        db.update_run(run_id, tool_calls=ctx.calls)
-    db.update_run(run_id, finish_reason=reason)
+    return LoopState(ctx=ctx, interp=interp, plan=plan, check_stop=lambda: check_stop(run_id))
+
+
+async def collect_agent(run_id: str) -> None:
+    """The agent loop with its fallback and top-up. Sets runs.finish_reason (collection finished),
+    fallback_used, top_up_used and the collection record (decision log, verdicts, gaps)."""
+    from ctxpack.collect.loop import run_loop
+
+    await run_loop(loop_state(run_id))
 
 
 # --------------------------------------------------------------------------
@@ -240,7 +172,7 @@ async def run_pipeline(run_id: str, *, collect: StageFn | None = None,
 
     collect / stages / build_pack can be swapped (tests, --from-run).
     """
-    collect = collect or collect_starting_units
+    collect = collect or collect_agent
     stages = ANALYSIS_STAGES if stages is None else stages
     build_pack = build_pack or build_pack_placeholder
     run = db.get_run(run_id)

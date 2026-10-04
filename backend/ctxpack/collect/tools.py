@@ -61,6 +61,7 @@ class RunContext:
     window_days: int
     store: Store
     record: bool = False                      # save sanitised fixtures (CLI --record)
+    brief_text: str = ""                      # the brief as typed (fake mode finds its transcript by it)
     started: float = field(default_factory=time.monotonic)
     calls: int = 0
     items: int = 0
@@ -78,16 +79,28 @@ class RunContext:
     page_types: dict[str, str] = field(default_factory=dict)
     queries: list[str] = field(default_factory=list)
     dropped_units: set = field(default_factory=set)
+    tried_units: set = field(default_factory=set)        # every unit a collection call was made for
+    unit_platform: dict[str, Platform] = field(default_factory=dict)
     external_signals: list[dict] = field(default_factory=list)
     coverage_after_last_collection: bool = False
     finished: dict | None = None
+    extra_secs: int = 0                                  # crash fallback after a timeout (modes.yaml agent)
+    apify_unavailable: bool = False                      # Apify credit used up: no more actor calls this run
+    # Reserved by calls still running, so concurrent calls cannot jointly overshoot a limit.
+    pending_items: int = 0
+    pending_unit_items: Counter = field(default_factory=Counter)
+    pending_apify_usd: float = 0.0
 
     @property
     def limits(self) -> dict[str, Any]:
         return _modes()["modes"][self.mode]
 
     def seconds_left(self) -> int:
-        return max(0, int(self.limits["collection_secs"] - (time.monotonic() - self.started)))
+        return max(0, int(self.limits["collection_secs"] + self.extra_secs - (time.monotonic() - self.started)))
+
+    def deadline(self) -> float:
+        """time.monotonic() at which collection time is up."""
+        return self.started + self.limits["collection_secs"] + self.extra_secs
 
     def calls_left(self) -> int:
         return max(0, self.limits["max_tool_calls"] - self.calls)
@@ -117,12 +130,30 @@ def _general_limit(ctx: RunContext) -> str | None:
     return None
 
 
+NO_APIFY_CREDIT = ("apify credit for this month is used up: Reddit, TikTok, YouTube, Instagram and "
+                   "Trends cannot run; use web_search and fetch_and_segment")
+
+
+def min_secs(tool: str) -> int:
+    """The low end of a tool's typical latency (catalog.yaml), e.g. 'usually 60-90 s' -> 60."""
+    m = re.search(r"\d+", _catalog()["tool_latency"].get(tool, ""))
+    return int(m.group()) if m else 0
+
+
+def _time_limit(ctx: RunContext, tool: str) -> str | None:
+    """A call that cannot finish in the time left is not started (it would overrun the cap)."""
+    need, left = min_secs(tool), ctx.seconds_left()
+    if left < need:
+        return f"not enough time left for {tool} ({left} s left, it usually needs at least {need} s)"
+    return None
+
+
 def _item_limit(ctx: RunContext, unit: str, requested: int) -> tuple[int, str | None]:
     """Clamp a call's items to: items per call, the item budget and the unit's 30% share."""
     lim = ctx.limits
-    unit_cap = int(lim["unit_share_max"] * lim["item_budget"]) - ctx.unit_items[unit]
+    unit_cap = int(lim["unit_share_max"] * lim["item_budget"]) - ctx.unit_items[unit] - ctx.pending_unit_items[unit]
     allowed = min(max(1, requested or lim["items_per_call_max"]), lim["items_per_call_max"],
-                  lim["item_budget"] - ctx.items, unit_cap)
+                  lim["item_budget"] - ctx.items - ctx.pending_items, unit_cap)
     if allowed <= 0:
         return 0, "unit share reached" if unit_cap <= 0 else "item budget spent"
     return allowed, None
@@ -167,6 +198,7 @@ def _samples(docs: list[Document]) -> list[str]:
 def _record_docs(ctx: RunContext, docs: list[Document]) -> None:
     for d in docs:
         st = ctx.unit_stats.setdefault(d.source_unit, Counter())
+        ctx.unit_platform[d.source_unit] = d.platform
         st["kept"] += 1
         if d.is_relevant:
             st["relevant"] += 1
@@ -242,9 +274,10 @@ async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int]
         if spec:
             n = limit_for(spec) if limit_for else limit
             attempts.append((spec, inputs(spec, n), n))
-    result = await apify.run_with_fallback(attempts, limit, timeout)
+    result = await apify.run_with_fallback(attempts, limit, timeout, deadline=ctx.deadline())
     if not limit_for:
         result.items = result.items[:limit]
+    ctx.apify_unavailable |= result.status == apify.NO_CREDIT
     ctx.apify_usd += result.usd
     _record(ctx, result)
     return result
@@ -256,7 +289,7 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
     cfg = _modes()["collection"]
     parents = sorted((p for p in posts if (p.get("comments") or 0) > 0 and p.get("url")),
                      key=lambda p: p["comments"], reverse=True)[:cfg["chain_parent_posts_max"]]
-    if not src or not parents or total <= 0:
+    if not src or not parents or total <= 0 or ctx.apify_unavailable:
         return None
     urls = [p["url"] for p in parents]
     per_post = max(1, math.ceil(total / len(urls)))
@@ -271,7 +304,8 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
         }[spec["id"]]
 
     attempts = [(spec, inputs(spec, total)) for spec in (src["actor"], src.get("fallback")) if spec]
-    result = await apify.run_with_fallback(attempts, total)
+    result = await apify.run_with_fallback(attempts, total, deadline=ctx.deadline())
+    ctx.apify_unavailable |= result.status == apify.NO_CREDIT
     result.items = result.items[:total]
     result.context = {"parent_urls": urls, "parent_by_id": {str(p.get("thread_id")): p["url"] for p in parents}}
     ctx.apify_usd += result.usd
@@ -282,7 +316,7 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
 async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platform, unit: str, target: str,
                       limit: int, reason: str, search_inputs: Callable[[dict, int], dict],
                       with_comments: bool) -> dict[str, Any]:
-    if why := _general_limit(ctx):
+    if why := _general_limit(ctx) or _apify_limit(ctx) or _time_limit(ctx, tool):
         return _limit_reached(ctx, why)
     if unit in ctx.dropped_units:
         return {"status": "unit_dropped", "source_unit": unit, **ctx.left()}
@@ -294,11 +328,34 @@ async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platfor
         return _limit_reached(ctx, why)
     src = _catalog()["sources"][source]
     expected = apify.expected_cost(src["actor"], limit)
-    if ctx.apify_usd + expected > ctx.limits["apify_usd"]:
+    if ctx.apify_usd + ctx.pending_apify_usd + expected > ctx.limits["apify_usd"]:
         return _limit_reached(ctx, f"apify budget (this call ~{expected} USD)")
     ctx.call_keys.add(key)
     ctx.calls += 1
     ctx.queries.append(target)
+    ctx.tried_units.add(unit)
+    ctx.pending_items += limit
+    ctx.pending_unit_items[unit] += limit
+    ctx.pending_apify_usd += expected
+    try:
+        drafts, notes = await _collect_apify(ctx, tool, source, platform, unit, target, limit, search_inputs,
+                                             with_comments)
+    finally:
+        ctx.pending_items -= limit
+        ctx.pending_unit_items[unit] -= limit
+        ctx.pending_apify_usd -= expected
+    if ctx.apify_unavailable and not drafts:
+        return _limit_reached(ctx, NO_APIFY_CREDIT)
+    return await _finish_collection(ctx, tool, unit, drafts, notes)
+
+
+def _apify_limit(ctx: RunContext) -> str | None:
+    return NO_APIFY_CREDIT if ctx.apify_unavailable else None
+
+
+async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Platform, unit: str, target: str,
+                         limit: int, search_inputs: Callable[[dict, int], dict],
+                         with_comments: bool) -> tuple[list[Draft], dict[str, Any]]:
     language = ",".join(ctx.brief.languages)
 
     cached = apify.cache_get(tool, target, language, str(limit))
@@ -320,7 +377,7 @@ async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platfor
                 notes["comments_actor"] = com.actor_id
         drafts = _drafts_from_raw(platform, unit, raw[:limit], fetched_at)
         apify.cache_put(tool, target, language, {"drafts": [d.to_cache() for d in drafts]}, str(limit))
-    return await _finish_collection(ctx, tool, unit, drafts, notes)
+    return drafts, notes
 
 
 def _cutoff(ctx: RunContext) -> str:
@@ -332,9 +389,43 @@ def _sub(target: str) -> str | None:
     return m.group(1) if m else None
 
 
+# Source unit names: one function per tool, shared with the fallback (what was tried?).
+
+def reddit_unit(target: str) -> str:
+    sub = _sub(target)
+    return f"reddit:r/{sub}" if sub else f"reddit:search:{target.strip().casefold()}"
+
+
+def tiktok_unit(target: str) -> str:
+    t = target.strip()
+    return f"tiktok:#{t.lstrip('#').casefold()}" if t.startswith("#") else f"tiktok:search:{t.casefold()}"
+
+
+def youtube_unit(query: str) -> str:
+    q = query.strip()
+    return f"youtube:{q.casefold()}" if q.startswith(("@", "https://www.youtube.com/")) else f"youtube:search:{q.casefold()}"
+
+
+def instagram_unit(hashtag: str) -> str:
+    return f"instagram:#{hashtag.strip().lstrip('#').casefold()}"
+
+
+def web_unit(url: str) -> str:
+    return "web:" + (web.urlparse(url).netloc.removeprefix("www.") or "?")
+
+
+def unit_for(tool: str, args: dict[str, Any]) -> str | None:
+    """The source unit a collection call works on (None for web_search, trends, coverage, finish)."""
+    return {"search_reddit": lambda: reddit_unit(args.get("target", "")),
+            "search_tiktok": lambda: tiktok_unit(args.get("target", "")),
+            "search_youtube": lambda: youtube_unit(args.get("query", "")),
+            "search_instagram": lambda: instagram_unit(args.get("hashtag", "")),
+            }.get(tool, lambda: None)()
+
+
 async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
     sub = _sub(target)
-    unit = f"reddit:r/{sub}" if sub else f"reddit:search:{target.strip().casefold()}"
+    unit = reddit_unit(target)
 
     def inputs(spec: dict, n: int) -> dict:
         posts = max(1, round(n * _modes()["collection"]["chain_posts_share"]))
@@ -357,7 +448,7 @@ async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: st
 
 async def search_tiktok(ctx: RunContext, target: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
     tag = target.strip().lstrip("#") if target.strip().startswith("#") else None
-    unit = f"tiktok:#{tag.casefold()}" if tag else f"tiktok:search:{target.strip().casefold()}"
+    unit = tiktok_unit(target)
 
     def inputs(spec: dict, n: int) -> dict:
         if spec["id"] == "clockworks/tiktok-scraper":
@@ -376,7 +467,7 @@ async def search_tiktok(ctx: RunContext, target: str, limit: int = 0, reason: st
 
 async def search_youtube(ctx: RunContext, query: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
     channel = query.strip() if query.strip().startswith(("@", "https://www.youtube.com/")) else None
-    unit = f"youtube:{channel.casefold()}" if channel else f"youtube:search:{query.strip().casefold()}"
+    unit = youtube_unit(query)
 
     def inputs(spec: dict, n: int) -> dict:
         if spec["id"] == "streamers/youtube-scraper":
@@ -394,7 +485,7 @@ async def search_youtube(ctx: RunContext, query: str, limit: int = 0, reason: st
 
 async def search_instagram(ctx: RunContext, hashtag: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
     tag = hashtag.strip().lstrip("#")
-    unit = f"instagram:#{tag.casefold()}"
+    unit = instagram_unit(hashtag)
 
     def inputs(spec: dict, n: int) -> dict:
         if spec["id"] == "apify/instagram-hashtag-scraper":
@@ -445,7 +536,7 @@ def trend_direction(values: list[float]) -> str:
 
 
 async def get_trends(ctx: RunContext, terms: list[str], geo: str = "", reason: str = "") -> dict[str, Any]:
-    if why := _general_limit(ctx):
+    if why := _general_limit(ctx) or _apify_limit(ctx) or _time_limit(ctx, "get_trends"):
         return _limit_reached(ctx, why)
     terms = [t.strip() for t in terms if t.strip()][:5]
     key = ("get_trends", "|".join(sorted(t.casefold() for t in terms)), geo.upper())
@@ -473,6 +564,8 @@ async def get_trends(ctx: RunContext, terms: list[str], geo: str = "", reason: s
 
     res = await _run_source(ctx, "google_trends", inputs, points, _modes()["collection"]["trends_timeout_secs"],
                             limit_for)
+    if res.status == apify.NO_CREDIT:
+        return _limit_reached(ctx, NO_APIFY_CREDIT)
     series = trend_series(res.items)
     signal = {"terms": terms, "geo": geo.upper() or "global", "timeframe": tf,
               "series": {t: {"points": len(v), "mean": round(sum(v) / len(v), 1), "trend": trend_direction(v)}
@@ -488,7 +581,7 @@ async def get_trends(ctx: RunContext, terms: list[str], geo: str = "", reason: s
 # --------------------------------------------------------------------------
 
 async def web_search(ctx: RunContext, query: str, country: str, language: str, reason: str = "") -> dict[str, Any]:
-    if why := _general_limit(ctx):
+    if why := _general_limit(ctx) or _time_limit(ctx, "web_search"):
         return _limit_reached(ctx, why)
     key = ("web_search", web.discover_key(query, country, language))
     if key in ctx.call_keys:
@@ -507,12 +600,12 @@ async def web_search(ctx: RunContext, query: str, country: str, language: str, r
 
 
 async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") -> dict[str, Any]:
-    if why := _general_limit(ctx):
+    if why := _general_limit(ctx) or _time_limit(ctx, "fetch_and_segment"):
         return _limit_reached(ctx, why)
     max_pages = ctx.limits["web_pages_per_call_max"]
     todo, skipped = [], []
     for url in dict.fromkeys(u.strip() for u in urls if u.strip()):
-        unit = "web:" + (web.urlparse(url).netloc.removeprefix("www.") or "?")
+        unit = web_unit(url)
         if url in ctx.fetched_urls or unit in ctx.dropped_units or len(todo) >= max_pages:
             skipped.append(url)
         elif _item_limit(ctx, unit, 1)[1]:
@@ -523,6 +616,7 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
         return {"status": "nothing_to_fetch", "skipped": skipped, **ctx.left()}
     ctx.calls += 1
     ctx.fetched_urls.update(todo)
+    ctx.tried_units.update(web_unit(u) for u in todo)
     gate = asyncio.Semaphore(_modes()["parallel_tool_calls_max"])
     fetched_at = datetime.now(timezone.utc)
 
@@ -541,7 +635,7 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
     pages = []
     for r in results:
         ctx.llm_usd += r.usd
-        unit = "web:" + web.urlparse(r.url).netloc.removeprefix("www.")
+        unit = web_unit(r.url)
         room, _ = _item_limit(ctx, unit, len(r.drafts) or 1)
         drafts += r.drafts[:room]
         pages.append({"url": r.url, "posts": len(r.drafts), "not_exact": r.segments_not_exact,
@@ -582,7 +676,8 @@ async def coverage_report(ctx: RunContext) -> dict[str, Any]:
             "source_units": units, "dropped_units": sorted(ctx.dropped_units), **ctx.left()}
 
 
-async def finish(ctx: RunContext, summary: str, source_verdicts: list[dict], gaps: list[str]) -> dict[str, Any]:
+async def finish(ctx: RunContext, summary: str, source_verdicts: list[dict], gaps: list[str],
+                 follow_up_queries: list[dict] | None = None) -> dict[str, Any]:
     problems = []
     if not ctx.coverage_after_last_collection:
         problems.append("call coverage_report after your last collection call, then finish")
@@ -602,7 +697,10 @@ async def finish(ctx: RunContext, summary: str, source_verdicts: list[dict], gap
     if problems:
         return {"status": "refused", "problems": problems}
     ctx.dropped_units |= {u for u, v in named.items() if v == "dropped"}
-    ctx.finished = {"summary": summary.strip(), "source_verdicts": source_verdicts, "gaps": list(gaps or [])}
+    follow_ups = [{"source_unit": f.get("source_unit", ""), "query": (f.get("query") or "").strip()}
+                  for f in follow_up_queries or [] if (f.get("query") or "").strip()]
+    ctx.finished = {"summary": summary.strip(), "source_verdicts": source_verdicts, "gaps": list(gaps or []),
+                    "follow_up_queries": follow_ups}
     return {"status": "ok", "finished": True}
 
 
@@ -649,12 +747,16 @@ def tool_definitions() -> list[dict[str, Any]]:
                             f"and time left. Call it before finish. Latency {_latency('coverage_report')}.",
          {}, []),
         ("finish", "End collection: a summary, a verdict (kept or dropped) with a reason for EVERY source unit "
-                   "you used, and an honest list of gaps.",
+                   "you used, and an honest list of gaps. Optionally propose follow-up queries inside kept "
+                   "units; code uses them only if evidence is short.",
          {"summary": {"type": "string"},
           "source_verdicts": {"type": "array", "items": {"type": "object", "properties": {
               "source_unit": {"type": "string"}, "verdict": {"type": "string", "enum": ["kept", "dropped"]},
               "reason": {"type": "string"}}, "required": ["source_unit", "verdict", "reason"]}},
-          "gaps": {"type": "array", "items": {"type": "string"}}},
+          "gaps": {"type": "array", "items": {"type": "string"}},
+          "follow_up_queries": {"type": "array", "items": {"type": "object", "properties": {
+              "source_unit": {"type": "string", "description": "A unit you marked kept."},
+              "query": {"type": "string"}}, "required": ["source_unit", "query"]}}},
          ["summary", "source_verdicts", "gaps"]),
     ]
     if "instagram" in _catalog()["sources"]:

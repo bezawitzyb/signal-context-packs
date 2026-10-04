@@ -15,6 +15,7 @@ from pathlib import Path
 import pytest
 
 from ctxpack import db, orchestrator, worker
+from ctxpack.collect import loop
 from ctxpack.agent.interpret import interpret
 from ctxpack.config import get_settings
 from ctxpack.guards import BudgetExceeded
@@ -65,7 +66,12 @@ async def test_queued_run_goes_through_every_stage(offline):
     assert run.status == RunStatus.complete
     assert run.finish_reason == FinishReason.finish
     assert stages(run_id) == ALL_STAGES
-    assert len(events(run_id, EventType.agent_call)) == 3 == len(events(run_id, EventType.agent_result))
+    # plan-driven stand-in agent: 3 starting units, then coverage_report and finish
+    calls = [e.payload["tool"] for e in events(run_id, EventType.agent_call)]
+    assert calls[-2:] == ["coverage_report", "finish"] and len(calls) == len(events(run_id, EventType.agent_result))
+    assert len(run.collection["decision_log"]) == len(calls)
+    judged = {s["source_unit"] for s in run.collection["sources_used"] + run.collection["sources_dropped"]}
+    assert judged == {"reddit:r/MealPrepSunday", "tiktok:#mealprep", "youtube:search:student meal prep"}
     assert events(run_id, EventType.counters)[-1].payload["kept"] == db.count_documents(run_id) > 0
     assert run.tool_calls == 3
     assert run.peak_mem_mb and run.peak_mem_mb > 0
@@ -81,14 +87,15 @@ async def test_empty_queue_does_nothing(offline):
 
 async def test_stop_during_collection_packages_a_partial_pack(offline, monkeypatch):
     run_id = await approved_run()
-    real_run_tool = orchestrator.run_tool
+    real_run_tool = loop.run_tool
 
     async def run_tool_then_stop(*args, **kwargs):
         result = await real_run_tool(*args, **kwargs)
         orchestrator.request_stop(run_id)  # Stop pressed after the first call
         return result
 
-    monkeypatch.setattr(orchestrator, "run_tool", run_tool_then_stop)
+    monkeypatch.setattr(loop, "run_tool", run_tool_then_stop)
+    monkeypatch.setattr(loop, "_modes", lambda: {**db.load_yaml("modes"), "parallel_tool_calls_max": 1})
     await worker.run_next()
     run = db.get_run(run_id)
     assert run.status == RunStatus.partial
@@ -263,7 +270,7 @@ class Killed(BaseException):
 
 async def test_interrupted_during_collection_is_packaged_from_what_was_stored(offline, monkeypatch):
     run_id = await approved_run()
-    real_collect = orchestrator.collect_starting_units
+    real_collect = orchestrator.collect_agent
 
     async def collect_then_die(rid):
         await real_collect(rid)

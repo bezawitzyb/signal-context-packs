@@ -1,0 +1,133 @@
+{
+ "brief": "heat pumps for homeowners in Germany",
+ "turns": [
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "Wärmepumpe Erfahrungen JAZ Altbau Forum",
+      "country": "DE",
+      "language": "de",
+      "reason": "Find forum threads (photovoltaikforum, energie-fachforum) with owner JAZ data for RQ-04/HYP-02"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "search_reddit",
+     "input": {
+      "target": "r/de",
+      "reason": "Candid threads on Wärmepumpe costs and Heizungsgesetz (RQ-01..03)",
+      "limit": 40
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "search_youtube",
+     "input": {
+      "query": "Wärmepumpe Erfahrungsbericht nach einem Jahr",
+      "reason": "Owner reviews and homeowner comments on noise, cost, installers (RQ-04/05)",
+      "limit": 40
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://www.haustechnikdialog.de/Forum/t/268590/Waermepumpe-im-Altbau-unsere-Erfahrungen",
+       "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
+       "https://www.heizungsforum.de/threads/ein-jahr-waermepumpe-fazit.31097/",
+       "https://www.urbia.de/forum/46-haushalt-wohnen/6032702-gasheizung-oder-waermepumpe-im-altbau",
+       "https://hausbesitzer-forum.de/waermepumpen/waermepumpen-forum/alte-heizkoerper-mit-waermepumpe-funktioniert-das-ueberhaupt-1780992611/"
+      ],
+      "reason": "Read owner experience threads on JAZ, old buildings, costs (RQ-02/04, HYP-02)"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "search_youtube",
+     "input": {
+      "query": "Wärmepumpe Altbau Kosten Förderung Heizungsgesetz",
+      "reason": "Comments on cost, subsidies, GEG confusion (RQ-02/03, HYP-05)",
+      "limit": 40
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "coverage_report",
+     "input": {}
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "finish",
+     "input": {
+      "summary": "Collection stopped early because the 300 s time limit was reached after 4 collection calls. The corpus has about 28 relevant documents against a target of 60. Most of it is German YouTube comments from owners (Bosch, Viessmann, PV combination, cost) and finanztip forum posts on JAZ and gas versus heat pump costs. Reddit r/de returned nothing relevant. Subsidies and GEG (RQ-03) and information channels (RQ-08) have no evidence.",
+      "source_verdicts": [
+       {
+        "source_unit": "youtube:search:wärmepumpe erfahrungsbericht nach einem jahr",
+        "verdict": "kept",
+        "reason": "69% relevant owner comments on brands, costs, PV and old houses."
+       },
+       {
+        "source_unit": "web:finanztip.de",
+        "verdict": "kept",
+        "reason": "All 8 posts are relevant homeowner experience posts on JAZ and costs."
+       },
+       {
+        "source_unit": "reddit:r/de",
+        "verdict": "dropped",
+        "reason": "0 relevant of 40 items collected; generic query returned off-topic content."
+       },
+       {
+        "source_unit": "youtube:search:wärmepumpe altbau kosten förderung heizungsgesetz",
+        "verdict": "dropped",
+        "reason": "0 relevant; nearly all results fell outside the 180-day window."
+       },
+       {
+        "source_unit": "web:heizungsforum.de",
+        "verdict": "dropped",
+        "reason": "The thread's posts were mostly outside the 180-day window; none were kept."
+       }
+      ],
+      "gaps": [
+       "RQ-03: no evidence on how people talk about BEG/KfW/BAFA subsidies and the GEG/Heizungsgesetz.",
+       "RQ-08: no evidence on information channels and sources used for decisions.",
+       "RQ-05 (installers and quotes) and RQ-06 (brand and type comparisons) have thin evidence.",
+       "HYP-05 (political debate driving postponement) is untested.",
+       "The 60-document target was not reached. Several forum URLs (haustechnikdialog, urbia, hausbesitzer-forum) were refused as url_not_allowed, and many forum posts were out of the time window.",
+       "Sceptic and non-owner voices are under-represented."
+      ],
+      "follow_up_queries": [
+       {
+        "source_unit": "youtube:search:wärmepumpe erfahrungsbericht nach einem jahr",
+        "query": "Wärmepumpe Förderung KfW BAFA 2025 Erfahrung Antrag"
+       },
+       {
+        "source_unit": "youtube:search:wärmepumpe erfahrungsbericht nach einem jahr",
+        "query": "Wärmepumpe Installateur Angebot Hydraulischer Abgleich Erfahrung"
+       }
+      ]
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  }
+ ]
+}

@@ -47,6 +47,7 @@ cleaning:
 # Collection tools (guide Step 1.6, B8). Same for every mode.
 collection:
   actor_timeout_secs: 180       # actor stops itself; partial items are kept
+  actor_min_secs: 20            # never start an actor (or its fallback / comments) with less time left
   trends_timeout_secs: 120      # trends is optional context: give up fast
   cost_margin: 0.20             # actors can overshoot max_items (reddit 12 of 10)
   chain_parent_posts_max: 3     # comments are fetched for at most this many posts
@@ -59,6 +60,13 @@ collection:
   web_search_max_uses: 3        # searches per web_search call
   anchor_words: 4               # words per text-fragment anchor (DH12)
   web_fetch_max_content_tokens: 20000  # caps the cost of one huge page (~0.02 USD input)
+
+# Agent loop (guide B8a, B8e). Same for every mode.
+agent:
+  turn_max_tokens: 4096         # one reasoner turn (tool calls + short reasons)
+  code_verdict_keep_share: 0.30 # units the agent gave no verdict: kept if at least this share is relevant
+  crash_fallback_extra_secs: 90 # after a timeout without finish(), the crash fallback may use this much more time
+  top_up_pages_per_unit: 3      # web top-up: unfetched pages per kept domain, from earlier web_search results
 
 # Job worker (guide B13) and live events (B6). Same for every mode.
 worker:
