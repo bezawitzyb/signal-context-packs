@@ -248,7 +248,8 @@ B4. Database tables
             fallback_used, top_up_used, error, pack_id, requester
             ("web"|"api"|"mcp"|"cli"), claimed_at, heartbeat_at,
             resume_count, peak_mem_mb, analysis (JSON: run-level metrics
-            from Step 3.2)
+            from Step 3.2), draft (JSON: draft pack sections and evidence
+            from Step 3.3)
  events     run_id, seq, type, payload (JSON), created_at
  documents  id, run_id, platform, source_unit, url, permalink, community,
             text, text_en, language, posted_at, date_precision,
@@ -1061,6 +1062,23 @@ WHAT  synthesis/baseline.py: one reasoner call with NO evidence (F4-8):
       by comparing them with the baseline (one worker call).
       synthesis/ids.py logic (inside write.py): deterministic IDs by rank;
       evidence numbered EV-0001.. by first use.
+      As built: up to 60 evidence items per call (call A needs one per
+      lexicon term), round-robin over the call's clusters, biggest first;
+      each excerpt <= 280 characters, cut around the post's first verbatim
+      phrase (modes.yaml synthesis). Code drops items whose cluster is of
+      the wrong kind or whose evidence is not a verified member of it, and
+      adds counts, strength, emotion, trend and recency from the cluster's
+      verified members. Competitors (>= 3 mentions), platform lens shares
+      and what performs come from the Step 3.2 metrics; the writers only
+      add words. Opportunities are scored in code (novelty from the
+      non_obvious of the item they build on). The generic points are saved
+      first, then the whole draft to runs.draft; a saved draft is never
+      paid for again. Confidence and safe_to_assert are added in Step 3.4.
+      CLI: write --from-run RUN_ID [--redo] [--show sections] prints the
+      chosen sections as JSON, the generic points, counts per section and
+      the CHECK. Built: NL draft, 90 evidence items, every evidence id
+      resolves and belongs to its cluster, lexicon 19, white space 6 (all
+      non-obvious), USD 0.30.
 PROMPT
   Read CLAUDE.md, Step 3.3, F4-8, F4-10 and PRD Section 6. Implement and
   build a DRAFT pack from the saved NL corpus. Show tensions, voice and

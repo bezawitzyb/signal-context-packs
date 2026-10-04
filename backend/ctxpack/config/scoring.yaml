@@ -59,6 +59,7 @@ metrics:
   what_performs_per_author: 2
   what_performs_per_thread: 1
   competitor_min_mentions: 3
+  item_emotion_min_share: 0.20  # an item lists an emotion only if this share of its members shows it (max 3)
   coverage_grade:               # highest grade whose minimums all pass; otherwise d
     a: {min_platforms: 4, min_kept: 300, all_languages: true}
     b: {min_platforms: 3, min_kept: 200, all_languages: false}   # b and c: not in the guide (owner to confirm)

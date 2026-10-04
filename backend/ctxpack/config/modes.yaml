@@ -64,6 +64,15 @@ clustering:
   membership_parallel_max: 5
   membership_text_chars: 1000   # each post is cut to this length for the yes/no check
 
+# Baseline + synthesis (guide Step 3.3, prompts F4-8, F4-10, F4-9 non_obvious). Same for every mode.
+synthesis:
+  evidence_per_call_max: 60     # numbered evidence items per writer call (guide ~40; call A needs one per lexicon term)
+  evidence_per_cluster_max: 3   # taken round-robin over the call's clusters, biggest first
+  evidence_chars: 280           # evidence excerpt length (pack schema max)
+  max_tokens: 16000             # one writer answer
+  opportunities_max: 6          # opportunity texts written (top by score)
+  non_obvious_batch: 60         # items per non_obvious worker call
+
 # Collection tools (guide Step 1.6, B8). Same for every mode.
 collection:
   actor_timeout_secs: 180       # actor stops itself; partial items are kept

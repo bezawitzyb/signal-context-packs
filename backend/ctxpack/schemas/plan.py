@@ -125,7 +125,8 @@ class RunEstimate(Strict):
     """Cost and time shown with the plan. Computed in code from modes.yaml, never by a model."""
 
     mode: Mode
-    max_usd: float = Field(description="Hard cap: Apify + LLM budget for the mode.", examples=[3.2])
+    max_usd: float = Field(description="Hard cap: Apify + collection LLM + analysis LLM budgets for the mode.",
+                           examples=[4.2])
     typical_usd_low: float = Field(examples=[1.5])
     typical_usd_high: float = Field(examples=[3.0])
     typical_minutes: int = Field(description="Typical end-to-end time.", examples=[7])

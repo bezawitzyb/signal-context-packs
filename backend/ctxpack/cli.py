@@ -617,6 +617,72 @@ def cluster(
 
 
 @app.command()
+def write(
+    from_run: str = typer.Option(..., "--from-run", help="Run id whose clusters are written up"),
+    redo: bool = typer.Option(False, "--redo", help="Write the draft again (generic points included)"),
+    show: str = typer.Option("tensions,voice,white_space", help="Draft sections to print as JSON"),
+    yes: bool = typer.Option(False, "--yes", help="Do not wait for Enter before the paid calls"),
+) -> None:
+    """Step 3.3 on a saved run: generic baseline, two writer calls, non_obvious -> a DRAFT pack.
+
+    The cost is added to that run (its analysis LLM budget applies) and to today's spend.
+    """
+    import asyncio
+    import json
+
+    from ctxpack import db, orchestrator
+    from ctxpack.config import mode_limits
+    from ctxpack.llm.client import tracking
+    from ctxpack.synthesis import write as wr
+
+    db.init_engine()
+    run = db.get_run(from_run)
+    clusters = db.get_clusters(from_run) if run else []
+    if run is None or not clusters or not run.analysis:
+        console.print(f"{BAD} run {from_run} has no clusters yet: run cluster --from-run {from_run} first")
+        raise typer.Exit(1)
+    limit_usd = mode_limits(run.mode)["analysis_llm_usd"]
+    done = bool((run.draft or {}).get("sections")) and not redo
+    est = 0.0 if done else wr.estimate_usd(clusters)
+    console.print(f"run {run.id} ({run.brief_text[:50]}) | clusters {len(clusters)} | draft saved {done}",
+                  highlight=False)
+    console.print(f"estimated max cost ${est:.2f} | run analysis LLM spend so far "
+                  f"${run.cost_analysis_llm_usd or 0:.2f} of ${limit_usd:.2f}", highlight=False)
+    if est and not yes and not get_settings().llm_fake:
+        typer.prompt("Press Enter to start (Ctrl-C to cancel)", default="", show_default=False)
+
+    with tracking(run.id, llm_limit_usd=limit_usd, analysis=True) as t:
+        before = t.spent_usd
+        out = asyncio.run(wr.write_run(run.id, orchestrator.brief_context(run), redo=redo))
+        spent = t.spent_usd - before
+
+    draft = db.get_run(run.id).draft
+    sections = draft["sections"]
+    for name in [x.strip() for x in show.split(",") if x.strip()]:
+        console.rule(name, style="dim")
+        console.print_json(json.dumps(sections.get(name), ensure_ascii=False))
+    console.print("\n[bold]GENERIC POINTS[/bold] (baseline, no evidence)")
+    for g in draft["generic_points"]:
+        console.print(f"  - {g}", highlight=False)
+    written = {n: len(v) for n, v in sections.items() if isinstance(v, list)}
+    console.print("[bold]WRITTEN[/bold] " + " | ".join(f"{n} {c}" for n, c in written.items()), highlight=False)
+    if out.dropped:
+        console.print("[bold]DROPPED[/bold] " + " | ".join(f"{k} {v}" for k, v in out.dropped.items()),
+                      highlight=False)
+    problems = wr.check_draft(draft, clusters)
+    ws = sections["white_space"]
+    console.print(f"[bold]CHECK[/bold] evidence ids resolve and belong to their cluster: "
+                  f"{'yes' if not problems else 'NO - ' + '; '.join(problems[:5])} | evidence {len(draft['evidence'])}"
+                  f" | lexicon {len(sections['lexicon'])} (standard >= 15) | white space non-obvious "
+                  f"{sum(w['non_obvious'] for w in ws)} of {len(ws)}", highlight=False)
+    console.print(f"[bold]COST[/bold] this step ${spent:.4f} in {out.calls} calls | tokens in {t.input_tokens} "
+                  f"out {t.output_tokens} | run analysis ${t.budget_spent_usd:.3f} of ${limit_usd:.2f}"
+                  f"{' | resumed: draft already saved' if out.resumed else ''}", highlight=False)
+    if problems:
+        raise typer.Exit(1)
+
+
+@app.command()
 def overlap(run_ids: list[str] = typer.Argument(..., help="Two or more run ids")) -> None:
     """How much the runs' source units overlap (eval: briefs share < 50%)."""
     from ctxpack import db

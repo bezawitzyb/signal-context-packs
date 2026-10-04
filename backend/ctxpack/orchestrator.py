@@ -13,8 +13,8 @@ starts at extracting from its saved corpus (the same path as --from-run).
 
 Collection is the agent loop (Step 2.4, collect/loop.py); extracting is
 analysis/extract.py (Step 3.1); clustering is analysis/cluster.py + metrics.py
-(Step 3.2); writing, verifying and the pack itself are placeholders filled
-in by later steps.
+(Step 3.2); writing is synthesis/baseline.py + write.py (Step 3.3);
+verifying and the pack itself are placeholders filled in by later steps.
 """
 
 from __future__ import annotations
@@ -207,6 +207,13 @@ async def cluster_stage(run_id: str) -> None:
     compute_run(run_id)
 
 
+async def write_stage(run_id: str) -> None:
+    """Writing (Step 3.3): generic baseline, two writer calls, non_obvious; saves the draft."""
+    from ctxpack.synthesis.write import write_run
+
+    await write_run(run_id, brief_context(db.get_run(run_id)))
+
+
 async def _placeholder(run_id: str) -> None:
     return None
 
@@ -219,7 +226,7 @@ async def build_pack_placeholder(run_id: str, partial: bool) -> str | None:
 ANALYSIS_STAGES: list[tuple[RunStage, StageFn]] = [
     (RunStage.extracting, extract_stage),
     (RunStage.clustering, cluster_stage),
-    (RunStage.writing, _placeholder),
+    (RunStage.writing, write_stage),
     (RunStage.verifying, _placeholder),
 ]
 

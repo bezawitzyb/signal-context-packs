@@ -80,6 +80,8 @@ class Run(SQLModel, table=True):
     brand_voice: str | None = None    # used ONLY by the playbook call (never in analysis)
     # Run-level metrics (Step 3.2, code only): platform lens, what performs, competitors, opportunities, coverage
     analysis: dict | None = Field(default=None, sa_type=JSON)
+    # Draft pack sections (Step 3.3): generic points, written items, evidence; verified in Step 3.4
+    draft: dict | None = Field(default=None, sa_type=JSON)
 
 
 class EventRow(SQLModel, table=True):
