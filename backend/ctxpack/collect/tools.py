@@ -85,7 +85,10 @@ class RunContext:
     coverage_after_last_collection: bool = False
     finished: dict | None = None
     extra_secs: int = 0                                  # crash fallback after a timeout (modes.yaml agent)
-    apify_unavailable: bool = False                      # Apify credit used up: no more actor calls this run
+    apify_unavailable: bool = False                      # Apify credit used up (or switched off): no actor calls
+    apify_usd_cap: float | None = None                   # a lower Apify cap for this run than the mode's
+    apify_recorded_usd: float = 0.0                      # Apify spend already written to the spend table
+    blocked_domains: set = field(default_factory=set)    # sites that refused fetching (this run + remembered)
     apify_by_actor: dict[str, dict[str, float]] = field(default_factory=dict)   # actor -> {runs, usd, items}
     # Reserved by calls still running, so concurrent calls cannot jointly overshoot a limit.
     pending_items: int = 0
@@ -108,7 +111,7 @@ class RunContext:
 
     def budget_left(self) -> dict[str, Any]:
         lim = self.limits
-        return {"apify_usd": round(max(0.0, lim["apify_usd"] - self.apify_usd), 3),
+        return {"apify_usd": round(max(0.0, apify_cap(self) - self.apify_usd), 3),
                 "llm_usd": round(max(0.0, lim["llm_usd"] - self.llm_usd), 3),
                 "items": max(0, lim["item_budget"] - self.items)}
 
@@ -139,8 +142,13 @@ def _general_limit(ctx: RunContext) -> str | None:
     return None
 
 
-NO_APIFY_CREDIT = ("apify credit for this month is used up: Reddit, TikTok, YouTube, Instagram and "
-                   "Trends cannot run; use web_search and fetch_and_segment")
+NO_APIFY_CREDIT = ("apify is unavailable for this run (credit used up or switched off): Reddit, TikTok, "
+                   "YouTube, Instagram and Trends cannot run; use web_search and fetch_and_segment")
+
+
+def apify_cap(ctx: RunContext) -> float:
+    cap = ctx.limits["apify_usd"]
+    return min(cap, ctx.apify_usd_cap) if ctx.apify_usd_cap is not None else cap
 
 
 def min_secs(tool: str) -> int:
@@ -339,7 +347,7 @@ async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platfor
         return _limit_reached(ctx, why)
     src = _catalog()["sources"][source]
     expected = apify.expected_cost(src["actor"], limit)
-    if ctx.apify_usd + ctx.pending_apify_usd + expected > ctx.limits["apify_usd"]:
+    if ctx.apify_usd + ctx.pending_apify_usd + expected > apify_cap(ctx):
         return _limit_reached(ctx, f"apify budget (this call ~{expected} USD)")
     ctx.call_keys.add(key)
     ctx.calls += 1
@@ -569,7 +577,7 @@ async def get_trends(ctx: RunContext, terms: list[str], geo: str = "", reason: s
         return len(terms) if spec.get("bills_per") == "term" else points
 
     expected = apify.expected_cost(src["actor"], limit_for(src["actor"]))
-    if ctx.apify_usd + expected > ctx.limits["apify_usd"]:
+    if ctx.apify_usd + expected > apify_cap(ctx):
         return _limit_reached(ctx, f"apify budget (this call ~{expected} USD)")
     ctx.call_keys.add(key)
     ctx.calls += 1
@@ -609,31 +617,42 @@ async def web_search(ctx: RunContext, query: str, country: str, language: str, r
     ctx.call_keys.add(key)
     ctx.calls += 1
     ctx.queries.append(query)
-    res = await web.discover(query, country, language)
+    ctx.blocked_domains |= set(web.blocked_sites())
+    blocked = sorted(ctx.blocked_domains)[:_modes()["collection"]["blocked_sites_max"]]
+    res = await web.discover(query, country, language, blocked)
     ctx.llm_usd += res.usd
-    pages = []
+    pages, hidden = [], 0
     for p in res.pages:
+        if web.domain_of(p.url) in ctx.blocked_domains:     # search may still return one: never offer it
+            hidden += 1
+            continue
         ctx.page_types[p.url] = p.page_type
         pages.append({"url": p.url, "page_type": p.page_type, "language": p.language, "why": p.why[:160],
                       "already_fetched": p.url in ctx.fetched_urls})
-    return {"status": "ok", "tool": "web_search", "pages": pages, "searches": res.searches, **ctx.left()}
+    return {"status": "ok", "tool": "web_search", "pages": pages, "searches": res.searches,
+            **({"blocked_sites_hidden": hidden} if hidden else {}), **ctx.left()}
 
 
 async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") -> dict[str, Any]:
     if why := _general_limit(ctx) or _time_limit(ctx, "fetch_and_segment"):
         return _limit_reached(ctx, why)
     max_pages = ctx.limits["web_pages_per_call_max"]
-    todo, skipped = [], []
+    ctx.blocked_domains |= set(web.blocked_sites())
+    todo, skipped, blocked = [], [], []
     for url in dict.fromkeys(u.strip() for u in urls if u.strip()):
         unit = web_unit(url)
-        if url in ctx.fetched_urls or unit in ctx.dropped_units or len(todo) >= max_pages:
+        if web.domain_of(url) in ctx.blocked_domains:
+            blocked.append(url)
+        elif url in ctx.fetched_urls or unit in ctx.dropped_units or len(todo) >= max_pages:
             skipped.append(url)
         elif _item_limit(ctx, unit, 1)[1]:
             skipped.append(url)
         else:
             todo.append(url)
+    note = {"blocked_sites": sorted({web.domain_of(u) for u in blocked}),
+            "blocked_note": "these sites refuse fetching; choose other sites"} if blocked else {}
     if not todo:
-        return {"status": "nothing_to_fetch", "skipped": skipped, **ctx.left()}
+        return {"status": "nothing_to_fetch", "skipped": skipped, **note, **ctx.left()}
     ctx.calls += 1
     ctx.fetched_urls.update(todo)
     ctx.tried_units.update(web_unit(u) for u in todo)
@@ -651,6 +670,12 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
         return res
 
     results = await asyncio.gather(*(one(u) for u in todo))
+    newly_blocked = {web.domain_of(r.url) for r in results if r.error in web.BLOCKED_ERRORS}
+    if newly_blocked:
+        ctx.blocked_domains |= newly_blocked
+        web.remember_blocked(newly_blocked)
+        note = {"blocked_sites": sorted(set(note.get("blocked_sites", [])) | newly_blocked),
+                "blocked_note": "these sites refuse fetching; choose other sites"}
     drafts: list[Draft] = []
     pages = []
     for r in results:
@@ -663,7 +688,7 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
         if ctx.record and r._page_text:
             _record_page(r)
     units = sorted({d.source_unit for d in drafts}) or ["web"]
-    summary = await _finish_collection(ctx, "fetch_and_segment", ", ".join(units), drafts, {"pages": pages})
+    summary = await _finish_collection(ctx, "fetch_and_segment", ", ".join(units), drafts, {"pages": pages, **note})
     if skipped:
         summary["skipped"] = skipped
     return summary

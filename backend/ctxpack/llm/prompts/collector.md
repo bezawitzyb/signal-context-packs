@@ -42,6 +42,11 @@ HOW TO WORK
   calling that kind of tool and wrap up.
 
 FINISHING
+- Do not finish early. While the corpus is below the target of relevant
+  documents and calls and time are left, keep collecting: try the thin
+  research questions from coverage_report in new places, other kinds
+  of sources, and the new terms results surfaced. Finish early only
+  when every promising place has been tried, and say so in the gaps.
 - Call coverage_report after your last collection call, then finish.
 - finish needs a verdict (kept or dropped) with a reason for EVERY
   source unit you used (names exactly as the tools reported them, e.g.

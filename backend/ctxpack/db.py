@@ -76,6 +76,7 @@ class Run(SQLModel, table=True):
     collection: dict | None = Field(default=None, sa_type=JSON)
     # Spend per call type: {"anthropic": {"worker/record_relevance": {calls, usd, tokens...}}, "apify": {actor: ...}}
     cost_breakdown: dict | None = Field(default=None, sa_type=JSON)
+    brand_voice: str | None = None    # used ONLY by the playbook call (never in analysis)
 
 
 class EventRow(SQLModel, table=True):

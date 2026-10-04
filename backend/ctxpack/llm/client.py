@@ -292,11 +292,14 @@ async def structured(
     fake: Callable[[str], dict[str, Any]] | None = None,
     server_tools: list[str] | None = None,
     server_tool_options: dict[str, dict[str, Any]] | None = None,
+    no_tool_answer: Callable[[list[Any]], dict[str, Any] | None] | None = None,
 ) -> CallResult:
     """One call that must answer through the `tool_name` tool, validated against `schema`.
 
     LLM_FAKE=true: no network. `fake(user)` builds the answer, otherwise
     tests/fixtures/llm/<tool_name>.json is replayed.
+    no_tool_answer(blocks): when the model answers without the tool, this may return the answer
+    to use instead of a paid retry (e.g. the page could not be fetched, so there is nothing to read).
     """
     if get_settings().llm_fake:
         raw = fake(user) if fake else json.loads((FAKE_DIR / f"{tool_name}.json").read_text(encoding="utf-8"))
@@ -331,6 +334,9 @@ async def structured(
         attempts += 1
 
         block = next((b for b in resp.content if b.type == "tool_use" and b.name == tool_name), None)
+        if block is None and no_tool_answer is not None and (answer := no_tool_answer(result.blocks)) is not None:
+            result.data = schema.model_validate(answer)
+            return result
         if block is None:
             error = f"No {tool_name} tool call in the answer (stop_reason={resp.stop_reason})."
             log.warning("llm %s/%s: %s", role, tool_name, error)

@@ -1,0 +1,425 @@
+{
+ "brief": "Launching a snack brand in the Netherlands",
+ "turns": [
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "gezonde snacks tussendoortjes tips forum ervaringen",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-03: find Dutch forum threads on healthy snacks"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "favoriete borrelhapjes snacks supermarkt welke koop jij forum",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-01/05: borrel snacks and slang"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "Albert Heijn huismerk vs Lay's Doritos chips welke is lekkerder reddit",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-04: private label vs brand"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://www.bokt.nl/forums/viewtopic.php?f=31&t=943204",
+       "https://forum.fok.nl/topic/2637061/1/50",
+       "https://happyhealthy.nl/gezonde-tussendoortjes/"
+      ],
+      "reason": "Read healthy snack threads for RQ-03/07"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "chips huismerk Jumbo Albert Heijn Lidl vergelijken smaak prijs",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-04 retry with simpler query"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "Dutch snacks expat favourite supermarket Netherlands",
+      "country": "NL",
+      "language": "en",
+      "reason": "Expat voices, separate from locals"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://www.ouders.nl/forum/huis-tuin-en-keuken/lidl-slecht",
+       "https://www.expat.com/en/forum/europe/netherlands/863725-just-for-fun-food-culture-in-the-netherlands.html",
+       "https://www.fodors.com/community/europe/food-shopping-in-amsterdam-1002899/"
+      ],
+      "reason": "Private label comparisons and expat voices"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "eiwitsnack proteïne reep ervaring smaak review",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-07 protein snacks"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "snacken avond Netflix chips verslaafd gezond alternatief forum",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-01/02 snacking moments and complaints"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://www.bokt.nl/forums/viewtopic.php?f=136&t=1353200",
+       "https://yoo.rs/ik-was-verslaafd-aan-chips-1512260956.html",
+       "https://grouwfit.nl/top-5-beste-eiwitrepen/",
+       "https://www.dehippevegetarier.nl/posts/reviews/beste-eiwitrepen/"
+      ],
+      "reason": "Chips cravings forum and protein bar comments"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "kieskeurig snacks chips noten review ervaringen",
+      "country": "NL",
+      "language": "nl",
+      "reason": "Kieskeurig-style reviews of snacks"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "vegan glutenvrij snacks supermarkt tips welke zijn lekker forum",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-07 dietary needs"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "reddit thenetherlands favoriete snack supermarkt",
+      "country": "NL",
+      "language": "nl",
+      "reason": "Find reddit threads fetchable as pages"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "fok forum snacks chips borrel nootjes wat eten jullie",
+      "country": "NL",
+      "language": "nl",
+      "reason": "forum threads on borrel snacks"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "nieuwe snack merk proberen TikTok gehyped viral snack Nederland reviews",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-06 discovery of new brands"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://forum.fok.nl/topic/2365318",
+       "https://forum.fok.nl/topic/1775676/1/999/borrelnoten-constante-verandering-van-smaak-ik-haat-dat.html",
+       "https://forum.fok.nl/topic/1831098/1/50",
+       "https://partyflock.nl/topic/737663:Chips-of-borrelnootjes",
+       "https://forum.fok.nl/topic/715892"
+      ],
+      "reason": "Borrel snack preferences and complaints (RQ-01/02/05)"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://kaspervanroyen.substack.com/p/snacksentimenten",
+       "https://snackspert.substack.com",
+       "https://grocerytourist.substack.com/p/what-to-buy-at-the-supermarket-when-178"
+      ],
+      "reason": "Substack snack essays with reader comments (RQ-01/06)"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "gezonde snacks marketing misleidend \"gezond\" suiker Nederland consument vertrouwen forum",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-03 distrust of health claims"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "forum.fok.nl chips smaken lekkerste Lay's Doritos Pringles huismerk",
+      "country": "NL",
+      "language": "nl",
+      "reason": "RQ-04 chips brand comparisons on forums"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://forum.fok.nl/topic/2737583/1/50",
+       "https://forum.fok.nl/topic/2312303/2/100",
+       "https://forum.fok.nl/topic/1185754/2/100/lays-chips-ineens-niet-lekker-meer.html",
+       "https://forum.fok.nl/topic/1653644/6/50/lays-chips-25-procent-minder-zout-100-procent-ranziger.html",
+       "https://radar-forum.avrotros.nl/voeding-f44/word-jij-ook-misleid-in-de-supermarkt-t203078.html",
+       "https://forum.fok.nl/topic/1664333/3/30/lays-chips-25-procent-minder-zout-100-procent-ranziger-2.html"
+      ],
+      "reason": "Chip brand complaints, reformulation, misleading claims (RQ-02/03/04)"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "coverage_report",
+     "input": {}
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://wateetjedanwel.nl/vegan-in-de-supermarkt-108/",
+       "https://www.bfreez.nl/vegan/snacks/"
+      ],
+      "reason": "RQ-07 vegan/glutenvrij snack experiences"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "finish",
+     "input": {
+      "summary": "Apify tools were unavailable, so I used only web_search and fetch_and_segment. The corpus is about 195 relevant Dutch documents, just under the 200 target. Almost all come from FOK forum threads on chips, borrelnoten and healthy tussendoortjes, plus a few from happyhealthy.nl comments and an ouders.nl supermarket thread. Strong coverage: RQ-01 (about 102 relevant docs) and RQ-02 (about 108), mainly complaints about Lay's reformulation, less salt and changing borrelnoot flavours. Moderate: RQ-03 (44), RQ-04 (45), RQ-05 (29) and RQ-06 (25). RQ-07 has almost nothing. The discussion skews toward older threads and forum-heavy, older users. TikTok, YouTube, Reddit and Kieskeurig could not be reached, so HYP-04 (discovery through TikTok and YouTube) is untested.",
+      "source_verdicts": [
+       {
+        "source_unit": "web:forum.fok.nl",
+        "verdict": "kept",
+        "reason": "Main source: first-person Dutch threads on chips brands, borrelnoten, healthy snacks; 56% relevant."
+       },
+       {
+        "source_unit": "web:happyhealthy.nl",
+        "verdict": "kept",
+        "reason": "Reader comments on healthy tussendoortjes, relevant to RQ-03."
+       },
+       {
+        "source_unit": "web:ouders.nl",
+        "verdict": "kept",
+        "reason": "First-person comments on Lidl, Aldi, Jumbo and AH quality and price, relevant to RQ-04."
+       },
+       {
+        "source_unit": "web:grouwfit.nl",
+        "verdict": "kept",
+        "reason": "One relevant protein-bar passage; low volume."
+       },
+       {
+        "source_unit": "web:expat.com",
+        "verdict": "dropped",
+        "reason": "Expat posts fell outside the time window; nothing kept."
+       },
+       {
+        "source_unit": "web:fodors.com",
+        "verdict": "dropped",
+        "reason": "Tourist posts, not relevant to Dutch consumers."
+       },
+       {
+        "source_unit": "web:grocerytourist.substack.com",
+        "verdict": "dropped",
+        "reason": "Only 2 items, none relevant; expat-oriented."
+       }
+      ],
+      "gaps": [
+       "RQ-07 (vegan, glutenvrij, high protein, low sugar demand) has almost no evidence; the vegan and glutenvrij pages were inaccessible.",
+       "RQ-06 (discovery and repurchase) is thin, and there is no TikTok/YouTube voice, so HYP-04 is untested.",
+       "Younger voices (18-30) are underrepresented; the corpus skews toward older FOK forum threads.",
+       "No Reddit or Kieskeurig content could be collected, and bokt.nl and the Radar forum were inaccessible.",
+       "The expat voice is essentially absent.",
+       "Sustainability and packaging (HYP-05) and online purchasing are barely covered.",
+       "The corpus is slightly under the 200 relevant document target."
+      ]
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "coverage_report",
+     "input": {}
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "finish",
+     "input": {
+      "summary": "Apify tools were unavailable, so I used only web_search and fetch_and_segment. The corpus is about 195 relevant Dutch documents, just under the 200 target. Almost all come from FOK forum threads on chips, borrelnoten and healthy tussendoortjes, plus a few from happyhealthy.nl comments and an ouders.nl supermarket thread. Strong coverage: RQ-01 (about 102 relevant docs) and RQ-02 (about 108), mainly complaints about Lay's reformulation, less salt and changing borrelnoot flavours. Moderate: RQ-03 (44), RQ-04 (45), RQ-05 (29) and RQ-06 (25). RQ-07 has almost nothing. The discussion skews toward older threads and forum-heavy, older users. TikTok, YouTube, Reddit and Kieskeurig could not be reached, so HYP-04 (discovery through TikTok and YouTube) is untested.",
+      "source_verdicts": [
+       {
+        "source_unit": "web:forum.fok.nl",
+        "verdict": "kept",
+        "reason": "Main source: first-person Dutch threads on chips brands, borrelnoten, healthy snacks; 56% relevant."
+       },
+       {
+        "source_unit": "web:happyhealthy.nl",
+        "verdict": "kept",
+        "reason": "Reader comments on healthy tussendoortjes, relevant to RQ-03."
+       },
+       {
+        "source_unit": "web:ouders.nl",
+        "verdict": "kept",
+        "reason": "First-person comments on Lidl, Aldi, Jumbo and AH quality and price, relevant to RQ-04."
+       },
+       {
+        "source_unit": "web:grouwfit.nl",
+        "verdict": "kept",
+        "reason": "One relevant protein-bar passage; low volume."
+       },
+       {
+        "source_unit": "web:expat.com",
+        "verdict": "dropped",
+        "reason": "Expat posts fell outside the time window; nothing kept."
+       },
+       {
+        "source_unit": "web:fodors.com",
+        "verdict": "dropped",
+        "reason": "Tourist posts, not relevant to Dutch consumers."
+       },
+       {
+        "source_unit": "web:grocerytourist.substack.com",
+        "verdict": "dropped",
+        "reason": "Only 2 items, none relevant; expat-oriented."
+       }
+      ],
+      "gaps": [
+       "RQ-07 (vegan, glutenvrij, high protein, low sugar demand) has almost no evidence; the vegan and glutenvrij pages were inaccessible.",
+       "RQ-06 (discovery and repurchase) is thin, and there is no TikTok/YouTube voice, so HYP-04 is untested.",
+       "Younger voices (18-30) are underrepresented; the corpus skews toward older FOK forum threads.",
+       "No Reddit or Kieskeurig content could be collected, and bokt.nl and the Radar forum were inaccessible.",
+       "The expat voice is essentially absent.",
+       "Sustainability and packaging (HYP-05) and online purchasing are barely covered.",
+       "The corpus is slightly under the 200 relevant document target."
+      ],
+      "follow_up_queries": [
+       {
+        "source_unit": "web:forum.fok.nl",
+        "query": "eiwitrijke snacks vegan glutenvrij ervaringen"
+       },
+       {
+        "source_unit": "web:forum.fok.nl",
+        "query": "nieuwe snack proberen Albert Heijn Jumbo novelty"
+       }
+      ]
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  }
+ ]
+}

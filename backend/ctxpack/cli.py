@@ -299,6 +299,191 @@ def plan(
     console.print(f"calls: {t.calls} | tokens in {t.input_tokens} out {t.output_tokens} | cost ${t.spent_usd:.4f}")
 
 
+# --------------------------------------------------------------------------
+# research: plan -> approve -> agent loop, printed live (Step 2.5)
+# --------------------------------------------------------------------------
+
+
+def _event_line(e) -> str | None:
+    """One readable line per live event (scraped text never appears in events)."""
+    p, t = e.payload, e.type.value
+    if t == "stage":
+        return f"[bold]STAGE[/bold] {p.get('stage')}"
+    if t == "agent_call":
+        return (f"[cyan]CALL[/cyan]  #{p['seq']} {p['tool']} {p.get('source_unit') or ''}\n"
+                f"      [dim]reason:[/dim] {p.get('reason') or '-'}")
+    if t == "agent_result":
+        if p.get("collected"):
+            terms = ", ".join(p.get("new_terms", [])[:5])
+            return (f"      -> #{p['seq']} {p['status']}: collected {p['collected']}, kept {p['kept']}, "
+                    f"relevant {round(100 * p.get('relevant_share', 0))}%" + (f" | new terms: {terms}" if terms else ""))
+        return f"      -> #{p['seq']} {p['status']}"
+    if t == "coverage":
+        qs = " ".join(f"{q['id']}={q['docs']}" for q in p.get("questions", []))
+        return f"[magenta]COVERAGE[/magenta] {qs}"
+    if t == "fallback":
+        return f"[yellow]FALLBACK[/yellow] {p.get('kind')}: {p.get('reason')}"
+    if t == "error":
+        return f"[red]ERROR[/red] {p.get('message')}"
+    return None
+
+
+def _print_summary(run) -> None:
+    from ctxpack import db
+    from ctxpack.orchestrator import cost_lines
+
+    col = run.collection or {}
+    counters = next((e.payload for e in reversed(db.get_events(run.id, limit=100000))
+                     if e.type.value == "counters"), {})
+    console.print(f"\n[bold]FINISH[/bold] {run.status.value} | reason {run.finish_reason} | "
+                  f"fallback {run.fallback_used} | top-up {run.top_up_used} | tool calls {run.tool_calls}")
+    if counters:
+        console.print("[bold]CLEAN[/bold] " + " | ".join(f"{k} {v}" for k, v in counters.items()))
+    console.print("[bold]KEPT[/bold]")
+    for s in col.get("sources_used", []):
+        console.print(f"  {s['source_unit']}: {s['kept']} docs, {round(100 * s['relevant_share'])}% relevant"
+                      f" - {s['reason']}", highlight=False)
+    console.print("[bold]DROPPED[/bold]")
+    for s in col.get("sources_dropped", []):
+        console.print(f"  {s['source_unit']}: {s['reason']}", highlight=False)
+    console.print("[bold]GAPS[/bold]")
+    for g in col.get("gaps", []):
+        console.print(f"  {g}", highlight=False)
+    console.print(f"[bold]COST[/bold] Apify ${run.cost_apify_usd:.3f} | Anthropic ${run.cost_llm_usd:.3f} | "
+                  f"total ${run.cost_apify_usd + run.cost_llm_usd:.3f}")
+    for line in cost_lines(run):
+        console.print(f"  {line}", highlight=False)
+    console.print(f"[bold]RUN[/bold] {run.id} | relevant docs {col.get('relevant_total', 0)} | "
+                  f"peak memory {run.peak_mem_mb} MB")
+
+
+@app.command()
+def research(
+    brief: str = typer.Argument(..., help='The brief, e.g. "Gen Z and meal prep"'),
+    mode: str = typer.Option("quick", help="quick or standard"),
+    window: int = typer.Option(0, help="Time window in days (default from modes.yaml)"),
+    fixtures: bool = typer.Option(False, "--fixtures", help="Recorded data and fake model: no network, $0"),
+    auto_approve: bool = typer.Option(False, "--auto-approve", help="No question, no Enter: run the plan"),
+    brand_voice: str = typer.Option("", "--brand-voice", help="One line; used only by the playbook"),
+    record: bool = typer.Option(False, "--record", help="Save the agent's tool calls as a fake-mode transcript"),
+    no_apify: bool = typer.Option(False, "--no-apify", help="No Apify tools this run: web sources only"),
+    apify_max: float = typer.Option(-1.0, "--apify-max", help="Lower Apify cap (USD) for this run"),
+) -> None:
+    """Plan -> show it and wait for Enter -> the agent loop, printed live -> counters, sources, cost."""
+    import asyncio
+    import os
+    import signal
+    import time
+
+    from ctxpack import db, orchestrator
+    from ctxpack.agent.interpret import interpret
+    from ctxpack.collect import loop
+    from ctxpack.llm.client import tracking
+    from ctxpack.schemas.enums import Mode, Requester, RunStatus
+
+    if mode not in ("quick", "standard"):
+        console.print(f"{BAD} mode must be quick or standard")
+        raise typer.Exit(1)
+    if fixtures:
+        os.environ["USE_FIXTURES"] = "true"
+        os.environ["LLM_FAKE"] = "true"
+        os.environ.setdefault("AUTHOR_HASH_SALT", "fixtures-only-not-a-secret")
+        get_settings.cache_clear()
+        db.init_engine(f"sqlite:///{get_settings().data_path / 'fixtures.db'}")   # never the real database
+    else:
+        for name in ("ANTHROPIC_API_KEY", "APIFY_API_TOKEN", "AUTHOR_HASH_SALT", "DATABASE_URL"):
+            if not get_settings().is_set(name):
+                console.print(f"{BAD} {name} not set - run the doctor command")
+                raise typer.Exit(1)
+        db.init_engine()
+    db.create_tables()
+
+    run = db.create_run(brief, mode=Mode(mode), requester=Requester.cli)
+    if brand_voice:
+        db.update_run(run.id, brand_voice=brand_voice[:200])
+
+    async def plan(clarification=None):
+        with tracking(run.id):
+            return await interpret(brief, mode=mode, window_days=window or None, allow_question=not auto_approve,
+                                   clarification=clarification)
+
+    out = asyncio.run(plan())
+    if out.result.clarifying_question:
+        _print_plan(out)
+        q = out.result.clarifying_question
+        answer = typer.prompt("Your answer (a number or your own words)")
+        if answer.strip().isdigit() and 1 <= int(answer) <= len(q.options):
+            answer = q.options[int(answer) - 1]
+        out = asyncio.run(plan((q.question, answer)))
+    _print_plan(out)
+    db.update_run(run.id, interpretation=out.result.interpretation.model_dump(mode="json"),
+                  plan=out.result.plan.model_dump(mode="json"))
+    if not auto_approve:
+        typer.prompt("\nPress Enter to start (Ctrl-C to cancel)", default="", show_default=False)
+
+    orchestrator.enqueue(run.id)
+    claimed = db.claim_next_run()
+    if claimed is None or claimed.id != run.id:
+        console.print(f"{BAD} another run is waiting in the queue; run {run.id} stays queued for the worker")
+        raise typer.Exit(1)
+
+    async def collect(run_id: str) -> None:
+        state = orchestrator.loop_state(run_id, no_apify=no_apify,
+                                        apify_usd_cap=apify_max if apify_max >= 0 else None)
+        await loop.run_loop(state)
+        if record:
+            path = loop.save_transcript(brief, state)
+            console.print(f"transcript saved: {path}")
+
+    async def go() -> None:
+        signal_loop = asyncio.get_running_loop()
+        signal_loop.add_signal_handler(signal.SIGINT, lambda: (
+            console.print("[yellow]Stopping - packaging what was collected...[/yellow]"),
+            orchestrator.request_stop(run.id)))
+        task = asyncio.create_task(orchestrator.run_pipeline(run.id, collect=collect))
+        last = 0
+        while True:
+            done = task.done()
+            for e in db.get_events(run.id, after_seq=last):
+                last = e.seq
+                if line := _event_line(e):
+                    console.print(line, highlight=False)
+            if done:
+                break
+            await asyncio.sleep(0.5)
+        await task
+
+    started = time.monotonic()
+    asyncio.run(go())
+    final = db.get_run(run.id)
+    _print_summary(final)
+    console.print(f"took {time.monotonic() - started:.0f} s")
+    if final.status == RunStatus.failed:
+        raise typer.Exit(1)
+
+
+@app.command()
+def overlap(run_ids: list[str] = typer.Argument(..., help="Two or more run ids")) -> None:
+    """How much the runs' source units overlap (eval: briefs share < 50%)."""
+    from ctxpack import db
+    from ctxpack.orchestrator import source_units, units_overlap
+
+    db.init_engine()
+    units = {}
+    for rid in run_ids:
+        run = db.get_run(rid)
+        if run is None:
+            console.print(f"{BAD} run {rid} not found")
+            raise typer.Exit(1)
+        units[f"{rid} ({run.brief_text[:40]})"] = source_units(run)
+    for name, us in units.items():
+        console.print(f"[bold]{name}[/bold]: {', '.join(sorted(us)) or '-'}", highlight=False)
+    report = units_overlap(list(units.values()))
+    console.print(f"\nshared units: {report['shared']} of {report['total']} "
+                  f"= {round(100 * report['share'])}% (target < 50%) | "
+                  f"largest pairwise overlap {round(100 * report['max_pairwise'])}%")
+
+
 @app.command()
 def version() -> None:
     """Print the package version."""

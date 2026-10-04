@@ -12,3 +12,13 @@ def temp_db(tmp_path):
     yield db
     db.get_engine().dispose()
     db._engine = None
+
+
+@pytest.fixture(autouse=True)
+def no_recorded_transcripts(monkeypatch, tmp_path_factory, request):
+    """Fake mode uses the plan-driven stand-in agent unless a test asks for the recorded
+    transcripts (tests/fixtures/transcripts) with @pytest.mark.transcripts."""
+    if request.node.get_closest_marker("transcripts"):
+        return
+    from ctxpack.collect import loop
+    monkeypatch.setattr(loop, "TRANSCRIPT_DIR", tmp_path_factory.mktemp("no_transcripts"))

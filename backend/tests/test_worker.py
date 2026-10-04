@@ -201,9 +201,12 @@ async def test_a_run_is_claimed_only_once(offline):
 # --- killed process, restart, resume once ----------------------------------
 
 KILL_AFTER_COLLECTION = textwrap.dedent("""
-    import asyncio, os, signal, sys
+    import asyncio, os, pathlib, signal, sys, tempfile
     from ctxpack import db, worker
+    from ctxpack.collect import loop
     from ctxpack.schemas.enums import RunStage
+
+    loop.TRANSCRIPT_DIR = pathlib.Path(tempfile.mkdtemp())  # the stand-in agent, as in the other tests
 
     async def killed(run_id):
         os.kill(os.getpid(), signal.SIGKILL)  # no clean-up, like a crash or a redeploy

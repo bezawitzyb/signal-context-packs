@@ -200,3 +200,43 @@ def test_batched_keeps_order_and_bounds_parallelism():
 
 def test_sdk_retries_with_backoff_are_configured():
     assert llm._models()["client"]["max_retries"] >= 2
+
+
+class _Block(SimpleNamespace):
+    """Stands in for an SDK content block (attribute access + model_dump)."""
+
+    def model_dump(self):
+        return dict(vars(self))
+
+
+def _fetch_failed_resp():
+    blocks = [_Block(type="web_fetch_tool_result", content={"type": "web_fetch_tool_error",
+                                                             "error_code": "url_not_accessible"}),
+              SimpleNamespace(type="text", text="Unfortunately, I'm unable to access the page.")]
+    return SimpleNamespace(content=blocks, stop_reason="end_turn",
+                           usage=SimpleNamespace(input_tokens=6000, output_tokens=200))
+
+
+def test_failed_fetch_gives_no_posts_without_a_paid_retry(real_mode, monkeypatch):
+    from ctxpack.collect import web
+    create = _mock_client(monkeypatch, _fetch_failed_resp())
+    res = asyncio.run(llm.structured(
+        "worker", "sys", "user", web.Segmentation, "record_segments", server_tools=["web_fetch"],
+        no_tool_answer=lambda blocks: {"segments": []} if web._fetched_text(blocks)[0] is None else None))
+    assert res.data.segments == [] and create.await_count == 1
+
+
+def test_a_fetched_page_without_the_tool_call_is_still_retried(real_mode, monkeypatch):
+    from ctxpack.collect import web
+    fetched = _Block(type="web_fetch_tool_result", content={"type": "web_fetch_result", "content": {
+        "source": {"type": "text", "media_type": "text/plain", "data": "a page with posts"}}})
+    no_tool = SimpleNamespace(content=[fetched, SimpleNamespace(type="text", text="Here are the posts")],
+                              stop_reason="end_turn", usage=SimpleNamespace(input_tokens=6000, output_tokens=50))
+    ok = SimpleNamespace(content=[SimpleNamespace(type="tool_use", name="record_segments", id="tu_2",
+                                                  input={"segments": [{"text": "posts", "position": 1}]})],
+                         stop_reason="tool_use", usage=SimpleNamespace(input_tokens=100, output_tokens=20))
+    create = _mock_client(monkeypatch, no_tool, ok)
+    res = asyncio.run(llm.structured(
+        "worker", "sys", "user", web.Segmentation, "record_segments", server_tools=["web_fetch"],
+        no_tool_answer=lambda blocks: {"segments": []} if web._fetched_text(blocks)[0] is None else None))
+    assert create.await_count == 2 and res.data.segments[0].text == "posts"

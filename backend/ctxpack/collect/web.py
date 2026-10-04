@@ -26,6 +26,7 @@ from ctxpack.config import get_settings, load_yaml
 from ctxpack.llm.client import load_prompt, structured, untrusted
 from ctxpack.schemas.enums import Platform
 
+BLOCKED_ERRORS = {"url_not_allowed"}   # the site refuses Anthropic's fetcher: retrying never helps
 DISCOVER_FIXTURE = FIXTURE_DIR / "web_discover.json"
 PAGES_FIXTURE = FIXTURE_DIR / "web_pages.json"
 
@@ -86,11 +87,48 @@ def _load(path) -> dict:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
 
+# --------------------------------------------------------------------------
+# Sites that refuse fetching (remembered in DATA_DIR, never committed)
+# --------------------------------------------------------------------------
+
+def domain_of(url: str) -> str:
+    return urlparse(url if "//" in url else f"https://{url}").netloc.removeprefix("www.").casefold()
+
+
+def _blocked_file():
+    return get_settings().data_path / "blocked_sites.json"
+
+
+def blocked_sites() -> dict[str, str]:
+    """domain -> date first refused, for the last blocked_site_days. Empty in fixture mode."""
+    if get_settings().use_fixtures or not _blocked_file().exists():
+        return {}
+    days = load_yaml("modes")["collection"]["blocked_site_days"]
+    cutoff = (datetime.now().date().toordinal()) - days
+    try:
+        data = json.loads(_blocked_file().read_text(encoding="utf-8"))
+    except ValueError:
+        return {}
+    return {d: day for d, day in data.items() if datetime.fromisoformat(day).date().toordinal() >= cutoff}
+
+
+def remember_blocked(domains: set[str]) -> None:
+    if get_settings().use_fixtures or not domains:
+        return
+    data = blocked_sites()
+    today = datetime.now().date().isoformat()
+    for d in domains:
+        data.setdefault(d, today)
+    _blocked_file().parent.mkdir(parents=True, exist_ok=True)
+    _blocked_file().write_text(json.dumps(data, indent=1, sort_keys=True), encoding="utf-8")
+
+
 def discover_key(query: str, country: str, language: str) -> str:
     return f"{query.casefold()}|{country.upper()}|{language.lower()}"
 
 
-async def discover(query: str, country: str, language: str) -> DiscoverResult:
+async def discover(query: str, country: str, language: str, blocked: list[str] | None = None) -> DiscoverResult:
+    """blocked: domains web search must not return (sites that refuse fetching)."""
     if get_settings().use_fixtures:
         data = _load(DISCOVER_FIXTURE).get(discover_key(query, country, language), {"pages": []})
         return DiscoverResult(Discovery.model_validate(data).pages)
@@ -98,7 +136,8 @@ async def discover(query: str, country: str, language: str) -> DiscoverResult:
     res = await structured(
         "worker", load_prompt("web_discover"), user, Discovery, "record_pages",
         description="Record the pages found.", max_tokens=4096, server_tools=["web_search"],
-        server_tool_options={"web_search": {"max_uses": load_yaml("modes")["collection"]["web_search_max_uses"]}},
+        server_tool_options={"web_search": {"max_uses": load_yaml("modes")["collection"]["web_search_max_uses"],
+                                            **({"blocked_domains": blocked} if blocked else {})}},
     )
     pages, seen = [], set()
     for p in res.data.pages:  # http(s) only, no duplicates
@@ -293,6 +332,8 @@ async def fetch_and_segment(url: str, page_type: str, fetched_at: datetime) -> P
     res = await structured(
         "worker", load_prompt("web_segment"), f"Page to fetch and split: {url}", Segmentation,
         "record_segments", description="Record every visitor post on the page.", max_tokens=16000,
+        # the fetch failed: nothing to split, so no retry (the model tends to explain in text instead)
+        no_tool_answer=lambda blocks: {"segments": []} if _fetched_text(blocks)[0] is None else None,
         server_tools=["web_fetch"], server_tool_options={"web_fetch": {
             "max_uses": 1,
             "max_content_tokens": load_yaml("modes")["collection"]["web_fetch_max_content_tokens"]}},

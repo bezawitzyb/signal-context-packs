@@ -465,3 +465,50 @@ async def test_apify_spend_per_actor_is_saved_and_listed_biggest_first(offline, 
     lines = orchestrator.cost_lines(run_)
     assert "apify     harshmaur/reddit-scraper" in lines[0] and "83%" in lines[0]   # biggest first
     assert "anthropic worker/record_relevance" in lines[1]
+
+
+async def test_apify_switched_off_for_a_run_is_told_up_front_and_refused(offline, monkeypatch):
+    ran = []
+    monkeypatch.setattr(apify, "run_actor", lambda *a, **k: ran.append(a))
+    run_id = await approved_run()
+    state = orchestrator.loop_state(run_id, no_apify=True)
+    assert "UNAVAILABLE this run" in loop.first_message(state.ctx, state.interp, state.plan)
+    assert (await tools.search_reddit(state.ctx, "r/x", 10, "t"))["reason"] == tools.NO_APIFY_CREDIT
+    assert ran == [] and state.ctx.calls == 0
+
+
+async def test_a_lower_apify_cap_for_one_run(offline, monkeypatch):
+    run_id = await approved_run()
+    ctx = orchestrator.loop_state(run_id, apify_usd_cap=0.01).ctx
+    out = await tools.search_reddit(ctx, "r/MealPrepSunday", 40, "too big for the cap")
+    assert out["status"] == "limit_reached" and out["reason"].startswith("apify budget")
+    assert out["budget_left"]["apify_usd"] == 0.01
+
+
+async def test_concurrent_apify_calls_are_recorded_once(offline, monkeypatch):
+    async def paid_actor(spec, run_input, limit, timeout=None):
+        await asyncio.sleep(0.05)                      # both calls are running at the same time
+        items = json.loads(apify.fixture_path(spec["id"]).read_text())[:limit]
+        return apify.ActorResult(spec["id"], items, 0.05, "SUCCEEDED")
+
+    monkeypatch.setattr(apify, "run_actor", paid_actor)
+    with_limits(monkeypatch, min_relevant=1)
+    run_id = await approved_run()
+    other = use("search_reddit", target="r/EatCheapAndHealthy", limit=10, reason="second sub")
+    await run(run_id, scripted([[REDDIT, other], [COVERAGE], finish_all()]))
+    run_ = db.get_run(run_id)
+    assert round(run_.cost_apify_usd, 4) == 0.10                       # not 0.15
+    assert round(sum(v["usd"] for v in run_.cost_breakdown["apify"].values()), 4) == 0.10
+
+
+@pytest.mark.transcripts
+@pytest.mark.parametrize("path", sorted(loop.TRANSCRIPT_DIR.glob("*.json")), ids=lambda p: p.stem)
+async def test_recorded_transcripts_replay_in_fake_mode(offline, path):
+    """Every saved real run replays against fixture tools without errors, and holds only tool calls."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert all(b["type"] == "tool_use" for t in data["turns"] for b in t["content"])
+    run_id = await approved_run(data["brief"])
+    db.update_run(run_id, mode="standard")             # recorded runs may be Standard
+    out = await loop.run_loop(orchestrator.loop_state(run_id))
+    assert out.finish_reason != FinishReason.error
+    assert len(out.collection["decision_log"]) >= len(data["turns"])

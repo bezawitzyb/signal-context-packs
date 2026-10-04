@@ -140,7 +140,6 @@ async def run_tool(state: LoopState, name: str, args: dict[str, Any]) -> dict[st
     state.calls.append((name, dict(args)))
     db.append_event(ctx.run_id, EventType.agent_call,
                     {"seq": seq, "tool": name, "source_unit": unit, "reason": reason})
-    apify_before = ctx.apify_usd
     try:
         result = await tools.call_tool(ctx, name, args)
     except BudgetExceeded as exc:            # a cleaning call inside the tool hit the run budget or daily cap
@@ -149,8 +148,12 @@ async def run_tool(state: LoopState, name: str, args: dict[str, Any]) -> dict[st
     except Exception as exc:                 # a failed source degrades gracefully (FR-B6)
         log.exception("tool %s failed", name)
         result = {"status": "error", "error": f"{name} failed ({type(exc).__name__})"}
-    if ctx.apify_usd > apify_before:
-        db.add_spend(apify_usd=ctx.apify_usd - apify_before, run_id=ctx.run_id)
+    # Record only what is not yet recorded: with concurrent calls a per-call "before" snapshot
+    # would count a neighbour's spend twice.
+    if ctx.apify_usd > ctx.apify_recorded_usd:
+        new = ctx.apify_usd - ctx.apify_recorded_usd
+        ctx.apify_recorded_usd = ctx.apify_usd
+        db.add_spend(apify_usd=new, run_id=ctx.run_id)
         run = db.get_run(ctx.run_id)
         db.append_event(ctx.run_id, EventType.cost, {"apify_usd": round(run.cost_apify_usd, 4),
                                                      "llm_usd": round(run.cost_llm_usd, 4)})
@@ -227,9 +230,11 @@ def first_message(ctx: RunContext, interp: Interpretation, plan: Plan) -> str:
         f"- raw items: {lim['item_budget']} in total, at most {lim['items_per_call_max']} per call, "
         f"at most {int(lim['unit_share_max'] * lim['item_budget'])} per source unit\n"
         f"- web pages per fetch_and_segment call: {lim['web_pages_per_call_max']}\n"
-        f"- budgets: Apify {lim['apify_usd']:.2f} USD, LLM {lim['llm_usd']:.2f} USD\n"
+        f"- budgets: Apify {tools.apify_cap(ctx):.2f} USD, LLM {lim['llm_usd']:.2f} USD\n"
         f"- target: at least {lim['min_relevant']} relevant documents\n"
-        f"- time window: posts from the last {interp.time_window_days} days",
+        f"- time window: posts from the last {interp.time_window_days} days"
+        + ("\n- Apify tools (search_reddit, search_tiktok, search_youtube, search_instagram, get_trends) "
+           "are UNAVAILABLE this run: use web_search and fetch_and_segment only" if ctx.apify_unavailable else ""),
         "Start now. Batch independent calls in one turn.",
     ])
 

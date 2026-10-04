@@ -103,6 +103,26 @@ def cost_lines(run: db.Run) -> list[str]:
     return [f"${usd:7.3f} {round(100 * usd / total):>3}%  {text}" for usd, text in sorted(rows, reverse=True)]
 
 
+def source_units(run: db.Run) -> set[str]:
+    """Every unit a run planned or used (plan + agent verdicts), lower-cased."""
+    units = {u.source_unit for u in Plan.model_validate(run.plan).starting_units} if run.plan else set()
+    col = run.collection or {}
+    units |= {s["source_unit"] for s in col.get("sources_used", []) + col.get("sources_dropped", [])}
+    return {u.casefold() for u in units}
+
+
+def units_overlap(sets: list[set[str]]) -> dict[str, float]:
+    """Units used by more than one run, as a share of all distinct units; and the largest pairwise Jaccard."""
+    from collections import Counter
+    from itertools import combinations
+
+    counts = Counter(u for s in sets for u in s)
+    shared = sum(1 for c in counts.values() if c > 1)
+    pairs = [len(a & b) / len(a | b) for a, b in combinations(sets, 2) if a | b]
+    return {"shared": shared, "total": len(counts), "share": shared / len(counts) if counts else 0.0,
+            "max_pairwise": max(pairs, default=0.0)}
+
+
 # --------------------------------------------------------------------------
 # Memory (B13)
 # --------------------------------------------------------------------------
@@ -128,7 +148,8 @@ def record_memory(run_id: str, stage: RunStage) -> float:
 # --------------------------------------------------------------------------
 
 
-def loop_state(run_id: str, record: bool = False) -> Any:
+def loop_state(run_id: str, record: bool = False, no_apify: bool = False,
+               apify_usd_cap: float | None = None) -> Any:
     """The loop's state for a planned run: RunContext from the interpretation and plan."""
     from ctxpack.collect.loop import LoopState
     from ctxpack.collect.relevance import BriefContext
@@ -144,6 +165,7 @@ def loop_state(run_id: str, record: bool = False) -> Any:
                            audience=interp.audience,
                            research_questions={q.id: q.text for q in plan.research_questions}))
     ctx.llm_usd = run.cost_llm_usd
+    ctx.apify_unavailable, ctx.apify_usd_cap = no_apify, apify_usd_cap
     return LoopState(ctx=ctx, interp=interp, plan=plan, check_stop=lambda: check_stop(run_id))
 
 

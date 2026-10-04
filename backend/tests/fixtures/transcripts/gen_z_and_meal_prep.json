@@ -1,0 +1,462 @@
+{
+ "brief": "Gen Z and meal prep",
+ "turns": [
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "search_reddit",
+     "input": {
+      "target": "r/MealPrepSunday",
+      "query": "college student budget",
+      "reason": "RQ-01/02: student budget motivations and barriers",
+      "limit": 60
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "search_reddit",
+     "input": {
+      "target": "r/EatCheapAndHealthy",
+      "query": "meal prep broke college student",
+      "reason": "RQ-01/04: cost motivations and cheap staples",
+      "limit": 60
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "search_tiktok",
+     "input": {
+      "target": "#mealprep",
+      "reason": "RQ-03/07: trending formats and slang in comments",
+      "limit": 60
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "search_reddit",
+     "input": {
+      "target": "r/EatCheapAndHealthy",
+      "query": "meal prep student",
+      "reason": "RQ-01/04 cost motivations, smaller call for budget",
+      "limit": 20
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "HelloFresh worth it for college student reddit",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-05 meal kit perceptions"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "meal prep getting boring soggy day 4 forum college",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-02 barriers flavour fatigue, sogginess"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://spoonuniversity.com/school/oregon/is-hellofresh-actually-worth-it-for-college-students/",
+       "https://www.aol.com/hellofresh-experience-college-student-191918066.html",
+       "https://www.theodysseyonline.com/college-hello-fresh"
+      ],
+      "reason": "RQ-05 student views on meal kit price vs DIY"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "gen z meal prep why I stopped meal prepping boring food spoils",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-02 quitting reasons"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "Factor meals review too expensive vs meal prep",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-05 prepared meal brands perception"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://www.thekitchn.com/argument-against-meal-prep-22979426",
+       "https://www.trustpilot.com/review/factor.com",
+       "https://knissen.substack.com/p/meal-prepping-is-a-scam"
+      ],
+      "reason": "RQ-02/05 first-person barriers and Factor reviews"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "search_reddit",
+     "input": {
+      "target": "r/MealPrepSunday",
+      "query": "meal prep getting boring",
+      "reason": "RQ-02 boredom/flavour fatigue",
+      "limit": 15
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "reddit meal prep college student cheap staples rice beans chicken thread",
+      "country": "US",
+      "language": "en",
+      "reason": "find fetchable first-person threads on cheap staples RQ-04"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "best meal prep containers recommendations glass vs plastic Reddit leaks stains",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-06 containers and disappointments"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://www.careervillage.org/questions/719776/what-is-the-best-way-to-meal-prep-in-college-on-a-budget-should-i-sign-up-for-door-delivery-or-make-smart-shopping-decisions-spring23",
+       "https://forums.anandtech.com/threads/i-dont-even-know-what-to-eat-for-dinner-anymore.939007",
+       "https://physicalkitchness.com/why-i-dont-meal-prep/"
+      ],
+      "reason": "RQ-01/02/04 first-person Q&A and comments"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "search_youtube",
+     "input": {
+      "query": "I tried meal prep for a week college student budget",
+      "reason": "RQ-02/07 YouTube comments (may be cheaper)",
+      "limit": 20
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "reddit r/mealprep thread meal prep boring tired of eating same thing",
+      "country": "US",
+      "language": "en",
+      "reason": "find fetchable Reddit threads on boredom"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "HelloFresh vs Factor vs meal prep reddit thread cancel too expensive 2025",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-05 recent threads on meal kits"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "tiktok meal prep trend gen z high protein girl dinner sunday reset comments",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-03 slang and formats"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://www.teamblind.com/post/hate-eating-the-same-food-again-and-again-but-also-hate-meal-preps-yqjmkmbg",
+       "https://ca.trustpilot.com/review/hellofresh.com",
+       "https://forums.anandtech.com/threads/prepping-meals-for-the-week.2464801/",
+       "https://www.reddit.com/r/MealPrepSunday/"
+      ],
+      "reason": "RQ-02/05 boredom and meal-kit complaints from first-person pages"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "meal prep tips for broke college students forum comments \"meal prep\" containers microwave dorm",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-01/06 dorm constraints and gadgets"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "quora is meal prepping worth it for college students why do people quit",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-01/02 Q&A voices"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://www.quora.com/Are-college-students-better-off-with-a-meal-plan-or-with-cooking-for-themselves",
+       "https://kealakai.byuh.edu/meal-prep-gives-students-more-time-during-the-week-and-saves-them-money",
+       "https://academichelp.net/blog/student-life/smart-meal-prep-tips-for-students.html",
+       "https://summerthedietitian.substack.com/p/how-i-use-hello-fresh-and-factor",
+       "https://www.hercampus.com/school/hawaii/broke-college-meal-prep/"
+      ],
+      "reason": "RQ-01/04/05/06 student voices and comments"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "forum thread cheap meal prep ideas for one person students food prices expensive groceries",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-01 cost inflation voices on forums"
+     }
+    },
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "Factor meals reviews customers sitejabber OR productreview OR consumeraffairs",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-05 Factor review pages"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "fetch_and_segment",
+     "input": {
+      "urls": [
+       "https://www.sitejabber.com/reviews/factor75.com",
+       "https://www.trustpilot.com/review/factor75.com",
+       "https://forums.studentdoctor.net/threads/food-budget.1145871/",
+       "https://www.sitejabber.com/reviews/hellofresh.com"
+      ],
+      "reason": "RQ-05 Factor/HelloFresh consumer reviews; RQ-01 student food budget"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "coverage_report",
+     "input": {}
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "web_search",
+     "input": {
+      "query": "meal prep high protein gym bulking cutting chicken rice discussion forum 2025",
+      "country": "US",
+      "language": "en",
+      "reason": "RQ-08 gym cutting framing, recent forum threads"
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  },
+  {
+   "content": [
+    {
+     "type": "tool_use",
+     "name": "finish",
+     "input": {
+      "summary": "The Apify budget (0.20 USD) ran out after three Reddit calls (65 items). Every TikTok and YouTube call, plus a second r/EatCheapAndHealthy call, was refused as over budget. The rest of the corpus came from free web fetches. Forum and review pages (Trustpilot HelloFresh Canada, careervillage, Blind, physicalkitchness comments) produced usable first-person voices, but most were out of the 180-day window. The final count is about 76 relevant documents, well short of the 200 target. Reddit gave the strongest Gen Z-relevant material: student meal prep posts at about $50-60 per week, ingredient-prep versus whole-meal approaches, reheating hassle, and potato/rice/pasta staples. HelloFresh reviews mix praise (reduced grocery bills, variety) with complaints about produce quality and cost. Boredom and time barriers appear in the Blind and physicalkitchness comments. TikTok slang and formats (RQ-03) and creator influence (RQ-07) are barely covered.",
+      "source_verdicts": [
+       {
+        "source_unit": "reddit:r/MealPrepSunday",
+        "verdict": "kept",
+        "reason": "Relevant share 0.73. Student budget preps, boredom, reheating problems and ingredient-prep habits."
+       },
+       {
+        "source_unit": "reddit:r/EatCheapAndHealthy",
+        "verdict": "kept",
+        "reason": "Relevant share 0.9. Cheap staples, cost motivation and casserole/potato/rice prep."
+       },
+       {
+        "source_unit": "web:careervillage.org",
+        "verdict": "kept",
+        "reason": "Student asks about budget meal prep versus delivery; replies include a student-athlete's account."
+       },
+       {
+        "source_unit": "web:ca.trustpilot.com",
+        "verdict": "kept",
+        "reason": "HelloFresh customer reviews on cost, value and quality for the meal-kit perception question; share relevant 0.57."
+       },
+       {
+        "source_unit": "web:teamblind.com",
+        "verdict": "kept",
+        "reason": "Early-career voices on hating repetitive meal prep food. Small but on-topic."
+       },
+       {
+        "source_unit": "web:physicalkitchness.com",
+        "verdict": "kept",
+        "reason": "Reader comments with first-person reasons for quitting meal prep. Moderate relevance, many comments outside the window."
+       },
+       {
+        "source_unit": "web:forums.anandtech.com",
+        "verdict": "dropped",
+        "reason": "Threads are old and out of window; nothing kept."
+       },
+       {
+        "source_unit": "web:knissen.substack.com",
+        "verdict": "dropped",
+        "reason": "Single post, out of window."
+       },
+       {
+        "source_unit": "web:summerthedietitian.substack.com",
+        "verdict": "dropped",
+        "reason": "Single post, out of window."
+       },
+       {
+        "source_unit": "web:sitejabber.com",
+        "verdict": "dropped",
+        "reason": "Reviews out of window or irrelevant to meal prep; 0 relevant."
+       },
+       {
+        "source_unit": "web:trustpilot.com",
+        "verdict": "dropped",
+        "reason": "Factor75 reviews were collected but judged not relevant (0 relevant)."
+       },
+       {
+        "source_unit": "web:forums.studentdoctor.net",
+        "verdict": "dropped",
+        "reason": "Thread entirely out of window; nothing kept."
+       },
+       {
+        "source_unit": "tiktok:#mealprep",
+        "verdict": "dropped",
+        "reason": "Call refused: Apify budget exhausted; no data collected."
+       },
+       {
+        "source_unit": "youtube:meal prep for college students",
+        "verdict": "dropped",
+        "reason": "Call refused: Apify budget exhausted; no data collected."
+       }
+      ],
+      "gaps": [
+       "RQ-03 (slang and trending formats) has almost no evidence: TikTok was never collected.",
+       "RQ-07 (influencers, platforms and trust) is nearly empty; no TikTok, YouTube or Instagram data.",
+       "HYP-02 cannot be tested without TikTok data to compare against Reddit.",
+       "HYP-05 (gender differences) has no direct evidence.",
+       "Factor and Prep Dish perceptions are missing; the Factor review pages were out of window and Trustpilot and Quora blocked or irrelevant.",
+       "Time window: much of the web content is older than 180 days, and the corpus is about 76 relevant documents against a target of 200.",
+       "Few self-identified Gen Z voices; Reddit and the web skew older and broader.",
+       "RQ-06 (containers and gadgets) rests on thin evidence."
+      ],
+      "follow_up_queries": [
+       {
+        "source_unit": "reddit:r/MealPrepSunday",
+        "query": "soggy by day 4 food spoilage how long does it last"
+       },
+       {
+        "source_unit": "reddit:r/EatCheapAndHealthy",
+        "query": "cheap meal prep for one student"
+       },
+       {
+        "source_unit": "reddit:r/MealPrepSunday",
+        "query": "meal prep containers recommendations leaking"
+       }
+      ]
+     }
+    }
+   ],
+   "stop_reason": "tool_use"
+  }
+ ]
+}
