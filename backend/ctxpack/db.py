@@ -14,11 +14,11 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import DateTime, Engine, UniqueConstraint, delete, func, inspect, text
+from sqlalchemy import DateTime, Engine, UniqueConstraint, delete, func, inspect, text, update
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import JSON, Field, Session, SQLModel, create_engine, select
 
-from ctxpack.config import REPO_DIR, get_settings, sqlalchemy_url
+from ctxpack.config import REPO_DIR, get_settings, load_yaml, sqlalchemy_url
 from ctxpack.schemas.document import Document
 from ctxpack.schemas.enums import EventType, Mode, Requester, RunStage, RunStatus
 from ctxpack.schemas.pack import ContextPack
@@ -26,7 +26,6 @@ from ctxpack.schemas.pack import ContextPack
 log = logging.getLogger(__name__)
 
 FEATURED_DIR = REPO_DIR / "featured"
-HEARTBEAT_STALE = timedelta(minutes=2)
 
 
 TZ = DateTime(timezone=True)
@@ -71,6 +70,8 @@ class Run(SQLModel, table=True):
     heartbeat_at: datetime | None = Field(default=None, sa_type=TZ)
     resume_count: int = 0
     peak_mem_mb: float | None = None
+    queued_at: datetime | None = Field(default=None, sa_type=TZ)          # FIFO order of the queue
+    stop_requested_at: datetime | None = Field(default=None, sa_type=TZ)  # Stop button; read by the worker
 
 
 class EventRow(SQLModel, table=True):
@@ -251,6 +252,42 @@ def append_event(run_id: str, type: EventType, payload: dict[str, Any] | None = 
     raise RuntimeError(f"could not append event for run {run_id}")
 
 
+def queued_runs() -> list[Run]:
+    """Waiting runs, first in line first (an interrupted run keeps its old place)."""
+    with session() as s:
+        return list(s.exec(select(Run).where(Run.status == RunStatus.queued)
+                           .order_by(Run.queued_at, Run.created_at)))
+
+
+def runs_with_status(status: RunStatus) -> list[Run]:
+    with session() as s:
+        return list(s.exec(select(Run).where(Run.status == status).order_by(Run.created_at)))
+
+
+def claim_next_run() -> Run | None:
+    """B13: take the oldest queued run and mark it running, so no other worker can take it.
+
+    Postgres: SELECT ... FOR UPDATE SKIP LOCKED. SQLite (tests): a conditional
+    UPDATE on the status flag - only one caller can move it from queued.
+    """
+    engine = get_engine()
+    with session() as s:
+        stmt = (select(Run).where(Run.status == RunStatus.queued)
+                .order_by(Run.queued_at, Run.created_at).limit(1))
+        if engine.dialect.name == "postgresql":
+            stmt = stmt.with_for_update(skip_locked=True)
+        run = s.exec(stmt).first()
+        if run is None:
+            return None
+        now = utcnow()
+        result = s.execute(update(Run).where(Run.id == run.id, Run.status == RunStatus.queued)
+                           .values(status=RunStatus.running, claimed_at=now, heartbeat_at=now, updated_at=now))
+        s.commit()
+        if result.rowcount != 1:
+            return None  # another worker was faster
+    return get_run(run.id)
+
+
 def get_events(run_id: str, after_seq: int = 0, limit: int = 500) -> list[EventRow]:
     with session() as s:
         stmt = (select(EventRow).where(EventRow.run_id == run_id, EventRow.seq > after_seq)
@@ -283,6 +320,14 @@ def delete_documents(ids: list[str]) -> int:
         result = s.exec(delete(DocumentRow).where(DocumentRow.id.in_(ids)))
         s.commit()
         return result.rowcount or 0
+
+
+def count_documents(run_id: str, relevant_only: bool = False) -> int:
+    with session() as s:
+        stmt = select(func.count()).select_from(DocumentRow).where(DocumentRow.run_id == run_id)
+        if relevant_only:
+            stmt = stmt.where(DocumentRow.is_relevant == True)  # noqa: E712
+        return s.exec(stmt).one()
 
 
 def get_documents(run_id: str, relevant_only: bool = False) -> list[DocumentRow]:
@@ -389,11 +434,11 @@ def load_featured(folder: Path = FEATURED_DIR) -> int:
 
 
 def mark_stale_runs_interrupted(now: datetime | None = None) -> list[str]:
-    """B13: a running run whose heartbeat is older than 2 minutes is 'interrupted'.
+    """B13: a running run whose heartbeat is older than stale_after_secs is 'interrupted'.
 
-    Resuming it is the worker's job (Step 2.x).
+    Resuming it is the worker's job (worker.handle_interrupted).
     """
-    cutoff = (now or utcnow()) - HEARTBEAT_STALE
+    cutoff = (now or utcnow()) - timedelta(seconds=load_yaml("modes")["worker"]["stale_after_secs"])
     with session() as s:
         runs = s.exec(select(Run).where(Run.status == RunStatus.running)).all()
         stale = [r for r in runs if r.heartbeat_at is None or _aware(r.heartbeat_at) < cutoff]
@@ -413,7 +458,7 @@ def _aware(value: datetime) -> datetime:
 def startup() -> dict[str, Any]:
     """Run at app start: tables, featured packs, retention, interrupted runs.
 
-    The worker loop is started by the app itself (later step).
+    The worker loop (started by the app) then resumes or closes interrupted runs.
     """
     create_tables()
     return {

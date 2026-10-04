@@ -59,3 +59,15 @@ collection:
   web_search_max_uses: 3        # searches per web_search call
   anchor_words: 4               # words per text-fragment anchor (DH12)
   web_fetch_max_content_tokens: 20000  # caps the cost of one huge page (~0.02 USD input)
+
+# Job worker (guide B13) and live events (B6). Same for every mode.
+worker:
+  heartbeat_secs: 20            # a working run updates heartbeat_at this often
+  stale_after_secs: 120         # no heartbeat for this long -> "interrupted"
+  interrupted_check_secs: 60    # how often the worker looks for interrupted runs
+  poll_secs: 2                  # idle worker checks the queue this often
+  max_resumes: 1                # an interrupted run is resumed at most once
+  thin_evidence_floor: 20       # relevant docs needed to package a run cut off mid-collection
+events:
+  poll_secs: 1                  # SSE reads new rows from the events table this often
+  ping_secs: 15                 # SSE heartbeat

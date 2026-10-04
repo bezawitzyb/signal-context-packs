@@ -1,4 +1,4 @@
-"""FastAPI app: /ping, /health and the placeholder home page.
+"""FastAPI app: /ping, /health, live run events and the placeholder home page.
 
 Started by start.sh (locally) and the Dockerfile (Render) as ONE uvicorn
 worker on $PORT. The frontend build is served here in a later step.
@@ -13,7 +13,8 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from sqlalchemy import text
 
-from ctxpack import db
+from ctxpack import db, worker
+from ctxpack.api.routes import router
 from ctxpack.config import get_settings
 
 logging.basicConfig(
@@ -47,8 +48,8 @@ PLACEHOLDER_HTML = """<!doctype html>
 """
 
 
-async def _startup_tasks() -> None:
-    """Tables, featured packs, retention, interrupted runs (B4).
+async def _startup_tasks(stop: asyncio.Event) -> None:
+    """Tables, featured packs, retention, interrupted runs (B4), then the worker loop (B13).
 
     Runs in the background so the server answers /ping straight away,
     even while Neon wakes up. A failure is logged (type only) and /health
@@ -59,16 +60,22 @@ async def _startup_tasks() -> None:
         log.info("startup tasks done: %s", result)
     except Exception as exc:  # never log the message: it may contain the URL
         log.error("startup tasks failed: %s", type(exc).__name__)
+        return
+    if get_settings().worker_mode == "inprocess":
+        await worker.worker_loop(stop)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    task = asyncio.create_task(_startup_tasks())
+    stop = asyncio.Event()
+    task = asyncio.create_task(_startup_tasks(stop))
     yield
+    stop.set()
     task.cancel()
 
 
 app = FastAPI(title="SIGNAL - Context Packs", version=VERSION, lifespan=lifespan)
+app.include_router(router)
 
 
 @app.get("/ping", response_class=PlainTextResponse)
