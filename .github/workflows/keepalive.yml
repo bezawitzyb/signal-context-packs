@@ -1,0 +1,31 @@
+# Keeps the Render Free service awake: GET $RENDER_URL/ping every 10 minutes.
+# RENDER_URL is a repository VARIABLE (not a secret): the public onrender.com
+# address. /ping never touches the database or a paid API (guide B12).
+name: keepalive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /ping
+        env:
+          RENDER_URL: ${{ vars.RENDER_URL }}
+        run: |
+          if [ -z "$RENDER_URL" ]; then
+            echo "RENDER_URL repository variable is not set yet - skipping."
+            exit 0
+          fi
+          # A sleeping free service can take ~1 minute to wake up.
+          body=$(curl --silent --show-error --fail --max-time 90 \
+                      --retry 3 --retry-delay 20 --retry-all-errors \
+                      "${RENDER_URL%/}/ping")
+          echo "Response: $body"
+          [ "$body" = "ok" ]
