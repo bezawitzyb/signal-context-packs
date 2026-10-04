@@ -1,1 +1,386 @@
-"""Database tables (B4) and helpers. Filled in Step 1.2."""
+"""Database tables (guide B4) and helpers.
+
+DATABASE_URL picks the database: Neon dev branch locally, Neon main online.
+Tests call init_engine("sqlite:///<tmp file>"). JSON columns work on both.
+
+Every pipeline stage saves here; the SSE endpoint reads the events table.
+"""
+
+import json
+import logging
+import secrets
+import datetime as dt
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+from typing import Any
+
+from sqlalchemy import DateTime, Engine, UniqueConstraint, delete, func
+from sqlalchemy.exc import IntegrityError
+from sqlmodel import JSON, Field, Session, SQLModel, create_engine, select
+
+from ctxpack.config import REPO_DIR, get_settings, sqlalchemy_url
+from ctxpack.schemas.document import Document
+from ctxpack.schemas.enums import EventType, Mode, Requester, RunStage, RunStatus
+from ctxpack.schemas.pack import ContextPack
+
+log = logging.getLogger(__name__)
+
+FEATURED_DIR = REPO_DIR / "featured"
+HEARTBEAT_STALE = timedelta(minutes=2)
+
+
+TZ = DateTime(timezone=True)
+
+
+def utcnow() -> datetime:
+    return datetime.now(UTC)
+
+
+def new_id(prefix: str) -> str:
+    """Random, URL-safe id (pack ids are the pack's link, so they must be unguessable)."""
+    return f"{prefix}_{secrets.token_urlsafe(12)}"
+
+
+# --------------------------------------------------------------------------
+# Tables
+# --------------------------------------------------------------------------
+
+
+class Run(SQLModel, table=True):
+    __tablename__ = "runs"
+
+    id: str = Field(default_factory=lambda: new_id("run"), primary_key=True)
+    brief_text: str
+    mode: Mode = Field(default=Mode.quick)
+    status: RunStatus = Field(default=RunStatus.created, index=True)
+    stage: RunStage | None = None
+    interpretation: dict | None = Field(default=None, sa_type=JSON)
+    plan: dict | None = Field(default=None, sa_type=JSON)
+    created_at: datetime = Field(default_factory=utcnow, index=True, sa_type=TZ)
+    updated_at: datetime = Field(default_factory=utcnow, sa_type=TZ)
+    cost_apify_usd: float = 0.0
+    cost_llm_usd: float = 0.0
+    tool_calls: int = 0
+    finish_reason: str | None = None
+    fallback_used: bool = False
+    top_up_used: bool = False
+    error: str | None = None
+    pack_id: str | None = None
+    requester: Requester = Field(default=Requester.web)
+    claimed_at: datetime | None = Field(default=None, sa_type=TZ)
+    heartbeat_at: datetime | None = Field(default=None, sa_type=TZ)
+    resume_count: int = 0
+    peak_mem_mb: float | None = None
+
+
+class EventRow(SQLModel, table=True):
+    __tablename__ = "events"
+    __table_args__ = (UniqueConstraint("run_id", "seq"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    run_id: str = Field(index=True)
+    seq: int
+    type: EventType
+    payload: dict = Field(default_factory=dict, sa_type=JSON)
+    created_at: datetime = Field(default_factory=utcnow, sa_type=TZ)
+
+
+class DocumentRow(Document, table=True):
+    __tablename__ = "documents"
+
+
+class ClusterRow(SQLModel, table=True):
+    __tablename__ = "clusters"
+
+    run_id: str = Field(primary_key=True)
+    id: str = Field(primary_key=True)  # CL-07, unique within a run
+    kind: str
+    label: str
+    member_ids: list = Field(default_factory=list, sa_type=JSON)
+    verified_member_ids: list = Field(default_factory=list, sa_type=JSON)
+
+
+class PackRow(SQLModel, table=True):
+    __tablename__ = "packs"
+
+    id: str = Field(primary_key=True)
+    run_id: str | None = Field(default=None, index=True)
+    brief_text: str
+    created_at: datetime = Field(default_factory=utcnow, sa_type=TZ)
+    schema_version: str
+    pack: dict = Field(sa_type=JSON)
+    featured: bool = Field(default=False, index=True)
+    coverage_grade: str | None = None
+
+
+class Spend(SQLModel, table=True):
+    __tablename__ = "spend"
+
+    date: dt.date = Field(primary_key=True)
+    usd_apify: float = 0.0
+    usd_llm: float = 0.0
+
+
+# --------------------------------------------------------------------------
+# Engine
+# --------------------------------------------------------------------------
+
+_engine: Engine | None = None
+
+
+def init_engine(url: str | None = None) -> Engine:
+    """Create the engine. Without a url, DATABASE_URL from .env is used."""
+    global _engine
+    if url is None:
+        settings = get_settings()
+        if not settings.is_set("DATABASE_URL"):
+            raise RuntimeError("DATABASE_URL is not set - run the doctor command")
+        url = settings.database_url.get_secret_value()
+    url = sqlalchemy_url(url)
+    if _engine is not None:
+        _engine.dispose()
+    if url.startswith("sqlite"):
+        _engine = create_engine(url, connect_args={"check_same_thread": False})
+    else:
+        # Small pool: one uvicorn worker on a 512 MB instance; Neon pooled URL.
+        _engine = create_engine(url, pool_pre_ping=True, pool_size=3, max_overflow=2, pool_recycle=300)
+    return _engine
+
+
+def get_engine() -> Engine:
+    return _engine if _engine is not None else init_engine()
+
+
+def session() -> Session:
+    return Session(get_engine(), expire_on_commit=False)
+
+
+def create_tables() -> None:
+    SQLModel.metadata.create_all(get_engine())
+
+
+# --------------------------------------------------------------------------
+# Runs and events
+# --------------------------------------------------------------------------
+
+
+def create_run(brief_text: str, mode: Mode = Mode.quick, requester: Requester = Requester.web) -> Run:
+    run = Run(brief_text=brief_text, mode=mode, requester=requester)
+    with session() as s:
+        s.add(run)
+        s.commit()
+    return run
+
+
+def get_run(run_id: str) -> Run | None:
+    with session() as s:
+        return s.get(Run, run_id)
+
+
+def update_run(run_id: str, **fields: Any) -> Run:
+    """Set any run columns; updated_at is always refreshed."""
+    with session() as s:
+        run = s.get(Run, run_id)
+        if run is None:
+            raise KeyError(f"run {run_id} not found")
+        for key, value in fields.items():
+            if not hasattr(run, key):
+                raise AttributeError(f"runs has no column {key}")
+            setattr(run, key, value)
+        run.updated_at = utcnow()
+        s.add(run)
+        s.commit()
+        return run
+
+
+def set_status(run_id: str, status: RunStatus, **fields: Any) -> Run:
+    return update_run(run_id, status=status, **fields)
+
+
+def set_stage(run_id: str, stage: RunStage) -> Run:
+    """Move a run to a pipeline stage and emit a 'stage' event."""
+    run = update_run(run_id, stage=stage)
+    append_event(run_id, EventType.stage, {"stage": stage.value})
+    return run
+
+
+def heartbeat(run_id: str) -> None:
+    update_run(run_id, heartbeat_at=utcnow())
+
+
+def append_event(run_id: str, type: EventType, payload: dict[str, Any] | None = None) -> int:
+    """Append an event with the next per-run number; returns that number."""
+    payload = json.loads(json.dumps(payload or {}, default=str))  # JSON-safe copy
+    for _ in range(5):
+        with session() as s:
+            last = s.exec(select(func.max(EventRow.seq)).where(EventRow.run_id == run_id)).one()
+            seq = (last or 0) + 1
+            s.add(EventRow(run_id=run_id, seq=seq, type=type, payload=payload))
+            try:
+                s.commit()
+                return seq
+            except IntegrityError:  # another writer took this number; try the next
+                s.rollback()
+    raise RuntimeError(f"could not append event for run {run_id}")
+
+
+def get_events(run_id: str, after_seq: int = 0, limit: int = 500) -> list[EventRow]:
+    with session() as s:
+        stmt = (select(EventRow).where(EventRow.run_id == run_id, EventRow.seq > after_seq)
+                .order_by(EventRow.seq).limit(limit))
+        return list(s.exec(stmt))
+
+
+# --------------------------------------------------------------------------
+# Documents, clusters, packs
+# --------------------------------------------------------------------------
+
+
+def save_documents(docs: list[Document]) -> int:
+    """Validate and insert or update documents (saved as they are cleaned)."""
+    retention = timedelta(days=get_settings().retention_days)
+    with session() as s:
+        for doc in docs:
+            data = Document.model_validate(doc.model_dump()).model_dump()  # re-validate (author hash etc.)
+            data["expires_at"] = data.get("expires_at") or utcnow() + retention
+            s.merge(DocumentRow(**data))
+        s.commit()
+    return len(docs)
+
+
+def get_documents(run_id: str, relevant_only: bool = False) -> list[DocumentRow]:
+    with session() as s:
+        stmt = select(DocumentRow).where(DocumentRow.run_id == run_id)
+        if relevant_only:
+            stmt = stmt.where(DocumentRow.is_relevant == True)  # noqa: E712
+        return list(s.exec(stmt))
+
+
+def save_clusters(run_id: str, clusters: list[ClusterRow]) -> None:
+    with session() as s:
+        for cluster in clusters:
+            cluster.run_id = run_id
+            s.merge(cluster)
+        s.commit()
+
+
+def save_pack(pack: ContextPack, run_id: str | None = None, featured: bool = False) -> str:
+    """Validate and save a pack; returns its id. Links the run to the pack."""
+    pack = ContextPack.model_validate(pack.model_dump())
+    row = PackRow(
+        id=pack.pack_id,
+        run_id=run_id,
+        brief_text=pack.brief.text,
+        created_at=pack.generated_at,
+        schema_version=pack.schema_version,
+        pack=pack.model_dump(mode="json"),
+        featured=featured,
+        coverage_grade=pack.snapshot.coverage_grade.value,
+    )
+    with session() as s:
+        s.merge(row)
+        s.commit()
+    if run_id:
+        update_run(run_id, pack_id=pack.pack_id)
+    return pack.pack_id
+
+
+def get_pack(pack_id: str) -> dict | None:
+    with session() as s:
+        row = s.get(PackRow, pack_id)
+        return row.pack if row else None
+
+
+def list_featured_packs() -> list[PackRow]:
+    with session() as s:
+        return list(s.exec(select(PackRow).where(PackRow.featured == True).order_by(PackRow.created_at)))  # noqa: E712
+
+
+# --------------------------------------------------------------------------
+# Spend (daily cap)
+# --------------------------------------------------------------------------
+
+
+def add_spend(apify_usd: float = 0.0, llm_usd: float = 0.0, run_id: str | None = None) -> None:
+    """Add cost to today's total (and to the run, if given)."""
+    today = utcnow().date()
+    with session() as s:
+        row = s.get(Spend, today) or Spend(date=today)
+        row.usd_apify += apify_usd
+        row.usd_llm += llm_usd
+        s.add(row)
+        if run_id:
+            run = s.get(Run, run_id)
+            if run is not None:
+                run.cost_apify_usd += apify_usd
+                run.cost_llm_usd += llm_usd
+                run.updated_at = utcnow()
+                s.add(run)
+        s.commit()
+
+
+def spend_today() -> float:
+    with session() as s:
+        row = s.get(Spend, utcnow().date())
+        return (row.usd_apify + row.usd_llm) if row else 0.0
+
+
+# --------------------------------------------------------------------------
+# Startup tasks (B4 notes)
+# --------------------------------------------------------------------------
+
+
+def delete_expired_documents(now: datetime | None = None) -> int:
+    """Retention (DH6): delete documents past expires_at. Also run once a day."""
+    with session() as s:
+        result = s.execute(delete(DocumentRow).where(DocumentRow.expires_at < (now or utcnow())))
+        s.commit()
+        return result.rowcount or 0
+
+
+def load_featured(folder: Path = FEATURED_DIR) -> int:
+    """Insert featured packs from featured/*.json if missing. Returns how many were added."""
+    if not folder.is_dir():
+        return 0
+    added = 0
+    for path in sorted(folder.glob("*.json")):
+        pack = ContextPack.model_validate_json(path.read_text(encoding="utf-8"))
+        if get_pack(pack.pack_id) is None:
+            save_pack(pack, featured=True)
+            added += 1
+    return added
+
+
+def mark_stale_runs_interrupted(now: datetime | None = None) -> list[str]:
+    """B13: a running run whose heartbeat is older than 2 minutes is 'interrupted'.
+
+    Resuming it is the worker's job (Step 2.x).
+    """
+    cutoff = (now or utcnow()) - HEARTBEAT_STALE
+    with session() as s:
+        runs = s.exec(select(Run).where(Run.status == RunStatus.running)).all()
+        stale = [r for r in runs if r.heartbeat_at is None or _aware(r.heartbeat_at) < cutoff]
+        for run in stale:
+            run.status = RunStatus.interrupted
+            run.updated_at = utcnow()
+            s.add(run)
+        s.commit()
+        return [r.id for r in stale]
+
+
+def _aware(value: datetime) -> datetime:
+    """SQLite drops timezones; treat naive times as UTC."""
+    return value if value.tzinfo else value.replace(tzinfo=UTC)
+
+
+def startup() -> dict[str, Any]:
+    """Run at app start: tables, featured packs, retention, interrupted runs.
+
+    The worker loop is started by the app itself (later step).
+    """
+    create_tables()
+    return {
+        "featured_added": load_featured(),
+        "documents_deleted": delete_expired_documents(),
+        "runs_interrupted": mark_stale_runs_interrupted(),
+    }

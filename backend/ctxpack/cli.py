@@ -96,6 +96,16 @@ def doctor() -> None:
         raise typer.Exit(code=1)
 
 
+@app.command("export-schema")
+def export_schema() -> None:
+    """Write docs/schema/context-pack.schema.json and docs/SCHEMA.md from the Pydantic models."""
+    from ctxpack.config import REPO_DIR
+    from ctxpack.schemas.schema_doc import write_all
+
+    for path in write_all(REPO_DIR / "docs"):
+        console.print(f"{OK} wrote {path.relative_to(REPO_DIR)}")
+
+
 @app.command()
 def version() -> None:
     """Print the package version."""
