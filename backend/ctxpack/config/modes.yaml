@@ -78,6 +78,14 @@ verification:
   claim_batch_items: 12         # claims per worker call (each with up to 5 evidence excerpts)
   claim_parallel_max: 5
 
+# Minimum content bar (PRD 6.6). Not met -> thin-evidence pack (said plainly, never padded).
+content_bar:
+  quick:    {lexicon: 8,  tensions: 2, hooks: 6,  objections: 3, opportunities: 3, white_space: 2, what_performs: 3, channel_plan: 3}
+  standard: {lexicon: 15, tensions: 3, hooks: 10, objections: 5, opportunities: 3, white_space: 2, what_performs: 5, channel_plan: 3}
+  tension_min_evidence: 3       # a tension counts with >= 3 evidence from >= 2 sources
+  tension_min_sources: 2
+  digest_max_chars: 2000        # ~500 tokens
+
 # Collection tools (guide Step 1.6, B8). Same for every mode.
 collection:
   actor_timeout_secs: 180       # actor stops itself; partial items are kept

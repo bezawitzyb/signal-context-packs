@@ -97,12 +97,12 @@ Read the relevant step before working. Do only that step.
 
 ## Commands (keep updated)
 - Backend CLI: cd backend && uv run python -m ctxpack.cli <command>
-  (doctor, catalog, tool, classify, plan, research, extract, cluster, write, verify, overlap, export-schema,
+  (doctor, catalog, tool, classify, plan, research, extract, cluster, write, verify, pack, overlap, export-schema,
   version)
 - Research run: ... research "<brief>" --mode quick|standard [--fixtures]
   [--auto-approve] [--no-apify] [--apify-max USD] [--record]
 - Analysis on a saved corpus: ... extract --from-run RUN_ID, then
-  ... cluster --from-run RUN_ID [--redo], then write and verify --from-run RUN_ID
+  ... cluster --from-run RUN_ID [--redo], then write, verify and pack --from-run RUN_ID
   [--redo] (estimate shown first)
 - Tests: cd backend && uv run pytest
 - Local app: ./start.sh

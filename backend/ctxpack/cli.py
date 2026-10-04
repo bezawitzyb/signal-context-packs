@@ -743,6 +743,82 @@ def verify(
 
 
 @app.command()
+def pack(
+    from_run: str = typer.Option(..., "--from-run", help="Run id whose verified draft is packaged"),
+    brand_voice: str = typer.Option("", help="Brand voice for the playbook only (max 200 chars)"),
+    test_hook: list[str] = typer.Option([], "--test-hook", help="Extra text for the compliance check only"),
+    redo: bool = typer.Option(False, "--redo", help="Write the playbook again for this brand voice"),
+    yes: bool = typer.Option(False, "--yes", help="Do not wait for Enter before the paid calls"),
+) -> None:
+    """Step 3.5 on a verified draft: playbook + compliance + finalise -> a validated, saved Context Pack.
+
+    The cost is added to that run (its analysis LLM budget applies) and to today's spend.
+    """
+    import asyncio
+
+    from ctxpack import db
+    from ctxpack.config import mode_limits, model_for
+    from ctxpack.llm.client import cost_usd, tracking
+    from ctxpack.synthesis.finalize import package_run
+
+    db.init_engine()
+    run = db.get_run(from_run)
+    if run is None or not (run.draft or {}).get("verified"):
+        console.print(f"{BAD} run {from_run} has no verified draft: run verify --from-run {from_run} first")
+        raise typer.Exit(1)
+    voice = brand_voice.strip()[:200] or None
+    saved = ((run.draft or {}).get("playbooks") or {}).get(voice or "_neutral")
+    limit_usd = mode_limits(run.mode)["analysis_llm_usd"]
+    est = 0.0 if saved and not redo and not test_hook else 2 * (
+        cost_usd(model_for("reasoner"), 9000, 7000) + cost_usd(model_for("reasoner"), 2500, 2500))
+    console.print(f"run {run.id} ({run.brief_text[:50]}) | brand voice: {voice or 'none'} | estimated max cost "
+                  f"${est:.2f} | run analysis LLM ${run.cost_analysis_llm_usd or 0:.2f} of ${limit_usd:.2f}",
+                  highlight=False)
+    if est and not yes and not get_settings().llm_fake:
+        typer.prompt("Press Enter to start (Ctrl-C to cancel)", default="", show_default=False)
+
+    with tracking(run.id, llm_limit_usd=limit_usd, analysis=True) as t:
+        before = t.spent_usd
+        out = asyncio.run(package_run(run.id, brand_voice=voice, use_run_brand_voice=False, redo=redo,
+                                      test_hooks=list(test_hook)))
+        spent = t.spent_usd - before
+    p = db.get_pack(out.pack_id)
+
+    def show(title: str, lines: list[str]) -> None:
+        console.print(f"\n[bold]{title}[/bold]")
+        for line in lines:
+            console.print(f"  {line}", highlight=False, markup=False)  # [brackets] are text here, not styling
+
+    show("DO FIRST", [f"{d['id']} [{d['effort']} effort / {d['impact']} impact, {d['owner_hint']}] {d['action']} "
+                      f"<- {', '.join(d['why_ids'])}" for d in p["do_first"]])
+    show("CHANNEL PLAN", [f"{c['priority']}. {c['platform']}: {c['why']} <- {', '.join(c['why_ids'])} | formats "
+                          f"{', '.join(c['formats'])} | {c['tone_note']}" for c in p["channel_plan"]])
+    show("HOOKS", [f"{h['id']} {h['text']} <- {', '.join(h['why_ids'])}" for h in p["playbook"]["hooks"]])
+    show("THIS WEEK", [f"{w['day']}: {w['platform']} {w['format']} - {w['hook_id']} - {w['angle']}"
+                       f"{' (' + w['moment_id'] + ')' if w['moment_id'] else ''}" for w in p["playbook"]["this_week"]])
+    cb = p["playbook"]["creative_brief"] or {}
+    show("CREATIVE BRIEF", [f"{k}: {v}" for k, v in cb.items() if v])
+    g = p["guardrails"]
+    show("GUARDRAILS", [f"say this: {'; '.join(g['say_this'])}", f"not this: {'; '.join(g['not_this'])}",
+                        f"never claim: {'; '.join(g['never_claim'])}", f"sensitivities: {'; '.join(g['sensitivities'])}"])
+    show("COMPLIANCE FLAGS", [f"{f['id']} {f['item_id']} [{f['category']}] {f['rule_area']}: {f['why']} -> "
+                              f"{f['safer_wording']}" for f in p["compliance_flags"]] or ["none"])
+    if test_hook:
+        flagged = {f["text"]: f for f in out.test_flags}
+        show("TEST HOOKS (not in the pack)", [
+            f"{h} -> " + (f"[{flagged[h]['category']}] {flagged[h]['rule_area']}: {flagged[h]['safer_wording']}"
+                          if h in flagged else "no flag") for h in test_hook])
+    console.print(f"\n[bold]PACK[/bold] {out.pack_id} | valid schema 1.0 | thin evidence "
+                  f"{p['coverage']['thin_evidence']}{': ' + ', '.join(out.bar_short) if out.bar_short else ''}",
+                  highlight=False)
+    console.print(f"[bold]PLAYBOOK CHECK[/bold] hooks {len(p['playbook']['hooks'])} | hooks without a tension "
+                  f"{out.hooks_without_tension} | dropped {out.playbook_dropped or 'none'}"
+                  f"{' | reused saved playbook' if out.reused_playbook else ''}", highlight=False)
+    console.print(f"[bold]COST[/bold] this step ${spent:.4f} in {out.calls} calls | run analysis "
+                  f"${t.budget_spent_usd:.3f} of ${limit_usd:.2f}", highlight=False)
+
+
+@app.command()
 def overlap(run_ids: list[str] = typer.Argument(..., help="Two or more run ids")) -> None:
     """How much the runs' source units overlap (eval: briefs share < 50%)."""
     from ctxpack import db

@@ -14,8 +14,8 @@ starts at extracting from its saved corpus (the same path as --from-run).
 Collection is the agent loop (Step 2.4, collect/loop.py); extracting is
 analysis/extract.py (Step 3.1); clustering is analysis/cluster.py + metrics.py
 (Step 3.2); writing is synthesis/baseline.py + write.py (Step 3.3);
-verifying is synthesis/verify.py + confidence.py (Step 3.4); the pack itself
-is a placeholder filled in by Step 3.5.
+verifying is synthesis/verify.py + confidence.py (Step 3.4); packaging is
+synthesis/playbook.py + compliance.py + finalize.py (Step 3.5).
 """
 
 from __future__ import annotations
@@ -226,9 +226,12 @@ async def _placeholder(run_id: str) -> None:
     return None
 
 
-async def build_pack_placeholder(run_id: str, partial: bool) -> str | None:
-    """Packaging builds and saves the pack (later step); returns its id, or None for now."""
-    return None
+async def package_stage(run_id: str, partial: bool) -> str | None:
+    """Packaging (Step 3.5): playbook (the run's brand voice), compliance, finalise, validate, save.
+    Returns the pack id, or None when there is no verified draft to package yet."""
+    from ctxpack.synthesis.finalize import package_run
+
+    return (await package_run(run_id, partial)).pack_id
 
 
 ANALYSIS_STAGES: list[tuple[RunStage, StageFn]] = [
@@ -253,7 +256,7 @@ async def run_pipeline(run_id: str, *, collect: StageFn | None = None,
     """
     collect = collect or collect_agent
     stages = ANALYSIS_STAGES if stages is None else stages
-    build_pack = build_pack or build_pack_placeholder
+    build_pack = build_pack or package_stage
     run = db.get_run(run_id)
     stage = RunStage.collecting
     try:
