@@ -12,6 +12,8 @@ modes:
     item_budget: 600            # raw items per run
     items_per_call_max: 40
     web_pages_per_call_max: 5
+    typical_usd: [1.50, 3.00]   # shown on the plan (PRD NFR2); the hard cap is apify_usd + llm_usd
+    typical_minutes: 7          # end to end (PRD NFR1)
   standard:
     max_tool_calls: 30
     collection_secs: 600
@@ -22,6 +24,8 @@ modes:
     item_budget: 2000
     items_per_call_max: 80
     web_pages_per_call_max: 8
+    typical_usd: [5.00, 7.00]
+    typical_minutes: 12
 
 default_mode: quick
 parallel_tool_calls_max: 3      # concurrent tool calls from one model turn

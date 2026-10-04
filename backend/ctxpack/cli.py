@@ -224,6 +224,81 @@ def classify(
                   f"cache write {t.cache_write_tokens}) out {t.output_tokens} | cost ${t.spent_usd:.5f}")
 
 
+def _print_plan(out) -> None:
+    """Interpretation, then the question or the plan, then the estimate."""
+    res, est = out.result, out.estimate
+    i = res.interpretation
+    assumed = {a.value for a in i.assumed}
+    console.print("[bold]Here's what I understood[/bold]")
+    for name in ("topic", "market", "languages", "audience", "category", "compliance_category",
+                 "competitors", "intent", "time_window_days"):
+        value = getattr(i, name)
+        value = ", ".join(value) if isinstance(value, list) else getattr(value, "value", value)
+        tag = " [yellow](assumed)[/yellow]" if name in assumed else ""
+        console.print(f"  {name:<20}{value or '-'}{tag}", highlight=False)
+    if res.clarifying_question:
+        q = res.clarifying_question
+        console.print(f"\n[bold]One question:[/bold] {q.question}")
+        for n, option in enumerate(q.options, 1):
+            console.print(f"  {n}. {option}")
+    else:
+        p = res.plan
+        console.print("\n[bold]Hypotheses[/bold]")
+        for h in p.hypotheses:
+            console.print(f"  [dim]{h.id}[/dim] {h.statement}", highlight=False)
+        console.print("[bold]Research questions[/bold]")
+        for q in p.research_questions:
+            console.print(f"  [dim]{q.id}[/dim] {q.text}", highlight=False)
+        console.print("[bold]Here's where I'll start[/bold]")
+        for u in p.starting_units:
+            console.print(f"  [cyan]{u.platform.value}[/cyan] {u.kind.value} [bold]{u.target}[/bold]", highlight=False)
+            console.print(f"      why: {u.reason}", highlight=False)
+            for q in u.queries:
+                console.print(f"      [dim]{q.language}[/dim] \"{q.query}\"", highlight=False)
+    console.print(f"\n[bold]Estimate[/bold] ({est.mode.value}): typically ${est.typical_usd_low:.2f}-"
+                  f"{est.typical_usd_high:.2f}, hard cap ${est.max_usd:.2f}; about {est.typical_minutes} min; "
+                  f"at most {est.max_tool_calls} tool calls in {est.collection_secs // 60} min of collection")
+
+
+@app.command()
+def plan(
+    brief: str = typer.Argument(..., help='The brief, e.g. "Gen Z and meal prep"'),
+    mode: str = typer.Option("quick", help="quick or standard (for the estimate)"),
+    window: int = typer.Option(0, help="Time window in days (default from modes.yaml)"),
+    agent: bool = typer.Option(False, "--agent", help="Act like an agent: never a clarifying question"),
+    answer: str = typer.Option("", help="Answer to the clarifying question (asked once)"),
+    as_json: bool = typer.Option(False, "--json", help="Print the raw result as JSON"),
+    fixtures: bool = typer.Option(False, "--fixtures", help="LLM_FAKE: no network, no cost"),
+) -> None:
+    """ONE reasoner call: interpretation + clarifying question or starting plan, with the estimate."""
+    import asyncio
+    import json
+    import os
+
+    from ctxpack.agent.interpret import interpret
+    from ctxpack.llm.client import tracking
+
+    if fixtures:
+        os.environ["LLM_FAKE"] = "true"
+        get_settings.cache_clear()
+
+    async def go(clarification=None):
+        return await interpret(brief, mode=mode, window_days=window or None, allow_question=not agent,
+                               clarification=clarification)
+
+    with tracking() as t:
+        out = asyncio.run(go())
+        q = out.result.clarifying_question
+        if q and answer:
+            out = asyncio.run(go((q.question, answer)))
+    if as_json:
+        console.print_json(json.dumps({"result": out.result.model_dump(mode="json"),
+                                       "estimate": out.estimate.model_dump(mode="json")}, ensure_ascii=False))
+    else:
+        _print_plan(out)
+    console.print(f"calls: {t.calls} | tokens in {t.input_tokens} out {t.output_tokens} | cost ${t.spent_usd:.4f}")
+
+
 @app.command()
 def version() -> None:
     """Print the package version."""

@@ -119,3 +119,15 @@ class PlanResult(Strict):
         if (self.clarifying_question is None) == (self.plan is None):
             raise ValueError("give exactly one of clarifying_question or plan")
         return self
+
+
+class RunEstimate(Strict):
+    """Cost and time shown with the plan. Computed in code from modes.yaml, never by a model."""
+
+    mode: Mode
+    max_usd: float = Field(description="Hard cap: Apify + LLM budget for the mode.", examples=[3.2])
+    typical_usd_low: float = Field(examples=[1.5])
+    typical_usd_high: float = Field(examples=[3.0])
+    typical_minutes: int = Field(description="Typical end-to-end time.", examples=[7])
+    collection_secs: int = Field(description="Hard cap on agent collection time.", examples=[300])
+    max_tool_calls: int = Field(description="Hard cap on agent tool calls.", examples=[15])

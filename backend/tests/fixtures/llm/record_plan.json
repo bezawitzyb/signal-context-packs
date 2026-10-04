@@ -1,0 +1,96 @@
+{
+ "interpretation": {
+  "topic": "meal prep",
+  "market": "global",
+  "languages": [
+   "en"
+  ],
+  "audience": "Gen Z (roughly 18-27), students and young workers cooking for themselves",
+  "category": "food and cooking",
+  "compliance_category": "food_nutrition",
+  "competitors": [],
+  "intent": "understand an audience",
+  "time_window_days": 180,
+  "assumed": [
+   "market",
+   "languages",
+   "category",
+   "intent",
+   "time_window_days"
+  ]
+ },
+ "hypotheses": [
+  {
+   "id": "HYP-01",
+   "statement": "Gen Z meal-preps mainly to save money, not for fitness."
+  },
+  {
+   "id": "HYP-02",
+   "statement": "Eating the same meal all week is the main reason they quit."
+  },
+  {
+   "id": "HYP-03",
+   "statement": "Short videos, not recipes sites, are where they learn meal prep."
+  }
+ ],
+ "research_questions": [
+  {
+   "id": "RQ-01",
+   "text": "Why do young people start meal prepping?"
+  },
+  {
+   "id": "RQ-02",
+   "text": "What makes them stop?"
+  },
+  {
+   "id": "RQ-03",
+   "text": "Which words and slang do they use for it?"
+  },
+  {
+   "id": "RQ-04",
+   "text": "When in the week do they prep and eat?"
+  },
+  {
+   "id": "RQ-05",
+   "text": "Which brands, tools or creators do they mention?"
+  }
+ ],
+ "starting_units": [
+  {
+   "platform": "reddit",
+   "kind": "subreddit",
+   "target": "r/MealPrepSunday",
+   "reason": "Large community where people post their weekly prep and discuss what failed.",
+   "queries": [
+    {
+     "language": "en",
+     "query": "meal prep on a budget student"
+    }
+   ]
+  },
+  {
+   "platform": "tiktok",
+   "kind": "hashtag",
+   "target": "#mealprep",
+   "reason": "Where Gen Z shares short prep videos; comments show reactions and objections.",
+   "queries": [
+    {
+     "language": "en",
+     "query": "meal prep for the week cheap"
+    }
+   ]
+  },
+  {
+   "platform": "youtube",
+   "kind": "query",
+   "target": "student meal prep",
+   "reason": "Long-form prep videos whose comments reveal what viewers actually try and drop.",
+   "queries": [
+    {
+     "language": "en",
+     "query": "student meal prep budget"
+    }
+   ]
+  }
+ ]
+}

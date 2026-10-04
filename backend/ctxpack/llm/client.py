@@ -247,6 +247,26 @@ def _tool(name: str, schema: type[BaseModel], description: str) -> dict[str, Any
 # --------------------------------------------------------------------------
 
 
+def _validate(schema: type[BaseModel], data: Any) -> BaseModel:
+    """Validate a tool input. Large nested objects sometimes arrive as JSON strings
+    (e.g. "plan": "{...}"); only if validation fails, those are parsed and tried once more."""
+    try:
+        return schema.model_validate(data)
+    except ValidationError:
+        if not isinstance(data, dict):
+            raise
+        fixed = dict(data)
+        for key, value in data.items():
+            if isinstance(value, str) and value.lstrip()[:1] in ("{", "["):
+                try:
+                    fixed[key] = json.loads(value)
+                except ValueError:
+                    pass
+        if fixed == data:
+            raise
+        return schema.model_validate(fixed)
+
+
 async def structured(
     role: str,
     system: str,
@@ -300,13 +320,16 @@ async def structured(
         block = next((b for b in resp.content if b.type == "tool_use" and b.name == tool_name), None)
         if block is None:
             error = f"No {tool_name} tool call in the answer (stop_reason={resp.stop_reason})."
+            log.warning("llm %s/%s: %s", role, tool_name, error)
             messages += [{"role": "assistant", "content": resp.content},
                          {"role": "user", "content": f"{error} Call the {tool_name} tool now."}]
             continue
         try:
-            result.data = schema.model_validate(block.input)
+            result.data = _validate(schema, block.input)
             return result
         except ValidationError as exc:
+            log.warning("llm %s/%s invalid answer (attempt %d): %s", role, tool_name, attempts,
+                        "; ".join(e["msg"] for e in exc.errors(include_input=False))[:2000])
             messages += [
                 {"role": "assistant", "content": resp.content},
                 {"role": "user", "content": [{
