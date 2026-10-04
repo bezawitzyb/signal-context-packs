@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(!.env.example)",
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(!.env.example)",
+
+      "Bash(*.env)",
+      "Bash(*.env *)",
+      "Bash(*.env\")",
+      "Bash(*.env\" *)",
+      "Bash(*.env')",
+      "Bash(*.env' *)",
+      "Bash(*.env.local*)",
+      "Bash(*.env.dev*)",
+      "Bash(*.env.prod*)",
+      "Bash(*.env.test*)",
+      "Bash(*.env.stag*)",
+      "Bash(*.env.bak*)",
+      "Bash(*.env.backup*)",
+      "Bash(*.env.old*)",
+      "Bash(*.env.orig*)",
+      "Bash(*.env.save*)",
+      "Bash(*.env.copy*)",
+      "Bash(*.env.tmp*)",
+      "Bash(*.env.swp*)",
+      "Bash(*.env~*)",
+      "Bash(printenv)",
+      "Bash(printenv *)",
+      "Bash(env)",
+      "Bash(export -p)",
+      "Bash(set)"
+    ]
+  }
+}

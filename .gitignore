@@ -1,0 +1,35 @@
+# --- Secrets (never commit) ---
+.env
+.env.*
+!.env.example
+
+# --- Local data (scraped content, caches, packs in progress) ---
+data/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+
+# --- Node / frontend ---
+node_modules/
+dist/
+npm-debug.log*
+.vite/
+
+# --- Claude Code personal settings (the shared .claude/settings.json IS committed) ---
+.claude/settings.local.json
+
+# --- OS / editors ---
+.DS_Store
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,445 @@
+================================================================================
+ SIGNAL - CONTEXT PACKS
+ DEVELOPMENT PLAN: FIVE PHASES IN SEVEN DAYS
+================================================================================
+
+Documents: 01 PRD = WHAT to build (requirements, content model,
+           schema); 02 Development Phases = WHEN (day plan, exit tests,
+           cut order); 03 Implementation Guide = HOW (architecture, build
+           steps, prompts). NUMBERS (limits, budgets, queue size, scoring
+           weights) live only in config/modes.yaml and config/scoring.yaml;
+           where a document and config disagree, config wins.
+Builder:   One non-technical builder, on a Mac, using Claude Code
+Deadline:  7 days. PUBLIC LINK required for judging.
+Security:  Four rules in every phase (guide A3b): the RUN_KEY is never
+           published; no real key in the web app; Claude Code cannot read
+           .env and treats scraped data as untrusted; secret scan before
+           every commit. The code is PUBLIC on GitHub - that is why the
+           scan matters.
+Costs:     Only the Anthropic API and Apify are paid. Hosting is free:
+           Render Free web service + Neon Free + GitHub (Actions, Pages);
+           no payment method on any of them.
+
+Rules
+  - Each phase ends with something you can SEE and TEST and leaves the
+    product working.
+  - Never start a phase until the previous exit test passes.
+  - Deploy on Day 1. Push to GitHub once or twice a day: every push
+    redeploys the Render service and interrupts a live run.
+  - Behind schedule? Apply the CUT ORDER (bottom of this file) at once.
+  - Solo-builder rule: keep 60-90 minutes of every day unscheduled. If a
+    day has no slack left by mid-afternoon, cut then, not at night.
+  - Numbers (limits, budgets, scoring weights) live in config/*.yaml;
+    if this plan and config disagree, config wins.
+
+--------------------------------------------------------------------------------
+ OVERVIEW
+--------------------------------------------------------------------------------
+
+ Day    Phase                               End-of-day result (public URL)
+ -----  ----------------------------------  -----------------------------------
+ Day 0  Setup (2-3 h, evening before)       Tools, accounts, keys, public repo,
+                                            .env blocked, secret scan on
+ Day 1  1 Foundations, Tools & Deployment   Schema + SCHEMA.md; the collection
+                                            tools work one by one with privacy
+                                            and dates built in; "hello" page
+                                            live
+ Day 2  2 The Agent Loop                    Brief -> plan -> job queue ->
+                                            agent loop with limits and
+                                            fallback -> clean corpus; tested on
+                                            all 4 eval briefs; memory test
+ Day 3  3 The Pack Engine                   Extract -> cluster -> synthesise ->
+                                            verify -> validated pack
+ Day 4  3 (cont.) Playbook, Exports, API    Playbook, compliance, exports incl.
+                                            skill, API + MCP + run queue,
+                                            featured packs (no evening work)
+ Day 5  4 The Web App                       Four screens live at the public URL
+ Day 6  5 Evaluation & Sharpening           Evals on 4 briefs, demo agent,
+                                            marketer test, prompt sharpening
+ Day 7  5 (cont.) Polish & Freeze           Morning BUFFER for what slipped;
+                                            then static mirror, README,
+                                            examples, rehearsal. FREEZE 15:00
+
+How the phases stack:
+  Phase 1  [ tools: collect + clean ]                       + deploy skeleton
+  Phase 2  [ plan -> AGENT LOOP over the tools -> corpus ]
+  Phase 3  [ ... -> extract -> cluster -> write -> verify -> PACK + exports ]
+  Phase 4  [ web app on the engine, live via SSE ]          + redeploy
+  Phase 5  [ evals, demo agent, sharpening, docs ]          + final deploy
+
+Daily pencils-down check
+  [ ] Tests pass
+  [ ] No secret-scan warning was bypassed
+  [ ] Committed, tagged (day-1-done ...), pushed to GitHub
+  [ ] Public URL works after Render's redeploy; keepalive workflow green
+  [ ] Today's spend checked (Anthropic + Apify dashboards) and Render's
+      Monthly Included Usage (hours, bandwidth, build minutes)
+  [ ] Tomorrow's first prompt ready
+
+
+================================================================================
+ PHASE 1 - FOUNDATIONS, TOOLS & DEPLOYMENT                 (Day 1)
+================================================================================
+
+GOAL
+  A deployed skeleton and a set of collection TOOLS that each fetch public
+  discourse, clean it (privacy, dates, duplicates, spam, relevance) and
+  return a short summary - ready for the agent to call tomorrow.
+
+SCOPE
+  1.1 Backend skeleton, config (models.yaml, modes.yaml), doctor command
+  1.2 Pack schema 1.0 as Pydantic models; JSON Schema + generated
+      docs/SCHEMA.md; database tables (Neon; SQLite in tests)
+  1.3 Deploy skeleton to a Render Free web service (Docker, auto-deploy
+      from GitHub); /ping endpoint and the keepalive workflow
+  1.4 Source catalog (actors verified live, fallbacks, chained comment
+      actors)
+  1.5 The cleaning chain used inside every tool: normalise, hash authors,
+      redact, dates + window, de-duplicate, spam, relevance (Haiku);
+      posts under 4 words kept as short_form, never dropped for length
+  1.6 Tools: search_reddit, search_tiktok, search_youtube, web_search,
+      fetch_and_segment, get_trends (+ search_instagram if its actor
+      verifies), coverage_report; fixtures and contract tests; each
+      tool's measured latency written into its description
+  1.7 CLI: tool <name> "<target>" -> prints the summary the agent will see
+  1.8 Quote-link test: text-fragment links built from original, PII-free
+      anchor words land on the right post on 3 real Dutch and 3 real
+      German forum pages, including one redacted quote (PRD DH12)
+
+TANGIBLE OUTCOME
+  - https://signal-<id>.onrender.com shows "SIGNAL"; /health and /ping ok.
+  - tool search_reddit "r/MealPrepSunday" prints: collected 40, kept 33,
+    relevant 71%, new terms [...], 3 samples, budget left.
+  - tool fetch_and_segment on a Dutch forum thread prints word-for-word
+    posts with several different author hashes and no names.
+
+EXIT TEST
+  [ ] Claude Code is refused when asked to read .env
+  [ ] gitleaks blocks a test commit with a fake key
+  [ ] Public URL and /health ok; data survives a manual redeploy (Neon)
+  [ ] /ping never touches the database; the keepalive workflow runs every
+      10 minutes; Render shows instance type "Free" and no payment method
+  [ ] docs/SCHEMA.md generated; enums lowercase
+  [ ] Every tool works on a real call and on its fixture; tests pass
+      without spending money
+  [ ] No raw usernames anywhere (Apify, web pages and the 24 h cache);
+      author_hash present
+  [ ] A date table test (en/nl/de, incl. relative dates) passes; posts
+      outside the window are dropped
+  [ ] A second identical call within 24 h is cached
+  [ ] A 2-word comment ("girl dinner fr") is kept with short_form = true
+  [ ] Quote links land on the right post on 3 NL + 3 DE real pages,
+      including one redacted quote
+  [ ] Every tool description states its measured latency
+
+CUT LINE
+  A broken actor with no fallback -> drop that tool and record it as a
+  blind spot. Instagram is the first thing to drop.
+
+
+================================================================================
+ PHASE 2 - THE AGENT LOOP                                  (Day 2)
+================================================================================
+
+GOAL
+  The agent decides where to listen, adapts to what it finds, explains
+  every move, and stays inside hard limits - producing a clean corpus.
+
+SCOPE
+  2.1 LLM client (two roles, structured output with retry, untrusted
+      wrapper, cost tracking, budgets, fake mode)
+  2.2 Interpret + plan in one call (with the single clarifying question)
+  2.3 Orchestrator + job model: run stages, events written to the events
+      table, stop -> partial; runs queued in Neon and claimed by a worker
+      in the same process; interrupted runs resumed once; peak memory
+      logged (guide B13)
+  2.4 The agent loop: tool definitions, system prompt, limits enforced in
+      tools, finish() validation, decision log, concurrent tool calls
+      (max 3), crash fallback and low-evidence top-up (PRD 8.6)
+  2.5 Recorded transcripts for fake mode (so tests and the keyless local
+      run replay real agent decisions for free)
+  2.6 CLI: research "<brief>" --mode quick|standard
+  2.7 Only if the memory test fails: Modal worker (guide Step 2.6, B14)
+
+TANGIBLE OUTCOME
+  research "heat pumps for homeowners in Germany" --mode quick prints:
+    PLAN  market=DE languages=[de] questions=6 start=[web_forums, youtube,
+          reddit:r/de]
+    CALL  web_search "Wärmepumpe Erfahrungen Forum" (DE)
+          reason: German homeowners discuss installs in forums
+          -> 9 threads (haustechnikdialog.de, ...)
+    CALL  fetch_and_segment 3 threads -> kept 84, relevant 78%
+    CALL  search_reddit "r/de Wärmepumpe" -> relevant 21%
+    CALL  coverage_report -> Q3 subsidy confusion: 2 docs
+    CALL  web_search "BEG Förderung Wärmepumpe Probleme"
+          reason: Q3 under-served
+    ...
+    FINISH kept: web_forums, youtube | dropped: reddit:r/de (21% relevant)
+           gaps: little TikTok discussion for this audience
+    CLEAN collected 390 | duplicates 44 | spam 12 | out of window 31 |
+          kept 247 | COST Apify $0.90 | Anthropic $0.60
+
+EXIT TEST
+  [ ] All four eval briefs produce clearly different plans and agent
+      paths (they share < 50% of source units)
+  [ ] NL brief: Dutch queries and Dutch communities; DE brief: German
+      forums/reviews and German queries; Gen Z: TikTok, Reddit, YouTube
+  [ ] Every tool call has a specific reason in the decision log
+  [ ] At least one source dropped with a concrete reason on a real run
+  [ ] Limits hold: a test with a tiny budget stops cleanly; finish()
+      without a fresh coverage_report is refused
+  [ ] Fallback: a forced loop error runs the untried starting-plan units
+      and logs it; a low-evidence finish tops up from KEPT units only - a
+      dropped unit is never called again
+  [ ] Two tool_use blocks in one turn run concurrently (their
+      timestamps overlap in the run log)
+  [ ] "snacks" triggers exactly one clarifying question
+  [ ] Spot-check 30 kept docs: >= 60% relevant
+  [ ] Quick run within its time and cost caps
+  [ ] MEMORY: both Standard runs peak below 400 MB (peak_mem_mb)
+  [ ] Killing the process after collection and restarting resumes the
+      run from its saved corpus; a refreshed live view misses no events
+
+CUT LINE
+  If the loop is unreliable by evening: switch to the research-director
+  fallback - code calls the SAME tools in the plan's order, then one
+  Sonnet call reviews coverage and picks up to 3 follow-up calls with
+  reasons. Same tools, same logs; less freedom.
+  If the memory test fails after trimming the biggest stages: move the
+  worker to Modal (guide Step 2.6; ~2 h, free credits, no card). The
+  public URL and all endpoints stay on Render.
+
+
+================================================================================
+ PHASE 3 - THE PACK ENGINE                                 (Days 3-4)
+================================================================================
+
+GOAL
+  Turn the corpus into a grounded, verified Context Pack with a playbook a
+  marketer would use tomorrow, in every format people and agents need.
+
+SCOPE
+  Day 3
+  3.1 Extraction (Haiku batches): needs, pains, objections, questions,
+      unanswered questions, brands, verbatim phrases, stance, emotion,
+      humour, code-switching, occasions, research questions, translation
+  3.2 Clustering (one Sonnet call) + membership check (Haiku) + code
+      metrics: counts, strength, emotion mix, platform-lens stats,
+      momentum / new-in-30-days, what performs, opportunity scores
+      (formulas in PRD 5.4-5.5, weights in config/scoring.yaml;
+      short_form posts never counted)
+  3.3 Generic baseline + synthesis (2 calls by layer group; a 3rd only
+      on overflow), each item tied to a cluster
+  3.4 Verification (substring + entailment), confidence, safe_to_assert
+  Day 4
+  3.5 Playbook call (do first, channel plan, hooks, creative brief,
+      objections, keywords, targets, this week) + compliance by category
+      + guardrails + instructions_for_agents + snapshot + digest +
+      schema validation
+  3.6 Exports: JSON, Markdown, prompt block, SKILL (zip). Excel is P1.
+  3.7 API (/api/v1), SSE events, one MCP server (same read rule as
+      REST), run key + spend cap + one-run-at-a-time guard with a FIFO
+      queue (max 3 waiting); featured packs (2 flagships)
+  No evening work on Day 4: leftover time is slack for 3.5-3.7.
+
+TANGIBLE OUTCOME
+  For the NL snack brief: brief.md reads like a one-page brief with do
+  first, five truths, generic-vs-found, channels, tensions with Dutch
+  quotes, hooks and compliance flags. Unzip the skill, drop it into
+  Claude, ask for "three TikTok hooks for our new snack" - Claude uses
+  the audience's words without being told to.
+
+EXIT TEST
+  [ ] Pack validates against the schema
+  [ ] Quote groundedness 100%; a planted fake quote is removed
+  [ ] Every item's evidence belongs to its cluster; counts change when a
+      test changes cluster members (model text cannot change them)
+  [ ] Some items in each flagship pack reach strong; safe_to_assert only
+      on strong + observed + verified
+  [ ] Minimum content bar met, or thin-evidence notice shown
+  [ ] Compliance: a food health claim and a heat-pump savings/green claim
+      both get flagged with the right category
+  [ ] Brand voice changes hooks and plan, not evidence or claims
+  [ ] Skill zip installs in Claude and is used; SKILL.md body
+      <= ~2,000 tokens
+  [ ] Prompt block <= 1,800 tokens; digest <= 500 tokens
+  [ ] Confidence labels reproduce the two PRD 5.4 worked examples in a
+      unit test; opportunity items show their four components
+  [ ] short_form posts appear in the lexicon but never in counts
+  [ ] A second run request is queued with a position, not refused
+  [ ] MCP: public read tools work without a key; create needs the key
+  [ ] Standard run <= ~12 min within its cap; 2 flagship packs featured
+
+CUT LINE
+  Keep: themes, tensions, lexicon, objections, hooks, creative brief, do
+  first, channel plan, verification, cluster counts, blind spots, skill
+  export. Simplify: platform lens as one paragraph per platform; white
+  space from unanswered questions only; competitors without tone.
+
+
+================================================================================
+ PHASE 4 - THE WEB APP                                     (Day 5)
+================================================================================
+
+GOAL
+  A marketer can use it at the public URL: transparent research, a
+  brief-first pack page, receipts in one click, handoffs.
+
+SCOPE
+  4.1 Shell, design tokens, three typefaces, a few schema-driven core
+      components (claim list, quote list, table) reused by every section
+  4.2 Ask + Plan (run-key field masked, tab session only)
+  4.3 Research Theatre (stage stepper, live agent log, counters, cost,
+      stop, replay, queue position). The source board is P1.
+  4.4 Pack page (all sections, sticky nav, filters, badges with counts),
+      evidence drawer, View as agent, Handoff panel, Method section
+  4.5 States (incl. queued), keyboard pass, print / save-as-PDF
+      stylesheet, one end-to-end test; /evals placeholder; production
+      build; deploy
+
+TANGIBLE OUTCOME
+  Open a featured pack -> Summary -> a tension -> real quotes with links
+  -> View as agent -> same IDs -> Handoff -> download the skill. Enter the
+  run key, type a brief, watch the agent's moves appear live.
+
+EXIT TEST
+  [ ] Full flow works on the public URL for a featured pack AND a live
+      Quick run
+  [ ] Every claim opens the drawer; every quote link lands on the post
+      (permalink or text fragment)
+  [ ] Theatre shows each tool call with its reason; Method lists dropped
+      sources with reasons
+  [ ] Confidence readable in greyscale; badges show counts
+  [ ] Prompt block and skill reachable in <= 2 clicks from the pack page
+  [ ] Without the run key, starting a run is refused politely; the key
+      appears nowhere in the web app
+  [ ] A second live run while one is running shows its queue position
+      and starts by itself afterwards
+  [ ] The run key is masked in the field and never visible on screen
+  [ ] Print / Save as PDF of a pack gives a clean brief (no nav, buttons
+      or drawer)
+
+CUT LINE
+  Keep Ask + Plan, Theatre agent log, pack page Summary + main sections,
+  drawer, Method, Handoff (prompt block, skill, JSON). Apply cut order
+  items 2-4.
+
+
+================================================================================
+ PHASE 5 - EVALUATION, SHARPENING & DEMO                   (Days 6-7)
+================================================================================
+
+GOAL
+  Prove quality with numbers, prove the "another agent" story, use the
+  saved time to sharpen insight quality, and ship clean docs.
+
+SCOPE
+  Day 6
+  5.1 Eval harness on the 4 briefs + /evals page
+  5.2 Demo agent: three TikTok scripts from the skill / MCP, with and
+      without the pack, automatic checks; output saved to examples/
+  5.3 Marketer test (20 min, afternoon)
+  5.4 Prompt sharpening: fix the three weakest sections across the four
+      eval packs (usually hooks, tensions, white space)
+  Day 7
+  Morning BUFFER (until ~11:00): finish or cut whatever slipped. No new
+  features. If nothing slipped, spot-check 5 quotes at their links in
+  each featured pack.
+  5.5 Hardening: cap test, friendly errors, demo-check command; static
+      mirror of the featured packs on GitHub Pages (guide B15)
+  5.6 README, SCHEMA.md refresh, examples/ (3 packs as JSON + Markdown,
+      1 exported skill, demo agent output), keyless local run check
+  5.7 Rehearse twice; FREEZE 15:00; final push to GitHub (Render
+      redeploys); no pushes during judging
+
+TANGIBLE OUTCOME
+  /evals shows groundedness 100%, entailment >= 95%, plan divergence,
+  loop health and simulated allocation efficiency. A fresh clone runs
+  locally with no keys and shows the featured packs.
+
+EXIT TEST
+  [ ] Eval on 4 briefs saved and shown; failures explained honestly
+  [ ] Demo agent uses >= 3 lexicon terms and 0 not_this phrases; cites IDs
+  [ ] Hook rating >= 60% "would use" (after sharpening)
+  [ ] Daily cap test refuses runs, then restored
+  [ ] The static mirror opens a featured pack, the evidence drawer and
+      the skill download while the Render service is suspended
+  [ ] Fresh clone + README keyless command works with no accounts
+  [ ] README, web app and repo contain no key (demo-check security green)
+  [ ] Demo rehearsed twice in <= 7 minutes
+  [ ] RUN_KEY sent to judges privately only
+
+CUT LINE
+  Keep evals on the two flagships (state it), demo agent, README,
+  examples. Sharpening stays - it is where insight quality comes from.
+
+
+================================================================================
+ DEMO SCRIPT (target 7 minutes)
+================================================================================
+  1. Before sharing the screen: enter the run key in the masked field
+     (it stays for the tab session). On stage: type "heat pumps for
+     homeowners in Germany" -> plan with German sources and reasons.
+     Start a live Quick run.
+  2. Theatre: the agent's moves appear live - a German forum search, a
+     dropped source with its reason, a gap being filled.
+  3. Switch to the featured NL snack pack while the run works.
+  4. Summary: do first -> generic AI vs. what people actually say -> a
+     tension -> its receipts (Dutch quotes, links, dates).
+  5. Playbook: a hook with a compliance flag; the channel plan.
+  6. Handoff: download the skill, drop it into Claude, ask for three
+     TikTok hooks - native audience language, no prompt needed.
+  7. /evals: groundedness, entailment, plan divergence, cost per pack.
+     Back to the live run, now finished. Close with the marketer quote.
+
+
+================================================================================
+ RISK PLAN
+================================================================================
+ Risk                               Response
+ ---------------------------------  -----------------------------------------
+ Agent loop unreliable on Day 2     Research-director fallback (Phase 2 cut
+                                    line); same tools and logs
+ No pack by end of Day 4            Cut the web app to Ask, Theatre log, pack
+                                    Summary + drawer. The pack is the product.
+ Deploy fails late                  Deployed on Day 1; pushed daily
+ Service asleep at judging          Keepalive pings /ping every 10 min;
+                                    check it the evening before and the
+                                    morning of; static mirror as backup
+ Service restarts mid-run           Job state in Neon; interrupted runs
+                                    resume from the saved corpus
+ 512 MB too small                   Trim per-stage memory; else Modal
+                                    worker (guide Step 2.6)
+ A free limit is reached            No card anywhere: services pause
+                                    instead of billing; static mirror and
+                                    featured packs in the repo
+ Live run slow in the demo          Featured packs + replay; live run is a
+                                    bonus
+ Generic insights                   Day 6 sharpening on the weakest sections
+ Several judges start runs at once  Queue shows positions; featured packs
+                                    and replay meanwhile
+ Quote link fails a spot-check      DH12 anchors; Day 1 real-page test
+ A day overruns                     Daily slack, then Day 7 buffer, then
+                                    the cut order
+ Key leak                           Revoke and replace immediately
+
+
+================================================================================
+ CUT ORDER (PRD Section 15) - first item first
+================================================================================
+ Never cut: verification, the decision log with reasons, the pack page,
+ the evidence drawer, the prompt block, MCP + digest, the skill export,
+ the run queue.
+   1. Instagram tool
+   2. Per-section agent-view toggle (keep one "View pack JSON" button)
+   3. Competitor tone (keep the simple list)
+   4. Queue time estimate (keep the position)
+   5. Static mirror (featured packs + replay on the live site remain)
+   6. Eval briefs 3-4 (state it on /evals)
+   7. Print / save-as-PDF stylesheet (Markdown remains)
+ P1 (built only if everything else is done): Excel workbook; Theatre
+ source board.
+
+================================================================================
+ END OF PHASE PLAN
+================================================================================

@@ -1,0 +1,21 @@
+#!/bin/sh
+# Blocks any commit whose staged changes contain a secret.
+# Rules: .gitleaks.toml (gitleaks defaults + RUN_KEY / AUTHOR_HASH_SALT).
+# Never bypass this with --no-verify.
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-commit: gitleaks is not installed - commit BLOCKED."
+  echo "Install it with:  brew install gitleaks"
+  exit 1
+fi
+
+gitleaks git --pre-commit --staged --redact --verbose --no-banner
+status=$?
+
+if [ $status -ne 0 ]; then
+  echo ""
+  echo "pre-commit: gitleaks found a possible SECRET in your staged changes."
+  echo "Commit BLOCKED. Remove the secret, then: git add <file> and commit again."
+  echo "If a real key was exposed anywhere, revoke it in its console now."
+  exit 1
+fi
