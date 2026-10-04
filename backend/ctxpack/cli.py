@@ -683,6 +683,66 @@ def write(
 
 
 @app.command()
+def verify(
+    from_run: str = typer.Option(..., "--from-run", help="Run id whose draft is verified"),
+    redo: bool = typer.Option(False, "--redo", help="Verify the draft again"),
+    yes: bool = typer.Option(False, "--yes", help="Do not wait for Enter before the paid calls"),
+) -> None:
+    """Step 3.4 on a saved draft: exact quotes, claim checks, confidence labels.
+
+    The cost is added to that run (its analysis LLM budget applies) and to today's spend.
+    """
+    import asyncio
+
+    from ctxpack import db
+    from ctxpack.config import mode_limits
+    from ctxpack.llm.client import tracking
+    from ctxpack.synthesis import verify as vf
+    from ctxpack.synthesis.write import INSIGHT_SECTIONS
+
+    db.init_engine()
+    run = db.get_run(from_run)
+    draft = (run.draft or {}) if run else {}
+    if not draft.get("sections"):
+        console.print(f"{BAD} run {from_run} has no draft yet: run write --from-run {from_run} first")
+        raise typer.Exit(1)
+    limit_usd = mode_limits(run.mode)["analysis_llm_usd"]
+    est = 0.0 if draft.get("verified") and not redo else vf.estimate_usd(draft)
+    console.print(f"run {run.id} ({run.brief_text[:50]}) | estimated max cost ${est:.2f} | run analysis LLM "
+                  f"spend so far ${run.cost_analysis_llm_usd or 0:.2f} of ${limit_usd:.2f}", highlight=False)
+    if est and not yes and not get_settings().llm_fake:
+        typer.prompt("Press Enter to start (Ctrl-C to cancel)", default="", show_default=False)
+
+    with tracking(run.id, llm_limit_usd=limit_usd, analysis=True) as t:
+        before = t.spent_usd
+        rep = asyncio.run(vf.verify_run(run.id, redo=redo))
+        spent = t.spent_usd - before
+
+    verified = db.get_run(run.id).draft["verified"]
+    s = verified["sections"]
+    console.print("\n[bold]LABELS[/bold] (score, label, verdict, safe to assert)")
+    for name in INSIGHT_SECTIONS:
+        for it in s[name]:
+            c = it["confidence"]
+            console.print(f"  {it['id']:<7} {c['score']:.2f} {c['label']:<11} {it['verification']['verdict']:<19} "
+                          f"{'SAFE ' if it['safe_to_assert'] else '     '}{it['counts']['matching']:>3} posts | "
+                          f"{it['claim'][:70]}", highlight=False)
+    console.print(f"\n[bold]QUOTES[/bold] checked {rep.quotes_checked} | whitespace fixed {rep.quotes_whitespace_fixed} | "
+                  f"removed {rep.quotes_removed} | groundedness {rep.groundedness:.0%}", highlight=False)
+    console.print(f"[bold]CLAIMS[/bold] supported {rep.supported} | partially (one level down, inferred) "
+                  f"{rep.partially_supported} | not supported (dropped) {rep.not_supported} | unchecked "
+                  f"{rep.unchecked} | items dropped without evidence {rep.items_dropped_no_evidence} | phrases "
+                  f"dropped {rep.phrases_dropped}", highlight=False)
+    console.print("[bold]LABEL COUNTS[/bold] " + " | ".join(f"{k} {v}" for k, v in rep.labels.items())
+                  + f" | safe to assert {rep.safe_to_assert} | thin evidence {rep.thin_evidence}", highlight=False)
+    if rep.dropped_items:
+        console.print(f"[bold]DROPPED[/bold] {', '.join(rep.dropped_items)}", highlight=False)
+    console.print(f"[bold]COST[/bold] this step ${spent:.4f} in {rep.calls} calls | run analysis "
+                  f"${t.budget_spent_usd:.3f} of ${limit_usd:.2f}{' | resumed: already verified' if rep.resumed else ''}",
+                  highlight=False)
+
+
+@app.command()
 def overlap(run_ids: list[str] = typer.Argument(..., help="Two or more run ids")) -> None:
     """How much the runs' source units overlap (eval: briefs share < 50%)."""
     from ctxpack import db

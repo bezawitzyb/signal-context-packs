@@ -14,7 +14,8 @@ starts at extracting from its saved corpus (the same path as --from-run).
 Collection is the agent loop (Step 2.4, collect/loop.py); extracting is
 analysis/extract.py (Step 3.1); clustering is analysis/cluster.py + metrics.py
 (Step 3.2); writing is synthesis/baseline.py + write.py (Step 3.3);
-verifying and the pack itself are placeholders filled in by later steps.
+verifying is synthesis/verify.py + confidence.py (Step 3.4); the pack itself
+is a placeholder filled in by Step 3.5.
 """
 
 from __future__ import annotations
@@ -214,6 +215,13 @@ async def write_stage(run_id: str) -> None:
     await write_run(run_id, brief_context(db.get_run(run_id)))
 
 
+async def verify_stage(run_id: str) -> None:
+    """Verifying (Step 3.4): exact quotes, claim checks, confidence; saves draft["verified"]."""
+    from ctxpack.synthesis.verify import verify_run
+
+    await verify_run(run_id)
+
+
 async def _placeholder(run_id: str) -> None:
     return None
 
@@ -227,7 +235,7 @@ ANALYSIS_STAGES: list[tuple[RunStage, StageFn]] = [
     (RunStage.extracting, extract_stage),
     (RunStage.clustering, cluster_stage),
     (RunStage.writing, write_stage),
-    (RunStage.verifying, _placeholder),
+    (RunStage.verifying, verify_stage),
 ]
 
 

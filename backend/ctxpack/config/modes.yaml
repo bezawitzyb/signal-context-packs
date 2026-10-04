@@ -73,6 +73,11 @@ synthesis:
   opportunities_max: 6          # opportunity texts written (top by score)
   non_obvious_batch: 60         # items per non_obvious worker call
 
+# Verification (guide Step 3.4, prompt F4-9 claim mode). Same for every mode.
+verification:
+  claim_batch_items: 12         # claims per worker call (each with up to 5 evidence excerpts)
+  claim_parallel_max: 5
+
 # Collection tools (guide Step 1.6, B8). Same for every mode.
 collection:
   actor_timeout_secs: 180       # actor stops itself; partial items are kept

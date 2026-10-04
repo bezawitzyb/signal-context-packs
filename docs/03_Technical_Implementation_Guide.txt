@@ -1101,6 +1101,26 @@ WHAT  synthesis/verify.py: stage 1 (code) - every quote/example is an
       supplies > 50% of members capped at emerging; thin-evidence runs
       capped at emerging; safe_to_assert =
       strong AND observed AND verified.
+      As built: a quote that matches only with different whitespace is
+      replaced by the exact evidence text; a phrase whose own text is not
+      found is dropped. Claims are checked in batches of 12 with their
+      evidence excerpts (modes.yaml verification), one retry pass for
+      claims without a verdict; unknown verdicts count as unchecked (no
+      paid retry). "Unverified inference" = an inferred claim that was
+      never checked -> speculative. Thin evidence = fewer relevant posts
+      than the mode's min_relevant. Unknown engagement scores 0
+      (scoring.yaml engagement_if_unknown; PRD 5.4 is silent). A partially
+      supported claim cannot pass the strong gate, so it is labelled at
+      most moderate and then goes one level down. The written draft stays
+      in runs.draft["sections"]; the result is runs.draft["verified"]
+      (sections, evidence, report), so verification can be redone.
+      CLI: verify --from-run RUN_ID [--redo] prints every claim's score,
+      label, verdict and safe_to_assert, then quotes removed, claims
+      supported / downgraded / dropped and label counts.
+      Built: NL draft, 123 quotes, groundedness 100%; 51 supported, 25
+      partially, 3 dropped; labels moderate 2, emerging 23, speculative
+      51, strong 0 (forum-only corpus: strong needs >= 2 platforms, and
+      with no engagement or dates the score cannot pass 0.65); USD 0.05.
 PROMPT
   Read CLAUDE.md, Step 3.4, F4-9 and PRD 5.4. Implement with tests incl.
   a planted fake quote. Run on the draft NL pack; report quotes removed,

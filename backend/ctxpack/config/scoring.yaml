@@ -15,6 +15,7 @@ confidence:
     authors: 8                  # authors = min(1, distinct_authors / 8)
     cross_platform_extra: 2     # cross_platform = min(1, (platforms - 1) / 2)
   recency_if_undated: 0.5
+  engagement_if_unknown: 0.0    # no engagement data (e.g. forums): no credit. PRD 5.4 is silent (owner to confirm)
   verifier_values:
     supported: 1.0
     partially_supported: 0.5
