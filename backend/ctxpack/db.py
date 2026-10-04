@@ -14,7 +14,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import DateTime, Engine, UniqueConstraint, delete, func
+from sqlalchemy import DateTime, Engine, UniqueConstraint, delete, func, inspect, text
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import JSON, Field, Session, SQLModel, create_engine, select
 
@@ -156,7 +156,34 @@ def session() -> Session:
 
 
 def create_tables() -> None:
-    SQLModel.metadata.create_all(get_engine())
+    """Create missing tables, then add any new nullable columns to existing ones."""
+    engine = get_engine()
+    SQLModel.metadata.create_all(engine)
+    add_missing_columns(engine)
+
+
+def add_missing_columns(engine: Engine) -> list[str]:
+    """create_all never changes an existing table. This only ADDS nullable columns
+    the models gained since the table was made; it never drops or alters data.
+    """
+    added = []
+    insp = inspect(engine)
+    with engine.begin() as conn:
+        for table in SQLModel.metadata.sorted_tables:
+            if not insp.has_table(table.name):
+                continue
+            existing = {c["name"] for c in insp.get_columns(table.name)}
+            for col in table.columns:
+                if col.name in existing:
+                    continue
+                if not col.nullable:
+                    raise RuntimeError(f"{table.name}.{col.name} is new and NOT NULL - needs a manual migration")
+                col_type = col.type.compile(dialect=engine.dialect)
+                conn.execute(text(f'ALTER TABLE "{table.name}" ADD COLUMN "{col.name}" {col_type}'))
+                added.append(f"{table.name}.{col.name}")
+    for name in added:
+        log.info("added column %s", name)
+    return added
 
 
 # --------------------------------------------------------------------------

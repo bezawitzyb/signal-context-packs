@@ -28,3 +28,14 @@ parallel_tool_calls_max: 3      # concurrent tool calls from one model turn
 queue_max: 3                    # runs waiting behind the live one (FIFO)
 time_window_days_options: [30, 90, 180, 365]
 default_time_window_days: 180
+
+# Cleaning chain (guide Step 1.5, PRD FR-C2). Same for every mode.
+cleaning:
+  short_form_max_words: 3       # posts under 4 words: short_form (lexicon only)
+  shingle_words: 5              # MinHash shingles of 5 words
+  minhash_threshold: 0.8        # near-duplicate Jaccard threshold
+  minhash_num_perm: 128
+  spam_max_hashtags: 8          # more than this in one post = hashtag flood
+  spam_flood_share: 0.5         # hashtags or emoji above this share of tokens
+  relevance_batch_size: 30      # docs per worker call (F4-5)
+  relevance_parallel_max: 5     # worker calls at once

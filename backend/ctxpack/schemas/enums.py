@@ -92,6 +92,18 @@ class Level(StrEnum):
     high = "high"
 
 
+class RelevanceReason(StrEnum):
+    """Why the relevance worker (F4-5) judged a document as it did."""
+
+    on_topic = "on_topic"
+    partly_on_topic = "partly_on_topic"
+    off_topic = "off_topic"
+    promotional = "promotional"
+    news_or_brand = "news_or_brand"
+    wrong_market = "wrong_market"
+    insufficient_evidence = "insufficient_evidence"
+
+
 class DatePrecision(StrEnum):
     day = "day"
     month = "month"

@@ -44,3 +44,9 @@ server_tools:
       claude-opus-5-5: web_fetch_20260209
       claude-haiku-4-5-20251001: web_fetch_20250910
     usd_per_1000_uses: 0.00       # no per-use fee; fetched content is billed as input tokens
+
+# Models that accept a forced tool_choice ({"type": "tool"}). Sonnet 5.5,
+# Opus 5.5 and Fable 5.1 reject it with a 400; for those the client asks
+# for the tool in the prompt (tool_choice auto) and validates the answer.
+forced_tool_choice_ok:
+  - claude-haiku-4-5-20251001

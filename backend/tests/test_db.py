@@ -94,3 +94,33 @@ def test_stale_running_run_is_interrupted(temp_db):
 def test_startup_runs_cleanly(temp_db):
     result = temp_db.startup()
     assert set(result) == {"featured_added", "documents_deleted", "runs_interrupted"}
+
+
+def test_new_columns_are_added_to_an_existing_table(tmp_path):
+    """An old documents table (made before Step 1.5) gains the new nullable columns."""
+    from sqlalchemy import MetaData, Table, create_engine, inspect, text
+
+    from ctxpack import db
+
+    new = {"market_match", "is_promotional", "relevance_reason"}
+    url = f"sqlite:///{tmp_path / 'old.db'}"
+    old = create_engine(url)
+    Table("documents", MetaData(),
+          *[c._copy() for c in db.DocumentRow.__table__.columns if c.name not in new]).create(old)
+    with old.begin() as conn:
+        conn.execute(text("INSERT INTO documents (id, run_id, platform, source_unit, url, text, date_precision,"
+                          " engagement_raw, research_question_ids, redacted, short_form) VALUES"
+                          " ('DOC-1', 'RUN-1', 'reddit', 'reddit:r/x', 'u', 'kept', 'unknown', '{}', '[]', 0, 0)"))
+    old.dispose()
+
+    db.init_engine(url)
+    try:
+        db.create_tables()
+        cols = {c["name"] for c in inspect(db.get_engine()).get_columns("documents")}
+        assert new <= cols
+        with db.get_engine().connect() as conn:  # existing data untouched
+            assert conn.execute(text("SELECT text FROM documents WHERE id='DOC-1'")).scalar_one() == "kept"
+        assert db.add_missing_columns(db.get_engine()) == []  # second run: nothing to do
+    finally:
+        db.get_engine().dispose()
+        db._engine = None
