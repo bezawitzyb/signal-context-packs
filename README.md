@@ -7,7 +7,7 @@ agent skill, MCP).
 
 > Work in progress - the live app currently shows a placeholder.
 
-- **Live app:** see [docs/DEPLOY.md](docs/DEPLOY.md)
+- **Live app:** https://signal-l2w5.onrender.com
 - **Pack format:** [docs/SCHEMA.md](docs/SCHEMA.md)
 - **Health check:** `GET /health` (status, version, database reachable)
 

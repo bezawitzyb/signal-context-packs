@@ -1,6 +1,6 @@
 # Deploying SIGNAL - Context Packs
 
-**Public URL:** _to be added after the first deploy_ (https://<service>.onrender.com)
+**Public URL:** https://signal-l2w5.onrender.com
 
 ## How it runs
 
