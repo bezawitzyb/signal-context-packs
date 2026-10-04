@@ -97,7 +97,7 @@ Read the relevant step before working. Do only that step.
 
 ## Commands (keep updated)
 - Backend CLI: cd backend && uv run python -m ctxpack.cli <command>
-  (doctor, catalog, export-schema, version)
+  (doctor, catalog, tool, classify, export-schema, version)
 - Tests: cd backend && uv run pytest
 - Local app: ./start.sh
 - Deploy: git push origin main (Render redeploys; at most twice a day,

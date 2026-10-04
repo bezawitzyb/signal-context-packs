@@ -198,6 +198,33 @@ def tool(
 
 
 @app.command()
+def classify(
+    topic: str = typer.Argument(..., help="Brief topic, e.g. \"meal prep\""),
+    sentences: list[str] = typer.Argument(..., help="Sentences to screen (one worker call)"),
+    language: str = typer.Option("en", help="ISO 639-1, e.g. nl"),
+) -> None:
+    """One real worker call: relevance verdicts for a few sentences, with tokens and cost.
+
+    The cost is added to today's spend table (daily cap checked first).
+    """
+    import asyncio
+    import json
+
+    from ctxpack.collect.relevance import BriefContext, classify as screen
+    from ctxpack.llm.client import tracking
+
+    texts = {f"s{i}": s for i, s in enumerate(sentences, 1)}
+    with tracking() as t:
+        outcome = asyncio.run(screen(texts, BriefContext(topic=topic, languages=[language])))
+    for sid, text in texts.items():
+        v = outcome.verdicts.get(sid)
+        console.print(f"[bold]{sid}[/bold] {text}")
+        console.print_json(json.dumps(v.model_dump() if v else {"verdict": "missing"}))
+    console.print(f"calls: {t.calls} | tokens in {t.input_tokens} (cache read {t.cache_read_tokens}, "
+                  f"cache write {t.cache_write_tokens}) out {t.output_tokens} | cost ${t.spent_usd:.5f}")
+
+
+@app.command()
 def version() -> None:
     """Print the package version."""
     from importlib.metadata import version as pkg_version

@@ -50,3 +50,9 @@ server_tools:
 # for the tool in the prompt (tool_choice auto) and validates the answer.
 forced_tool_choice_ok:
   - claude-haiku-4-5-20251001
+
+# Client behaviour (B7).
+client:
+  max_retries: 4                # SDK retries 408/409/429/5xx + connection errors with exponential backoff
+  timeout_secs: 300             # per request; web fetch turns can be slow
+  cost_event_step_usd: 0.01     # emit a "cost" event when the run total grows by at least this

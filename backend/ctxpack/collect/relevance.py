@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import asyncio
 import re
 from dataclasses import dataclass, field
 from pydantic import BaseModel, Field
 
 from ctxpack.config import load_yaml
-from ctxpack.llm.client import load_prompt, structured, untrusted
+from ctxpack.llm.client import batched, load_prompt, structured, untrusted
 from ctxpack.schemas.enums import RelevanceReason
 
 
@@ -72,19 +71,16 @@ def _fake_answer(ctx: BriefContext):
 async def classify(texts: dict[str, str], ctx: BriefContext) -> RelevanceOutcome:
     """Screen {id: text}. Items the model skips get no verdict (treated as not relevant)."""
     cfg = load_yaml("modes")["cleaning"]
-    ids = list(texts)
-    batches = [ids[i:i + cfg["relevance_batch_size"]] for i in range(0, len(ids), cfg["relevance_batch_size"])]
-    gate = asyncio.Semaphore(cfg["relevance_parallel_max"])
     system = load_prompt("relevance")
 
     async def run(batch: list[str]):
         user = _brief_block(ctx) + "\n\nItems:\n\n" + "\n\n".join(untrusted(i, texts[i]) for i in batch)
-        async with gate:
-            return await structured("worker", system, user, RelevanceBatch, "record_relevance",
-                                    description="Record a relevance verdict for every item.",
-                                    fake=_fake_answer(ctx))
+        return await structured("worker", system, user, RelevanceBatch, "record_relevance",
+                                description="Record a relevance verdict for every item.",
+                                fake=_fake_answer(ctx))
 
-    results = await asyncio.gather(*(run(b) for b in batches))
+    results = await batched(list(texts), run, size=cfg["relevance_batch_size"],
+                            parallel=cfg["relevance_parallel_max"])
     outcome = RelevanceOutcome(verdicts={})
     for res in results:
         outcome.usd += res.usd
