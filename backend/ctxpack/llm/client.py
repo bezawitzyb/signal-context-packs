@@ -10,7 +10,7 @@ Caching, budgets, the daily cap and call logging arrive in Step 2.1.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable
@@ -36,6 +36,8 @@ class CallResult:
     usd: float = 0.0
     input_tokens: int = 0
     output_tokens: int = 0
+    web_searches: int = 0
+    blocks: list[Any] = field(default_factory=list)  # every content block (server-tool results)
 
 
 def load_prompt(name: str) -> str:
@@ -67,6 +69,16 @@ def _client():
     return anthropic.AsyncAnthropic(api_key=key.get_secret_value() if key else None)
 
 
+def server_tool(name: str, model: str, **options: Any) -> dict[str, Any]:
+    """web_search / web_fetch definition with the type this model supports (models.yaml)."""
+    spec = load_yaml("models")["server_tools"][name]
+    return {"type": spec["type_by_model"][model], "name": spec["name"], **options}
+
+
+def _search_usd(count: int) -> float:
+    return count * load_yaml("models")["server_tools"]["web_search"]["usd_per_1000_uses"] / 1000
+
+
 def _tool(name: str, schema: type[BaseModel], description: str) -> dict[str, Any]:
     return {"name": name, "description": description, "input_schema": schema.model_json_schema()}
 
@@ -81,6 +93,8 @@ async def structured(
     description: str = "Return the answer.",
     max_tokens: int = 4096,
     fake: Callable[[str], dict[str, Any]] | None = None,
+    server_tools: list[str] | None = None,
+    server_tool_options: dict[str, dict[str, Any]] | None = None,
 ) -> CallResult:
     """One call that must answer through the `tool_name` tool, validated against `schema`.
 
@@ -92,25 +106,39 @@ async def structured(
         return CallResult(data=schema.model_validate(raw))
 
     model = model_for(role)
-    forced = model in load_yaml("models").get("forced_tool_choice_ok", [])
+    # A forced custom tool would stop the model from using web search/fetch first.
+    forced = not server_tools and model in load_yaml("models").get("forced_tool_choice_ok", [])
+    tools = [server_tool(n, model, **(server_tool_options or {}).get(n, {})) for n in server_tools or []]
+    tools.append(_tool(tool_name, schema, description))
     tool_choice = {"type": "tool", "name": tool_name} if forced else {"type": "auto"}
     if not forced:
         system += f"\n\nAnswer only by calling the {tool_name} tool exactly once."
 
     messages: list[dict[str, Any]] = [{"role": "user", "content": user}]
     result = CallResult(data=None)  # type: ignore[arg-type]
-    for attempt in range(2):  # first try + one retry with the validation error (B7)
+    attempts, pauses = 0, 0
+    while attempts < 2:  # first try + one retry with the validation error (B7)
         resp = await _client().messages.create(
             model=model,
             max_tokens=max_tokens,
             system=system,
             messages=messages,
-            tools=[_tool(tool_name, schema, description)],
+            tools=tools,
             tool_choice=tool_choice,
         )
         result.input_tokens += resp.usage.input_tokens
         result.output_tokens += resp.usage.output_tokens
         result.usd += cost_usd(model, resp.usage.input_tokens, resp.usage.output_tokens)
+        searches = getattr(getattr(resp.usage, "server_tool_use", None), "web_search_requests", 0) or 0
+        result.web_searches += searches
+        result.usd += _search_usd(searches)
+        result.blocks.extend(resp.content)
+        if resp.stop_reason == "pause_turn" and pauses < 3:
+            # Long server-tool turn: re-send it as is and the API resumes (no extra user message).
+            pauses += 1
+            messages.append({"role": "assistant", "content": resp.content})
+            continue
+        attempts += 1
 
         block = next((b for b in resp.content if b.type == "tool_use" and b.name == tool_name), None)
         if block is None:

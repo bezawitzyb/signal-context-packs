@@ -239,3 +239,27 @@ def test_clean_chain(llm_fake):
     for name in ("janjansen1987", "copycat", "jan@x.nl"):
         assert name not in dumped
     assert result.usd == 0.0
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("Zitat geschrieben von smaragd  Danke dir", "Zitat geschrieben von [user]  Danke dir"),
+    ("Zitat von Heizer77: das stimmt", "Zitat von [user]: das stimmt"),
+    ("Citaat van Marieke: klopt", "Citaat van [user]: klopt"),
+    ("Marieke schreef op 12 mei 2025: ik ook", "[user] schreef op 12 mei 2025: ik ook"),
+    ("Heizer77 schrieb: genau", "[user] schrieb: genau"),
+    ("Quote from bob_k: agreed", "Quote from [user]: agreed"),
+    ("jane wrote: yes", "[user] wrote: yes"),
+    ("Originally posted by Sam1 nope", "Originally posted by [user] nope"),
+])
+def test_forum_quote_headers_are_redacted(text, expected):
+    assert redact(text) == (expected, True)
+
+
+def test_known_page_names_are_redacted():
+    out, changed = redact("Ik ben het eens met Marieke en marieke93 hier", ["Marieke", "marieke93", "x"])
+    assert out == "Ik ben het eens met [user] en [user] hier" and changed
+
+
+@pytest.mark.parametrize("text", ["Hij zei dat het lekker was", "she said it was fine", "Zitat ist gut"])
+def test_quote_header_rule_leaves_normal_text(text):
+    assert redact(text) == (text, False)

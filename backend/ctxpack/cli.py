@@ -134,6 +134,70 @@ def catalog() -> None:
 
 
 @app.command()
+def tool(
+    name: str = typer.Argument(..., help="search_reddit, search_tiktok, search_youtube, search_instagram, "
+                                         "web_search, fetch_and_segment or get_trends"),
+    targets: list[str] = typer.Argument(..., help="Target(s): r/name, #tag, query, URL(s) or trend terms"),
+    topic: str = typer.Option("", help="Brief topic for the relevance check (default: the target)"),
+    market: str = typer.Option("global", help="ISO country code, e.g. NL"),
+    language: str = typer.Option("en", help="ISO 639-1, e.g. nl"),
+    limit: int = typer.Option(20, help="Items wanted"),
+    mode: str = typer.Option("quick"),
+    window: int = typer.Option(180, help="Time window in days"),
+    fixtures: bool = typer.Option(False, "--fixtures", help="Replay fixtures: no network, no cost"),
+    record: bool = typer.Option(False, "--record", help="Save a sanitised fixture (names -> user_N)"),
+) -> None:
+    """Run ONE tool and print the summary the agent would see (results kept in memory only)."""
+    import asyncio
+    import json
+    import os
+
+    from ctxpack.collect import tools as t
+    from ctxpack.collect.relevance import BriefContext
+
+    if fixtures:
+        os.environ["USE_FIXTURES"] = "true"
+        os.environ["LLM_FAKE"] = "true"
+        get_settings.cache_clear()
+    if not fixtures and not get_settings().is_set("AUTHOR_HASH_SALT"):
+        console.print(f"{BAD} AUTHOR_HASH_SALT not set - run the doctor command")
+        raise typer.Exit(1)
+    stored: list = []
+    ctx = t.RunContext(run_id="cli", mode=mode, window_days=window, record=record,
+                       brief=BriefContext(topic=topic or " ".join(targets), market=market, languages=[language]),
+                       store=lambda docs, replaced: stored.extend(docs))
+    args: dict = {"reason": "manual CLI test"}
+    if name in ("search_reddit", "search_tiktok"):
+        args |= {"target": targets[0], "limit": limit}
+    elif name == "search_youtube":
+        args |= {"query": targets[0], "limit": limit}
+    elif name == "search_instagram":
+        args |= {"hashtag": targets[0], "limit": limit}
+    elif name == "web_search":
+        args |= {"query": " ".join(targets), "country": market, "language": language}
+    elif name == "fetch_and_segment":
+        args |= {"urls": targets}
+    elif name == "get_trends":
+        args |= {"terms": targets, "geo": "" if market == "global" else market}
+    else:
+        console.print(f"{BAD} unknown tool {name}")
+        raise typer.Exit(1)
+
+    started = __import__("time").monotonic()
+    summary = asyncio.run(t.call_tool(ctx, name, args))
+    seconds = __import__("time").monotonic() - started
+    if record and name == "web_search" and summary.get("status") == "ok":
+        from ctxpack.collect import web
+        data = json.loads(web.DISCOVER_FIXTURE.read_text(encoding="utf-8")) if web.DISCOVER_FIXTURE.exists() else {}
+        data[web.discover_key(args["query"], market, language)] = {"pages": [
+            {k: p[k] for k in ("url", "page_type", "language", "why")} for p in summary["pages"]]}
+        web.DISCOVER_FIXTURE.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    console.print_json(json.dumps(summary, ensure_ascii=False, default=str))
+    console.print(f"took {seconds:.0f} s | cost: Apify ${ctx.apify_usd:.4f}, Anthropic ${ctx.llm_usd:.4f}"
+                  f" | documents kept in memory: {len(stored)}")
+
+
+@app.command()
 def version() -> None:
     """Print the package version."""
     from importlib.metadata import version as pkg_version

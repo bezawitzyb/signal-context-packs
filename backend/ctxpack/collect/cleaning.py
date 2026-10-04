@@ -97,9 +97,37 @@ _PHONE_INTL = re.compile(r"(?<![\w+])(?:\+|00)\d{1,3}[\s.-]?(?:\(0\)[\s.-]?)?\d(
 _PHONE_NATIONAL = re.compile(r"(?<![\w+.,/])\(?0\d{1,4}\)?[\s/-]?\d(?:[\s-]?\d){5,9}(?![\w.,])")
 
 
-def redact(text: str) -> tuple[str, bool]:
-    """Emails, profile URLs, phone numbers and handles -> [email] [user] [phone]."""
-    out = _EMAIL.sub("[email]", text)
+# Forum quote headers name a person: "Zitat von X", "X schreef:", "Quote from X", "X wrote:".
+_NAME = r"[^\s:,]{2,40}"
+_QUOTE_HEADER = re.compile(
+    rf"\b(?P<pre>(?:zitat|citaat|quote|quoting)\s+(?:geschrieben\s+)?(?:von|van|from|by|of)\s+){_NAME}"
+    rf"|\b(?P<pre2>originally\s+posted\s+by\s+|geschrieben\s+von\s+|gepost\s+door\s+){_NAME}"
+    rf"|(?<![\w\[])(?P<name>{_NAME})(?P<post>\s+(?:schreef|schrieb|wrote|said|zei|sagte)(?:\s+(?:op|am|on)\s+[^:\n]{{1,40}})?\s*:)",
+    re.I,
+)
+
+
+def _quote_header(m: re.Match) -> str:
+    if m.group("pre"):
+        return m.group("pre") + "[user]"
+    if m.group("pre2"):
+        return m.group("pre2") + "[user]"
+    return "[user]" + m.group("post")
+
+
+def redact_names(text: str, names: list[str]) -> str:
+    """Replace the page's known author names (from the segmenter) wherever they appear."""
+    for name in sorted({n.strip().lstrip("@") for n in names if n and len(n.strip().lstrip("@")) >= 3},
+                       key=len, reverse=True):
+        text = re.sub(rf"(?<![\w@]){re.escape(name)}(?!\w)", "[user]", text, flags=re.I)
+    return text
+
+
+def redact(text: str, names: list[str] | None = None) -> tuple[str, bool]:
+    """Emails, profile URLs, phones, handles, quote headers and known author names -> [email] [user] [phone]."""
+    out = redact_names(text, names or [])
+    out = _QUOTE_HEADER.sub(_quote_header, out)
+    out = _EMAIL.sub("[email]", out)
     out = _PROFILE_URL.sub("[user]", out)
     out = _PHONE_INTL.sub("[phone]", out)
     out = _PHONE_NATIONAL.sub("[phone]", out)
@@ -136,6 +164,8 @@ class Draft:
     engagement: dict[str, Any] = field(default_factory=dict)
     redacted: bool = False
     short_form: bool = False
+    fragment_anchor_start: str | None = None  # from the ORIGINAL text, PII-free (DH12)
+    fragment_anchor_end: str | None = None
 
     def to_cache(self) -> dict[str, Any]:
         data = asdict(self)
@@ -163,6 +193,9 @@ def make_draft(
     community: str | None = None,
     thread_id: str | None = None,
     engagement: dict[str, Any] | None = None,
+    fragment_anchor_start: str | None = None,
+    fragment_anchor_end: str | None = None,
+    page_names: list[str] | None = None,
 ) -> Draft:
     """Normalise + privacy in ONE function: the raw author name dies here (CLAUDE.md)."""
     if salt is None:
@@ -170,7 +203,7 @@ def make_draft(
         salt = secret.get_secret_value() if secret else ""
     author_hash = hash_author(str(platform), author, salt)
     del author  # never stored, logged, cached or prompted
-    clean, changed = redact(normalise_text(text))
+    clean, changed = redact(normalise_text(text), page_names)
     return Draft(
         platform=platform,
         source_unit=source_unit,
@@ -185,6 +218,8 @@ def make_draft(
         engagement={k: v for k, v in (engagement or {}).items() if isinstance(v, (int, float)) and not isinstance(v, bool)},
         redacted=changed,
         short_form=is_short_form(clean),
+        fragment_anchor_start=fragment_anchor_start,
+        fragment_anchor_end=fragment_anchor_end,
     )
 
 
@@ -535,6 +570,7 @@ async def clean(
             is_promotional=verdict.is_promotional if verdict else None,
             research_question_ids=verdict.research_question_ids if verdict else [],
             redacted=d.redacted, short_form=d.short_form,
+            fragment_anchor_start=d.fragment_anchor_start, fragment_anchor_end=d.fragment_anchor_end,
             expires_at=d.fetched_at + retention,
         ))
     stats["kept"] = len(documents)

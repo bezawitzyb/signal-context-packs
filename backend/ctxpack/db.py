@@ -275,6 +275,16 @@ def save_documents(docs: list[Document]) -> int:
     return len(docs)
 
 
+def delete_documents(ids: list[str]) -> int:
+    """Remove documents a better copy replaced (de-duplication keeps the higher-engagement one)."""
+    if not ids:
+        return 0
+    with session() as s:
+        result = s.exec(delete(DocumentRow).where(DocumentRow.id.in_(ids)))
+        s.commit()
+        return result.rowcount or 0
+
+
 def get_documents(run_id: str, relevant_only: bool = False) -> list[DocumentRow]:
     with session() as s:
         stmt = select(DocumentRow).where(DocumentRow.run_id == run_id)

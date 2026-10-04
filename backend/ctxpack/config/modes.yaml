@@ -39,3 +39,19 @@ cleaning:
   spam_flood_share: 0.5         # hashtags or emoji above this share of tokens
   relevance_batch_size: 30      # docs per worker call (F4-5)
   relevance_parallel_max: 5     # worker calls at once
+
+# Collection tools (guide Step 1.6, B8). Same for every mode.
+collection:
+  actor_timeout_secs: 180       # actor stops itself; partial items are kept
+  trends_timeout_secs: 120      # trends is optional context: give up fast
+  cost_margin: 0.20             # actors can overshoot max_items (reddit 12 of 10)
+  chain_parent_posts_max: 3     # comments are fetched for at most this many posts
+  chain_posts_share: 0.4        # share of a call's item limit spent on posts
+  trends_points_max: 30         # trends bills per data point (0.005 each)
+  cache_hours: 24               # PRD DH2
+  samples_max: 3                # samples in a tool summary
+  sample_chars: 200
+  new_terms_max: 8
+  web_search_max_uses: 3        # searches per web_search call
+  anchor_words: 4               # words per text-fragment anchor (DH12)
+  web_fetch_max_content_tokens: 20000  # caps the cost of one huge page (~0.02 USD input)

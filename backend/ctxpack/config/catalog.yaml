@@ -14,16 +14,16 @@
 # fields: where each Document field is read from in the actor output.
 # author fields are hashed in the same function that reads them.
 
-# Typical latencies are PRD 8.3 defaults; Step 1.6 replaces them with
-# measured values. Tool descriptions quote them.
+# Typical latencies, measured on real calls on 2026-10-04 (Step 1.6; one or
+# two calls each - re-measure as runs accumulate). Tool descriptions quote them.
 tool_latency:
   web_search: "usually 10-20 s"
-  fetch_and_segment: "usually 20-60 s"
-  search_reddit: "usually 30-90 s"
-  search_youtube: "usually 60-180 s"
-  search_tiktok: "usually 60-180 s"
-  search_instagram: "usually 60-180 s"
-  get_trends: "usually 30-60 s"
+  fetch_and_segment: "usually 60-90 s for 2-3 pages"
+  search_reddit: "usually 40-70 s"
+  search_youtube: "usually 60-90 s"
+  search_tiktok: "usually 50-120 s"
+  search_instagram: "usually 25-60 s"
+  get_trends: "usually 20-60 s"
   coverage_report: "instant"
 
 verified_on: "2026-10-04"
@@ -90,11 +90,15 @@ sources:
       memory_mbytes: 4096   # actor default
       smoke: ok 2026-10-04 (5/5 text, date, url, likes)
       min_max_charge_usd: 0.50  # Apify refuses a lower per-run cap; max_items bounds real cost
-      price_usd: {result: 0.0037, actor_start: 0.001, scrape_as_in_country: 0.0013}
+      price_usd: {result: 0.0037, actor_start: 0.001, date_filter_per_item: 0.0013}
+      date_filter: >-
+        hashtag pages return all-time top videos (2021) and ignore
+        oldestPostDateUnified; use video search (searchSection /video) with
+        videoSearchDateFilter, also for hashtags (verified 2026-10-04, ~2 min)
       success_30d: 0.99
       limit_inputs: [resultsPerPage]
       date_inputs: [oldestPostDateUnified, newestPostDate]
-      unit_inputs: {query: searchQueries, hashtag: hashtags}
+      unit_inputs: {query: searchQueries, hashtag: searchQueries ('#tag')}
       notes: keep all download, AI and transcription inputs OFF
       fields:
         text: [text]
@@ -155,7 +159,8 @@ sources:
       id: streamers/youtube-scraper
       memory_mbytes: 1024   # actor default
       smoke: ok 2026-10-04 (5/5 text, date, url, likes)
-      price_usd: {result: 0.004, date_filter: 0.0013}
+      price_usd: {result: 0.004, date_filter_per_item: 0.0013}
+      date_filter: search needs dateFilter (month | year) - without it 9 of 20 were older than 180 days
       success_30d: 0.99
       limit_inputs: [maxResults, maxResultsShorts, maxResultStreams]
       date_inputs: [dateFilter, oldestPostDate]
@@ -212,12 +217,28 @@ sources:
     audience: Search interest over time for any geo; context, not voice.
     language_country_inputs: geo
     actor:
+      id: apify/google-trends-scraper
+      memory_mbytes: 4096   # actor default; at 1024 it timed out
+      bills_per: term           # one item per search term, whole series inside
+      smoke: ok 2026-10-04 at 4096 MB (31 points, 38 s, 0.009 USD); the earlier
+        timeout ran at 1024 MB
+      price_usd: {dataset_item: 0.003}
+      success_30d: 0.60         # 23% of runs time out; short timeout, keep partial items
+      limit_inputs: [maxItems]
+      date_inputs: [timeRange]
+      unit_inputs: {query: searchTerms}
+      fields:
+        series: interestOverTime_timelineData
+        averages: interestOverTime_averages
+    fallback:
       id: khadinakbar/google-trends-scraper
       memory_mbytes: 1024   # actor default
+      bills_per: point          # one item per data point
       smoke: ok 2026-10-04 (geo NL honoured; 5/5 date + value)
       price_usd: {result_item: 0.005, actor_start: 0.00005}
       success_30d: 0.91
       limit_inputs: [maxResults]  # ALWAYS set: default 500 items = USD 2.50
+      cost_note: bills per data point - 30 points = 0.18 USD (2026-10-04); ~20x the primary
       date_inputs: [timeframe]
       unit_inputs: {query: keywords}
       required_inputs: {dataTypes: [interest_over_time]}
@@ -225,18 +246,6 @@ sources:
         date: date              # e.g. "Jul 4, 2026"
         value: value
         partial: is_partial
-    fallback:
-      id: apify/google-trends-scraper
-      memory_mbytes: 4096   # actor default; the smoke timeout ran at 1024, which may have hurt
-      smoke: timed out at 240 s on 2026-10-04 (widgets never loaded, 0 items)
-      price_usd: {dataset_item: 0.003}
-      success_30d: 0.60         # 23% of runs time out; keep partial items
-      limit_inputs: [maxItems]
-      date_inputs: [timeRange]
-      unit_inputs: {query: searchTerms}
-      fields:
-        series: interestOverTime_timelineData
-        averages: interestOverTime_averages
 
   instagram:
     kind: apify

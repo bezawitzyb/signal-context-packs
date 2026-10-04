@@ -1,0 +1,118 @@
+{
+ "snacks|NL|nl": {
+  "pages": [
+   {
+    "url": "https://www.zwangerschapspagina.nl/threads/typisch-nederlandse-snacks-en-of-producten.704144/",
+    "page_type": "forum",
+    "language": "nl",
+    "why": "Forum discussion about typical Dutch snacks with multiple participants sharing recommendations and opinions"
+   },
+   {
+    "url": "https://forum.viva.nl/eten/beterschap-snackbox/list_messages/515684",
+    "page_type": "forum",
+    "language": "nl",
+    "why": "Dutch forum discussion about snack boxes with user recommendations and suggestions"
+   },
+   {
+    "url": "https://forum.viva.nl/eten/maak-je-eigen-top-10-lekkerste-snacks/list_messages/24919",
+    "page_type": "forum",
+    "language": "nl",
+    "why": "Forum thread where users create personal top 10 lists of favorite snacks with detailed comments"
+   },
+   {
+    "url": "https://www.snack-nieuws.nl/tag/vragen/",
+    "page_type": "qa",
+    "language": "nl",
+    "why": "Dutch snack news site with Q&A section about popular snacks and sauces"
+   },
+   {
+    "url": "https://nederlandreview.nl/eten-drinken/snackje-ervaringen-beoordelingen-reviews",
+    "page_type": "review",
+    "language": "nl",
+    "why": "Dutch review site for snack products with user reviews and ratings"
+   },
+   {
+    "url": "https://www.trustpilot.com/review/snacks.com",
+    "page_type": "review",
+    "language": "nl",
+    "why": "Review platform with Dutch user reviews of snack products"
+   }
+  ]
+ },
+ "wärmepumpe erfahrungen|DE|de": {
+  "pages": [
+   {
+    "url": "https://www.haustechnikdialog.de/Forum/t/268590/Waermepumpe-im-Altbau-unsere-Erfahrungen",
+    "page_type": "forum",
+    "language": "de",
+    "why": "Forum thread about heat pump experiences in old buildings with user discussions"
+   },
+   {
+    "url": "https://www.haustechnikdialog.de/Forum/30/Waermepumpen",
+    "page_type": "forum",
+    "language": "de",
+    "why": "Active heat pump forum section with multiple recent discussion threads"
+   },
+   {
+    "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
+    "page_type": "forum",
+    "language": "de",
+    "why": "Forum discussion about real heat pump installation experiences with user reports"
+   },
+   {
+    "url": "https://www.photovoltaikforum.com/thread/221419-erfahrungen-mit-einer-w%C3%A4rmepumpe-nach-2-jahren/",
+    "page_type": "forum",
+    "language": "de",
+    "why": "Forum thread about 2-year heat pump experience with detailed user reports"
+   },
+   {
+    "url": "https://www.hobby-wohnmobilforum.de/forum/thread/19578-wer-hat-erfahrung-oder-meinung-zu-w%C3%A4rmepumpen/",
+    "page_type": "forum",
+    "language": "de",
+    "why": "Forum discussion about heat pump experience and opinions from community members"
+   },
+   {
+    "url": "https://green-24.de/forum/eure-erfahrungen-mit-waermepumpen-t109428.html",
+    "page_type": "forum",
+    "language": "de",
+    "why": "Forum thread collecting user experiences with heat pumps"
+   },
+   {
+    "url": "https://akkudoktor.net/t/erfahrung-luft-luft-waermepumpe/28486",
+    "page_type": "forum",
+    "language": "de",
+    "why": "Forum discussion about air-air heat pump experiences and advice"
+   },
+   {
+    "url": "https://www.waermepumpenforum.com/",
+    "page_type": "forum",
+    "language": "de",
+    "why": "Dedicated heat pump forum for experiences, planning and help"
+   },
+   {
+    "url": "https://de.trustpilot.com/review/waermepumpen-preisvergleich.de",
+    "page_type": "review",
+    "language": "de",
+    "why": "Review page with customer experiences about heat pump comparison service"
+   },
+   {
+    "url": "https://www.thermondo.de/leistungen/kundenmeinungen/",
+    "page_type": "review",
+    "language": "de",
+    "why": "Customer testimonials and experiences with heat pump installation service"
+   },
+   {
+    "url": "https://www.vattenfall.de/waerme/waermepumpe-erfahrungen",
+    "page_type": "review",
+    "language": "de",
+    "why": "Customer experiences and testimonials about heat pump consulting and products"
+   },
+   {
+    "url": "https://www.erfahrungen.com/mit/thermondo/",
+    "page_type": "review",
+    "language": "de",
+    "why": "Customer reviews and experiences with heat pump installation company Thermondo"
+   }
+  ]
+ }
+}
