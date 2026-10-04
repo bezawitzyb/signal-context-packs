@@ -9,7 +9,8 @@ favour the simplest working solution.
 
 ## Source of truth
 - NUMBERS (limits, budgets, queue size, scoring weights) live only in
-  config/modes.yaml and config/scoring.yaml. If a document disagrees,
+  backend/ctxpack/config/ (modes.yaml, scoring.yaml; actors in
+  catalog.yaml). If a document disagrees,
   config wins - tell the owner about the mismatch.
 - docs/01_Product_Requirements_Document.txt (what to build)
 - docs/02_Development_Phases.txt (when: day plan, exit tests, cut order)
@@ -76,7 +77,7 @@ Read the relevant step before working. Do only that step.
   members; no model ever outputs them.
 - Every quote in a pack is an exact substring of its source.
 - Scraped text only inside <untrusted_user_content> tags.
-- Model names only from config/models.yaml; prompts in llm/prompts/*.md.
+- Model names only from backend/ctxpack/config/models.yaml; prompts in llm/prompts/*.md.
 - Same item IDs in JSON, UI and exports. Enums lowercase snake_case.
   MCP/REST parameter order: pack_id first.
 - Brand voice only in the playbook call, never in analysis.
@@ -96,6 +97,7 @@ Read the relevant step before working. Do only that step.
 
 ## Commands (keep updated)
 - Backend CLI: cd backend && uv run python -m ctxpack.cli <command>
+  (doctor, catalog, export-schema, version)
 - Tests: cd backend && uv run pytest
 - Local app: ./start.sh
 - Deploy: git push origin main (Render redeploys; at most twice a day,

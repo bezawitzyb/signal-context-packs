@@ -1,6 +1,21 @@
-# Tool catalogue. Typical latencies are PRD 8.3 defaults; Step 1.6
-# replaces them with measured values. Tool descriptions quote them.
+# Source catalogue (guide Step 1.4, Appendix F3).
+# Actors verified live on 2026-10-04 against the public Apify API:
+# public, not deprecated, recent build, 30-day run success, price, input
+# fields and output fields. Re-verify before relying on them - actor IDs,
+# inputs and prices change.
+#
+# Each source lists the KINDS of unit the agent may pick (subreddit,
+# hashtag, channel, domain, query) and general audience notes. It NEVER
+# lists communities, hashtags or domains for a brief or a market: the
+# agent decides where to look; tools enforce limits from modes.yaml.
+#
+# price_usd values are copied from the actor's public pricing on the
+# verification date (pay per event). Run budgets live in modes.yaml.
+# fields: where each Document field is read from in the actor output.
+# author fields are hashed in the same function that reads them.
 
+# Typical latencies are PRD 8.3 defaults; Step 1.6 replaces them with
+# measured values. Tool descriptions quote them.
 tool_latency:
   web_search: "usually 10-20 s"
   fetch_and_segment: "usually 20-60 s"
@@ -10,3 +25,329 @@ tool_latency:
   search_instagram: "usually 60-180 s"
   get_trends: "usually 30-60 s"
   coverage_report: "instant"
+
+verified_on: "2026-10-04"
+
+sources:
+  reddit:
+    kind: apify
+    platform: reddit
+    tool: search_reddit
+    unit_types: [subreddit, query]
+    audience: >-
+      English-heavy, skews younger and male; strong for candid first-person
+      problems, comparisons and "is it worth it" threads. Non-English
+      markets often have national subreddits but smaller volume.
+    language_country_inputs: none (filter language in the relevance step)
+    actor:
+      id: harshmaur/reddit-scraper
+      memory_mbytes: 512   # actor default
+      smoke: ok 2026-10-04 (12/12 text, date, url, votes; posts and comments)
+      price_usd: {result: 0.002, init: 0.02}
+      success_30d: 0.99
+      limit_inputs: [maxPostsCount, maxCommentsCount, maxCommentsPerPost]
+      overshoot: billed 12 results with max_items 10 - count items, never trust the cap alone
+      date_inputs: [searchTime, postedAfter, postedBefore, commentedAfter]
+      unit_inputs: {query: searchTerms, subreddit: withinCommunity}
+      comments: inline (crawlCommentsPerPost true, maxCommentsPerPost)
+      notes: keep aiAnalysis and all mcp* inputs OFF (extra charges)
+      fields:                   # posts and comments use different names (dataType)
+        text: [title, body]
+        date: {post: createdAt, comment: commentCreatedAt}
+        url: {post: postUrl, comment: url}
+        permalink: {comment: url}
+        engagement: [score, upVotes, commentUpVotes, commentsCount]
+        author: authorName
+    fallback:
+      id: trudax/reddit-scraper-lite
+      memory_mbytes: 2048   # actor default; bills 0.02 per GB at start (0.04)
+      smoke: ok 2026-10-04, BUT no vote/score fields in the output (engagement empty)
+      min_items: 10            # fails 'Invalid input' below 10
+      price_usd: {result: 0.004, actor_start_per_gb: 0.02}
+      success_30d: 0.86
+      limit_inputs: [maxItems, maxPostCount, maxComments]
+      date_inputs: [postDateLimit, commentDateLimit, time]
+      unit_inputs: {query: searches, subreddit: searchCommunityName}
+      fields:
+        text: [title, body]
+        date: createdAt
+        url: url
+        permalink: url
+        engagement: []
+        author: username
+
+  tiktok:
+    kind: apify
+    platform: tiktok
+    tool: search_tiktok
+    unit_types: [hashtag, query]
+    audience: >-
+      Under-35 heavy, trend and slang driven; captions are short, the
+      real voice is in the comments (chained actor).
+    language_country_inputs: proxyCountryCode (extra 0.0013 per run)
+    actor:
+      id: clockworks/tiktok-scraper
+      memory_mbytes: 4096   # actor default
+      smoke: ok 2026-10-04 (5/5 text, date, url, likes)
+      min_max_charge_usd: 0.50  # Apify refuses a lower per-run cap; max_items bounds real cost
+      price_usd: {result: 0.0037, actor_start: 0.001, scrape_as_in_country: 0.0013}
+      success_30d: 0.99
+      limit_inputs: [resultsPerPage]
+      date_inputs: [oldestPostDateUnified, newestPostDate]
+      unit_inputs: {query: searchQueries, hashtag: hashtags}
+      notes: keep all download, AI and transcription inputs OFF
+      fields:
+        text: [text]
+        date: createTimeISO
+        url: webVideoUrl
+        engagement: [diggCount, commentCount, shareCount, playCount]
+        author: authorMeta.name
+    fallback:
+      id: apidojo/tiktok-scraper
+      memory_mbytes: 256   # actor default
+      smoke: not run (metadata verified only)
+      price_usd: {dataset_item: 0.0003}
+      success_30d: 0.96
+      limit_inputs: [maxItems]
+      date_inputs: [dateRange]
+      unit_inputs: {query: keywords, hashtag: startUrls}
+      fields:
+        text: [title]
+        date: uploadedAt
+        url: postPage
+        engagement: [likes, comments, shares, views]
+        author: channel.username
+    comments:
+      actor:
+        id: clockworks/tiktok-comments-scraper
+        memory_mbytes: 4096   # actor default
+        smoke: ok 2026-10-04 (5/5 text, date, url, likes)
+        price_usd: {result: 0.00125}
+        success_30d: 1.00
+        limit_inputs: [commentsPerPost, maxRepliesPerComment]
+        input_from_parent: postURLs
+        fields:
+          text: [text]
+          date: createTimeISO
+          url: videoWebUrl
+          permalink: null       # no comment permalink; cid kept as id
+          engagement: [diggCount, replyCommentTotal]
+          author: uniqueId
+      fallback:
+        id: apidojo/tiktok-comments-scraper
+        memory_mbytes: 256   # actor default
+        smoke: not run (metadata verified only)
+        price_usd: {dataset_item: 0.0003}
+        success_30d: 1.00
+        limit_inputs: [maxItems]
+        input_from_parent: startUrls
+
+  youtube:
+    kind: apify
+    platform: youtube
+    tool: search_youtube
+    unit_types: [channel, query]
+    audience: >-
+      Broad ages; reviews, tutorials and comparisons. Video text is
+      creator voice; the audience voice is in the comments (chained).
+    language_country_inputs: none on the primary (query in the target language)
+    actor:
+      id: streamers/youtube-scraper
+      memory_mbytes: 1024   # actor default
+      smoke: ok 2026-10-04 (5/5 text, date, url, likes)
+      price_usd: {result: 0.004, date_filter: 0.0013}
+      success_30d: 0.99
+      limit_inputs: [maxResults, maxResultsShorts, maxResultStreams]
+      date_inputs: [dateFilter, oldestPostDate]
+      unit_inputs: {query: searchQueries, channel: startUrls}
+      notes: keep subtitles, transcription and AI inputs OFF
+      fields:
+        text: [title, text]
+        date: date
+        url: url
+        engagement: [likes, commentsCount, viewCount]
+        author: channelName
+    fallback:
+      id: apidojo/youtube-scraper
+      memory_mbytes: 256   # actor default
+      smoke: not run (metadata verified only)
+      price_usd: {dataset_item: 0.0005}
+      success_30d: 0.82
+      limit_inputs: [maxItems]
+      date_inputs: [uploadDate]
+      unit_inputs: {query: keywords, channel: youtubeHandles}
+      language_country_inputs: gl, hl
+    comments:
+      actor:
+        id: streamers/youtube-comments-scraper
+        memory_mbytes: 1024   # actor default
+        min_max_charge_usd: 0.50
+        smoke: ok 2026-10-04 (5/5; dates relative, e.g. '1 day ago')
+        price_usd: {result: 0.002}
+        success_30d: 0.99
+        limit_inputs: [maxComments]
+        date_inputs: [oldestCommentDate]
+        input_from_parent: startUrls
+        fields:
+          text: [comment]
+          date: publishedTimeText   # relative ("3 weeks ago"); cleaning resolves it
+          url: pageUrl
+          permalink: pageUrl + "&lc=" + cid
+          engagement: [voteCount, replyCount]
+          author: author
+      fallback:
+        id: apidojo/youtube-comments-scraper
+        memory_mbytes: 256   # actor default
+        smoke: not run (metadata verified only)
+        price_usd: {dataset_item: 0.0005, query: 0.001}
+        success_30d: 1.00
+        limit_inputs: [maxItems]
+        input_from_parent: startUrls
+
+  google_trends:
+    kind: apify
+    platform: null              # external signal, never a Document
+    tool: get_trends
+    unit_types: [query]
+    audience: Search interest over time for any geo; context, not voice.
+    language_country_inputs: geo
+    actor:
+      id: khadinakbar/google-trends-scraper
+      memory_mbytes: 1024   # actor default
+      smoke: ok 2026-10-04 (geo NL honoured; 5/5 date + value)
+      price_usd: {result_item: 0.005, actor_start: 0.00005}
+      success_30d: 0.91
+      limit_inputs: [maxResults]  # ALWAYS set: default 500 items = USD 2.50
+      date_inputs: [timeframe]
+      unit_inputs: {query: keywords}
+      required_inputs: {dataTypes: [interest_over_time]}
+      fields:
+        date: date              # e.g. "Jul 4, 2026"
+        value: value
+        partial: is_partial
+    fallback:
+      id: apify/google-trends-scraper
+      memory_mbytes: 4096   # actor default; the smoke timeout ran at 1024, which may have hurt
+      smoke: timed out at 240 s on 2026-10-04 (widgets never loaded, 0 items)
+      price_usd: {dataset_item: 0.003}
+      success_30d: 0.60         # 23% of runs time out; keep partial items
+      limit_inputs: [maxItems]
+      date_inputs: [timeRange]
+      unit_inputs: {query: searchTerms}
+      fields:
+        series: interestOverTime_timelineData
+        averages: interestOverTime_averages
+
+  instagram:
+    kind: apify
+    platform: instagram
+    tool: search_instagram
+    unit_types: [hashtag, query]
+    audience: >-
+      Visual, lifestyle and brand-heavy; captions are often promotional,
+      so comments (chained) carry most of the audience voice.
+    language_country_inputs: none (filter language in the relevance step)
+    actor:
+      id: apify/instagram-hashtag-scraper
+      memory_mbytes: 1024   # actor default
+      smoke: ok 2026-10-04 (5/5; returns newest posts, often 0 comments)
+      price_usd: {result: 0.0026}
+      success_30d: 1.00
+      limit_inputs: [resultsLimit]
+      date_inputs: []           # no date filter; cleaning drops old posts
+      unit_inputs: {hashtag: hashtags, query: keywordSearch}
+      fields:
+        text: [caption]
+        date: timestamp
+        url: url
+        engagement: [likesCount, commentsCount]
+        author: ownerUsername
+    fallback:
+      id: apify/instagram-scraper
+      memory_mbytes: 1024   # actor default
+      smoke: not run (metadata verified only)
+      price_usd: {result: 0.0027}
+      success_30d: 1.00
+      limit_inputs: [resultsLimit, searchLimit]
+      date_inputs: [onlyPostsNewerThan]
+      unit_inputs: {hashtag: search, query: search}
+    comments:
+      actor:
+        id: apify/instagram-comment-scraper
+        memory_mbytes: 1024   # actor default
+        smoke: ok 2026-10-04 (5/5 text, date, url, comment permalink, likes)
+        price_usd: {comment: 0.0026}
+        success_30d: 1.00
+        limit_inputs: [resultsLimit]
+        input_from_parent: directUrls
+        fields:
+          text: [text]
+          date: timestamp
+          url: postUrl
+          permalink: commentUrl
+          engagement: [likesCount, repliesCount]
+          author: ownerUsername
+      fallback: null            # none verified; on failure keep posts, skip comments
+
+  web_forums:
+    kind: web
+    platform: web_forum
+    tool: web_search + fetch_and_segment
+    unit_types: [domain, query]
+    audience: >-
+      Local-language forums and Q&A sites; often the best first-person
+      voice in non-English markets. Login pages and JavaScript-only pages
+      are skipped and logged.
+    language_country_inputs: query language + country in the search prompt
+  web_reviews:
+    kind: web
+    platform: web_review
+    tool: web_search + fetch_and_segment
+    unit_types: [domain, query]
+    audience: Review sites and retailer reviews; ratings plus objections.
+    language_country_inputs: query language + country in the search prompt
+  web_editorial:
+    kind: web
+    platform: web_editorial
+    tool: web_search + fetch_and_segment
+    unit_types: [domain, query]
+    audience: News and articles; context only, never counted as audience voice.
+    language_country_inputs: query language + country in the search prompt
+
+# Rules for collect/apify.py (Step 1.6), learned from the 2026-10-04 smoke test.
+call_rules:
+  budget_check: >-
+    Check the remaining budget against the EXPECTED cost (items x price +
+    start fee from this file), not against max_charge. Some actors refuse
+    a per-run cap below min_max_charge_usd (0.50); that cap is only a
+    last-resort ceiling.
+  count_items: >-
+    Actors can return more than max_items (reddit billed 12 of 10). Count
+    items in code, keep at most the limit, and keep a 20% cost margin.
+  final_cost: >-
+    usageTotalUsd settles after the run ends (seen as 0 at first). Re-read
+    the run after it finishes and record that billed cost.
+  chain_comments: >-
+    Only chain comment actors on posts with a comment count above 0,
+    highest first. Newest posts (instagram hashtag) often have none.
+  missing_engagement: >-
+    An actor with no engagement fields (engagement: []) gives unknown
+    engagement (null percentile), never 0.
+  optional_sources: >-
+    google_trends is context only: short timeout (about 120 s), never
+    blocks a run, at most actor then fallback.
+  memory: Always pass memory_mbytes from this file.
+
+web_pricing_note: >-
+  web search about USD 10 per 1,000 searches plus tokens; web fetch is
+  tokens only (re-check current Anthropic prices before a paid run).
+
+# Verified and rejected on 2026-10-04 (kept so the choice is auditable).
+rejected:
+  trudax/reddit-scraper: deprecated by its author
+  (trudax/reddit-scraper-lite moved to fallback: no vote counts in its output)
+  fatihtahta/reddit-scraper-search-fast: healthy, but a third reddit option adds nothing
+  clockworks/free-tiktok-scraper: same code and vendor as the primary, so no real fallback
+  apidojo/instagram-hashtag-scraper: 0.016 per keyword query makes small runs expensive
+  data_xplorer/google-trends-fast-scraper: smoke 2026-10-04 ignored keyword and geo; returns the US trending-now list
+  agenscrape/google-trends-scraper: 0.025 per item

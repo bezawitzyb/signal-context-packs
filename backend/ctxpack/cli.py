@@ -107,6 +107,33 @@ def export_schema() -> None:
 
 
 @app.command()
+def catalog() -> None:
+    """Print the source catalogue: actors, fallbacks, limits and unit types."""
+    from ctxpack.config import load_yaml
+
+    cat = load_yaml("catalog")
+
+    def actor(a: dict | None) -> str:
+        return f"{a['id']} ({a['success_30d']:.0%} ok)" if a else "none verified"
+
+    console.print(f"[bold]Sources[/bold] (actors verified {cat['verified_on']})")
+    for name, src in cat["sources"].items():
+        console.print(f"\n[bold]{name}[/bold]  units: {', '.join(src['unit_types'])}")
+        if src["kind"] == "web":
+            rows = [("tool", src["tool"]), ("limits", "modes.yaml web_pages_per_call_max")]
+        else:
+            comments = src.get("comments")
+            rows = [
+                ("actor", actor(src["actor"])),
+                ("fallback", actor(src.get("fallback"))),
+                ("comments", f"{actor(comments['actor'])}, fallback {actor(comments.get('fallback'))}" if comments else "-"),
+                ("limits", ", ".join(src["actor"]["limit_inputs"])),
+            ]
+        for label, value in rows:
+            console.print(f"  {label:<9}{value}", soft_wrap=False, highlight=False)
+
+
+@app.command()
 def version() -> None:
     """Print the package version."""
     from importlib.metadata import version as pkg_version
