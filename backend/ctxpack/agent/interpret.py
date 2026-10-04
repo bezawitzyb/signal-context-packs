@@ -150,7 +150,7 @@ def estimate(mode: Mode | str) -> RunEstimate:
     m = Mode(mode)
     lim = mode_limits(m.value)
     low, high = lim["typical_usd"]
-    return RunEstimate(mode=m, max_usd=round(lim["apify_usd"] + lim["llm_usd"], 2),
+    return RunEstimate(mode=m, max_usd=round(lim["apify_usd"] + lim["llm_usd"] + lim["analysis_llm_usd"], 2),
                        typical_usd_low=low, typical_usd_high=high, typical_minutes=lim["typical_minutes"],
                        collection_secs=lim["collection_secs"], max_tool_calls=lim["max_tool_calls"])
 

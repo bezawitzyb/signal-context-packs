@@ -12,8 +12,9 @@ Collection is finished once runs.finish_reason is set; a resumed run then
 starts at extracting from its saved corpus (the same path as --from-run).
 
 Collection is the agent loop (Step 2.4, collect/loop.py); extracting is
-analysis/extract.py (Step 3.1); clustering..verifying and the pack itself
-are placeholders filled in by later steps.
+analysis/extract.py (Step 3.1); clustering is analysis/cluster.py + metrics.py
+(Step 3.2); writing, verifying and the pack itself are placeholders filled
+in by later steps.
 """
 
 from __future__ import annotations
@@ -197,6 +198,15 @@ async def extract_stage(run_id: str) -> None:
     await extract_run(run_id, brief_context(db.get_run(run_id)))
 
 
+async def cluster_stage(run_id: str) -> None:
+    """Clustering (Step 3.2): one reasoner call, the membership check, then the metrics (code only)."""
+    from ctxpack.analysis.cluster import cluster_run
+    from ctxpack.analysis.metrics import compute_run
+
+    await cluster_run(run_id, brief_context(db.get_run(run_id)))
+    compute_run(run_id)
+
+
 async def _placeholder(run_id: str) -> None:
     return None
 
@@ -208,7 +218,7 @@ async def build_pack_placeholder(run_id: str, partial: bool) -> str | None:
 
 ANALYSIS_STAGES: list[tuple[RunStage, StageFn]] = [
     (RunStage.extracting, extract_stage),
-    (RunStage.clustering, _placeholder),
+    (RunStage.clustering, cluster_stage),
     (RunStage.writing, _placeholder),
     (RunStage.verifying, _placeholder),
 ]
@@ -232,9 +242,9 @@ async def run_pipeline(run_id: str, *, collect: StageFn | None = None,
     run = db.get_run(run_id)
     stage = RunStage.collecting
     try:
-        with tracking(run_id, llm_limit_usd=mode_limits(run.mode)["llm_usd"]):
-            partial = False
-            if run.finish_reason is None:
+        limits = mode_limits(run.mode)
+        if run.finish_reason is None:
+            with tracking(run_id, llm_limit_usd=limits["llm_usd"]):  # collection budget
                 db.set_stage(run_id, stage)
                 try:
                     await collect(run_id)
@@ -243,9 +253,11 @@ async def run_pipeline(run_id: str, *, collect: StageFn | None = None,
                 except BudgetExceeded as exc:
                     db.update_run(run_id, finish_reason=FinishReason.budget_limit, error=str(exc))
                 record_memory(run_id, stage)
-            else:
-                log.info("run %s: collection already finished, resuming from the saved corpus", run_id)
+        else:
+            log.info("run %s: collection already finished, resuming from the saved corpus", run_id)
 
+        # Analysis has its own budget, so an expensive collection never starves the pack.
+        with tracking(run_id, llm_limit_usd=limits["analysis_llm_usd"], analysis=True):
             partial = db.get_run(run_id).finish_reason in PARTIAL_REASONS
             if not partial:
                 try:

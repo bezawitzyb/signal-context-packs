@@ -472,7 +472,7 @@ def extract(
 ) -> None:
     """Step 3.1 on a saved corpus: extraction for every relevant doc, then a few enriched docs + cost.
 
-    The cost is added to that run (its LLM budget applies) and to today's spend.
+    The cost is added to that run (its analysis LLM budget applies) and to today's spend.
     """
     import asyncio
     import json
@@ -493,15 +493,15 @@ def extract(
 
     relevant = db.get_documents(from_run, relevant_only=True)
     todo = pending(from_run, redo=redo, limit=limit or None)
-    limit_usd = mode_limits(run.mode)["llm_usd"]
+    limit_usd = mode_limits(run.mode)["analysis_llm_usd"]
     console.print(f"run {run.id} ({run.brief_text[:50]}) | relevant docs {len(relevant)} | to extract {len(todo)} "
                   f"({sum(len(d.text) for d in todo)} chars)", highlight=False)
-    console.print(f"estimated max cost ${estimate_usd(todo):.2f} | run LLM spend so far ${run.cost_llm_usd:.2f} "
-                  f"of ${limit_usd:.2f}", highlight=False)
+    console.print(f"estimated max cost ${estimate_usd(todo):.2f} | run analysis LLM spend so far "
+                  f"${run.cost_analysis_llm_usd or 0:.2f} of ${limit_usd:.2f}", highlight=False)
     if todo and not yes and not get_settings().llm_fake:
         typer.prompt("Press Enter to start (Ctrl-C to cancel)", default="", show_default=False)
 
-    with tracking(run.id, llm_limit_usd=limit_usd) as t:
+    with tracking(run.id, llm_limit_usd=limit_usd, analysis=True) as t:
         before = t.spent_usd
         outcome = asyncio.run(extract_run(run.id, orchestrator.brief_context(run), redo=redo, limit=limit or None))
         spent = t.spent_usd - before
@@ -521,9 +521,99 @@ def extract(
                   f"phrases kept {outcome.phrases_kept} dropped (not exact) {outcome.phrases_dropped} | "
                   f"done {len(done)} of {len(relevant)} relevant", highlight=False)
     console.print(f"[bold]COST[/bold] this step ${spent:.4f} in {outcome.calls} calls | tokens in {t.input_tokens} "
-                  f"out {t.output_tokens} | run LLM total now ${t.spent_usd:.3f}", highlight=False)
+                  f"out {t.output_tokens} | run analysis ${t.budget_spent_usd:.3f} of ${limit_usd:.2f} | "
+                  f"run LLM total ${t.spent_usd:.3f}", highlight=False)
     if outcome.missing:
         raise typer.Exit(1)
+
+
+@app.command()
+def cluster(
+    from_run: str = typer.Option(..., "--from-run", help="Run id whose extracted corpus is clustered"),
+    redo: bool = typer.Option(False, "--redo", help="Delete the saved clusters and cluster again"),
+    yes: bool = typer.Option(False, "--yes", help="Do not wait for Enter before the paid calls"),
+) -> None:
+    """Step 3.2 on a saved corpus: one clustering call, the membership check, then the metrics (code).
+
+    Prints clusters with verified-member counts, rejections, platform lens and top opportunities.
+    The cost is added to that run (its analysis LLM budget applies) and to today's spend.
+    """
+    import asyncio
+
+    from ctxpack import db, orchestrator
+    from ctxpack.analysis import cluster as clu
+    from ctxpack.analysis.metrics import compute_run
+    from ctxpack.config import mode_limits
+    from ctxpack.llm.client import tracking
+
+    db.init_engine()
+    run = db.get_run(from_run)
+    if run is None or not run.plan or run.finish_reason is None:
+        console.print(f"{BAD} run {from_run} not found or has not finished collecting")
+        raise typer.Exit(1)
+    relevant = db.get_documents(from_run, relevant_only=True)
+    if any(d.extraction is None for d in relevant if not d.short_form):
+        console.print(f"{BAD} some relevant docs have no extraction yet: run extract --from-run {from_run} first")
+        raise typer.Exit(1)
+    saved = [] if redo else db.get_clusters(from_run)
+    limit_usd = mode_limits(run.mode)["analysis_llm_usd"]
+    est = 0.0 if saved and all((c.details or {}).get("verified") for c in saved) else clu.estimate_usd(relevant)
+    console.print(f"run {run.id} ({run.brief_text[:50]}) | relevant docs {len(relevant)} | saved clusters "
+                  f"{len(saved)}", highlight=False)
+    console.print(f"estimated max cost ${est:.2f} | run analysis LLM spend so far "
+                  f"${run.cost_analysis_llm_usd or 0:.2f} of ${limit_usd:.2f}", highlight=False)
+    if est and not yes and not get_settings().llm_fake:
+        typer.prompt("Press Enter to start (Ctrl-C to cancel)", default="", show_default=False)
+
+    with tracking(run.id, llm_limit_usd=limit_usd, analysis=True) as t:
+        before = t.spent_usd
+        out = asyncio.run(clu.cluster_run(run.id, orchestrator.brief_context(run), redo=redo))
+        spent = t.spent_usd - before
+    analysis = compute_run(run.id)
+
+    console.print(f"\n[bold]CLUSTERS[/bold] (verified of proposed; rejected by the check)")
+    flagged = []
+    for c in db.get_clusters(run.id):
+        st = out.by_cluster.get(c.id, {})
+        proposed, verified = st.get("proposed", len(c.member_ids)), len(c.verified_member_ids)
+        keep = verified / proposed if proposed else 0
+        if proposed and keep < 0.7:
+            flagged.append(c.id)
+        n = c.metrics["counts"]
+        extra = f" = {c.details.get('meaning')}" if c.kind == "lexicon" else ""
+        console.print(f"  {c.id} {c.kind:<12} {n['matching']:>3} of {n['of_total']} | verified {verified}/{proposed}"
+                      f"{' [red]<70%[/red]' if c.id in flagged else ''} | {c.label}{extra}", highlight=False)
+        if c.kind not in ("lexicon", "competitor") and c.details.get("point"):
+            console.print(f"       [dim]{c.details['point']}[/dim]", highlight=False)
+    share = out.verified / out.proposed if out.proposed else 0
+    console.print(f"\n[bold]CHECK[/bold] pairs proposed {out.proposed} | verified {out.verified} ({share:.0%}) | "
+                  f"rejected {out.rejected} | unchecked {out.unchecked} | invented ids dropped {out.invented_ids} | "
+                  f"clusters under 70%: {', '.join(flagged) or 'none'}", highlight=False)
+    console.print("[bold]PLATFORM LENS[/bold]")
+    for lens in analysis["platform_lens"]:
+        top = ", ".join(f"{s['label']} {s['share']:.0%}" for s in lens["theme_shares"][:4])
+        emo = ", ".join(f"{e['emotion']} {e['share']:.0%}" for e in lens["emotion_mix"][:4])
+        console.print(f"  {lens['platform']}: {lens['kept_posts']} posts | themes: {top} | emotions: {emo}",
+                      highlight=False)
+    if not analysis["platform_lens"]:
+        console.print("  (no platform with 15+ relevant posts)")
+    console.print("[bold]COMPETITORS[/bold] " + (", ".join(
+        f"{c['name']} {c['mentions']} ({c['share']:.0%})" for c in analysis["competitors"]) or "none with 3+ mentions"),
+        highlight=False)
+    console.print("[bold]TOP OPPORTUNITIES[/bold] (score if non-obvious; novelty is set in Step 3.4)")
+    for o in analysis["opportunities"][:5]:
+        comp = o["components"]
+        console.print(f"  {o['cluster_id']} {o['score_if_non_obvious']:.2f} | demand {comp['demand']:.2f} "
+                      f"dissatisfaction {comp['dissatisfaction']:.2f} saturation {comp['saturation']:.2f} | "
+                      f"{o['members']} members | {o['label']}", highlight=False)
+    cov = analysis["coverage"]
+    console.print(f"[bold]COVERAGE[/bold] grade {cov['grade']} | kept {cov['kept']} | platforms "
+                  f"{', '.join(cov['platforms'])} | languages {', '.join(cov['languages'])} | dated "
+                  f"{cov['dated_share']:.0%} | whats_new {len(analysis['whats_new'])} | what performs "
+                  f"{len(analysis['what_performs'])}", highlight=False)
+    console.print(f"[bold]COST[/bold] this step ${spent:.4f} in {out.calls} calls | tokens in {t.input_tokens} "
+                  f"out {t.output_tokens} | run analysis ${t.budget_spent_usd:.3f} of ${limit_usd:.2f}"
+                  f"{' | resumed: no clustering call' if out.resumed else ''}", highlight=False)
 
 
 @app.command()

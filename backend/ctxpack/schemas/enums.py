@@ -74,6 +74,21 @@ class Emotion(StrEnum):
     indifference = "indifference"
 
 
+class ClusterKind(StrEnum):
+    """What a cluster (CL-xx) groups (F4-7). Tension sides are two paired clusters."""
+
+    theme = "theme"
+    motivation = "motivation"
+    tension_want = "tension_want"
+    tension_but = "tension_but"
+    objection = "objection"
+    segment = "segment"
+    lexicon = "lexicon"
+    moment = "moment"
+    competitor = "competitor"
+    white_space = "white_space"
+
+
 class Stance(StrEnum):
     """A document's stance toward the topic or a brand (extraction, F4-6; PRD 5.5 uses it)."""
 

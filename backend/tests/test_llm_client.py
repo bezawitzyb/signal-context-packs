@@ -240,3 +240,35 @@ def test_a_fetched_page_without_the_tool_call_is_still_retried(real_mode, monkey
         "worker", "sys", "user", web.Segmentation, "record_segments", server_tools=["web_fetch"],
         no_tool_answer=lambda blocks: {"segments": []} if web._fetched_text(blocks)[0] is None else None))
     assert create.await_count == 2 and res.data.segments[0].text == "posts"
+
+
+def test_analysis_has_its_own_budget(real_mode, monkeypatch, temp_db):
+    run = temp_db.create_run("meal prep")
+    temp_db.update_run(run.id, cost_llm_usd=3.40)        # collection spent almost all of its budget
+    create = _mock_client(monkeypatch, _resp(GOOD), _resp(GOOD))
+
+    async def go():
+        with llm.tracking(run.id, llm_limit_usd=2.50, analysis=True) as t:
+            await llm.structured("worker", "sys", "user", RelevanceBatch, "record_relevance")
+        return t
+
+    t = asyncio.run(go())
+    one = (1000 * 1.00 + 200 * 5.00) / 1e6
+    assert create.await_count == 1 and t.budget_spent_usd == pytest.approx(one)
+    saved = temp_db.get_run(run.id)
+    assert saved.cost_analysis_llm_usd == pytest.approx(one)
+    assert saved.cost_llm_usd == pytest.approx(3.40 + one)  # the run total still includes everything
+
+
+def test_analysis_budget_stops_before_the_call(real_mode, monkeypatch, temp_db):
+    run = temp_db.create_run("meal prep")
+    temp_db.update_run(run.id, cost_llm_usd=0.10, cost_analysis_llm_usd=2.50)  # a resume that spent it
+    create = _mock_client(monkeypatch, _resp(GOOD))
+
+    async def go():
+        with llm.tracking(run.id, llm_limit_usd=2.50, analysis=True):
+            await llm.structured("worker", "sys", "user", RelevanceBatch, "record_relevance")
+
+    with pytest.raises(BudgetExceeded, match="analysis"):
+        asyncio.run(go())
+    assert create.await_count == 0

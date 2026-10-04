@@ -59,6 +59,7 @@ class Run(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=utcnow, sa_type=TZ)
     cost_apify_usd: float = 0.0
     cost_llm_usd: float = 0.0
+    cost_analysis_llm_usd: float | None = None  # the part of cost_llm_usd spent after collection (own budget)
     tool_calls: int = 0
     finish_reason: str | None = None
     fallback_used: bool = False
@@ -77,6 +78,8 @@ class Run(SQLModel, table=True):
     # Spend per call type: {"anthropic": {"worker/record_relevance": {calls, usd, tokens...}}, "apify": {actor: ...}}
     cost_breakdown: dict | None = Field(default=None, sa_type=JSON)
     brand_voice: str | None = None    # used ONLY by the playbook call (never in analysis)
+    # Run-level metrics (Step 3.2, code only): platform lens, what performs, competitors, opportunities, coverage
+    analysis: dict | None = Field(default=None, sa_type=JSON)
 
 
 class EventRow(SQLModel, table=True):
@@ -104,6 +107,9 @@ class ClusterRow(SQLModel, table=True):
     label: str
     member_ids: list = Field(default_factory=list, sa_type=JSON)
     verified_member_ids: list = Field(default_factory=list, sa_type=JSON)
+    # point (what every member expresses) and kind-specific fields; "verified": membership check done
+    details: dict | None = Field(default=None, sa_type=JSON)
+    metrics: dict | None = Field(default=None, sa_type=JSON)  # counts, strength, emotion mix... (code only)
 
 
 class PackRow(SQLModel, table=True):
@@ -373,6 +379,23 @@ def save_clusters(run_id: str, clusters: list[ClusterRow]) -> None:
         s.commit()
 
 
+def get_clusters(run_id: str) -> list[ClusterRow]:
+    with session() as s:
+        return sorted(s.exec(select(ClusterRow).where(ClusterRow.run_id == run_id)),
+                      key=lambda c: int(c.id.split("-")[1]))
+
+
+def delete_clusters(run_id: str, ids: list[str] | None = None) -> int:
+    """Clustering again from scratch (--redo), or only the given cluster ids."""
+    with session() as s:
+        stmt = delete(ClusterRow).where(ClusterRow.run_id == run_id)
+        if ids is not None:
+            stmt = stmt.where(ClusterRow.id.in_(ids))
+        result = s.exec(stmt)
+        s.commit()
+        return result.rowcount or 0
+
+
 def save_pack(pack: ContextPack, run_id: str | None = None, featured: bool = False) -> str:
     """Validate and save a pack; returns its id. Links the run to the pack."""
     pack = ContextPack.model_validate(pack.model_dump())
@@ -410,8 +433,9 @@ def list_featured_packs() -> list[PackRow]:
 # --------------------------------------------------------------------------
 
 
-def add_spend(apify_usd: float = 0.0, llm_usd: float = 0.0, run_id: str | None = None) -> None:
-    """Add cost to today's total (and to the run, if given)."""
+def add_spend(apify_usd: float = 0.0, llm_usd: float = 0.0, run_id: str | None = None,
+              analysis: bool = False) -> None:
+    """Add cost to today's total (and to the run, if given; analysis spend also to its own budget)."""
     today = utcnow().date()
     with session() as s:
         row = s.get(Spend, today) or Spend(date=today)
@@ -423,6 +447,8 @@ def add_spend(apify_usd: float = 0.0, llm_usd: float = 0.0, run_id: str | None =
             if run is not None:
                 run.cost_apify_usd += apify_usd
                 run.cost_llm_usd += llm_usd
+                if analysis:
+                    run.cost_analysis_llm_usd = (run.cost_analysis_llm_usd or 0.0) + llm_usd
                 run.updated_at = utcnow()
                 s.add(run)
         s.commit()

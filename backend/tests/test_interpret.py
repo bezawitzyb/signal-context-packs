@@ -48,13 +48,13 @@ def test_fake_mode_returns_plan_and_estimate(mode):
     mode(True)
     out = asyncio.run(ip.interpret("Gen Z and meal prep"))
     assert out.result.plan and out.result.clarifying_question is None
-    assert out.estimate.max_usd == pytest.approx(1.80 + 1.40)       # sum of the quick caps (modes.yaml)
+    assert out.estimate.max_usd == pytest.approx(1.80 + 1.40 + 1.00)  # sum of the quick caps (modes.yaml)
     assert out.usd == 0
 
 
 def test_estimate_comes_from_modes_yaml():
     est = ip.estimate("standard")
-    assert est.max_usd == pytest.approx(4.00 + 3.50)
+    assert est.max_usd == pytest.approx(4.00 + 3.50 + 2.50)
     assert (est.typical_usd_low, est.typical_usd_high, est.typical_minutes) == (5.0, 7.0, 12)
 
 

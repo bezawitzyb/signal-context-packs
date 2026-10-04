@@ -112,7 +112,9 @@ class Tracker:
 
     run_id: str | None = None
     llm_limit_usd: float | None = None
-    spent_usd: float = 0.0                 # starts from the run's saved cost, so a resume keeps the budget
+    analysis: bool = False                 # after collection: own budget (modes.yaml analysis_llm_usd)
+    spent_usd: float = 0.0                 # starts from the run's saved cost (events, breakdown)
+    budget_spent_usd: float = 0.0          # what counts against llm_limit_usd; also starts from the saved cost
     calls: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
@@ -124,29 +126,35 @@ class Tracker:
     _lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
     def check(self) -> None:
-        if self.llm_limit_usd is not None and self.spent_usd >= self.llm_limit_usd:
-            raise BudgetExceeded(f"run LLM budget of ${self.llm_limit_usd:.2f} spent")
+        if self.llm_limit_usd is not None and self.budget_spent_usd >= self.llm_limit_usd:
+            part = "analysis" if self.analysis else "collection"
+            raise BudgetExceeded(f"run {part} LLM budget of ${self.llm_limit_usd:.2f} spent")
 
 
 _tracker: ContextVar[Tracker | None] = ContextVar("llm_tracker", default=None)
 
 
 @contextmanager
-def tracking(run_id: str | None = None, llm_limit_usd: float | None = None) -> Iterator[Tracker]:
+def tracking(run_id: str | None = None, llm_limit_usd: float | None = None,
+             analysis: bool = False) -> Iterator[Tracker]:
     """Record every paid call inside this block to the database and enforce the limits.
+
+    Collection and analysis have separate budgets: with analysis=True, only the
+    run's analysis spend (runs.cost_analysis_llm_usd) counts against llm_limit_usd.
 
     Needs the database (spend table, runs, events). Calls outside any
     tracking() block are only logged (tests, one-off tools).
     """
-    spent, by_call = 0.0, {}
+    spent, budget_spent, by_call = 0.0, 0.0, {}
     if run_id:
         from ctxpack import db
 
         run = db.get_run(run_id)
         spent = run.cost_llm_usd if run else 0.0
+        budget_spent = ((run.cost_analysis_llm_usd or 0.0) if analysis else spent) if run else 0.0
         by_call = copy.deepcopy(((run.cost_breakdown or {}) if run else {}).get("anthropic", {}))  # a resume adds on
-    tracker = Tracker(run_id=run_id, llm_limit_usd=llm_limit_usd, spent_usd=spent, by_call=by_call,
-                      _last_event_usd=spent)
+    tracker = Tracker(run_id=run_id, llm_limit_usd=llm_limit_usd, analysis=analysis, spent_usd=spent,
+                      budget_spent_usd=budget_spent, by_call=by_call, _last_event_usd=spent)
     token = _tracker.set(tracker)
     try:
         yield tracker
@@ -188,6 +196,7 @@ async def _after_paid_call(role: str, name: str, model: str, usage: Any, seconds
         tracker.cache_write_tokens += cw
         tracker.cache_read_tokens += cr
         tracker.spent_usd += usd
+        tracker.budget_spent_usd += usd
         row = tracker.by_call.setdefault(f"{role}/{name}", {})
         for key, value in (("calls", 1), ("usd", usd), ("input_tokens", inp), ("output_tokens", out),
                            ("cache_read_tokens", cr), ("cache_write_tokens", cw), ("web_searches", searches)):
@@ -199,7 +208,7 @@ async def _after_paid_call(role: str, name: str, model: str, usage: Any, seconds
 def _record_spend(tracker: Tracker, usd: float) -> None:
     from ctxpack import db
 
-    db.add_spend(llm_usd=usd, run_id=tracker.run_id)
+    db.add_spend(llm_usd=usd, run_id=tracker.run_id, analysis=tracker.analysis)
     if tracker.run_id and tracker.spent_usd - tracker._last_event_usd >= _models()["client"]["cost_event_step_usd"]:
         _emit_cost(tracker)
 

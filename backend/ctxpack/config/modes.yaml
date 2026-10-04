@@ -6,19 +6,21 @@ modes:
     max_tool_calls: 15
     collection_secs: 300
     apify_usd: 1.80
-    llm_usd: 1.40               # whole run
+    llm_usd: 1.40               # collection: plan + agent loop + tools
+    analysis_llm_usd: 1.00      # after collection: extraction, clustering, writing, verifying, playbook
     unit_share_max: 0.30        # share of item_budget per source unit
     min_relevant: 60
     item_budget: 600            # raw items per run
     items_per_call_max: 40
     web_pages_per_call_max: 5
-    typical_usd: [1.50, 3.00]   # shown on the plan (PRD NFR2); the hard cap is apify_usd + llm_usd
+    typical_usd: [1.50, 3.00]   # shown on the plan (PRD NFR2); the hard cap is apify_usd + llm_usd + analysis_llm_usd
     typical_minutes: 7          # end to end (PRD NFR1)
   standard:
     max_tool_calls: 30
     collection_secs: 600
     apify_usd: 4.00
     llm_usd: 3.50
+    analysis_llm_usd: 2.50
     unit_share_max: 0.30
     min_relevant: 200
     item_budget: 2000
@@ -51,6 +53,16 @@ extraction:
   parallel_max: 5               # worker calls at once
   max_tokens: 12000             # one call's answer (fields + English translations)
   phrases_max: 6                # verbatim phrases kept per doc (exact substrings only)
+
+# Clustering + membership check (guide Step 3.2, prompts F4-7 and F4-9). Same for every mode.
+clustering:
+  digest_max_chars: 240000      # all digests in ONE reasoner call (~70k tokens); summaries shrink to fit
+  digest_summary_chars: 160     # per-doc summary in the digest (shortened first when over the max)
+  max_tokens: 16000             # the clustering answer (member id lists)
+  membership_batch_docs_max: 30 # posts per membership call (one cluster per call)
+  membership_batch_chars_max: 12000
+  membership_parallel_max: 5
+  membership_text_chars: 1000   # each post is cut to this length for the yes/no check
 
 # Collection tools (guide Step 1.6, B8). Same for every mode.
 collection:

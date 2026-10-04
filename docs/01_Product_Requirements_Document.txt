@@ -511,14 +511,21 @@ EPIC C - PROCESSING
        dropped for length), relevance + language (Haiku batches),
        engagement percentiles within platform.
  FR-C3 [P0] Extraction per relevant doc: needs, pains, objections,
-       questions, unanswered_question, brand mentions, verbatim phrases
-       (exact substrings), stance, emotion, humour, code-switching,
-       time/occasion cues, research_question_ids, text_en.
+       questions, unanswered_question, brand mentions (each with a
+       stance), verbatim phrases (exact substrings; code discards the
+       rest), stance, emotion, humour, code-switching, time/occasion
+       cues, text_en (required for every non-English doc; untranslated
+       docs get one retry). research_question_ids come from the
+       relevance step (FR-C2).
  FR-C4 [P0] Clustering in one call over extraction digests: themes,
-       tension sides, objections, segments, lexicon candidates, moments,
-       competitors, white-space candidates - each with member doc ids.
- FR-C5 [P0] Membership check: one batched Haiku pass confirms each
-       member; only verified members count.
+       motivations (need / pain / job), tension sides, objections,
+       segments, lexicon candidates, moments, competitors, white-space
+       candidates - each with member doc ids. Brands are built in code
+       from the extraction's brand mentions (spellings merged); the
+       clusterer's competitor list only normalises names and aliases.
+ FR-C5 [P0] Membership check: lexicon and competitor members are checked
+       in code (the term or brand must appear in the post); every other
+       member by one batched Haiku pass. Only verified members count.
  FR-C6 [P0] Code computes counts, strength, emotion mixes, platform-lens
        statistics, momentum or new-in-30-days, what-performs ranking
        (max 2 per author, 1 per thread), opportunity scores, coverage
@@ -649,12 +656,19 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
   Tool calls        15           30
   Collection time   5 min        10 min
   Apify budget      1.80 USD     4.00 USD
-  LLM budget        1.40 USD     3.50 USD (whole run)
+  LLM budget        1.40 USD     3.50 USD (collection: plan, agent loop,
+                                             tools)
+  Analysis LLM      1.00 USD     2.50 USD (after collection: extraction,
+  budget                                     clustering, writing,
+                                             verifying, playbook)
   Item budget       600 raw items  2,000 raw items
   Per source unit   <= 30% of the item budget
   Minimum to finish >= 60 relevant docs (quick), >= 200 (standard), or
                     budget/time exhausted
   - Tools refuse to run when the budget, call or time limit is reached.
+  - The two LLM budgets are separate, so an expensive collection never
+    starves the pack. Each run stores its total LLM spend and, separately,
+    the part spent on analysis (runs.cost_analysis_llm_usd).
   - finish() is refused unless coverage_report() was called after the last
     collection call; source_verdicts must name every source unit used.
   - The agent can only call the allowlisted tools; no general HTTP, file
@@ -852,9 +866,10 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
 ================================================================================
  NFR1 Performance   Quick <= ~7 min, Standard <= ~12 min end to end; plan
                     visible <= 15 s.
- NFR2 Cost          Quick typically USD 1.50-3, hard cap USD 3.20;
-                    Standard typically USD 5-7, hard cap USD 7.50
-                    (sums of the caps in modes.yaml).
+ NFR2 Cost          Quick typically USD 1.50-3, hard cap USD 4.20;
+                    Standard typically USD 5-7, hard cap USD 10.00
+                    (sums of the three caps in modes.yaml: Apify,
+                    collection LLM, analysis LLM).
  NFR3 Reliability   Partial packs on timeout or stop; fallback plan;
                     retries with backoff; featured packs always available;
                     runs survive a service restart (resume once from the

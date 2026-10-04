@@ -243,9 +243,12 @@ B3. Folder structure
 B4. Database tables
  runs       id, brief_text, mode, status, stage, interpretation (JSON),
             plan (JSON), created_at, updated_at, cost_apify_usd,
-            cost_llm_usd, tool_calls, finish_reason, fallback_used,
-            top_up_used, error, pack_id, requester ("web"|"api"|"mcp"|"cli"),
-            claimed_at, heartbeat_at, resume_count, peak_mem_mb
+            cost_llm_usd, cost_analysis_llm_usd (the part of cost_llm_usd
+            spent after collection), tool_calls, finish_reason,
+            fallback_used, top_up_used, error, pack_id, requester
+            ("web"|"api"|"mcp"|"cli"), claimed_at, heartbeat_at,
+            resume_count, peak_mem_mb, analysis (JSON: run-level metrics
+            from Step 3.2)
  events     run_id, seq, type, payload (JSON), created_at
  documents  id, run_id, platform, source_unit, url, permalink, community,
             text, text_en, language, posted_at, date_precision,
@@ -254,7 +257,9 @@ B4. Database tables
             redacted, short_form, fragment_anchor_start,
             fragment_anchor_end, expires_at
  clusters   id, run_id, kind, label, member_ids (JSON),
-            verified_member_ids (JSON)
+            verified_member_ids (JSON), details (JSON: point and
+            kind-specific fields; verified = membership checked),
+            metrics (JSON: counts, strength, emotion mix... code only)
  packs      id (random), run_id, brief_text, created_at, schema_version,
             pack (JSON), featured (bool), coverage_grade
  spend      date, usd_apify, usd_llm          (daily cap)
@@ -368,7 +373,8 @@ B8. The agent loop (collect/loop.py, tools.py, fallback.py)
   max_tool_calls    15         30
   collection_secs   300        600
   apify_usd         1.80       4.00
-  llm_usd           1.40       3.50   (whole run)
+  llm_usd           1.40       3.50   (collection: plan, loop, tools)
+  analysis_llm_usd  1.00       2.50   (extraction .. playbook, own budget)
   unit_share_max    0.30       0.30   (of the item budget per source unit)
   min_relevant      60         200
   item_budget       600        2000   (raw items per run)
@@ -949,12 +955,21 @@ pay for collection again while iterating.
 --------------------------------------------------------------------------------
 STEP 3.1  Extraction                                  (Day 3, ~60 min)
 --------------------------------------------------------------------------------
-WHAT  analysis/extract.py: worker batches of 20-40 relevant docs (F4-6):
+WHAT  analysis/extract.py: worker batches of up to 30 relevant docs and
+      about 8,000 characters, 5 at once (F4-6; modes.yaml extraction):
       needs, pains, objections, questions, unanswered_question, brand
-      mentions, verbatim_phrases (exact substrings; code discards others),
-      stance, emotion (enum list), humour_or_irony, code_switching,
-      time_occasion_cues, text_en (if not English). Saved to
-      documents.extraction.
+      mentions (name + stance), verbatim_phrases (exact substrings; code
+      discards others), stance, emotion (enum list), humour_or_irony,
+      code_switching, time_occasion_cues, text_en (required if not
+      English). Each item carries its language outside the untrusted
+      wrapper. Skipped or untranslated docs get one retry pass; unknown
+      emotions or stances are dropped in code (no paid retry). Saved to
+      documents.extraction and documents.text_en batch by batch, so a
+      resume only pays for docs not yet done.
+      CLI: extract --from-run RUN_ID [--show 5] [--limit N] [--redo]
+      prints the estimate first, then enriched docs and the cost.
+      Built: NL standard corpus, 231 of 231 docs extracted and
+      translated, 528 exact phrases, USD 0.77.
 PROMPT
   Read CLAUDE.md, Step 3.1 and F4-6. Implement with LLM_FAKE tests, then
   run on the saved NL corpus (--from-run). Show 5 enriched docs + cost.
@@ -966,17 +981,28 @@ CHECK
 STEP 3.2  Clustering, membership check, metrics       (Day 3, ~2 h)
 --------------------------------------------------------------------------------
 WHAT  analysis/cluster.py: ONE reasoner call (F4-7) over compact
-      extraction digests (doc id, platform, short summary, needs, pains,
-      objections, emotion, phrases) returns clusters with member doc ids:
-      themes (5-12, audience-centred), tension sides (paired), objection
+      extraction digests (short id D001.., platform, source, stance,
+      emotion, short summary, needs, pains, objections, questions,
+      brands, phrases, cues) returns clusters with member ids: themes
+      (5-12, audience-centred), motivations (need / pain / job), tension
+      sides (two paired clusters, tension_want and tension_but), objection
       groups, segments (2-4), lexicon candidates (term + doc ids), moments,
-      competitor mentions (normalised names), white-space candidates
-      (recurring unanswered questions, needs nobody serves). short_form
-      posts are sent ONLY for lexicon candidates. If the corpus
-      is too big for one call, split by platform and merge in a second
-      call. Saved to the clusters table as CL-xx.
-      Membership check: one batched worker pass (F4-9, membership mode)
-      confirms each (cluster, doc) pair; only verified_member_ids count.
+      competitors (names + aliases), white-space candidates. Code maps the
+      short ids back and drops invented ones. short_form posts are sent
+      marked SHORT and kept ONLY in lexicon clusters. If the digests are
+      too big for one call (modes.yaml clustering.digest_max_chars), the
+      per-doc summaries shrink until they fit (no platform split: Standard
+      corpora fit in one call). Saved to the clusters table as CL-xx
+      BEFORE the check, so a resume never repeats the clustering call.
+      Brands: competitor clusters are built in code from the extraction's
+      brand mentions (accents and punctuation ignored, a name in brackets
+      is the same brand, product names fold into the brand they start
+      with); the clusterer's list only normalises names and aliases.
+      Membership check: lexicon and competitor members in code (the term
+      or brand must appear in the post); all others by batched worker
+      calls (F4-9, membership mode; one cluster per call, posts cut to
+      1,000 characters), with one retry pass for pairs without a verdict.
+      Only verified_member_ids count.
       analysis/metrics.py (code only; short_form posts excluded from
       every count): counts {matching, of_total};
       strength (members, distinct author hashes, platforms, engagement
@@ -989,8 +1015,18 @@ WHAT  analysis/cluster.py: ONE reasoner call (F4-7) over compact
       thread, grouped by format); competitor share of mentions (>= 3
       mentions); opportunity scores per PRD 5.5
       (demand x dissatisfaction x novelty x (1 - saturation), each 0-1,
-      components stored with the score); coverage grade (a: >= 4 platforms,
-      >= 300 kept, all target languages; d: < 100 kept or 1 platform).
+      components stored with the score; novelty needs non_obvious from
+      Step 3.4, so Step 3.2 shows the score "if non-obvious"); coverage
+      grade (a: >= 4 platforms, >= 300 kept, all target languages; b: >= 3
+      platforms, >= 200 kept; c: >= 2 platforms, >= 100 kept; otherwise
+      d - scoring.yaml metrics.coverage_grade). Cluster metrics are saved
+      in clusters.metrics, run-level metrics in runs.analysis.
+      CLI: cluster --from-run RUN_ID [--redo] prints clusters with
+      verified-of-proposed counts, clusters under 70%, platform lens,
+      competitors, top opportunities, coverage and cost.
+      Built: NL standard corpus, 74 clusters plus brands; 80% of the
+      clusterer's members verified (271 of 338); small clusters (2-4
+      members) are the ones under 70%; USD 0.69 for two runs.
 PROMPT
   Read CLAUDE.md, Step 3.2, F4-7 and F4-9. Implement with tests (changing
   a cluster's members must change its counts). Run on the saved NL
@@ -1744,18 +1780,21 @@ F4. Prompt catalogue (12 prompts in llm/prompts/)
 
  F4-7  CLUSTERER (reasoner): from extraction digests, return clusters
        with member doc ids: 5-12 audience-centred themes (not topic
-       labels); tension pairs ("want X" side, "but Y" side); objection
-       groups; 2-4 segments from evidence only (no stereotypes); lexicon
-       candidates (term + doc ids); moments; normalised competitor names;
-       white-space candidates (recurring unanswered questions, needs
-       nobody serves). Every member must clearly express the cluster's
-       point.
+       labels); motivations (need / pain / job); tension pairs ("want X"
+       side, "but Y" side); objection groups; 2-4 segments from evidence
+       only (no stereotypes); lexicon candidates (term + doc ids);
+       moments; competitor names + aliases (code adds any brand left
+       out); white-space candidates (recurring unanswered questions,
+       needs nobody serves). Every point is ONE simple idea; every member
+       must clearly express the whole point; claim clusters need at least
+       3 members. Never count posts.
 
  F4-8  GENERIC BASELINE (reasoner, no evidence): list 8-12 points a
        generic marketing answer would make about this audience and topic.
 
  F4-9  VERIFIER (worker, batch), three modes:
        membership - does this post express this cluster's point? yes / no
+         (lexicon and competitor members are checked in code instead)
        claim - does this claim follow from its evidence? supported /
          partially / not_supported + short reason
        non_obvious - is this finding already covered by the generic

@@ -44,3 +44,22 @@ opportunity:
   novelty_non_obvious: 1.0
   novelty_obvious: 0.4
   # score = demand x dissatisfaction x novelty x (1 - saturation)
+
+# Metrics (guide Step 3.2). Code only, from VERIFIED members; short_form posts never counted.
+metrics:
+  platform_lens_min_docs: 15    # a platform gets a lens only with this many relevant posts
+  momentum_min_dated: 30        # rising / stable / fading only with this many dated members ...
+  momentum_min_weeks: 8         # ... spread over at least this many weeks ...
+  momentum_change: 0.20         # ... a change of more than this between the first and last third ...
+                                # ... AND Google Trends agrees; otherwise insufficient_data
+  whats_new_days: 30
+  whats_new_min_members: 3      # members dated in the last 30 days
+  whats_new_min_ratio: 2.0      # their share of the cluster vs the share of all dated posts that are that new
+  what_performs_max: 10
+  what_performs_per_author: 2
+  what_performs_per_thread: 1
+  competitor_min_mentions: 3
+  coverage_grade:               # highest grade whose minimums all pass; otherwise d
+    a: {min_platforms: 4, min_kept: 300, all_languages: true}
+    b: {min_platforms: 3, min_kept: 200, all_languages: false}   # b and c: not in the guide (owner to confirm)
+    c: {min_platforms: 2, min_kept: 100, all_languages: false}
