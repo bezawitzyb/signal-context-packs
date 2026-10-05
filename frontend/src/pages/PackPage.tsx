@@ -14,6 +14,7 @@ import { CopyButton } from "../components/CopyButton";
 import { EvidenceDrawer } from "../components/EvidenceDrawer";
 import { AgentJson } from "../components/AgentJson";
 import { Handoff } from "../components/Handoff";
+import { Skeleton } from "../components/Skeleton";
 
 const NAV: [string, string][] = [
   ["summary", "Summary"], ["channels", "Channels & this week"], ["voice", "Voice"], ["tensions", "Tensions & motivations"],
@@ -37,7 +38,7 @@ function Section({ id, title, agent, agentData, name, version, children, note }:
   children: React.ReactNode; note?: React.ReactNode;
 }) {
   return (
-    <section aria-labelledby={id} className="mb-14 break-inside-avoid-page">
+    <section aria-labelledby={id} className="pack-section mb-14">
       <header className="mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-2">
         <h2 id={id} className="scroll-mt-24 text-xl font-semibold tracking-tight text-ink">{title}</h2>
         {note && <p className="text-sm text-ink-3">{note}</p>}
@@ -397,7 +398,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
 
   return (
     <PackContext.Provider value={{ evidence: index.evidence, onOpen: setDrawer }}>
-      <div className="lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
+      <div className="pack-layout lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
         <nav aria-label="Sections" className="hidden print:hidden lg:block">
           <ul className="sticky top-20 space-y-1 text-sm">
             {NAV.map(([id, label]) => <li key={id}><a href={`#${id}`} className="block rounded px-2 py-1 text-ink-2 hover:bg-wash hover:text-ink">{label}</a></li>)}
@@ -410,6 +411,9 @@ export function PackBody({ pack }: { pack: ContextPack }) {
             </p>
             <h1 className="text-3xl font-semibold tracking-tight text-ink">{pack.brief.text}</h1>
             <p className="text-ink-2">{pack.brief.interpreted.audience} · {pack.brief.interpreted.market}</p>
+            <p className="hidden font-mono text-xs text-ink print:block">
+              Context Pack {pack.pack_id} · {pack.generated_at.slice(0, 10)} · coverage grade {pack.snapshot.coverage_grade} · {pack.mode}
+            </p>
             <p className="flex flex-wrap gap-3 text-sm text-ink-2" aria-label="Confidence summary">
               {(Object.keys(GLYPH) as Label[]).map((l) => (
                 <span key={l}><span aria-hidden="true">{GLYPH[l]}</span> {counts[l]} {l}</span>
@@ -438,8 +442,16 @@ export function PackBody({ pack }: { pack: ContextPack }) {
           <div className="mb-10 space-y-2">
             {pack.coverage.thin_evidence && (
               <LimitationCallout title="Thin evidence">
-                This pack does not meet the minimum content bar, so treat its findings as early signals. See Blind spots for what is short;
-                a Standard run, a wider time window or including English discussion can help.
+                This pack does not meet the minimum content bar, so treat its findings as early signals (see Blind spots for what is short).
+                <span className="mt-2 flex flex-wrap gap-2 print:hidden">
+                  {[["Run it as Standard", { mode: "standard" }], ["Widen the time window", { window: "365" }],
+                    ["Include English discussion", { suffix: " (include English-language discussion)" }]].map(([label, o]) => {
+                    const opt = o as { mode?: string; window?: string; suffix?: string };
+                    const q = new URLSearchParams({ brief: pack.brief.text + (opt.suffix ?? ""), mode: opt.mode ?? pack.mode,
+                      ...(opt.window ? { window: opt.window } : {}) });
+                    return <Link key={label as string} to={`/?${q}`} className="rounded border border-ink px-2 py-0.5 text-xs text-ink">{label as string}</Link>;
+                  })}
+                </span>
               </LimitationCallout>
             )}
             {pack.coverage.loop.fallback_used && (
@@ -547,6 +559,6 @@ export function PackPage() {
     getPack(packId).then(setPack).catch((e: Error) => setError(e.message));
   }, [packId]);
   if (error) return <p className="text-ink-2">{error}</p>;
-  if (!pack) return <p className="text-ink-3">Loading the pack…</p>;
+  if (!pack) return <div className="max-w-[760px] lg:ml-[15.5rem]"><Skeleton lines={4} label="Loading the pack" /></div>;
   return <PackBody pack={pack} />;
 }

@@ -1,7 +1,7 @@
 // S1 ASK + PLAN (PRD 10.2, guide Step 4.2): brief, mode, window, brand voice, masked run key ->
 // one clarifying question (answer chips) or the plan to review -> Start (the run joins the queue).
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { ArrowRight, CircleHelp, KeyRound, Loader2, X } from "lucide-react";
 import {
   ApiError, answerQuestion, createRun, getOptions, startRun,
@@ -40,10 +40,11 @@ function usd(x: number) {
 // --- the form -------------------------------------------------------------------------------
 
 export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
+  const [params] = useSearchParams(); // prefill from a thin-evidence option: ?brief=&mode=&window=
   const [options, setOptions] = useState<Options | null>(null);
-  const [brief, setBrief] = useState("");
-  const [mode, setMode] = useState<"quick" | "standard">("quick");
-  const [windowDays, setWindowDays] = useState<number | null>(null);
+  const [brief, setBrief] = useState(params.get("brief") ?? "");
+  const [mode, setMode] = useState<"quick" | "standard">(params.get("mode") === "standard" ? "standard" : "quick");
+  const [windowDays, setWindowDays] = useState<number | null>(params.get("window") ? Number(params.get("window")) : null);
   const [voice, setVoice] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +52,7 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
   const example = useRotatingExample(brief.length > 0);
 
   useEffect(() => {
-    getOptions().then((o) => { setOptions(o); setMode(o.default_mode); }).catch(() => setOptions(null));
+    getOptions().then((o) => { setOptions(o); if (!params.get("mode")) setMode(o.default_mode); }).catch(() => setOptions(null));
     if (keyRef.current) keyRef.current.value = readRunKey(); // the DOM property only - never an attribute
   }, []);
 

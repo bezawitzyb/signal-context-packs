@@ -31,7 +31,9 @@ function resultLine(m: Move): { text: string; tone: "good" | "weak" | "none" | "
   const r = m.result;
   if (!r) return null;
   if (r.status === "limit_reached") return { text: "limit reached - not run", tone: "limit" };
-  if (r.status !== "ok") return { text: r.status, tone: "limit" };
+  if (r.status === "error") return { text: "this source failed - the agent tries elsewhere (see Blind spots)", tone: "limit" };
+  if (r.status === "refused") return { text: "refused - the tools require a fresh coverage check first", tone: "limit" };
+  if (r.status !== "ok") return { text: r.status.replace(/_/g, " "), tone: "limit" };
   if (m.tool === "coverage_report") return { text: "coverage checked", tone: "none" };
   if (m.tool === "finish") return { text: "collection finished", tone: "none" };
   if (m.tool === "web_search" && r.collected === 0) return { text: "pages found for reading", tone: "none" };

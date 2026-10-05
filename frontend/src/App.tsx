@@ -6,6 +6,7 @@ import { RunPage } from "./pages/RunPage";
 import { ReplayPage } from "./pages/ReplayPage";
 import { ComponentsPreview } from "./pages/ComponentsPreview";
 import { NotFound } from "./pages/NotFound";
+import { EvalsPage } from "./pages/EvalsPage";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="packs/:packId/replay" element={<ReplayPage />} />
         <Route path="runs/:runId" element={<RunPage />} />
         <Route path="components" element={<ComponentsPreview />} />
+        <Route path="evals" element={<EvalsPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

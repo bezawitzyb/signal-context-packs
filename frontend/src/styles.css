@@ -45,6 +45,10 @@ body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   html, body { background: #fff; }
   button, dialog, nav[aria-label="Sections"] { display: none !important; }
   main { max-width: none !important; padding: 0 !important; }
+  .pack-layout { display: block !important; }                     /* the section menu is hidden: one column */
+  .pack-layout > div { max-width: none !important; }
   a { color: inherit; text-decoration: none; }
-  section { break-inside: avoid-page; }
+  .pack-section ~ .pack-section { break-before: page; }          /* each main section starts on a clean page */
+  article, figure, li { break-inside: avoid; }
+  a.print-url::after { content: " " attr(href); font-size: 0.68rem; word-break: break-all; }
 }

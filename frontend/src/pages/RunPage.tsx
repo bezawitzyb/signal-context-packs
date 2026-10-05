@@ -8,6 +8,7 @@ import { summarize } from "../lib/runSummary";
 import { useRunEvents } from "../lib/useRunEvents";
 import { AgentLog, Announcer, CoverageBars, Counters, Notices, SourcesVerdict, StageStepper } from "../components/Theatre";
 import { ReplayPage } from "./ReplayPage";
+import { Skeleton } from "../components/Skeleton";
 
 const FINISHED = ["complete", "partial", "failed", "stopped"];
 
@@ -71,7 +72,7 @@ function LiveRun({ runId }: { runId: string }) {
   }, [runId, last?.seq, summary.step]);
 
   if (error) return <p className="text-ink-2">{error}</p>;
-  if (!run) return <p className="text-ink-3">Loading…</p>;
+  if (!run) return <Skeleton lines={3} label="Loading the run" />;
   const finished = FINISHED.includes(run.status);
   const packId = summary.packId ?? run.pack_id;
 
@@ -87,6 +88,11 @@ function LiveRun({ runId }: { runId: string }) {
   const status = run.status === "queued" && summary.queue
     ? <p className="flex items-center gap-2"><Hourglass aria-hidden="true" size={15} />
         Waiting in line: position {run.queue_position ?? summary.queue.position}, starts in {minutes(summary.queue.estimated_start_secs)}. It starts by itself.</p>
+    : run.status === "failed" ? (
+        <p role="alert" className="text-ink">
+          {run.error ?? "The run failed."}{" "}
+          {packId ? "A partial pack was saved from what was collected." : "The posts collected so far were saved; no pack could be built from them."}
+        </p>)
     : finished ? <p>Finished: {run.status}{run.status === "partial" ? " (stopped early - the pack uses what was collected)" : ""}.</p>
     : <p>{live ? "Live" : "Reconnecting…"} · {run.mode === "standard" ? "Standard" : "Quick"} · started {new Date(run.created_at).toLocaleTimeString()}</p>;
 

@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { listPacks, type FeaturedPack } from "../lib/api";
 import { ModeBadge } from "../components/badges";
 import { AskFlow } from "./Ask";
+import { Skeleton } from "../components/Skeleton";
 
 export function PackCards({ packs }: { packs: FeaturedPack[] }) {
   return (
@@ -57,7 +58,7 @@ export function Home() {
       <section aria-labelledby="featured">
         <h2 id="featured" className="mb-3 text-lg font-semibold text-ink">See a sample pack</h2>
         {error && <p className="text-sm text-ink-2">Could not load the packs: {error}</p>}
-        {!packs && !error && <p className="text-sm text-ink-3">Loading…</p>}
+        {!packs && !error && <Skeleton lines={1} label="Loading the sample packs" />}
         {packs && <PackCards packs={packs} />}
       </section>
       <section aria-labelledby="ask">

@@ -1296,6 +1296,12 @@ WHAT  api/routes.py: every endpoint in B9; SSE streams events by seq,
       text-fragment links are rebuilt only from anchors that still appear
       (spacing ignored) in the redacted post. Applied to the NL and Gen Z
       runs: names gone, 69 of 88 NL links kept.
+      Data fix (Day 5): normalise_text first runs tidy_markup - escaped
+      emoji from scrapers ("\ud83d\udc40") become the emoji, forum image
+      markup ("![:9~](http://.../kwijl.gif)") becomes its alt text.
+      redact-run applies it to saved runs too (and drops "ud83d" debris
+      from new_terms). load_featured now also updates a featured pack when
+      its file in featured/ changed, so a fix reaches the public database.
 PROMPT
   Read CLAUDE.md, Step 3.7, B6, B9 and B10. Implement with API and MCP
   tests (fixtures + LLM_FAKE). Run one fresh end-to-end Standard pack
@@ -1481,6 +1487,18 @@ WHAT  States (PRD 10.4): skeletons, thin evidence with options, source
       axe check via Playwright on Ask, Theatre, Pack; fix serious issues.
       One Playwright e2e test in fixtures mode. /evals page placeholder
       reading /api/v1/evals. Push and verify.
+      As built: frontend/e2e (npm run e2e) builds the app and starts it in
+      fake mode (e2e/server.sh: LLM_FAKE + fixtures, throwaway SQLite, a
+      test-only run key) using the installed Chrome (no browser download).
+      Two tests: brief -> plan -> start -> theatre -> pack -> drawer
+      (Escape closes) -> handoff, and a featured pack (drawer with real
+      posts, agent view, filter, replay); axe finds no serious or critical
+      issue on Ask, Theatre, Pack, drawer or replay. States: skeletons,
+      thin evidence with one-click options (Standard / wider window /
+      include English, prefilled on the Ask form), failed run says what
+      was saved, failed source line in the agent log. Print: one column,
+      each main section on a new page, quote links print their URL, a
+      header line with pack id, date, coverage grade.
 PROMPT
   Read CLAUDE.md and Step 4.5. Implement, run checks and the e2e test,
   push to GitHub, confirm the public site works. Tag day-5-done.

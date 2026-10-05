@@ -33,3 +33,7 @@ npm-debug.log*
 .idea/
 .vscode/
 *.swp
+
+# --- Playwright ---
+test-results/
+playwright-report/

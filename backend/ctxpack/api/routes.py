@@ -103,6 +103,13 @@ async def get_options() -> dict[str, Any]:
             "default_time_window_days": cfg["default_time_window_days"], "brand_voice_max_chars": 200}
 
 
+@router.get("/evals")
+async def get_evals() -> dict[str, Any]:
+    """Evaluation results (Phase 5 fills this). Until then it says so plainly."""
+    return {"status": "not_run_yet", "results": [],
+            "note": "Evaluations on the four test briefs run in Phase 5 (Day 6); results will appear here."}
+
+
 @router.get("/schema")
 async def get_schema() -> JSONResponse:
     """The Context Pack 1.0 JSON schema."""

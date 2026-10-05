@@ -43,7 +43,7 @@ export function Quote({ text, evidence, size = "md" }: {
           )}
           {link && (
             <a href={link} target="_blank" rel="noopener noreferrer nofollow"
-               className="inline-flex items-center gap-1 text-ink-2 underline-offset-2 hover:underline">
+               className="print-url inline-flex items-center gap-1 text-ink-2 underline-offset-2 hover:underline">
               source <ExternalLink aria-hidden="true" size={11} />
             </a>
           )}

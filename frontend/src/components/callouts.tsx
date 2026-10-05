@@ -31,9 +31,12 @@ export function CoverageStrip({ pack }: { pack: ContextPack }) {
             <dd className="mt-0.5 font-mono text-xs text-ink">{v}</dd>
           </div>
         ))}
-        <div className="flex items-center gap-2 bg-paper px-3 py-2">
-          <ModeBadge mode={pack.mode} />
-          {c.thin_evidence && <span className="rounded border border-accent px-1.5 py-0.5 text-xs text-accent-ink">Thin evidence</span>}
+        <div className="bg-paper px-3 py-2">
+          <dt className="sr-only">Mode and evidence</dt>
+          <dd className="flex items-center gap-2">
+            <ModeBadge mode={pack.mode} />
+            {c.thin_evidence && <span className="rounded border border-accent px-1.5 py-0.5 text-xs text-accent-ink">Thin evidence</span>}
+          </dd>
         </div>
       </dl>
     </div>
