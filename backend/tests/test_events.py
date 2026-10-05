@@ -56,17 +56,17 @@ def test_http_stream_resumes_after_last_event_id(temp_db):
     add_events(run.id, 6)
     db.set_status(run.id, RunStatus.complete)
 
-    full = client.get(f"/api/runs/{run.id}/events")
+    full = client.get(f"/api/v1/runs/{run.id}/events")
     assert full.status_code == 200 and full.headers["content-type"].startswith("text/event-stream")
     assert sse_ids(full.text) == [1, 2, 3, 4, 5, 6]
     assert "event: counters" in full.text
     data = [json.loads(l[5:]) for l in full.text.splitlines() if l.startswith("data:")]
     assert data[0] == {"seq": 1, "collected": 0}
 
-    resumed = client.get(f"/api/runs/{run.id}/events", headers={"Last-Event-ID": "4"})
+    resumed = client.get(f"/api/v1/runs/{run.id}/events", headers={"Last-Event-ID": "4"})
     assert sse_ids(resumed.text) == [5, 6]
-    assert sse_ids(client.get(f"/api/runs/{run.id}/events?after=5").text) == [6]
+    assert sse_ids(client.get(f"/api/v1/runs/{run.id}/events?after=5").text) == [6]
 
 
 def test_unknown_run_is_404(temp_db):
-    assert client.get("/api/runs/run_nope/events").status_code == 404
+    assert client.get("/api/v1/runs/run_nope/events").status_code == 404

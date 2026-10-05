@@ -263,3 +263,33 @@ def test_known_page_names_are_redacted():
 @pytest.mark.parametrize("text", ["Hij zei dat het lekker was", "she said it was fine", "Zitat ist gut"])
 def test_quote_header_rule_leaves_normal_text(text):
     assert redact(text) == (text, False)
+
+
+# --- first names written inside a post (Step 3.7 privacy fix) ---------------------------
+
+import pytest as _pytest  # noqa: E402
+
+from ctxpack.collect.cleaning import redact as _redact  # noqa: E402
+
+
+@_pytest.mark.parametrize("text,expected", [
+    ("Mijn man Hans en ik verdienen niet zo veel", "Mijn man [name] en ik verdienen niet zo veel"),
+    ("m'n vriendin Ans vindt het vies", "m'n vriendin [name] vindt het vies"),
+    ("Bedankt Oscar,\n\nVeel snacks.\n\nHartelijke groet,\nLaura", "Bedankt [name],\n\nVeel snacks.\n\nHartelijke groet,\n[name]"),
+    ("My husband Tom loves chips", "My husband [name] loves chips"),
+    ("Thanks Sarah!", "Thanks [name]!"),
+    ("Meine Frau Petra isst gern Chips.\nViele Grüße\nKlaus", "Meine Frau [name] isst gern Chips.\nViele Grüße\n[name]"),
+    ("Liefs, Ans", "Liefs, [name]"),
+    ("Gr Bea en Hans en de kids", "Gr Bea en Hans en de kids"),                  # no cue: left alone ...
+    ("Gr [user] en Hans en de kids", "Gr [user] en [name] en de kids"),          # ... but joined to a redacted name
+])
+def test_first_names_in_the_post_are_redacted(text, expected):
+    assert _redact(text)[0] == expected
+
+
+@_pytest.mark.parametrize("text", [
+    "Hoi allemaal, ik eet graag Lays", "Hi All, Croky is better", "Groetjes van mij", "mijn man vindt het lekker",
+    "Thanks for the tip, Albert Heijn has it", "Lidl en AH naast elkaar", "Beste chips ooit: Croky",
+])
+def test_ordinary_text_is_left_alone(text):
+    assert _redact(text) == (text, False)

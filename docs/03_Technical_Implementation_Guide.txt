@@ -1272,6 +1272,30 @@ WHAT  api/routes.py: every endpoint in B9; SSE streams events by seq,
       phone, @handle, profile URL or quote > 280 chars.
       Then run ONE fresh end-to-end Standard pack for the NL brief and
       feature the two flagship packs.
+      As built: REST under /api/v1 (api/routes.py) and MCP tools call the
+      same functions (api/service.py). Extra endpoint POST
+      /api/v1/runs/{id}/answer {answer} for the clarifying question;
+      POST /runs/{id}/start takes {disabled_units, removed_questions}
+      (plan review, FR-A4). MCP SDK 2.x renamed FastMCP to MCPServer
+      (mcp.server.mcpserver); the app is stateless streamable HTTP with
+      JSON answers, mounted at /mcp (no trailing slash needed). Its
+      DNS-rebinding protection allows localhost and RENDER_EXTERNAL_HOSTNAME
+      (set by Render) - without that, /mcp would refuse the public host.
+      Tools read X-API-Key via ctx.headers; refusals are ToolErrors the
+      agent can read. Guards: RUN_KEY unset -> runs switched off (503);
+      wrong key 401; daily cap and queue full 429. The feature command
+      drops cost events and reuses the cleaning step's patterns.
+      Privacy fix (Day 4): redaction now also replaces first names written
+      inside posts, found by the words around them (relatives: "mijn man
+      X", "my wife X", "meine Frau X"; greetings at a line start: "Bedankt
+      X,"; sign-offs at a line end: "Groetjes, X"; a name joined to one
+      already redacted: "[user] en X") -> [name]. No name lists, no model.
+      CLI redact-run RUN_ID re-applies the current redaction to a saved
+      run (documents, draft, packs; free): the same rule on both sides
+      keeps quotes exact, quotes that no longer match are removed, and
+      text-fragment links are rebuilt only from anchors that still appear
+      (spacing ignored) in the redacted post. Applied to the NL and Gen Z
+      runs: names gone, 69 of 88 NL links kept.
 PROMPT
   Read CLAUDE.md, Step 3.7, B6, B9 and B10. Implement with API and MCP
   tests (fixtures + LLM_FAKE). Run one fresh end-to-end Standard pack

@@ -115,6 +115,39 @@ def _quote_header(m: re.Match) -> str:
     return "[user]" + m.group("post")
 
 
+# First names written INSIDE a post, found by the words around them (no name lists, no model):
+#   "mijn man Hans", "my wife Anna", "meine Frau Petra"          -> "mijn man [name]"
+#   "Bedankt Oscar," / "Hi Tom," at the start of a line            -> "Bedankt [name],"
+#   "Hartelijke groet,\nLaura" / "Regards, Tom" at the end of a line -> "Hartelijke groet,\n[name]"
+# The cue words match in any case; the name must start with a capital.
+_FIRST_NAME = r"(?!(?:Allemaal|Iedereen|Allen|All|Everyone|Everybody|Guys|Folks|Team|Zusammen|Alle|Leute)\b)" \
+              r"[A-ZÀ-ÖØ-Þ][a-zß-öø-ÿ]{1,20}(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]{2,20})?"
+_RELATION = (r"(?:man|vrouw|vriend|vriendin|vriendje|vriendinnetje|partner|zoon|dochter|broer|zus|zusje|"
+             r"moeder|vader|schoonmoeder|schoonvader|collega|buurman|buurvrouw|"
+             r"husband|wife|boyfriend|girlfriend|son|daughter|brother|sister|mum|mom|dad|friend|colleague|"
+             r"neighbour|neighbor|mann|frau|freund|freundin|sohn|tochter|bruder|schwester|kollege|kollegin)")
+_NAMES_IN_TEXT = [
+    re.compile(rf"(?P<cue>(?i:\b(?:mijn|m'n|onze|ons|my|our|mein|meine|meinem|meinen|unser|unsere)\s+"
+               rf"{_RELATION}\s+))(?P<name>{_FIRST_NAME})\b"),
+    re.compile(rf"(?P<cue>(?im:^[ \t]*(?:bedankt|dank\s*je(?:wel)?|dankjewel|hoi|hallo|hey|hi|beste|lieve|dear|"
+               rf"thanks|thank\s+you|hello|liebe|lieber|danke)[ \t,]+))(?P<name>{_FIRST_NAME})(?=[ \t]*[,!.:]|[ \t]*$)",
+               re.M),
+    re.compile(rf"(?P<cue>(?i:\b(?:(?:met\s+)?(?:vriendelijke|hartelijke)\s+groet(?:en)?|groet(?:en|jes)?|"
+               rf"liefs|mvg|kind\s+regards|best\s+regards|regards|cheers|viele\s+gr(?:ü|ue)(?:ß|ss)e|"
+               rf"liebe\s+gr(?:ü|ue)(?:ß|ss)e|gr(?:ü|ue)(?:ß|ss)e|gru(?:ß|ss)|lg)[ \t]*[,.!]?[ \t]*\n?[ \t]*))"
+               rf"(?P<name>{_FIRST_NAME})(?=[ \t]*$)", re.M),
+    # a name joined to one already redacted: "Gr [user] en Hans en de kids" -> "Gr [user] en [name] en de kids"
+    re.compile(rf"(?P<cue>\[(?:user|name)\]\s*(?:,\s*)?(?i:en|and|und|&)\s+)(?P<name>{_FIRST_NAME})\b"),
+]
+
+
+def redact_first_names(text: str) -> str:
+    """Names written inside the post (relatives, greetings, sign-offs) -> [name]."""
+    for pattern in _NAMES_IN_TEXT:
+        text = pattern.sub(lambda m: m.group("cue") + "[name]", text)
+    return text
+
+
 def redact_names(text: str, names: list[str]) -> str:
     """Replace the page's known author names (from the segmenter) wherever they appear."""
     for name in sorted({n.strip().lstrip("@") for n in names if n and len(n.strip().lstrip("@")) >= 3},
@@ -124,8 +157,10 @@ def redact_names(text: str, names: list[str]) -> str:
 
 
 def redact(text: str, names: list[str] | None = None) -> tuple[str, bool]:
-    """Emails, profile URLs, phones, handles, quote headers and known author names -> [email] [user] [phone]."""
+    """Emails, profile URLs, phones, handles, quote headers, known author names and first names written in
+    the post -> [email] [user] [phone] [name]."""
     out = redact_names(text, names or [])
+    out = redact_first_names(out)
     out = _QUOTE_HEADER.sub(_quote_header, out)
     out = _EMAIL.sub("[email]", out)
     out = _PROFILE_URL.sub("[user]", out)

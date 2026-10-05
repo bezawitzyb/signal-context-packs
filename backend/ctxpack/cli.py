@@ -858,6 +858,46 @@ def export(pack_id: str = typer.Argument(..., help="A saved pack id")) -> None:
 
 
 @app.command()
+def feature(pack_id: str = typer.Argument(..., help="A finished pack to publish as featured")) -> None:
+    """Privacy check, then featured/<pack_id>.json + examples/<slug>.json, .md and the skill folder (free).
+
+    Stops (and writes nothing) on any email, phone, @handle, profile URL or quote over 280 characters.
+    These files go into the PUBLIC repo: read them before committing.
+    """
+    from ctxpack import db
+    from ctxpack.exports.featured import feature as write_featured
+
+    db.init_engine()
+    p = db.get_pack(pack_id)
+    if p is None:
+        console.print(f"{BAD} pack {pack_id} not found")
+        raise typer.Exit(1)
+    try:
+        paths = write_featured(p)
+    except ValueError as exc:
+        console.print(f"{BAD} {exc}", highlight=False, markup=False)
+        raise typer.Exit(1)
+    db.set_featured(pack_id)
+    console.print(f"{OK} privacy check passed; featured {pack_id}")
+    for kind, path in paths.items():
+        console.print(f"  {kind:<13} {path}", highlight=False)
+
+
+@app.command("redact-run")
+def redact_run_cmd(run_id: str = typer.Argument(..., help="A saved run")) -> None:
+    """Re-apply the current redaction to a saved run: documents, draft and packs (free, no model calls).
+    Re-export the packs afterwards with: export PACK_ID."""
+    from ctxpack import db
+    from ctxpack.maintenance import redact_run
+
+    db.init_engine()
+    rep = redact_run(run_id)
+    console.print(f"{OK} run {run_id}: documents changed {rep.documents_changed} | text-fragment links dropped "
+                  f"{rep.anchors_cleared} | strings changed {rep.strings_changed} | quotes removed "
+                  f"{rep.quotes_removed} | packs re-saved {', '.join(rep.packs_saved) or 'none'}", highlight=False)
+
+
+@app.command()
 def overlap(run_ids: list[str] = typer.Argument(..., help="Two or more run ids")) -> None:
     """How much the runs' source units overlap (eval: briefs share < 50%)."""
     from ctxpack import db

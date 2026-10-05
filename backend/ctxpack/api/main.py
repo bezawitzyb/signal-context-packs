@@ -1,4 +1,4 @@
-"""FastAPI app: /ping, /health, live run events and the placeholder home page.
+"""FastAPI app: /ping, /health, the REST API (/api/v1), the MCP server (/mcp) and the home page.
 
 Started by start.sh (locally) and the Dockerfile (Render) as ONE uvicorn
 worker on $PORT. The frontend build is served here in a later step.
@@ -13,7 +13,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from sqlalchemy import text
 
-from ctxpack import db, worker
+from ctxpack import db, mcp_server, worker
 from ctxpack.api.routes import router
 from ctxpack.config import get_settings
 
@@ -65,17 +65,31 @@ async def _startup_tasks(stop: asyncio.Event) -> None:
         await worker.worker_loop(stop)
 
 
+mcp_app = mcp_server.http_app()  # creates the MCP session manager, started in the lifespan below
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     stop = asyncio.Event()
     task = asyncio.create_task(_startup_tasks(stop))
-    yield
+    async with mcp_server.mcp.session_manager.run():
+        yield
     stop.set()
     task.cancel()
 
 
 app = FastAPI(title="SIGNAL - Context Packs", version=VERSION, lifespan=lifespan)
 app.include_router(router)
+app.mount("/mcp", mcp_app)
+
+
+@app.middleware("http")
+async def mcp_without_slash(request, call_next):
+    """/mcp and /mcp/ are the same endpoint (MCP clients POST to /mcp and do not follow redirects)."""
+    if request.scope["path"] == "/mcp":
+        request.scope["path"] = "/mcp/"
+        request.scope["raw_path"] = b"/mcp/"
+    return await call_next(request)
 
 
 @app.get("/ping", response_class=PlainTextResponse)

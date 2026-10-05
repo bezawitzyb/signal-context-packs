@@ -78,6 +78,7 @@ class Run(SQLModel, table=True):
     # Spend per call type: {"anthropic": {"worker/record_relevance": {calls, usd, tokens...}}, "apify": {actor: ...}}
     cost_breakdown: dict | None = Field(default=None, sa_type=JSON)
     brand_voice: str | None = None    # used ONLY by the playbook call (never in analysis)
+    clarifying_question: dict | None = Field(default=None, sa_type=JSON)  # waiting for the user's answer
     # Run-level metrics (Step 3.2, code only): platform lens, what performs, competitors, opportunities, coverage
     analysis: dict | None = Field(default=None, sa_type=JSON)
     # Draft pack sections (Step 3.3): generic points, written items, evidence; verified in Step 3.4
@@ -414,7 +415,7 @@ def save_pack(pack: ContextPack, run_id: str | None = None, featured: bool = Fal
     with session() as s:
         s.merge(row)
         s.commit()
-    if run_id:
+    if run_id and get_run(run_id) is not None:  # a pack outlives its run (featured packs, retention)
         update_run(run_id, pack_id=pack.pack_id)
     return pack.pack_id
 
@@ -422,6 +423,27 @@ def save_pack(pack: ContextPack, run_id: str | None = None, featured: bool = Fal
 def get_pack(pack_id: str) -> dict | None:
     with session() as s:
         row = s.get(PackRow, pack_id)
+        return row.pack if row else None
+
+
+def set_featured(pack_id: str, featured: bool = True) -> None:
+    with session() as s:
+        row = s.get(PackRow, pack_id)
+        if row is not None:
+            row.featured = featured
+            s.add(row)
+            s.commit()
+
+
+def list_packs_for_run(run_id: str) -> list[PackRow]:
+    with session() as s:
+        return list(s.exec(select(PackRow).where(PackRow.run_id == run_id).order_by(PackRow.created_at)))
+
+
+def get_pack_for_run(run_id: str) -> dict | None:
+    """The latest pack built from a run (featured packs keep their run id even without the run)."""
+    with session() as s:
+        row = s.exec(select(PackRow).where(PackRow.run_id == run_id).order_by(PackRow.created_at.desc())).first()
         return row.pack if row else None
 
 

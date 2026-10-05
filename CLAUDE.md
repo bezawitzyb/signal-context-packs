@@ -97,7 +97,7 @@ Read the relevant step before working. Do only that step.
 
 ## Commands (keep updated)
 - Backend CLI: cd backend && uv run python -m ctxpack.cli <command>
-  (doctor, catalog, tool, classify, plan, research, extract, cluster, write, verify, pack, export, overlap, export-schema,
+  (doctor, catalog, tool, classify, plan, research, extract, cluster, write, verify, pack, export, feature, redact-run, overlap, export-schema,
   version)
 - Research run: ... research "<brief>" --mode quick|standard [--fixtures]
   [--auto-approve] [--no-apify] [--apify-max USD] [--record]
