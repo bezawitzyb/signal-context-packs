@@ -145,7 +145,12 @@ def run_status(run_id: str) -> dict[str, Any]:
     run = db.get_run(run_id)
     if run is None:
         raise NotFound(f"run {run_id} not found")
+    col = run.collection or {}
+    collection = {"sources_used": col.get("sources_used", []), "sources_dropped": col.get("sources_dropped", []),
+                  "gaps": col.get("gaps", []), "finish_reason": run.finish_reason,
+                  "fallback_used": run.fallback_used, "top_up_used": run.top_up_used} if col else None
     return {"run_id": run.id, "brief": run.brief_text, "mode": str(run.mode), "status": run.status.value,
+            "collection": collection,
             "stage": run.stage.value if run.stage else None, "queue_position": queue_position(run.id),
             "pack_id": run.pack_id, "error": run.error, "created_at": run.created_at,
             "interpretation": run.interpretation, "plan": run.plan,

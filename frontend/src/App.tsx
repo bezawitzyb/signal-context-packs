@@ -3,6 +3,7 @@ import { Shell } from "./components/Shell";
 import { Home, Packs } from "./pages/Home";
 import { PackPage } from "./pages/PackPage";
 import { RunPage } from "./pages/RunPage";
+import { ReplayPage } from "./pages/ReplayPage";
 import { ComponentsPreview } from "./pages/ComponentsPreview";
 import { NotFound } from "./pages/NotFound";
 
@@ -13,6 +14,7 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="packs" element={<Packs />} />
         <Route path="packs/:packId" element={<PackPage />} />
+        <Route path="packs/:packId/replay" element={<ReplayPage />} />
         <Route path="runs/:runId" element={<RunPage />} />
         <Route path="components" element={<ComponentsPreview />} />
         <Route path="*" element={<NotFound />} />

@@ -307,3 +307,13 @@ def test_snacks_gets_one_question_in_fake_mode_and_agents_never_do(api):
     assert agent["status"] == "queued" and agent["clarifying_question"] is None   # agents: never a question
     wrong = client.post("/api/v1/runs", json={"brief": "snacks"}, headers={"X-API-Key": "nope"})
     assert wrong.status_code == 401 and "run key" in wrong.json()["detail"]
+
+
+async def test_run_status_shows_the_agents_verdicts_once_collection_is_done(api):
+    run = await service.create_run("Gen Z and meal prep", auto_approve=True)
+    assert service.run_status(run["run_id"])["collection"] is None          # nothing collected yet
+    await worker.run_next()
+    status = client.get(f"/api/v1/runs/{run['run_id']}").json()
+    col = status["collection"]
+    assert col["sources_used"] and {"source_unit", "reason"} <= set(col["sources_used"][0])
+    assert "finish_reason" in col and TEST_KEY not in json.dumps(status)

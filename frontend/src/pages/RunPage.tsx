@@ -1,44 +1,116 @@
-// The run's live status. The full Research Theatre (stage stepper, agent log, counters) is Step 4.3.
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
-import { getRun, stopRun, type RunStatus } from "../lib/api";
-import { readRunKey } from "../lib/runKey";
+// /runs/:id - the Research Theatre for a live run (SSE). ?replay=1 plays the finished run back from its pack.
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router";
+import { ArrowRight, Hourglass, Square } from "lucide-react";
+import { getRun, stopRun, ApiError, type RunStatus } from "../lib/api";
+import { explain, readRunKey } from "../lib/runKey";
+import { summarize } from "../lib/runSummary";
 import { useRunEvents } from "../lib/useRunEvents";
+import { AgentLog, Announcer, CoverageBars, Counters, Notices, SourcesVerdict, StageStepper } from "../components/Theatre";
+import { ReplayPage } from "./ReplayPage";
 
-export function RunPage() {
-  const { runId = "" } = useParams();
+const FINISHED = ["complete", "partial", "failed", "stopped"];
+
+function minutes(secs: number) {
+  return secs < 60 ? "under a minute" : `about ${Math.round(secs / 60)} min`;
+}
+
+export function TheatreLayout({ title, status, summary, collection, children }: {
+  title: string; status: React.ReactNode; summary: ReturnType<typeof summarize>;
+  collection: RunStatus["collection"]; children?: React.ReactNode;
+}) {
+  const done = Boolean(summary.packId);
+  return (
+    <div className="space-y-6">
+      <header className="space-y-2">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">{title}</h1>
+        <div className="text-ink-2">{status}</div>
+        <StageStepper step={summary.step} done={done} />
+      </header>
+      {children}
+      <Notices summary={summary} />
+      <Announcer milestones={summary.milestones} />
+      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+        <section aria-labelledby="log">
+          <h2 id="log" className="mb-3 text-lg font-semibold text-ink">What the agent is doing</h2>
+          <AgentLog moves={summary.moves} />
+        </section>
+        <aside className="space-y-6">
+          <section aria-labelledby="funnel">
+            <h2 id="funnel" className="mb-2 text-sm font-semibold uppercase tracking-wide text-ink-3">Posts so far</h2>
+            <Counters counters={summary.counters} cost={summary.cost} />
+          </section>
+          {summary.coverage.length > 0 && (
+            <section aria-labelledby="cov">
+              <h2 id="cov" className="mb-2 text-sm font-semibold uppercase tracking-wide text-ink-3">Evidence per question</h2>
+              <CoverageBars questions={summary.coverage} />
+            </section>
+          )}
+        </aside>
+      </div>
+      {collection && (
+        <section aria-labelledby="verdicts">
+          <h2 id="verdicts" className="mb-3 text-lg font-semibold text-ink">Sources kept and dropped</h2>
+          <SourcesVerdict collection={collection} />
+        </section>
+      )}
+    </div>
+  );
+}
+
+function LiveRun({ runId }: { runId: string }) {
   const [run, setRun] = useState<RunStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { events } = useRunEvents(runId);
+  const [stopping, setStopping] = useState(false);
+  const { events, live } = useRunEvents(runId);
+  const summary = useMemo(() => summarize(events), [events]);
   const last = events[events.length - 1];
 
   useEffect(() => {
     getRun(runId).then(setRun).catch((e: Error) => setError(e.message));
-  }, [runId, last?.seq]); // refresh the status whenever a new event arrives
+  }, [runId, last?.seq, summary.step]);
 
   if (error) return <p className="text-ink-2">{error}</p>;
   if (!run) return <p className="text-ink-3">Loading…</p>;
-  const finished = ["complete", "partial", "failed", "stopped"].includes(run.status);
+  const finished = FINISHED.includes(run.status);
+  const packId = summary.packId ?? run.pack_id;
+
+  const stop = async () => {
+    const key = readRunKey();
+    if (!key) return setError("Stopping needs the run key: enter it on the start page first.");
+    setStopping(true);
+    try { setRun(await stopRun(key, runId)); } catch (e) {
+      setError(e instanceof ApiError ? explain(e.status, e.message) : "Could not reach the server.");
+    } finally { setStopping(false); }
+  };
+
+  const status = run.status === "queued" && summary.queue
+    ? <p className="flex items-center gap-2"><Hourglass aria-hidden="true" size={15} />
+        Waiting in line: position {run.queue_position ?? summary.queue.position}, starts in {minutes(summary.queue.estimated_start_secs)}. It starts by itself.</p>
+    : finished ? <p>Finished: {run.status}{run.status === "partial" ? " (stopped early - the pack uses what was collected)" : ""}.</p>
+    : <p>{live ? "Live" : "Reconnecting…"} · {run.mode === "standard" ? "Standard" : "Quick"} · started {new Date(run.created_at).toLocaleTimeString()}</p>;
+
   return (
-    <div className="max-w-3xl space-y-4">
-      <p className="font-mono text-xs text-ink-3">{run.run_id}</p>
-      <h1 className="text-2xl font-semibold tracking-tight text-ink">{run.brief}</h1>
-      <p className="text-ink">
-        {run.status === "queued" && run.queue_position
-          ? `Waiting in line: position ${run.queue_position}. It starts by itself.`
-          : finished ? `Finished: ${run.status}.` : `Working: ${run.stage ?? run.status}.`}
-      </p>
-      {run.pack_id && <Link to={`/packs/${run.pack_id}`} className="inline-block rounded-lg bg-ink px-4 py-2 text-sm text-paper">Open the pack</Link>}
-      {!finished && (
-        <button type="button" onClick={() => stopRun(readRunKey(), runId).then(setRun).catch((e: Error) => setError(e.message))}
-                className="rounded-lg border border-line-strong px-3 py-1.5 text-sm text-ink">
-          Stop and build the pack now
-        </button>
-      )}
-      <ol className="space-y-1 font-mono text-xs text-ink-2">
-        {events.slice(-30).map((e) => <li key={e.seq}>{e.seq} · {e.type} · {JSON.stringify(e.payload).slice(0, 140)}</li>)}
-      </ol>
-      <p className="text-sm text-ink-3">The full Research Theatre comes in Step 4.3.</p>
-    </div>
+    <TheatreLayout title={run.brief} status={status} summary={summary} collection={run.collection}>
+      <div className="flex flex-wrap gap-2">
+        {packId && (
+          <Link to={`/packs/${packId}`} className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-ink">
+            Open the pack <ArrowRight aria-hidden="true" size={15} />
+          </Link>
+        )}
+        {!finished && (
+          <button type="button" onClick={stop} disabled={stopping}
+                  className="inline-flex items-center gap-2 rounded-lg border border-ink px-3 py-2 text-sm text-ink disabled:opacity-60">
+            <Square aria-hidden="true" size={13} /> Stop and build the pack now
+          </button>
+        )}
+      </div>
+    </TheatreLayout>
   );
+}
+
+export function RunPage() {
+  const { runId = "" } = useParams();
+  const [params] = useSearchParams();
+  return params.get("replay") === "1" ? <ReplayPage runId={runId} /> : <LiveRun runId={runId} />;
 }

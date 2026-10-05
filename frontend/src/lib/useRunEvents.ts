@@ -25,10 +25,12 @@ export function useRunEvents(runId: string | undefined) {
     setDone(false);
     const source = new EventSource(runEventsUrl(runId));
     const onEvent = (type: EventType) => (e: MessageEvent) => {
-      const data = JSON.parse(e.data) as Record<string, unknown> & { seq: number };
-      if (seen.current.has(data.seq)) return; // a reconnect never shows an event twice
-      seen.current.add(data.seq);
-      const { seq, ...payload } = data;
+      // The event's own number is the SSE id (the browser resends it as Last-Event-ID on reconnect).
+      // The data is the payload as written: its own "seq" (an agent call number) stays untouched.
+      const seq = Number(e.lastEventId);
+      if (!Number.isFinite(seq) || seen.current.has(seq)) return; // a reconnect never shows an event twice
+      seen.current.add(seq);
+      const payload = JSON.parse(e.data) as Record<string, unknown>;
       setEvents((prev) => [...prev, { seq, type, payload }]);
     };
     EVENT_TYPES.forEach((t) => source.addEventListener(t, onEvent(t) as EventListener));

@@ -49,6 +49,11 @@ export interface RunStatus {
   stage: string | null; queue_position: number | null; pack_id: string | null; error: string | null;
   created_at: string; interpretation: Interpretation | null; plan: Plan | null;
   clarifying_question: { question: string; options: string[] } | null;
+  collection: {
+    sources_used: { source_unit: string; platform: string; reason: string; kept: number; relevant_share: number }[];
+    sources_dropped: { source_unit: string; reason: string }[];
+    gaps: string[]; finish_reason: string | null; fallback_used: boolean; top_up_used: boolean;
+  } | null;
   estimate: Estimate;
 }
 

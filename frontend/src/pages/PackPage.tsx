@@ -1,7 +1,7 @@
 // S3 PACK PAGE: the full page (sticky nav, every section, evidence drawer) is Step 4.3.
 // For now: coverage, do first, five truths, tensions and voice, built from the shared components.
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { getPack, type ContextPack, type Evidence, type InsightLike } from "../lib/api";
 import { CoverageStrip, LimitationCallout } from "../components/callouts";
 import { LexiconChip, PackContext, TensionCard } from "../components/cards";
@@ -17,6 +17,9 @@ export function PackBody({ pack }: { pack: ContextPack }) {
           <p className="font-mono text-xs text-ink-3">{pack.pack_id} · {pack.generated_at.slice(0, 10)}</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{pack.brief.text}</h1>
           <p className="mt-1 text-ink-2">{pack.brief.interpreted.audience}</p>
+          <Link to={`/packs/${pack.pack_id}/replay`} className="mt-2 inline-block text-sm text-ink underline underline-offset-2">
+            Replay the research
+          </Link>
         </header>
         <CoverageStrip pack={pack} />
         {pack.coverage.thin_evidence && (

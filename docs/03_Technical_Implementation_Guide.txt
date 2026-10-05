@@ -1397,6 +1397,19 @@ WHAT  /runs/:id: stage stepper (Plan > Collect > Process > Write >
       build pack now"; auto-link to the pack on
       pack_ready; replay mode (?replay=1) from pack.events. aria-live for
       milestones; reduced motion respected.
+      As built: lib/runSummary.ts turns events into the view (moves pair
+      agent_call and agent_result by their call seq; moves after a coverage
+      check are marked "Filling a gap"); the live hook takes the event
+      number from the SSE id (Last-Event-ID), never from the payload, whose
+      own "seq" is the agent's call number. GET /api/v1/runs/{id} now
+      includes collection (sources kept / dropped with reasons, gaps,
+      fallback / top-up) once collection has finished. Replays: /runs/:id
+      ?replay=1 and /packs/:packId/replay (featured packs have no run);
+      play / pause, 1x / 3x, skip to the end; everything at once with
+      reduced motion. A pack copies its events while being built, so a
+      replay marks the run done when it reaches the end. Tested: replay of
+      featured pk_wrvZBhDFsLR9 (111 events, 13 moves) and a fake-mode
+      fixture run (27 moves) whose page keeps everything after a reload.
 PROMPT
   Read CLAUDE.md and Step 4.3. Implement; test with a fixture run (which
   replays a recorded transcript) and with replay of a featured pack.
