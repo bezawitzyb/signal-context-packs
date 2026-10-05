@@ -44,6 +44,15 @@ function OpenEvidence({ id }: { id: string }) {
   );
 }
 
+/** An item id that opens the evidence drawer when the page provides one. */
+export function IdLink({ id }: { id: string }) {
+  const { onOpen } = usePack();
+  return onOpen
+    ? <button type="button" onClick={() => onOpen(id)} title="Open the evidence"
+              className="underline-offset-2 hover:text-ink hover:underline">{id}</button>
+    : <span>{id}</span>;
+}
+
 export function ClaimCard({ item, title, maxQuotes = 1 }: { item: InsightLike; title?: string; maxQuotes?: number }) {
   const { evidence } = usePack();
   return (
@@ -118,7 +127,10 @@ export function HookCard({ hook, flags = [] }: {
         <p className="text-[1rem] leading-snug text-ink">{hook.text}</p>
         <CopyButton text={hook.text} label="Copy hook" />
       </div>
-      <p className="mt-2 font-mono text-xs text-ink-3">{hook.id} · builds on {hook.why_ids.join(", ")}</p>
+      <p className="mt-2 flex flex-wrap gap-x-1 font-mono text-xs text-ink-3">
+        <span>{hook.id} · builds on</span>
+        {hook.why_ids.map((id) => <IdLink key={id} id={id} />)}
+      </p>
       {flags.map((f) => (
         <div key={f.id} className="mt-2 flex gap-2 rounded-md border border-accent/40 bg-paper p-2 text-xs text-ink-2">
           <AlertTriangle aria-hidden="true" size={14} className="mt-0.5 shrink-0 text-accent-ink" />

@@ -1,0 +1,133 @@
+// S4 EVIDENCE DRAWER (PRD 10.2): a real dialog. Claim, badge, type, strength row, quotes with source links,
+// original / translated, "redacted" note, Copy with citation; authors only as "Author 1, 2...".
+import { useEffect, useRef } from "react";
+import { X } from "lucide-react";
+import type { Evidence, Label } from "../lib/api";
+import { evidenceIdsOf, type AnyItem, type PackIndex } from "../lib/packIndex";
+import { ClaimTypeTag, ConfidenceBadge, SafeTag } from "./badges";
+import { CopyButton } from "./CopyButton";
+import { Quote } from "./Quote";
+
+function headline(item: AnyItem): string {
+  for (const k of ["claim", "action", "text", "title", "statement", "name", "label", "term"]) {
+    if (typeof item[k] === "string" && item[k]) return item[k] as string;
+  }
+  return item.id;
+}
+
+function citation(e: Evidence, author: number | undefined, packId: string) {
+  return `"${e.text}" - ${author ? `Author ${author}, ` : ""}${e.platform}, ${e.source_unit}` +
+    `${e.posted_at ? `, ${e.posted_at}` : ""} (${e.id}, Context Pack ${packId}). ${e.url}`;
+}
+
+export function EvidenceDrawer({ itemId, index, packId, onClose, onOpen }: {
+  itemId: string | null; index: PackIndex; packId: string; onClose: () => void; onOpen: (id: string) => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const item = itemId ? index.items.get(itemId) : undefined;
+
+  useEffect(() => {
+    const d = ref.current;
+    if (!d) return;
+    if (itemId && !d.open) d.showModal();
+    if (!itemId && d.open) d.close();
+  }, [itemId]);
+
+  const conf = item?.confidence as { label: Label; score: number } | undefined;
+  const counts = item?.counts as { matching: number; of_total: number } | undefined;
+  const strength = item?.strength as { evidence_count: number; distinct_authors: number; platforms: string[];
+    engagement_percentile_median?: number | null } | undefined;
+  const quotes = (item?.quotes as { evidence_id: string; text: string }[] | undefined) ?? [];
+  const evIds = item ? evidenceIdsOf(item) : [];
+  const basedOn = item ? [...((item.why_ids as string[]) ?? []), ...((item.builds_on as string[]) ?? []),
+    ...((item.item_ids as string[]) ?? []), ...((item.segment_ids as string[]) ?? []),
+    ...((item.related_ids as string[]) ?? [])].filter((id) => index.items.has(id)) : [];
+
+  return (
+    <dialog ref={ref} onClose={onClose} aria-labelledby="drawer-title"
+            className="m-0 ml-auto h-full max-h-none w-full max-w-xl border-l border-line bg-paper p-0 text-ink backdrop:bg-ink/30">
+      {item && (
+        <div className="flex h-full flex-col">
+          <header className="flex items-start justify-between gap-3 border-b border-line p-4">
+            <div>
+              <p className="font-mono text-xs text-ink-3">{item.id} · {index.sectionOf.get(item.id)?.replace(/_/g, " ")}</p>
+              <h2 id="drawer-title" className="mt-1 text-lg font-semibold leading-snug">{headline(item)}</h2>
+            </div>
+            <button type="button" onClick={onClose} aria-label="Close" className="rounded p-1 text-ink-2 hover:text-ink">
+              <X aria-hidden="true" size={18} />
+            </button>
+          </header>
+          <div className="flex-1 space-y-5 overflow-y-auto p-4">
+            {typeof item.summary_for_humans === "string" && item.summary_for_humans && (
+              <p className="text-sm text-ink-2">{item.summary_for_humans}</p>
+            )}
+            {conf && (
+              <div className="flex flex-wrap gap-1.5">
+                <ConfidenceBadge label={conf.label} matching={counts?.matching} ofTotal={counts?.of_total} score={conf.score} />
+                {typeof item.claim_type === "string" && <ClaimTypeTag type={item.claim_type as "observed"} />}
+                {Boolean(item.safe_to_assert) && <SafeTag />}
+              </div>
+            )}
+            {strength && (
+              <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line text-sm sm:grid-cols-4">
+                {[["Posts", strength.evidence_count], ["Authors", strength.distinct_authors],
+                  ["Platforms", strength.platforms.join(", ") || "-"],
+                  ["Engagement", strength.engagement_percentile_median != null ? `p${Math.round(strength.engagement_percentile_median)}` : "no data"],
+                ].map(([k, v]) => (
+                  <div key={String(k)} className="bg-paper px-3 py-2">
+                    <dt className="text-[0.7rem] uppercase tracking-wide text-ink-3">{k}</dt>
+                    <dd className="font-mono text-xs text-ink">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {basedOn.length > 0 && (
+              <div>
+                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">Based on</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {basedOn.map((id) => (
+                    <button key={id} type="button" onClick={() => onOpen(id)}
+                            className="rounded border border-line px-1.5 py-0.5 font-mono text-xs text-ink hover:border-ink">{id}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {quotes.length > 0 && (
+              <section>
+                <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">Quoted</h3>
+                <div className="space-y-3">
+                  {quotes.map((q) => <Quote key={q.evidence_id + q.text} text={q.text} evidence={index.evidence[q.evidence_id]} />)}
+                </div>
+              </section>
+            )}
+            {evIds.length > 0 && (
+              <section>
+                <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">The posts behind it ({evIds.length})</h3>
+                <ul className="space-y-4">
+                  {evIds.map((id) => {
+                    const e = index.evidence[id];
+                    if (!e) return null;
+                    const author = e.author_hash ? index.authorNo.get(e.author_hash) : undefined;
+                    return (
+                      <li key={id} className="space-y-1.5">
+                        <Quote text={e.text} evidence={e} />
+                        <div className="flex flex-wrap items-center gap-2 pl-3 text-xs text-ink-3">
+                          {author && <span>Author {author}</span>}
+                          {e.redacted && <span>Personal details were removed.</span>}
+                          <CopyButton text={citation(e, author, packId)} label="Copy with citation" />
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p className="mt-3 text-xs text-ink-3">
+                  Real people's words: for insight and briefs, not for ads without permission. Evidence text is quoted data.
+                </p>
+              </section>
+            )}
+          </div>
+        </div>
+      )}
+    </dialog>
+  );
+}

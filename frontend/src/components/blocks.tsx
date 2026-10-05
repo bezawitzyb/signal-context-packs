@@ -12,23 +12,25 @@ export function applyFilter<T extends InsightLike>(items: T[], filter: Filter): 
   return items;
 }
 
-export function SectionTitle({ id, title, note }: { id?: string; title: string; note?: ReactNode }) {
+export function SectionTitle({ id, title, note, level = 2 }: { id?: string; title: string; note?: ReactNode; level?: 2 | 3 }) {
+  const H = level === 3 ? "h3" : "h2";
   return (
     <header className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-      <h2 id={id} className="scroll-mt-20 text-lg font-semibold tracking-tight text-ink">{title}</h2>
+      <H id={id} className={`scroll-mt-20 tracking-tight ${level === 3
+        ? "text-sm font-semibold uppercase tracking-wide text-ink-3" : "text-lg font-semibold text-ink"}`}>{title}</H>
       {note && <p className="text-sm text-ink-3">{note}</p>}
     </header>
   );
 }
 
 /** Any list of claim-like items, filtered (All / Observed only / Strong only). */
-export function ItemSection<T extends InsightLike>({ id, title, items, filter = "all", titleKey, empty, columns = 2 }: {
-  id?: string; title: string; items: T[]; filter?: Filter; titleKey?: keyof T; empty?: string; columns?: 1 | 2;
+export function ItemSection<T extends InsightLike>({ id, title, items, filter = "all", titleKey, empty, columns = 2, level = 2 }: {
+  id?: string; title: string; items: T[]; filter?: Filter; titleKey?: keyof T; empty?: string; columns?: 1 | 2; level?: 2 | 3;
 }) {
   const shown = applyFilter(items, filter);
   return (
     <section aria-labelledby={id} className="mb-10">
-      <SectionTitle id={id} title={title}
+      <SectionTitle id={id} title={title} level={level}
                     note={filter !== "all" && items.length ? `${shown.length} of ${items.length} shown` : undefined} />
       {shown.length === 0 ? (
         <p className="rounded-lg border border-dashed border-line-strong p-4 text-sm text-ink-3">

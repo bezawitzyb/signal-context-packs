@@ -15,25 +15,27 @@ export function CoverageStrip({ pack }: { pack: ContextPack }) {
   const platforms = [...new Set((c.sources_used ?? []).map((s) => s.platform))];
   const pct = (share: number) => (share > 0 && share < 0.005 ? "<1%" : `${Math.round(share * 100)}%`);
   const langs = (c.language_mix ?? []).map((l) => `${l.language} ${pct(l.share)}`);
-  const items: [string, string][] = [
+  const items: [string, React.ReactNode][] = [
     ["Coverage", GRADE[pack.snapshot.coverage_grade] ?? pack.snapshot.coverage_grade],
     ["Relevant posts", String(c.counts.relevant)],
     ["Platforms", platforms.join(", ") || "-"],
     ["Languages", langs.join(", ") || "-"],
-    ["Dates", c.date_range?.start ? `${c.date_range.start} → ${c.date_range.end}` : "mostly undated"],
+    ["Dates", c.date_range?.start ? <><span className="whitespace-nowrap">{c.date_range.start}</span> → <span className="whitespace-nowrap">{c.date_range.end}</span></> : "mostly undated"],
   ];
   return (
-    <div className="flex flex-wrap items-stretch gap-px overflow-hidden rounded-lg border border-line bg-line">
-      {items.map(([k, v]) => (
-        <div key={k} className="min-w-[8rem] flex-1 bg-paper px-3 py-2">
-          <p className="text-[0.7rem] font-medium uppercase tracking-wide text-ink-3">{k}</p>
-          <p className={`mt-0.5 font-mono text-xs text-ink ${k === "Dates" ? "whitespace-nowrap" : ""}`}>{v}</p>
+    <div className="overflow-hidden rounded-lg border border-line">
+      <dl className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3">
+        {items.map(([k, v]) => (
+          <div key={k} className="bg-paper px-3 py-2">
+            <dt className="text-[0.7rem] font-medium uppercase tracking-wide text-ink-3">{k}</dt>
+            <dd className="mt-0.5 font-mono text-xs text-ink">{v}</dd>
+          </div>
+        ))}
+        <div className="flex items-center gap-2 bg-paper px-3 py-2">
+          <ModeBadge mode={pack.mode} />
+          {c.thin_evidence && <span className="rounded border border-accent px-1.5 py-0.5 text-xs text-accent-ink">Thin evidence</span>}
         </div>
-      ))}
-      <div className="flex items-center gap-2 bg-paper px-3 py-2">
-        <ModeBadge mode={pack.mode} />
-        {c.thin_evidence && <span className="rounded border border-accent px-1.5 py-0.5 text-xs text-accent-ink">Thin evidence</span>}
-      </div>
+      </dl>
     </div>
   );
 }

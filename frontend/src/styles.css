@@ -39,3 +39,12 @@ body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Print / Save as PDF: a clean brief (no navigation, no buttons, sections not split across pages). */
+@media print {
+  html, body { background: #fff; }
+  button, dialog, nav[aria-label="Sections"] { display: none !important; }
+  main { max-width: none !important; padding: 0 !important; }
+  a { color: inherit; text-decoration: none; }
+  section { break-inside: avoid-page; }
+}

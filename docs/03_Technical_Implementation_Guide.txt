@@ -1446,6 +1446,17 @@ WHAT  /packs/:id: ONE scrollable page, content column ~760 px, sticky
       a 2-line "how to install"); For your team (Print / Save as PDF; Copy
       for Notion / Docs); For agents (Download JSON; MCP one-liner with
       <YOUR_KEY>, plus the keyless read-only note).
+      As built: lib/packIndex.ts finds any item by id (drawer, "based on"
+      links) and numbers authors "Author 1, 2..." per pack. The drawer is a
+      native <dialog> (Esc, focus, backdrop): claim, badges, strength row,
+      quotes, every cited post with Copy with citation. View as agent shows
+      each section's JSON (escaped, then coloured). Copy for Notion / Docs
+      puts both the Markdown and HTML (lib/markdown.ts converts our own
+      brief.md: headings, lists, tables, quotes) on the clipboard. Print
+      hides navigation and buttons. Every id in a card, table or list opens
+      the drawer; links from scraped data render only if http(s). Checked
+      with screenshots on both featured packs (every section renders; 186
+      and 149 evidence links).
 PROMPT
   Read CLAUDE.md and Step 4.4. Build in this order, showing me each:
   Summary + drawer, Method, Playbook, the remaining sections, agent view,

@@ -8,7 +8,7 @@ export function Shell() {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:rounded focus:border focus:border-ink focus:bg-paper focus:px-2 focus:py-1">
         Skip to content
       </a>
-      <header className="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur print:hidden">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2" aria-label="SIGNAL home">
             <span aria-hidden="true" className="inline-block size-2.5 rounded-full bg-accent" />
@@ -25,7 +25,7 @@ export function Shell() {
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         <Outlet />
       </main>
-      <footer className="border-t border-line">
+      <footer className="border-t border-line print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 px-4 py-4 text-xs text-ink-3">
           <span>Real public posts, in their own words. Quotes are for insight, not for ads without permission.</span>
           <span className="font-mono">/mcp · /api/v1</span>
