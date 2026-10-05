@@ -231,9 +231,13 @@ def test_feature_writes_public_files_without_costs_and_refuses_private_data(api,
     pack = api.model_dump(mode="json")
     pack["events"].append({"seq": 999, "type": "cost", "payload": {"llm_usd": 1.0},
                            "created_at": pack["generated_at"]})
+    pack["coverage"]["decision_log"].append({"seq": 99, "tool": "search_reddit", "source_unit": None,
+                                             "reason": "r", "result_summary": "limit_reached (this call ~0.17 USD)"})
+    assert privacy_problems(pack)                                    # a cost amount is not publishable as is
     paths = feature(pack, tmp_path / "featured", tmp_path / "examples")
     saved = json.loads(paths["featured"].read_text(encoding="utf-8"))
     assert all(e["type"] != "cost" for e in saved["events"]) and "documents" not in saved
+    assert "USD" not in paths["featured"].read_text(encoding="utf-8")
     assert paths["example_md"].exists() and (paths["skill"] / "SKILL.md").exists()
     ContextPack.model_validate(saved)
 

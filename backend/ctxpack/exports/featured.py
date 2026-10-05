@@ -14,6 +14,7 @@ from __future__ import annotations
 import copy
 import io
 import json
+import re
 import zipfile
 from pathlib import Path
 from typing import Any, Iterator
@@ -46,6 +47,9 @@ def _strings(value: Any, path: str = "") -> Iterator[tuple[str, str]]:
 def privacy_problems(pack: dict) -> list[str]:
     """Everything that must not be published. Empty list = safe to feature."""
     problems = []
+    for path, text in _strings({k: pack[k] for k in SYSTEM_PARTS if k in pack}):
+        if _COST.search(text):
+            problems.append(f"{path}: cost amount")
     for path, text in _strings(pack):
         for pattern, what in CHECKS:
             if m := pattern.search(text):
@@ -59,18 +63,34 @@ def privacy_problems(pack: dict) -> list[str]:
     return problems
 
 
+# Our run costs appear only in system text (decision log, events) - never touch what people wrote,
+# where "$40 a week" is their own words.
+_COST = re.compile(r"~?\$?\s?\d+(?:[.,]\d+)?\s*USD", re.I)
+SYSTEM_PARTS = ("coverage", "events")
+
+
+def _hide_costs(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {k: _hide_costs(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_hide_costs(v) for v in value]
+    return _COST.sub("[cost hidden]", value) if isinstance(value, str) else value
+
+
 def public_copy(pack: dict) -> dict:
-    """The finished pack without cost events."""
+    """The finished pack without cost events or our cost amounts in system text (no costs in public files)."""
     p = copy.deepcopy(pack)
     p["events"] = [e for e in p.get("events", []) if e.get("type") != "cost"]
+    for part in SYSTEM_PARTS:
+        if part in p:
+            p[part] = _hide_costs(p[part])
     return p
 
 
 def feature(pack: dict, featured_dir: Path = FEATURED_DIR, examples_dir: Path = EXAMPLES_DIR) -> dict[str, Path]:
     """Write the featured pack and the examples. Raises ValueError (and writes nothing) on any privacy problem."""
-    from ctxpack.exports.common import slug
     from ctxpack.exports.markdown import to_markdown
-    from ctxpack.exports.skill import skill_zip
+    from ctxpack.exports.skill import skill_name, skill_zip
     from ctxpack.schemas.pack import ContextPack
 
     p = public_copy(pack)
@@ -78,8 +98,7 @@ def feature(pack: dict, featured_dir: Path = FEATURED_DIR, examples_dir: Path = 
     if problems:
         raise ValueError("privacy check failed - nothing written:\n" + "\n".join(problems[:30]))
     p = ContextPack.model_validate(p).model_dump(mode="json")
-    i = p["brief"]["interpreted"]
-    name = slug(i["topic"], i["market"], max_chars=48)
+    name = skill_name(p)  # <short topic>-<market>-audience, same as the skill folder
     featured_dir.mkdir(parents=True, exist_ok=True)
     examples_dir.mkdir(parents=True, exist_ok=True)
     text = json.dumps(p, ensure_ascii=False, indent=1)
