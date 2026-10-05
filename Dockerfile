@@ -2,13 +2,14 @@
 # Build context = repo root. Secrets come ONLY from Render's environment;
 # .dockerignore keeps .env out of the image.
 
-# --- Stage 1: frontend (added in a later step) -----------------------------
-# FROM node:20-slim AS frontend
-# WORKDIR /frontend
-# COPY frontend/package.json frontend/package-lock.json ./
-# RUN npm ci
-# COPY frontend/ ./
-# RUN npm run build
+# --- Stage 1: frontend (Step 4.1) --------------------------------------------
+# React Router 8 needs Node >= 22.22; the build output (frontend/dist) is copied into stage 2.
+FROM node:24-slim AS frontend
+WORKDIR /frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
 
 # --- Stage 2: backend -------------------------------------------------------
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
@@ -28,7 +29,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY backend/ ./
 RUN uv sync --frozen --no-dev
 COPY featured/ /app/featured/
-# COPY --from=frontend /frontend/dist /app/frontend/dist
+COPY --from=frontend /frontend/dist /app/frontend/dist
 
 ENV PATH="/app/backend/.venv/bin:$PATH"
 

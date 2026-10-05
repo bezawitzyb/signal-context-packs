@@ -106,7 +106,9 @@ Read the relevant step before working. Do only that step.
   [--redo] (estimate shown first); pack [--brand-voice] [--test-hook] writes
   every export to data/packs/<pack_id>/; export PACK_ID re-exports (free)
 - Tests: cd backend && uv run pytest
-- Local app: ./start.sh
+- Local app: ./start.sh (builds frontend/, then serves it and the API on :7860)
+- Frontend: cd frontend && npm run dev (:5173, /api proxied to :7860);
+  npm run build; npm run types (lib/types.ts from the JSON schema)
 - Deploy: git push origin main (Render redeploys; at most twice a day,
   never during judging)
 - Public URL: see docs/DEPLOY.md

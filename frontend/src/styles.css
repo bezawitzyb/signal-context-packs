@@ -1,0 +1,41 @@
+/* Design tokens (PRD 10.5) and the three voices (PRD 10.1):
+   THEIR WORDS = serif (Newsreader), OUR WORK = sans (Geist), MACHINE DATA = mono (Geist Mono). */
+@import "tailwindcss";
+
+:root {
+  --paper: #fafaf7;
+  --ink: #16161a;
+  --ink-2: #45454d;      /* secondary text: 9.1:1 on paper */
+  --ink-3: #6b6b74;      /* tertiary text: 5.05:1 on paper, 4.66:1 on wash (AA) */
+  --line: #e4e4dd;       /* borders over shadows */
+  --line-strong: #c9c9c0;
+  --wash: #f1f1ec;       /* quiet fills */
+  --accent: #e8590c;     /* one accent, < 5% of the screen */
+  --accent-ink: #b8460a; /* accent as text: 5.1:1 on paper (AA) */
+  --focus: #1d4ed8;
+}
+
+@theme {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-wash: var(--wash);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader Variable", ui-serif, Georgia, serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html { background: var(--paper); color: var(--ink); }
+body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+
+/* Visible keyboard focus everywhere (PRD 10.6). */
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

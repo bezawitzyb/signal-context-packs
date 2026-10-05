@@ -9,8 +9,10 @@ import logging
 from contextlib import asynccontextmanager
 from importlib.metadata import version as pkg_version
 
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 from sqlalchemy import text
 
 from ctxpack import db, mcp_server, worker
@@ -114,6 +116,34 @@ def health() -> dict:
     return {"ok": database, "version": VERSION, "database": database}
 
 
-@app.get("/", response_class=HTMLResponse)
-async def home() -> str:
-    return PLACEHOLDER_HTML
+# The built web app (frontend/dist). Locally next to backend/, in the image at /app/frontend/dist.
+DIST = Path(__file__).resolve().parents[3] / "frontend" / "dist"
+NOT_APP = ("api/", "mcp", "docs", "redoc", "openapi.json", "ping", "health")
+
+
+def _app_file(path: str) -> Path | None:
+    """A file inside DIST (never outside it), or None."""
+    if not DIST.is_dir():
+        return None
+    target = (DIST / path).resolve()
+    return target if target.is_file() and target.is_relative_to(DIST.resolve()) else None
+
+
+@app.get("/", include_in_schema=False)
+async def home():
+    index = _app_file("index.html")
+    return FileResponse(index) if index else HTMLResponse(PLACEHOLDER_HTML)
+
+
+@app.get("/{path:path}", include_in_schema=False)
+async def web_app(path: str):
+    """Static files of the web app; every other page path gets index.html (the app routes it)."""
+    if path.startswith(NOT_APP):
+        raise HTTPException(status_code=404)
+    if found := _app_file(path):
+        headers = {"Cache-Control": "public, max-age=31536000, immutable"} if path.startswith("assets/") else {}
+        return FileResponse(found, headers=headers)
+    index = _app_file("index.html")
+    if index is None:
+        raise HTTPException(status_code=404)
+    return FileResponse(index, headers={"Cache-Control": "no-cache"})
