@@ -92,6 +92,17 @@ async def get_export(pack_id: str, kind: Literal["json", "md", "prompt", "skill"
     return Response(content=data, media_type=media, headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
 
+@router.get("/options")
+async def get_options() -> dict[str, Any]:
+    """What the Ask form offers, from modes.yaml: modes with time and cost estimates, time windows."""
+    from ctxpack.agent.interpret import estimate
+
+    cfg = load_yaml("modes")
+    return {"modes": {m: estimate(m).model_dump(mode="json") for m in ("quick", "standard")},
+            "default_mode": cfg["default_mode"], "time_window_days_options": cfg["time_window_days_options"],
+            "default_time_window_days": cfg["default_time_window_days"], "brand_voice_max_chars": 200}
+
+
 @router.get("/schema")
 async def get_schema() -> JSONResponse:
     """The Context Pack 1.0 JSON schema."""

@@ -37,7 +37,7 @@ def offline(monkeypatch, tmp_path, temp_db):
 
 async def approved_run(brief: str = "Gen Z and meal prep") -> str:
     """A run with the recorded plan, approved and waiting in the queue."""
-    res = await interpret(brief)
+    res = await interpret(brief, allow_question=False)  # an approved run never waits for a question
     interp = res.result.interpretation.model_copy(update={"time_window_days": 365})  # fixtures are older
     run = db.create_run(brief)
     db.update_run(run.id, interpretation=interp.model_dump(mode="json"),

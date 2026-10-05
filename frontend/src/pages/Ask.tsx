@@ -1,0 +1,349 @@
+// S1 ASK + PLAN (PRD 10.2, guide Step 4.2): brief, mode, window, brand voice, masked run key ->
+// one clarifying question (answer chips) or the plan to review -> Start (the run joins the queue).
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
+import { ArrowRight, CircleHelp, KeyRound, Loader2, X } from "lucide-react";
+import {
+  ApiError, answerQuestion, createRun, getOptions, startRun,
+  type Options, type PlanUnit, type RunStatus,
+} from "../lib/api";
+import { explain, readRunKey, saveRunKey } from "../lib/runKey";
+
+const EXAMPLES = [
+  "Launching a snack brand in the Netherlands",
+  "Gen Z and meal prep",
+  "Heat pumps for homeowners in Germany",
+  "Protein supplements for women in the Netherlands",
+  "Bouldering gyms for beginners",
+];
+
+const FIELD_LABELS: Record<string, string> = {
+  topic: "Topic", market: "Market", languages: "Languages", audience: "Audience", category: "Category",
+  intent: "Goal", time_window_days: "Time window", competitors: "Brands named", compliance_category: "Rules area",
+};
+
+function useRotatingExample(paused: boolean) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (paused || still) return;
+    const t = setInterval(() => setN((x) => (x + 1) % EXAMPLES.length), 3500);
+    return () => clearInterval(t);
+  }, [paused]);
+  return EXAMPLES[n];
+}
+
+function usd(x: number) {
+  return `$${x.toFixed(2)}`;
+}
+
+// --- the form -------------------------------------------------------------------------------
+
+export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
+  const [options, setOptions] = useState<Options | null>(null);
+  const [brief, setBrief] = useState("");
+  const [mode, setMode] = useState<"quick" | "standard">("quick");
+  const [windowDays, setWindowDays] = useState<number | null>(null);
+  const [voice, setVoice] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const keyRef = useRef<HTMLInputElement>(null);
+  const example = useRotatingExample(brief.length > 0);
+
+  useEffect(() => {
+    getOptions().then((o) => { setOptions(o); setMode(o.default_mode); }).catch(() => setOptions(null));
+    if (keyRef.current) keyRef.current.value = readRunKey(); // the DOM property only - never an attribute
+  }, []);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const key = keyRef.current?.value.trim() ?? "";
+    setError(null);
+    if (brief.trim().length < 3) return setError("Please describe what you want to research.");
+    if (!key) return setError("Please enter the run key to start research.");
+    saveRunKey(key);
+    setBusy(true);
+    try {
+      const run = await createRun(key, {
+        brief: brief.trim(), mode, time_window_days: windowDays ?? undefined,
+        brand_voice: voice.trim() || undefined,
+      });
+      onRun(run);
+    } catch (err) {
+      setError(err instanceof ApiError ? explain(err.status, err.message) : "Could not reach the server.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const est = options?.modes[mode];
+  return (
+    <form onSubmit={submit} className="space-y-4" aria-describedby={error ? "ask-error" : undefined}>
+      <label htmlFor="brief" className="sr-only">Your brief</label>
+      <textarea
+        id="brief" value={brief} onChange={(e) => setBrief(e.target.value)} rows={3} maxLength={2000}
+        placeholder={`e.g. ${example}`}
+        className="w-full resize-y rounded-lg border border-line-strong bg-paper px-4 py-3 text-lg text-ink placeholder:text-ink-3 focus:border-ink focus:outline-none"
+      />
+      <div className="grid gap-4 md:grid-cols-[auto_auto_1fr]">
+        <fieldset>
+          <legend className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">Depth</legend>
+          <div className="flex rounded-lg border border-line p-0.5">
+            {(["quick", "standard"] as const).map((m) => (
+              <label key={m} className={`cursor-pointer rounded-md px-3 py-1.5 text-sm ${mode === m ? "bg-ink text-paper" : "text-ink-2"}`}>
+                <input type="radio" name="mode" value={m} checked={mode === m} onChange={() => setMode(m)} className="sr-only" />
+                {m === "quick" ? "Quick" : "Standard"}
+                {options && <span className="ml-1 font-mono text-xs opacity-80">~{options.modes[m].typical_minutes} min</span>}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <div>
+          <label htmlFor="window" className="mb-1 block text-xs font-medium uppercase tracking-wide text-ink-3">Time window</label>
+          <select id="window" value={windowDays ?? options?.default_time_window_days ?? ""}
+                  onChange={(e) => setWindowDays(Number(e.target.value))}
+                  className="rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink">
+            {(options?.time_window_days_options ?? []).map((d) => <option key={d} value={d}>Last {d} days</option>)}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="voice" className="mb-1 block text-xs font-medium uppercase tracking-wide text-ink-3">
+            Brand voice (one line, optional)
+          </label>
+          <input id="voice" value={voice} onChange={(e) => setVoice(e.target.value)}
+                 maxLength={options?.brand_voice_max_chars ?? 200} placeholder="e.g. dry Dutch humour, no hype"
+                 className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-3" />
+        </div>
+      </div>
+      <div className="grid items-end gap-4 md:grid-cols-[1fr_auto]">
+        <div>
+          <label htmlFor="runkey" className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-ink-3">
+            <KeyRound aria-hidden="true" size={13} /> Run key
+          </label>
+          <input id="runkey" ref={keyRef} type="password" autoComplete="off" spellCheck={false}
+                 aria-describedby="runkey-help"
+                 className="w-full rounded-lg border border-line bg-paper px-3 py-2 font-mono text-sm text-ink md:max-w-sm" />
+          <p id="runkey-help" className="mt-1 text-xs text-ink-3">
+            Judges: the run key was provided with your judging materials. It stays in this browser tab only.
+          </p>
+        </div>
+        <button type="submit" disabled={busy}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-ink px-5 py-2.5 text-sm font-medium text-paper hover:bg-ink-2 disabled:opacity-60">
+          {busy ? <Loader2 aria-hidden="true" size={16} className="animate-spin" /> : <ArrowRight aria-hidden="true" size={16} />}
+          {busy ? "Reading your brief…" : "Plan the research"}
+        </button>
+      </div>
+      {est && (
+        <p className="text-xs text-ink-3">
+          {mode === "quick" ? "Quick" : "Standard"}: about {est.typical_minutes} minutes, typically {usd(est.typical_usd_low)}–{usd(est.typical_usd_high)},
+          never more than {usd(est.max_usd)}. Planning first: nothing is collected until you press Start.
+        </p>
+      )}
+      {error && <p id="ask-error" role="alert" className="rounded-lg border border-line-strong bg-wash px-3 py-2 text-sm text-ink">{error}</p>}
+    </form>
+  );
+}
+
+// --- the clarifying question ------------------------------------------------------------------
+
+export function QuestionCard({ run, onPlanned }: { run: RunStatus; onPlanned: (run: RunStatus) => void }) {
+  const [other, setOther] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const q = run.clarifying_question!;
+  const answer = async (text: string) => {
+    if (!text.trim()) return;
+    setBusy(true);
+    setError(null);
+    try {
+      onPlanned(await answerQuestion(readRunKey(), run.run_id, text.trim()));
+    } catch (err) {
+      setError(err instanceof ApiError ? explain(err.status, err.message) : "Could not reach the server.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <section aria-labelledby="question" className="rounded-lg border border-line-strong p-5">
+      <h2 id="question" className="flex items-center gap-2 text-lg font-semibold text-ink">
+        <CircleHelp aria-hidden="true" size={18} /> One question first
+      </h2>
+      <p className="mt-1 text-ink">{q.question}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {q.options.map((o) => (
+          <button key={o} type="button" disabled={busy} onClick={() => answer(o)}
+                  className="rounded-full border border-line-strong px-3 py-1.5 text-sm text-ink hover:border-ink disabled:opacity-60">
+            {o}
+          </button>
+        ))}
+      </div>
+      <form onSubmit={(e) => { e.preventDefault(); answer(other); }} className="mt-3 flex gap-2">
+        <label htmlFor="other" className="sr-only">Or answer in your own words</label>
+        <input id="other" value={other} onChange={(e) => setOther(e.target.value)} placeholder="Or in your own words"
+               className="w-full max-w-sm rounded-lg border border-line px-3 py-1.5 text-sm" />
+        <button type="submit" disabled={busy || !other.trim()} className="rounded-lg border border-ink px-3 py-1.5 text-sm disabled:opacity-50">
+          Answer
+        </button>
+      </form>
+      {error && <p role="alert" className="mt-2 text-sm text-ink">{error}</p>}
+    </section>
+  );
+}
+
+// --- the plan -----------------------------------------------------------------------------------
+
+function UnitCard({ unit, on, onToggle, last }: { unit: PlanUnit; on: boolean; onToggle: () => void; last: boolean }) {
+  return (
+    <article className={`rounded-lg border p-3 ${on ? "border-line" : "border-dashed border-line-strong opacity-70"}`}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="font-mono text-xs text-ink-3">{unit.platform} · {unit.kind}</p>
+          <p className="truncate font-mono text-sm text-ink" title={unit.target}>{unit.target}</p>
+        </div>
+        <button type="button" onClick={onToggle} aria-pressed={on} disabled={on && last}
+                title={on && last ? "At least one source must stay on" : undefined}
+                className={`shrink-0 rounded border px-2 py-0.5 text-xs ${on ? "border-ink text-ink" : "border-line text-ink-3"} disabled:opacity-50`}>
+          {on ? "On" : "Off"}
+        </button>
+      </div>
+      <p className="mt-2 text-sm text-ink-2">{unit.reason}</p>
+      {unit.queries.length > 0 && (
+        <ul className="mt-2 flex flex-wrap gap-1">
+          {unit.queries.slice(0, 4).map((q) => (
+            <li key={q.language + q.query} lang={q.language}
+                className="rounded border border-line px-1.5 py-0.5 font-mono text-[0.72rem] text-ink-2">
+              {q.language} · {q.query}
+            </li>
+          ))}
+        </ul>
+      )}
+    </article>
+  );
+}
+
+export function PlanReview({ run }: { run: RunStatus }) {
+  const navigate = useNavigate();
+  const plan = run.plan!;
+  const interp = run.interpretation!;
+  const [off, setOff] = useState<Set<number>>(new Set());
+  const [removed, setRemoved] = useState<Set<string>>(new Set());
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const questions = plan.research_questions.filter((q) => !removed.has(q.id));
+  const onCount = plan.starting_units.length - off.size;
+  const assumed = new Set(interp.assumed ?? []);
+  const est = run.estimate;
+
+  const toggle = (n: number) => setOff((s) => { const t = new Set(s); if (t.has(n)) t.delete(n); else t.add(n); return t; });
+  const start = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await startRun(readRunKey(), run.run_id, { disabled_units: [...off], removed_questions: [...removed] });
+      navigate(`/runs/${run.run_id}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? explain(err.status, err.message) : "Could not reach the server.");
+      setBusy(false);
+    }
+  };
+
+  const fields: [string, string][] = [
+    ["topic", interp.topic], ["market", interp.market], ["languages", interp.languages.join(", ")],
+    ["audience", interp.audience], ["intent", interp.intent],
+    ["time_window_days", `last ${interp.time_window_days} days`],
+    ...(interp.competitors?.length ? [["competitors", interp.competitors.join(", ")] as [string, string]] : []),
+  ];
+
+  return (
+    <div className="space-y-8">
+      <section aria-labelledby="understood">
+        <h2 id="understood" className="mb-3 text-lg font-semibold text-ink">Here's what I understood</h2>
+        <dl className="grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
+          {fields.map(([k, v]) => (
+            <div key={k} className="bg-paper px-4 py-3">
+              <dt className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-ink-3">
+                {FIELD_LABELS[k] ?? k}
+                {assumed.has(k as never) && (
+                  <span title="Not in your brief: my assumption" className="rounded border border-line-strong px-1 py-px text-[0.65rem] normal-case tracking-normal text-ink-2">
+                    assumed
+                  </span>
+                )}
+              </dt>
+              <dd className="mt-0.5 text-ink">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section aria-labelledby="start-here">
+        <h2 id="start-here" className="mb-1 text-lg font-semibold text-ink">Here's where I'll start</h2>
+        <p className="mb-3 text-sm text-ink-2">
+          Starting points, each with a reason. The agent adapts from here: it digs where people really talk and drops
+          sources that are off-topic. Switch off any you don't want.
+        </p>
+        <div className="grid gap-3 md:grid-cols-2">
+          {plan.starting_units.map((u, n) => (
+            <UnitCard key={n} unit={u} on={!off.has(n)} onToggle={() => toggle(n)} last={onCount <= 1} />
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="questions">
+        <h2 id="questions" className="mb-3 text-lg font-semibold text-ink">Questions the research will answer</h2>
+        <ul className="space-y-2">
+          {questions.map((q) => (
+            <li key={q.id} className="flex items-start justify-between gap-3 rounded-lg border border-line px-3 py-2">
+              <span className="text-ink"><span className="mr-2 font-mono text-xs text-ink-3">{q.id}</span>{q.text}</span>
+              <button type="button" onClick={() => setRemoved((s) => new Set(s).add(q.id))}
+                      disabled={questions.length <= 5} aria-label={`Remove ${q.id}`}
+                      title={questions.length <= 5 ? "At least 5 questions are needed" : "Remove this question"}
+                      className="shrink-0 rounded p-1 text-ink-3 hover:text-ink disabled:opacity-40">
+                <X aria-hidden="true" size={15} />
+              </button>
+            </li>
+          ))}
+        </ul>
+        {plan.hypotheses.length > 0 && (
+          <details className="mt-3 text-sm text-ink-2">
+            <summary className="cursor-pointer text-ink">Hypotheses to test ({plan.hypotheses.length})</summary>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {plan.hypotheses.map((h) => <li key={h.id}><span className="font-mono text-xs text-ink-3">{h.id}</span> {h.statement}</li>)}
+            </ul>
+          </details>
+        )}
+      </section>
+
+      <section className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-line-strong p-4">
+        <p className="text-sm text-ink-2">
+          <span className="font-medium text-ink">{run.mode === "standard" ? "Standard" : "Quick"}</span>: about{" "}
+          {est.typical_minutes} minutes, typically ${est.typical_usd_low.toFixed(2)}–${est.typical_usd_high.toFixed(2)},
+          never more than ${est.max_usd.toFixed(2)}. If someone else's research is running, yours waits in line and
+          starts by itself.
+        </p>
+        <button type="button" onClick={start} disabled={busy}
+                className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
+          {busy ? <Loader2 aria-hidden="true" size={16} className="animate-spin" /> : <ArrowRight aria-hidden="true" size={16} />}
+          Start research
+        </button>
+      </section>
+      {error && <p role="alert" className="rounded-lg border border-line-strong bg-wash px-3 py-2 text-sm text-ink">{error}</p>}
+    </div>
+  );
+}
+
+export function AskFlow() {
+  const [run, setRun] = useState<RunStatus | null>(null);
+  const result = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (run) result.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [run]);
+  return (
+    <div className="space-y-8">
+      <AskForm onRun={setRun} />
+      <div ref={result} className="scroll-mt-20">
+        {run?.status === "needs_clarification" && run.clarifying_question && <QuestionCard run={run} onPlanned={setRun} />}
+        {run?.status === "awaiting_approval" && run.plan && <PlanReview run={run} />}
+      </div>
+    </div>
+  );
+}

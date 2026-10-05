@@ -284,3 +284,26 @@ async def test_redact_run_fixes_names_in_documents_draft_and_packs(fake, temp_db
     assert saved["tensions"][0]["quotes"] == [{"evidence_id": saved["evidence"][0]["id"],
                                                "text": "Mijn man [name] zegt"}]   # same rule on both sides
     ContextPack.model_validate(saved)
+
+
+def test_options_come_from_config(api):
+    from ctxpack.config import load_yaml
+
+    opts = client.get("/api/v1/options").json()
+    cfg = load_yaml("modes")
+    assert opts["time_window_days_options"] == cfg["time_window_days_options"]
+    assert opts["default_time_window_days"] == cfg["default_time_window_days"]
+    assert opts["modes"]["quick"]["typical_minutes"] == cfg["modes"]["quick"]["typical_minutes"]
+    assert opts["modes"]["standard"]["max_usd"] > opts["modes"]["quick"]["max_usd"]
+
+
+def test_snacks_gets_one_question_in_fake_mode_and_agents_never_do(api):
+    run = client.post("/api/v1/runs", json={"brief": "snacks"}, headers=KEY).json()
+    assert run["status"] == "needs_clarification" and len(run["clarifying_question"]["options"]) >= 3
+    answered = client.post(f"/api/v1/runs/{run['run_id']}/answer", json={"answer": "Netherlands, young adults"},
+                           headers=KEY).json()
+    assert answered["status"] == "awaiting_approval" and answered["plan"]
+    agent = client.post("/api/v1/runs", json={"brief": "snacks", "auto_approve": True}, headers=KEY).json()
+    assert agent["status"] == "queued" and agent["clarifying_question"] is None   # agents: never a question
+    wrong = client.post("/api/v1/runs", json={"brief": "snacks"}, headers={"X-API-Key": "nope"})
+    assert wrong.status_code == 401 and "run key" in wrong.json()["detail"]

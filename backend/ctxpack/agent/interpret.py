@@ -183,6 +183,24 @@ def _user_message(brief: str, window_days: int, allow_question: bool,
     return "\n\n".join(parts)
 
 
+def _fake_answer(brief: str, ask: bool) -> dict:
+    """LLM_FAKE: the recorded plan; a one-word brief (e.g. "snacks") gets one clarifying question instead,
+    so the question path can be tried for free. Real runs never use this."""
+    import json
+
+    from ctxpack.llm.client import FAKE_DIR
+
+    recorded = json.loads((FAKE_DIR / f"{TOOL}.json").read_text(encoding="utf-8"))
+    if not (ask and len(brief.split()) <= 1):
+        return recorded
+    interp = {**recorded["interpretation"], "topic": brief.strip(), "market": "global",
+              "assumed": ["market", "audience"]}
+    return {"interpretation": interp, "hypotheses": [], "research_questions": [], "starting_units": [],
+            "clarifying_question": {"question": "Which market and audience is this for?",
+                                    "options": ["Netherlands, young adults", "Germany, families",
+                                                "Global, Gen Z", "UK, office workers"]}}
+
+
 async def interpret(brief: str, *, mode: Mode | str = Mode.quick, window_days: int | None = None,
                     allow_question: bool = True,
                     clarification: tuple[str, str] | None = None) -> Interpreted:
@@ -197,5 +215,5 @@ async def interpret(brief: str, *, mode: Mode | str = Mode.quick, window_days: i
     res = await structured("reasoner", load_prompt("interpret_plan"),
                            _user_message(brief, window, ask, clarification), schema, TOOL,
                            description="Record the interpretation and either one clarifying question or the plan.",
-                           max_tokens=6000)
+                           max_tokens=6000, fake=lambda user: _fake_answer(brief, ask))
     return Interpreted(result=res.data.to_result(), estimate=estimate(mode), usd=res.usd)

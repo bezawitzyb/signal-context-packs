@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { listPacks, type FeaturedPack } from "../lib/api";
 import { ModeBadge } from "../components/badges";
+import { AskFlow } from "./Ask";
 
 export function PackCards({ packs }: { packs: FeaturedPack[] }) {
   return (
@@ -58,6 +59,10 @@ export function Home() {
         {error && <p className="text-sm text-ink-2">Could not load the packs: {error}</p>}
         {!packs && !error && <p className="text-sm text-ink-3">Loading…</p>}
         {packs && <PackCards packs={packs} />}
+      </section>
+      <section aria-labelledby="ask">
+        <h2 id="ask" className="mb-3 text-lg font-semibold text-ink">Research your own brief</h2>
+        <AskFlow />
       </section>
     </div>
   );

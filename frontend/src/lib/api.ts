@@ -47,10 +47,9 @@ export interface RunStatus {
   status: "created" | "needs_clarification" | "awaiting_approval" | "queued" | "running" | "interrupted"
     | "complete" | "partial" | "failed" | "stopped";
   stage: string | null; queue_position: number | null; pack_id: string | null; error: string | null;
-  created_at: string; interpretation: Interpretation | null; plan: Record<string, unknown> | null;
+  created_at: string; interpretation: Interpretation | null; plan: Plan | null;
   clarifying_question: { question: string; options: string[] } | null;
-  estimate: { mode: string; max_usd: number; typical_usd_low: number; typical_usd_high: number;
-              typical_minutes: number };
+  estimate: Estimate;
 }
 
 export interface ItemResult { pack_id: string; item: Record<string, unknown>; evidence: Evidence[]; note: string }
@@ -92,6 +91,17 @@ export const searchEvidence = (packId: string, q: string, opts: { platform?: str
 };
 export const exportUrl = (packId: string, kind: "json" | "md" | "prompt" | "skill") =>
   `${BASE}/packs/${encodeURIComponent(packId)}/export/${kind}`;
+
+export interface Estimate { mode: string; max_usd: number; typical_usd_low: number; typical_usd_high: number;
+  typical_minutes: number; collection_secs: number; max_tool_calls: number }
+export interface Options { modes: Record<"quick" | "standard", Estimate>; default_mode: "quick" | "standard";
+  time_window_days_options: number[]; default_time_window_days: number; brand_voice_max_chars: number }
+export const getOptions = () => request<Options>("/options");
+
+export interface PlanUnit { platform: string; kind: string; target: string; reason: string; enabled: boolean;
+  queries: { language: string; query: string }[] }
+export interface Plan { hypotheses: { id: string; statement: string }[];
+  research_questions: { id: string; text: string }[]; starting_units: PlanUnit[] }
 
 // --- runs (the run key is required to create, answer, start and stop) -----------------
 export const createRun = (runKey: string, body: { brief: string; mode: "quick" | "standard";

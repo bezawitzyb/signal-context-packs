@@ -1369,6 +1369,16 @@ WHAT  "/": headline; featured pack cards ("See a sample pack" first);
       or the plan ("Here's what I understood" with assumed tags; "Here's
       where I'll start": source cards with reasons, questions with
       remove buttons; time and cost estimate; Start).
+      As built: GET /api/v1/options serves modes (time and cost estimates),
+      time windows and the brand-voice limit from modes.yaml, so the form
+      holds no numbers. The run key input is uncontrolled (never a DOM
+      attribute), type=password, kept in sessionStorage for the tab only;
+      refusals are shown in plain words (401 wrong key, 429 queue full or
+      daily cap, 503 runs switched off). Sources can be switched off (at
+      least one stays on); questions can be removed down to 5 (the plan's
+      minimum). Start -> /runs/:id (live status until Step 4.3). In
+      LLM_FAKE mode a one-word brief ("snacks") gets one clarifying
+      question, so the question path can be tried for free.
 PROMPT
   Read CLAUDE.md and Step 4.2. Implement and test with fixtures + LLM_FAKE.
 CHECK
