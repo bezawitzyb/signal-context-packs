@@ -1,0 +1,11 @@
+{
+ "about": "Human evaluation (PRD 14.4): one 20-minute session with a marketer. Fill in after Step 5.3; null = not rated yet. Quote only with permission.",
+ "session": {"date": null, "rater": "a marketer", "brief_team_tomorrow": null, "why": null, "quote": null, "quote_permission": false},
+ "briefs": {
+  "genz_meal_prep": {"hooks_would_use": null, "hooks_rated": null, "complaints": []},
+  "nl_snack_brand": {"hooks_would_use": null, "hooks_rated": null, "complaints": []},
+  "de_heat_pumps": {"hooks_would_use": null, "hooks_rated": null, "complaints": []},
+  "snacks_vague": {"hooks_would_use": null, "hooks_rated": null, "complaints": []}
+ },
+ "target_would_use_share": 0.6
+}

@@ -319,11 +319,6 @@ async def test_run_status_shows_the_agents_verdicts_once_collection_is_done(api)
     assert "finish_reason" in col and TEST_KEY not in json.dumps(status)
 
 
-def test_evals_placeholder_is_public_and_honest(api):
-    body = client.get("/api/v1/evals").json()
-    assert body["status"] == "not_run_yet" and body["results"] == []
-
-
 def test_clean_text_and_escape_debris_in_new_terms():
     from ctxpack.maintenance import RedactReport, clean_text, redact_tree
 

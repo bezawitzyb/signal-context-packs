@@ -447,6 +447,15 @@ def get_pack_for_run(run_id: str) -> dict | None:
         return row.pack if row else None
 
 
+def latest_pack_for_brief(brief_text: str) -> PackRow | None:
+    """The newest pack whose brief text matches (case and spaces ignored); used by the eval with --reuse."""
+    key = " ".join(brief_text.split()).casefold()
+    with session() as s:
+        rows = s.exec(select(PackRow.id, PackRow.brief_text).order_by(PackRow.created_at.desc())).all()
+        pack_id = next((i for i, text in rows if " ".join(text.split()).casefold() == key), None)
+        return s.get(PackRow, pack_id) if pack_id else None
+
+
 def list_featured_packs() -> list[PackRow]:
     with session() as s:
         return list(s.exec(select(PackRow).where(PackRow.featured == True).order_by(PackRow.created_at)))  # noqa: E712
@@ -504,6 +513,8 @@ def load_featured(folder: Path = FEATURED_DIR) -> int:
         return 0
     changed = 0
     for path in sorted(folder.glob("*.json")):
+        if path.stem.startswith("evals"):  # evals.json, evals_human.json: eval results, not packs
+            continue
         pack = ContextPack.model_validate_json(path.read_text(encoding="utf-8"))
         data = pack.model_dump(mode="json")
         with session() as s:

@@ -1,0 +1,18 @@
+# Channels
+
+1. reddit: Largest volume (40 posts). Homeowners lay out house data and ask peers for procedure help and installer recommendations. Stories with concrete numbers and house data draw concrete answers. Questions on subsidy and offer comparison fit here best. Formats: Situation post with house data and a concrete question, Offer-comparison breakdown (itemised), Sourced subsidy explainer as a comment or post. Where: Reddit threads where Hausbesitzer ask about Wärmepumpe, Heizungstausch, Förderung and installers. Tone: Practical, question-driven, du-register. Give data, don't pitch. Blunt brand criticism gets agreement here, so stay out of it and stick to numbers. (CHN-01)
+2. youtube: Second-largest volume (32 posts). Sceptical comments sit under explainer videos, next to proud operator numbers. A promise of an honest one-year bill is a proven curiosity hook. Evidence comes from several platforms, but the format fit here is the strongest for running-cost proof. Formats: One-year operator review video with real bill, Old-house case walkthrough (Heizlast, Vorlauftemperatur), Pinned comment answering sceptics with the calculation. Where: #Wärmepumpe, #WärmepumpeNach1Jahr, #Altbau. Tone: Dry, numbers-first, no hype. Expect sceptical comments and answer them with calculations. (CHN-02)
+3. tiktok: 16 posts, short and technical or myth-busting. A specific expert tip and a simple ratio rebuttal both perform. Treat it as a test for reach. Most of the deep evidence comes from Reddit and YouTube. Formats: 15-45 second tuning tip (Heizkurve, Vorlauftemperatur), Myth-busting clip with a simple efficiency calculation, Cold-season check-in. Where: #Wärmepumpe, #WP, #Heizkurve, #Heizungstausch, #Förderung. Tone: Short, explanatory, dry humour allowed (a quip lands, but add substance). Explain every abbreviation once. (CHN-03)
+4. web_forum: Heating forum users (Forumsfreund) compare consumption and tariffs in detail, and peers answer subsidy questions that no official source covers. This is a test channel: the evidence comes from one culture item and the white-space observations. Formats: Detailed data reply in existing threads, Consumption benchmark question with house data. Where: Public heating and PV forums with Wärmepumpe sub-forums. Tone: Technical, du-register, data tables welcome. No promotional tone. (CHN-04)
+
+## How each platform sounds
+- reddit (40 posts): Practical and question-driven: people lay out their house and offer details and ask peers for procedure help, local recommendations and plain answers. Reddit is where subsidy process (KfW, bonus conditions), installer search and offer details are worked through step by step.
+- youtube (32 posts): Sceptical and opinionated in comments under explainer videos, mixed with proud personal operating numbers. YouTube is where payback and old-house doubts are argued, and where owners reply to creators with their own JAZ figures.
+- tiktok (16 posts): Short and explanatory, with technical or myth-busting framing. TikTok content is about technical details and safety (for example microbubble separator placement) and correcting the 'Stromfresser' label.
+
+## Public communities and creators
+- Reddit homeowner Q&A threads on Wärmepumpe and Heizungstausch (German-language subreddits) (community, reddit)
+- Public heating forum threads (Forumsfreund-style consumption and tariff comparisons) (community, web_forum)
+- YouTube comment sections of Wärmepumpe explainer and one-year review videos (community, youtube)
+- TikTok Wärmepumpe tip and myth-busting hashtags (#Wärmepumpe, #WP, #Heizkurve) (community, tiktok)
+- Public PV and energy-independence forum threads on PV plus WP systems (community, web_forum)

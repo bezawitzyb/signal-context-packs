@@ -140,8 +140,10 @@ def _fake_verdicts(user: str) -> dict:
                       for i in re.findall(r"^Claim (\w+-\d+):", user, flags=re.M)]}
 
 
-async def check_claims(items: list[dict], ev_text: dict[str, str], report: Report) -> dict[str, Verdict]:
-    """One verdict per claim (batched, one retry pass for claims without a verdict)."""
+async def check_claims(items: list[dict], ev_text: dict[str, str], report: Report,
+                       role: str = "worker") -> dict[str, Verdict]:
+    """One verdict per claim (batched, one retry pass for claims without a verdict).
+    The eval re-check uses role="evaluator" (PRD 14.3: not the pipeline's verifier model)."""
     cfg = _cfg()
     system = load_prompt("verify_claim")
     verdicts: dict[str, Verdict] = {}
@@ -154,7 +156,7 @@ async def check_claims(items: list[dict], ev_text: dict[str, str], report: Repor
             blocks.append(f"Claim {it['id']}: {it['claim']}\nEvidence:\n"
                           + "\n".join(untrusted(e, ev_text[e]) for e in evs[:6] if e in ev_text))
         try:
-            res = await structured("worker", system, "\n\n".join(blocks), VerdictBatch, "record_verdicts",
+            res = await structured(role, system, "\n\n".join(blocks), VerdictBatch, "record_verdicts",
                                    description="Record a verdict for every claim.", fake=_fake_verdicts)
         except LLMError as exc:  # its claims get the retry pass
             log.warning("claim batch of %d failed: %s", len(batch), exc)

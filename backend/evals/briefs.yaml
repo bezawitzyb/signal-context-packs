@@ -1,0 +1,45 @@
+# Evaluation briefs (guide Appendix F5, PRD 14.2). They mirror the judges' live tests.
+# Targets are in PRD 14.3; limits, budgets and thresholds stay in ctxpack/config/*.yaml.
+#
+# reuse_pack: a finished pack that is scored as it is (no new run, no new spend).
+# Without it, `eval` runs the brief (the cost estimate is shown first) unless --reuse is given;
+# with --reuse the newest finished pack for the same brief text is scored instead.
+
+briefs:
+  - id: genz_meal_prep
+    brief: Gen Z and meal prep
+    mode: standard
+    expect: {market: global, languages: [en]}
+    reuse_pack: pk_CamfAsJ7Zbdr
+
+  - id: nl_snack_brand
+    brief: Launching a snack brand in the Netherlands
+    mode: standard
+    expect: {market: NL, languages: [nl, en]}
+    reuse_pack: pk_wrvZBhDFsLR9
+
+  - id: de_heat_pumps
+    brief: Heat pumps for homeowners in Germany
+    mode: standard
+    expect: {market: DE, languages: [de], compliance_category: energy_environmental}
+    note: B2B-like; energy and green claims. Becomes the third example (feature it after a privacy check).
+
+  - id: snacks_vague
+    brief: snacks
+    mode: quick
+    expect: {clarifying_question: true}
+    source_diversity_exempt: true
+    note: Vague and thin on purpose. The clarifying question is recorded; the run takes the first option.
+
+# PRD 14.3 targets (the numbers the /evals page shows pass / fail against).
+targets:
+  quote_groundedness: 1.0
+  claim_entailment: 0.95
+  claims_with_evidence: 1.0
+  relevance_rate: 0.60
+  source_diversity_platforms: 3
+  plan_divergence_max_shared: 0.50
+  peak_mem_mb_standard: 400
+  schema_valid: 1.0
+  expected_language_min_share: 0.05   # a target language counts as covered from this share of kept posts
+  entailment_sample: 30

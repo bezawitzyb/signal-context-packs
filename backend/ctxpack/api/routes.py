@@ -105,9 +105,11 @@ async def get_options() -> dict[str, Any]:
 
 @router.get("/evals")
 async def get_evals() -> dict[str, Any]:
-    """Evaluation results (Phase 5 fills this). Until then it says so plainly."""
-    return {"status": "not_run_yet", "results": [],
-            "note": "Evaluations on the four test briefs run in Phase 5 (Day 6); results will appear here."}
+    """Evaluation results (featured/evals.json from the eval command) plus the human ratings file.
+    Before the first eval it says so plainly."""
+    from ctxpack.evaluation import published
+
+    return await asyncio.to_thread(published)
 
 
 @router.get("/schema")

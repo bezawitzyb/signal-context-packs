@@ -357,6 +357,58 @@ def _print_summary(run) -> None:
                   f"peak memory {run.peak_mem_mb} MB")
 
 
+
+def _execute(run_id: str, brief: str, *, no_apify: bool = False, apify_max: float = -1.0, record: bool = False):
+    """Queue a planned run, claim it and run the whole pipeline here, printing live events and the summary."""
+    import asyncio
+    import signal
+    import time
+
+    from ctxpack import db, orchestrator
+    from ctxpack.collect import loop
+
+    orchestrator.enqueue(run_id)
+    claimed = db.claim_next_run()
+    if claimed is None or claimed.id != run_id:
+        console.print(f"{BAD} another run is waiting in the queue; run {run_id} stays queued for the worker")
+        raise typer.Exit(1)
+
+    async def collect(rid: str) -> None:
+        state = orchestrator.loop_state(rid, no_apify=no_apify,
+                                        apify_usd_cap=apify_max if apify_max >= 0 else None)
+        await loop.run_loop(state)
+        if record:
+            path = loop.save_transcript(brief, state)
+            console.print(f"transcript saved: {path}")
+
+    async def go() -> None:
+        signal_loop = asyncio.get_running_loop()
+        signal_loop.add_signal_handler(signal.SIGINT, lambda: (
+            console.print("[yellow]Stopping - packaging what was collected...[/yellow]"),
+            orchestrator.request_stop(run_id)))
+        task = asyncio.create_task(orchestrator.run_pipeline(run_id, collect=collect))
+        last = 0
+        while True:
+            done = task.done()
+            for e in db.get_events(run_id, after_seq=last):
+                last = e.seq
+                if line := _event_line(e):
+                    console.print(line, highlight=False)
+            if done:
+                break
+            await asyncio.sleep(0.5)
+        await task
+
+    started = time.monotonic()
+    asyncio.run(go())
+    final = db.get_run(run_id)
+    _print_summary(final)
+    if final.pack_id:
+        _print_exports(db.get_pack(final.pack_id))
+    console.print(f"took {time.monotonic() - started:.0f} s")
+    return final
+
+
 @app.command()
 def research(
     brief: str = typer.Argument(..., help='The brief, e.g. "Gen Z and meal prep"'),
@@ -372,12 +424,9 @@ def research(
     """Plan -> show it and wait for Enter -> the agent loop, printed live -> counters, sources, cost."""
     import asyncio
     import os
-    import signal
-    import time
 
-    from ctxpack import db, orchestrator
+    from ctxpack import db
     from ctxpack.agent.interpret import interpret
-    from ctxpack.collect import loop
     from ctxpack.llm.client import tracking
     from ctxpack.schemas.enums import Mode, Requester, RunStatus
 
@@ -421,45 +470,7 @@ def research(
     if not auto_approve:
         typer.prompt("\nPress Enter to start (Ctrl-C to cancel)", default="", show_default=False)
 
-    orchestrator.enqueue(run.id)
-    claimed = db.claim_next_run()
-    if claimed is None or claimed.id != run.id:
-        console.print(f"{BAD} another run is waiting in the queue; run {run.id} stays queued for the worker")
-        raise typer.Exit(1)
-
-    async def collect(run_id: str) -> None:
-        state = orchestrator.loop_state(run_id, no_apify=no_apify,
-                                        apify_usd_cap=apify_max if apify_max >= 0 else None)
-        await loop.run_loop(state)
-        if record:
-            path = loop.save_transcript(brief, state)
-            console.print(f"transcript saved: {path}")
-
-    async def go() -> None:
-        signal_loop = asyncio.get_running_loop()
-        signal_loop.add_signal_handler(signal.SIGINT, lambda: (
-            console.print("[yellow]Stopping - packaging what was collected...[/yellow]"),
-            orchestrator.request_stop(run.id)))
-        task = asyncio.create_task(orchestrator.run_pipeline(run.id, collect=collect))
-        last = 0
-        while True:
-            done = task.done()
-            for e in db.get_events(run.id, after_seq=last):
-                last = e.seq
-                if line := _event_line(e):
-                    console.print(line, highlight=False)
-            if done:
-                break
-            await asyncio.sleep(0.5)
-        await task
-
-    started = time.monotonic()
-    asyncio.run(go())
-    final = db.get_run(run.id)
-    _print_summary(final)
-    if final.pack_id:
-        _print_exports(db.get_pack(final.pack_id))
-    console.print(f"took {time.monotonic() - started:.0f} s")
+    final = _execute(run.id, brief, no_apify=no_apify, apify_max=apify_max, record=record)
     if final.status == RunStatus.failed:
         raise typer.Exit(1)
 
@@ -917,6 +928,202 @@ def overlap(run_ids: list[str] = typer.Argument(..., help="Two or more run ids")
     console.print(f"\nshared units: {report['shared']} of {report['total']} "
                   f"= {round(100 * report['share'])}% (target < 50%) | "
                   f"largest pairwise overlap {round(100 * report['max_pairwise'])}%")
+
+
+# --------------------------------------------------------------------------
+# eval: the four test briefs (Step 5.1, Appendix F5, PRD 14)
+# --------------------------------------------------------------------------
+
+
+def _eval_pack(spec: dict, reuse: bool):
+    """(pack, run) for a brief that is scored without a new run, or None."""
+    import json
+
+    from ctxpack import db
+    from ctxpack.db import FEATURED_DIR
+
+    row = None
+    if spec.get("reuse_pack"):
+        with db.session() as s:
+            row = s.get(db.PackRow, spec["reuse_pack"])
+        if row is None and (FEATURED_DIR / f"{spec['reuse_pack']}.json").is_file():
+            return json.loads((FEATURED_DIR / f"{spec['reuse_pack']}.json").read_text(encoding="utf-8")), None
+    elif reuse:
+        row = db.latest_pack_for_brief(spec["brief"])
+    if row is None:
+        return None
+    return row.pack, (db.get_run(row.run_id) if row.run_id else None)
+
+
+async def _ask_question(brief: str, mode: str) -> dict:
+    """The brief's clarifying question, if the planner asks one (one reasoner call)."""
+    from ctxpack.agent.interpret import interpret
+
+    out = await interpret(brief, mode=mode, allow_question=True)
+    q = out.result.clarifying_question
+    return {"question": q.question, "options": q.options, "answer": None} if q else \
+        {"question": None, "options": [], "answer": None}
+
+
+@app.command("eval")
+def eval_cmd(
+    reuse: bool = typer.Option(False, "--reuse", help="No new research runs: score the newest saved pack per brief"),
+    only: list[str] = typer.Option([], "--only", help="Only this brief id (evals/briefs.yaml); repeatable"),
+    recheck: bool = typer.Option(False, "--recheck", help="Re-check claims and the clarifying question again (paid)"),
+    yes: bool = typer.Option(False, "--yes", help="Do not wait for Enter before the paid calls"),
+) -> None:
+    """Score the eval briefs (PRD 14.3) -> evals/results/<date>.json, copied to featured/evals.json (/evals).
+
+    The two flagship packs are always reused. Without --reuse the other briefs are researched first
+    (the expected cost is shown and Enter is needed). Claim re-checks are saved and reused unless --recheck.
+    """
+    import asyncio
+
+    from ctxpack import db
+    from ctxpack import evaluation as ev
+    from ctxpack.agent.interpret import interpret
+    from ctxpack.config import mode_limits, model_for
+    from ctxpack.llm.client import cost_usd, tracking
+    from ctxpack.schemas.enums import Mode, Requester
+
+    db.init_engine()
+    db.create_tables()
+    cfg = ev.load_briefs()
+    targets = cfg["targets"]
+    specs = [b for b in cfg["briefs"] if not only or b["id"] in only]
+    if not specs:
+        console.print(f"{BAD} no brief matches --only {', '.join(only)}")
+        raise typer.Exit(1)
+
+    found: dict[str, tuple] = {}
+    to_run: list[dict] = []
+    for spec in specs:
+        got = _eval_pack(spec, reuse)
+        if got is not None:
+            found[spec["id"]] = got
+        elif reuse or spec.get("reuse_pack"):
+            console.print(f"[yellow]skip[/yellow] {spec['id']}: no saved pack for \"{spec['brief']}\"", highlight=False)
+        else:
+            to_run.append(spec)
+
+    # What still costs money, shown before anything is spent
+    n = targets["entailment_sample"]
+    ent_usd = 2 * cost_usd(model_for("evaluator"), n * 6 * 120 + 3 * 900, n * 70)
+    ask_usd = 2 * cost_usd(model_for("reasoner"), 6000, 1500)
+    prev = {sid: ev.previous(sid, pack["pack_id"]) for sid, (pack, _) in found.items()}
+    need_ent = [s["id"] for s in specs if s["id"] in found and (recheck or not (prev[s["id"]] or {}).get("entailment"))]
+    need_ent += [s["id"] for s in to_run]
+    need_ask = [s["id"] for s in specs if s["id"] in found and s.get("expect", {}).get("clarifying_question")
+                and (recheck or not (prev[s["id"]] or {}).get("clarifying_question"))]
+    lines, typ_lo, typ_hi, worst = [], 0.0, 0.0, 0.0
+    for spec in to_run:
+        lim = mode_limits(spec["mode"])
+        cap = lim["apify_usd"] + lim["llm_usd"] + lim["analysis_llm_usd"]
+        typ_lo, typ_hi, worst = typ_lo + lim["typical_usd"][0], typ_hi + lim["typical_usd"][1], worst + cap
+        lines.append(f"research {spec['id']} ({spec['mode']}): typically ${lim['typical_usd'][0]:.2f}-"
+                     f"{lim['typical_usd'][1]:.2f}, hard cap ${cap:.2f}")
+    if need_ent:
+        lines.append(f"claim re-check ({model_for('evaluator')}, {n} claims each): {len(need_ent)} pack(s), "
+                     f"at most ${ent_usd * len(need_ent):.2f}")
+    if need_ask:
+        lines.append(f"clarifying-question check: at most ${ask_usd * len(need_ask):.2f}")
+    extra = ent_usd * len(need_ent) + ask_usd * len(need_ask)
+    console.print("[bold]EVAL[/bold] " + ", ".join(s["id"] for s in specs), highlight=False)
+    for line in lines:
+        console.print(f"  {line}", highlight=False)
+    if lines:
+        console.print(f"  [bold]expected ${typ_lo + extra / 2:.2f}-{typ_hi + extra:.2f}, maximum ${worst + extra:.2f}"
+                      f"[/bold] (Apify + Anthropic)", highlight=False)
+        if not yes and not get_settings().llm_fake:
+            typer.prompt("Press Enter to start (Ctrl-C to cancel)", default="", show_default=False)
+    else:
+        console.print("  nothing to pay for: everything is reused", highlight=False)
+
+    clarifying: dict[str, dict | None] = {sid: (prev[sid] or {}).get("clarifying_question") for sid in found}
+    for spec in to_run:
+        run = db.create_run(spec["brief"], mode=Mode(spec["mode"]), requester=Requester.cli)
+
+        async def plan(clarification=None, brief=spec["brief"], mode=spec["mode"], run_id=run.id):
+            with tracking(run_id):
+                return await interpret(brief, mode=mode, allow_question=True, clarification=clarification)
+
+        out = asyncio.run(plan())
+        clar = {"question": None, "options": [], "answer": None}
+        if q := out.result.clarifying_question:
+            _print_plan(out)
+            clar = {"question": q.question, "options": q.options, "answer": q.options[0]}
+            console.print(f"eval answers with the first option: {q.options[0]}", highlight=False)
+            out = asyncio.run(plan((q.question, q.options[0])))
+        _print_plan(out)
+        db.update_run(run.id, interpretation=out.result.interpretation.model_dump(mode="json"),
+                      plan=out.result.plan.model_dump(mode="json"))
+        final = _execute(run.id, spec["brief"])
+        if not final.pack_id:
+            console.print(f"{BAD} {spec['id']}: run {run.id} ended {final.status.value} without a pack", highlight=False)
+            continue
+        found[spec["id"]] = (db.get_pack(final.pack_id), final)
+        clarifying[spec["id"]] = clar
+        prev[spec["id"]] = None
+
+    scored, eval_usd = [], 0.0
+    with tracking(None) as t:
+        for spec in specs:
+            if spec["id"] not in found:
+                continue
+            pack, run = found[spec["id"]]
+            if spec["id"] in need_ask:
+                clarifying[spec["id"]] = asyncio.run(_ask_question(spec["brief"], spec["mode"]))
+            ent = (prev.get(spec["id"]) or {}).get("entailment")
+            if recheck or not ent:
+                console.print(f"re-checking {n} claims of {pack['pack_id']} ({spec['id']})...", highlight=False)
+                ent = asyncio.run(ev.recheck_claims(pack, n))
+            scored.append(ev.score_brief(spec, pack, run, targets, entailment=ent,
+                                         clarifying=clarifying.get(spec["id"]),
+                                         reused=spec["id"] not in {s["id"] for s in to_run}))
+        eval_usd = t.spent_usd
+    if not scored:
+        console.print(f"{BAD} nothing to score")
+        raise typer.Exit(1)
+    if only and (last := ev.latest()):  # keep the other briefs' latest scores
+        done = {b["id"] for b in scored}
+        scored = [b for b in last["briefs"] if b["id"] not in done and "units" in b] + scored
+        order = [s["id"] for s in cfg["briefs"]]
+        scored.sort(key=lambda b: order.index(b["id"]) if b["id"] in order else len(order))
+    result = ev.build_result(scored, targets, eval_usd)
+    path = ev.save(result)
+    _print_eval(result)
+    console.print(f"\nsaved {path.relative_to(path.parents[2])} and featured/evals.json | eval checks cost "
+                  f"${eval_usd:.3f}", highlight=False)
+
+
+def _print_eval(result: dict) -> None:
+    def mark(ok) -> str:
+        return "[green]PASS[/green]" if ok else "[red]FAIL[/red]" if ok is False else "[dim]n/a[/dim]"
+
+    rates = {"quote_groundedness", "claim_entailment", "claims_with_evidence", "relevance_rate", "schema_valid",
+             "plan_divergence"}
+
+    def show(name: str, value) -> str:
+        if value is None:
+            return "-"
+        if isinstance(value, dict):
+            return f"{value.get('tool_calls')} calls, {value.get('finish_reason')}"
+        return f"{round(100 * value, 1)}%" if name in rates else str(value)
+
+    for b in result["briefs"]:
+        console.print(f"\n[bold]{b['id']}[/bold] {b['pack_id']} ({b['mode']}, grade {b['coverage_grade']}, "
+                      f"{b['relevant_posts']} relevant{', thin evidence' if b['thin_evidence'] else ''})",
+                      highlight=False)
+        for name, m in b["metrics"].items():
+            sim = " SIMULATED" if m.get("simulated") else ""
+            console.print(f"  {mark(m['pass'])} {name:<22} {show(name, m['value']):>16}  {m['detail']}{sim}",
+                          highlight=False)
+        for e in b["expectations"]:
+            console.print(f"  {mark(e['pass'])} {e['check']:<40} {e['detail']}", highlight=False)
+    console.print("\n[bold]HEADLINE[/bold]")
+    for name, m in result["headline"].items():
+        console.print(f"  {mark(m['pass'])} {name:<22} {show(name, m['value']):>16}  target {m['target']}  {m['detail']}",
+                      highlight=False)
 
 
 @app.command()

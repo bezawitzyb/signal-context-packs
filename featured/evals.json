@@ -1,0 +1,1564 @@
+{
+ "status": "ok",
+ "date": "2026-10-05",
+ "generated_at": "2026-10-05T20:31:10+00:00",
+ "targets": {
+  "quote_groundedness": 1.0,
+  "claim_entailment": 0.95,
+  "claims_with_evidence": 1.0,
+  "relevance_rate": 0.6,
+  "source_diversity_platforms": 3,
+  "plan_divergence_max_shared": 0.5,
+  "peak_mem_mb_standard": 400,
+  "schema_valid": 1.0,
+  "expected_language_min_share": 0.05,
+  "entailment_sample": 30
+ },
+ "headline": {
+  "quote_groundedness": {
+   "value": 1.0,
+   "target": 1.0,
+   "pass": true,
+   "detail": "lowest of the briefs"
+  },
+  "claim_entailment": {
+   "value": 0.7,
+   "target": 0.95,
+   "pass": false,
+   "detail": "84 of 120 sampled claims, all briefs"
+  },
+  "claims_with_evidence": {
+   "value": 1.0,
+   "target": 1.0,
+   "pass": true,
+   "detail": "lowest of the briefs"
+  },
+  "relevance_rate": {
+   "value": 0.328,
+   "target": 0.6,
+   "pass": false,
+   "detail": "lowest of the briefs; failing: genz_meal_prep, nl_snack_brand, de_heat_pumps, snacks_vague"
+  },
+  "source_diversity": {
+   "value": 3,
+   "target": 3,
+   "pass": true,
+   "detail": "briefs with >= 3 platforms (the vague brief is exempt)"
+  },
+  "plan_divergence": {
+   "value": 0.039,
+   "target": 0.5,
+   "pass": true,
+   "detail": "3 of 77 distinct source units are used by more than one brief: reddit:r/thenetherlands, web:ah.nl, web:forum.fok.nl"
+  },
+  "allocation_efficiency": {
+   "value": 1.36,
+   "target": "agent >= equal split",
+   "pass": true,
+   "detail": "median ratio over briefs",
+   "simulated": true
+  },
+  "schema_valid": {
+   "value": 1.0,
+   "target": 1.0,
+   "pass": true,
+   "detail": "lowest of the briefs"
+  },
+  "peak_mem_mb": {
+   "value": 195.9,
+   "target": 400,
+   "pass": true,
+   "detail": "highest of the briefs"
+  }
+ },
+ "plan_divergence": {
+  "value": 0.039,
+  "target": 0.5,
+  "pass": true,
+  "detail": "3 of 77 distinct source units are used by more than one brief: reddit:r/thenetherlands, web:ah.nl, web:forum.fok.nl",
+  "pairwise_jaccard": {
+   "genz_meal_prep / nl_snack_brand": 0.0,
+   "genz_meal_prep / de_heat_pumps": 0.0,
+   "genz_meal_prep / snacks_vague": 0.0,
+   "nl_snack_brand / de_heat_pumps": 0.0,
+   "nl_snack_brand / snacks_vague": 0.176,
+   "de_heat_pumps / snacks_vague": 0.0
+  }
+ },
+ "briefs": [
+  {
+   "id": "genz_meal_prep",
+   "brief": "Gen Z and meal prep",
+   "mode": "standard",
+   "pack_id": "pk_CamfAsJ7Zbdr",
+   "run_id": "run_bz5PBTd-Pr6Xp3f2",
+   "reused": true,
+   "note": "",
+   "interpreted": {
+    "topic": "meal prep habits, motivations and barriers among Gen Z",
+    "market": "global",
+    "languages": [
+     "en"
+    ]
+   },
+   "coverage_grade": "c",
+   "relevant_posts": 76,
+   "thin_evidence": true,
+   "thin_evidence_note": "below the content bar or the minimum relevant posts for standard (200); the pack says so instead of padding",
+   "metrics": {
+    "quote_groundedness": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "77 of 77 quotes are exact substrings of their evidence"
+    },
+    "claim_entailment": {
+     "value": 0.7,
+     "target": 0.95,
+     "pass": false,
+     "detail": "21 of 30 sampled claims entailed (strictly supported: 50%); not entailed: CUL-01, LEX-08, TEN-03, TEN-02, LEX-05, WSP-01, MOT-02, MOT-05"
+    },
+    "claims_with_evidence": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "47 of 47 claims cite evidence that is in the pack"
+    },
+    "relevance_rate": {
+     "value": 0.539,
+     "target": 0.6,
+     "pass": false,
+     "detail": "76 relevant of 141 kept posts; weakest kept sources: web:physicalkitchness.com (29% of 14), web:teamblind.com (33% of 9)"
+    },
+    "source_diversity": {
+     "value": 4,
+     "target": 3,
+     "pass": true,
+     "detail": "reddit, web_editorial, web_forum, web_review"
+    },
+    "allocation_efficiency": {
+     "value": 1.88,
+     "target": "agent >= equal split",
+     "pass": true,
+     "detail": "agent 40 relevant posts vs. equal split ~21 from 52 items over 4 units; per USD 19.8 vs. 10.5",
+     "simulated": true,
+     "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
+     "relevant_per_usd": {
+      "agent": 19.8,
+      "equal_split": 10.5
+     },
+     "units": 4
+    },
+    "loop_health": {
+     "value": {
+      "tool_calls": 23,
+      "finish_reason": "finish",
+      "fallback_used": false,
+      "top_up_used": true,
+      "max_tool_calls": 30
+     },
+     "target": "finish, no fallback",
+     "pass": true,
+     "detail": "23 tool calls, finished by 'finish', top-up used"
+    },
+    "cost_usd": {
+     "value": 2.7,
+     "target": 10.0,
+     "pass": true,
+     "detail": "Apify $0.34 + Anthropic $2.37; typical $5.00-7.00, hard cap $10.00 (NFR2)"
+    },
+    "latency_min": {
+     "value": 143.4,
+     "target": 12,
+     "pass": false,
+     "detail": "143.4 min end to end (NFR1: about 12 min); includes a 132 min pause between 'packaging' and 'cost' (stages re-run by hand later), so about 11.1 min of work"
+    },
+    "peak_mem_mb": {
+     "value": 185.2,
+     "target": 400,
+     "pass": true,
+     "detail": "185.2 MB peak (NFR9 applies to Standard runs)"
+    },
+    "schema_valid": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "valid Context Pack 1.0"
+    }
+   },
+   "expectations": [
+    {
+     "check": "market is global",
+     "pass": true,
+     "detail": "interpreted market: global"
+    },
+    {
+     "check": "en posts in the corpus",
+     "pass": true,
+     "detail": "100% of kept posts"
+    }
+   ],
+   "clarifying_question": null,
+   "entailment": {
+    "checked": 30,
+    "sampled": 30,
+    "counts": {
+     "supported": 15,
+     "partially_supported": 14,
+     "not_supported": 1,
+     "unchecked": 0
+    },
+    "entailed": 21,
+    "rate": 0.7,
+    "strict_rate": 0.5,
+    "rows": [
+     {
+      "id": "OBJ-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Both posts say portions are very small, and EV-0001 says it's very expensive for what they get."
+     },
+     {
+      "id": "MOT-06",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0047 says cooking for 1 is challenging, but no post asks for simple meals sized for one; others are about general struggles."
+     },
+     {
+      "id": "CUL-01",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One person doubles and freezes Budget Bytes fajitas; 'people' in general is broader than a single post shows."
+     },
+     {
+      "id": "LEX-08",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "The post says 'Frozen anything.' but the question it answers isn't shown."
+     },
+     {
+      "id": "TEN-03",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "EV-0001 says kits are expensive for what you get, but nothing shows wanting easy kits; other posts are mostly positive or truncated."
+     },
+     {
+      "id": "TEN-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "EV-0022 and EV-0039 show disliking leftovers, but wanting meals ready for the week isn't clearly stated; they actually avoid meal prep."
+     },
+     {
+      "id": "THM-06",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0019 says reheating took so long that meal prep felt like a waste of time."
+     },
+     {
+      "id": "LEX-05",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One student-athlete says 'Food is fuel'; this doesn't show athletes in general frame it this way."
+     },
+     {
+      "id": "WSP-01",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One poster asks microwave vs air fryer on a budget; 'students' plural and 'cheap' are not clearly shown."
+     },
+     {
+      "id": "LEX-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One post is titled 'Meal Prep for Weight Loss', but it doesn't show a general titling pattern."
+     },
+     {
+      "id": "MOT-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0019 says slow reheating made meal prep feel like a waste of time; EV-0020 relates to reheating time."
+     },
+     {
+      "id": "MOT-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts mention food going bad or wasting food, but none expresses hating it directly."
+     },
+     {
+      "id": "OBJ-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Posts report items missing, wrong instruction cards, and wrong recipe card received; recurring ('half the time', 'times').'"
+     },
+     {
+      "id": "LEX-06",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Only says PB&J is pretty good and healthy-ish; nothing about quick or cheap."
+     },
+     {
+      "id": "THM-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Poster wants recipes using basics on hand, and replies offer cheap simple meals from staples."
+     },
+     {
+      "id": "MOT-05",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One post says cooking yourself leads to healthier eating; the others are prep examples, not first-person motive statements."
+     },
+     {
+      "id": "LEX-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Post says weekly meal planning helps with decision fatigue."
+     },
+     {
+      "id": "WSP-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show people asking about freezing and reheating, but nothing shows nobody provides a quick reference."
+     },
+     {
+      "id": "MOM-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Posts describe weekend/Sunday prepping for meals through the week."
+     },
+     {
+      "id": "PHR-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The post literally says 'Frozen anything.'"
+     },
+     {
+      "id": "SEG-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "College students meal prepping cheaply ask about freezing and reheating."
+     },
+     {
+      "id": "THM-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A poster says they make a double batch, freeze half, and reheat it."
+     },
+     {
+      "id": "MOT-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Meal planning helping decision fatigue is supported, but no one explicitly says they want to stop deciding daily."
+     },
+     {
+      "id": "THM-04",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show need for quick, make-ahead, freezable food fitting busy schedules."
+     },
+     {
+      "id": "LEX-02",
+      "verdict": "not_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "The post uses 'macro-friendly' for a pasta bake but never defines it as meeting protein, carb and fat targets."
+     },
+     {
+      "id": "OBJ-05",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Posts say they love the meals but dislike a required subscription and being made to call to cancel, which is an extra step."
+     },
+     {
+      "id": "MOT-07",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The poster wants to stop buying McMuffins that keep them full from 6:30 to a 10:00 break, and a reply suggests make-ahead and freezer options."
+     },
+     {
+      "id": "MOM-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The poster starts work at 6:30 with a break at 10:00 and wants a filling breakfast that lasts."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Two posters each say they freeze fajita food 'all the time'."
+     },
+     {
+      "id": "OBJ-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts say meal prepping stresses them out and that they don't want to spend weekend time on it. Neither says it takes too much of the week."
+     }
+    ],
+    "usd": 0.0427
+   },
+   "units": [
+    "reddit:r/eatcheapandhealthy",
+    "reddit:r/mealprepsunday",
+    "tiktok:#mealprep",
+    "tiktok:gen z meal prep struggles",
+    "web",
+    "web:academichelp.net",
+    "web:aol.com",
+    "web:ca.trustpilot.com",
+    "web:careervillage.org",
+    "web:forums.anandtech.com",
+    "web:forums.studentdoctor.net",
+    "web:hercampus.com",
+    "web:kealakai.byuh.edu",
+    "web:knissen.substack.com",
+    "web:meal kit vs meal prep reviews young adults",
+    "web:physicalkitchness.com",
+    "web:quora.com",
+    "web:reddit.com",
+    "web:search:best meal prep containers recommendations glass vs plastic reddit leaks stains",
+    "web:search:factor meals review too expensive vs meal prep",
+    "web:search:factor meals reviews customers sitejabber or productreview or consumeraffairs",
+    "web:search:forum thread cheap meal prep ideas for one person students food prices expensive groceries",
+    "web:search:gen z meal prep why i stopped meal prepping boring food spoils",
+    "web:search:hellofresh vs factor vs meal prep reddit thread cancel too expensive 2025",
+    "web:search:hellofresh worth it for college student reddit",
+    "web:search:meal prep getting boring soggy day 4 forum college",
+    "web:search:meal prep high protein gym bulking cutting chicken rice discussion forum 2025",
+    "web:search:meal prep tips for broke college students forum comments \"meal prep\" containers microwave dorm",
+    "web:search:quora is meal prepping worth it for college students why do people quit",
+    "web:search:reddit meal prep college student cheap staples rice beans chicken thread",
+    "web:search:reddit r/mealprep thread meal prep boring tired of eating same thing",
+    "web:search:tiktok meal prep trend gen z high protein girl dinner sunday reset comments",
+    "web:sitejabber.com",
+    "web:spoonuniversity.com",
+    "web:summerthedietitian.substack.com",
+    "web:teamblind.com",
+    "web:thekitchn.com",
+    "web:theodysseyonline.com",
+    "web:trustpilot.com",
+    "youtube:meal prep for college students",
+    "youtube:search:i tried meal prep for a week college student budget"
+   ]
+  },
+  {
+   "id": "nl_snack_brand",
+   "brief": "Launching a snack brand in the Netherlands",
+   "mode": "standard",
+   "pack_id": "pk_wrvZBhDFsLR9",
+   "run_id": "run_wOcIwOgGDnDUITS2",
+   "reused": true,
+   "note": "",
+   "interpreted": {
+    "topic": "snacking habits, preferences and attitudes toward new snack brands",
+    "market": "NL",
+    "languages": [
+     "nl",
+     "en"
+    ]
+   },
+   "coverage_grade": "a",
+   "relevant_posts": 233,
+   "thin_evidence": true,
+   "thin_evidence_note": "below the content bar or the minimum relevant posts for standard (200); the pack says so instead of padding",
+   "metrics": {
+    "quote_groundedness": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "101 of 101 quotes are exact substrings of their evidence"
+    },
+    "claim_entailment": {
+     "value": 0.7,
+     "target": 0.95,
+     "pass": false,
+     "detail": "21 of 30 sampled claims entailed (strictly supported: 50%); not entailed: LEX-11, PHR-06, PHR-03, MOT-05, PHR-02, WSP-01, THM-03, LEX-05"
+    },
+    "claims_with_evidence": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "60 of 60 claims cite evidence that is in the pack"
+    },
+    "relevance_rate": {
+     "value": 0.53,
+     "target": 0.6,
+     "pass": false,
+     "detail": "233 relevant of 440 kept posts; weakest kept sources: youtube:search:gezonde snacks test eiwit supermarkt (34% of 41), tiktok:search:gezonde snacks supermarkt (35% of 49)"
+    },
+    "source_diversity": {
+     "value": 4,
+     "target": 3,
+     "pass": true,
+     "detail": "reddit, tiktok, web_forum, youtube"
+    },
+    "allocation_efficiency": {
+     "value": 1.17,
+     "target": "agent >= equal split",
+     "pass": true,
+     "detail": "agent 233 relevant posts vs. equal split ~200 from 467 items over 6 units; per USD 122.4 vs. 105.0",
+     "simulated": true,
+     "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
+     "relevant_per_usd": {
+      "agent": 122.4,
+      "equal_split": 105.0
+     },
+     "units": 6
+    },
+    "loop_health": {
+     "value": {
+      "tool_calls": 10,
+      "finish_reason": "finish",
+      "fallback_used": false,
+      "top_up_used": false,
+      "max_tool_calls": 30
+     },
+     "target": "finish, no fallback",
+     "pass": true,
+     "detail": "10 tool calls, finished by 'finish'"
+    },
+    "cost_usd": {
+     "value": 2.97,
+     "target": 10.0,
+     "pass": true,
+     "detail": "Apify $0.85 + Anthropic $2.12; typical $5.00-7.00, hard cap $10.00 (NFR2)"
+    },
+    "latency_min": {
+     "value": 17.3,
+     "target": 12,
+     "pass": false,
+     "detail": "17.3 min end to end (NFR1: about 12 min)"
+    },
+    "peak_mem_mb": {
+     "value": 195.9,
+     "target": 400,
+     "pass": true,
+     "detail": "195.9 MB peak (NFR9 applies to Standard runs)"
+    },
+    "schema_valid": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "valid Context Pack 1.0"
+    }
+   },
+   "expectations": [
+    {
+     "check": "market is NL",
+     "pass": true,
+     "detail": "interpreted market: NL"
+    },
+    {
+     "check": "nl posts in the corpus",
+     "pass": true,
+     "detail": "72% of kept posts"
+    },
+    {
+     "check": "en posts in the corpus",
+     "pass": true,
+     "detail": "25% of kept posts"
+    }
+   ],
+   "clarifying_question": null,
+   "entailment": {
+    "checked": 30,
+    "sampled": 30,
+    "counts": {
+     "supported": 15,
+     "partially_supported": 13,
+     "not_supported": 2,
+     "unchecked": 0
+    },
+    "entailed": 21,
+    "rate": 0.7,
+    "strict_rate": 0.5,
+    "rows": [
+     {
+      "id": "LEX-11",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Nibbits called 'verslavend lekker' once, but no evidence that people generally use it for moreish snacks."
+     },
+     {
+      "id": "THM-06",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Videos say they test new supermarket products 'zodat jij dat niet hoeft te doen'."
+     },
+     {
+      "id": "PHR-05",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "'Ik hou van chips!' is a simple, direct statement."
+     },
+     {
+      "id": "PHR-06",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One commenter's favourite Croky chips come with a 'kinderfeestje flashback'; a single case, not a general tie."
+     },
+     {
+      "id": "LEX-08",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Shows a schaal bittergarnituur with people picking items, but doesn't define it or say there's a set order beyond one complaint."
+     },
+     {
+      "id": "MOT-06",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "'Ook lekker, alleen een beetje weinig in een zak.'"
+     },
+     {
+      "id": "SEG-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "One commenter buys products unavailable in the Netherlands, and supermarket-testing videos exist, but following testers isn't shown directly."
+     },
+     {
+      "id": "LEX-07",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Commenter notices borrelnootjes got saltier, but no definition of serving with drinks."
+     },
+     {
+      "id": "LEX-14",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "'Megool' is used enthusiastically about a flavour, though a single use."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Commenter says 'Oh wat mis ik die!' about the Yes snack."
+     },
+     {
+      "id": "OBJ-06",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Commenter calls vegetarian snacks imitating meat 'yuck'."
+     },
+     {
+      "id": "MOT-07",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "'zijn wel lekker iets te zoet'."
+     },
+     {
+      "id": "LEX-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "One post says bamischijf is top, another says gatverdamme; both poles appear."
+     },
+     {
+      "id": "PHR-03",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Only one post uses 'gatverdamme' for bamischijf/nasigedoe; generalization to disliked items is broader."
+     },
+     {
+      "id": "MOT-05",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts list several snacks/flavours the posters buy, but none state a liking for variety itself."
+     },
+     {
+      "id": "WSP-05",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One poster says only three flavours are sold locally and others unavailable, but 'people want more' is just one person's complaint."
+     },
+     {
+      "id": "PHR-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One post dismisses healthiness based on kcal and sugar numbers; the generalization is thin."
+     },
+     {
+      "id": "OBJ-05",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Poster says cheap chips are generally disgusting."
+     },
+     {
+      "id": "WSP-01",
+      "verdict": "not_supported",
+      "claim_type": "inferred",
+      "entailed": false,
+      "reason": "Someone asks where to buy and another answers with locations; nobody-answers claim is contradicted."
+     },
+     {
+      "id": "THM-03",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posters name liked flavours or favourites, but none clearly state a single definite favourite flavour with certainty."
+     },
+     {
+      "id": "PHR-08",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Doritos Nacho Cheese described as having little flavour and being slap."
+     },
+     {
+      "id": "LEX-10",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Post explicitly calls Calvé dip with chips jeugdsentiment."
+     },
+     {
+      "id": "MOT-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Posts promote less sugar, better ingredients and feeling good about snacks, and minimally processed options."
+     },
+     {
+      "id": "TEN-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Evidence shows desire for healthier snacks plus doubts: not healthy, inaccessible, bad tasting; price is only loosely covered via accessibility."
+     },
+     {
+      "id": "OBJ-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Comment says too expensive, Aldi is 4 cents cheaper."
+     },
+     {
+      "id": "WSP-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show people asking why products disappeared, but nothing shows nobody explains or that brands stay silent."
+     },
+     {
+      "id": "PHR-07",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Both video descriptions say they test products so viewers don't have to."
+     },
+     {
+      "id": "LEX-05",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One post calls it the 'oer-Hollandse Groningse Eierbal', implying local identity; 'classic' and 'pride' are only loosely shown, and another post is disgusted."
+     },
+     {
+      "id": "LEX-13",
+      "verdict": "not_supported",
+      "claim_type": "inferred",
+      "entailed": false,
+      "reason": "Evidence only lists 'Duijvis Snackstar' and 'het tros zoutje'; it doesn't define a zoutje as a simple salty snack named by brand."
+     },
+     {
+      "id": "MOT-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Reviews exist and one commenter doubts an expert's reliability, but no post states the viewer's motivation for reliable reviews to know what's worth buying."
+     }
+    ],
+    "usd": 0.0356
+   },
+   "units": [
+    "reddit:r/thenetherlands",
+    "tiktok:#snacktip",
+    "tiktok:search:gezonde snacks supermarkt",
+    "web:ah.nl",
+    "web:forum.bodybuilding.nl",
+    "web:forum.fok.nl",
+    "web:kieskeurig.nl",
+    "web:proud2bme.nl",
+    "web:search:forum.fok.nl lekkerste snacks supermarkt",
+    "web:search:gezonde snack tip eiwit reep ervaringen forum",
+    "youtube:search:gezonde snacks test eiwit supermarkt",
+    "youtube:search:nieuwe snacks proberen albert heijn jumbo",
+    "youtube:snacks proberen nederland supermarkt taste test"
+   ]
+  },
+  {
+   "id": "de_heat_pumps",
+   "brief": "Heat pumps for homeowners in Germany",
+   "mode": "standard",
+   "pack_id": "pk_0yCXA3I3WI--",
+   "run_id": "run_RdiMT8Jdw9SRrBqN",
+   "reused": false,
+   "note": "B2B-like; energy and green claims. Becomes the third example (feature it after a privacy check).",
+   "interpreted": {
+    "topic": "Wärmepumpen: Kauf, Kosten, Förderung, Installation und Erfahrungen bei Hausbesitzern",
+    "market": "DE",
+    "languages": [
+     "de"
+    ]
+   },
+   "coverage_grade": "a",
+   "relevant_posts": 101,
+   "thin_evidence": true,
+   "thin_evidence_note": "below the content bar or the minimum relevant posts for standard (200); the pack says so instead of padding",
+   "metrics": {
+    "quote_groundedness": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "113 of 113 quotes are exact substrings of their evidence"
+    },
+    "claim_entailment": {
+     "value": 0.6,
+     "target": 0.95,
+     "pass": false,
+     "detail": "18 of 30 sampled claims entailed (strictly supported: 37%); not entailed: LEX-02, LEX-14, LEX-12, WSP-06, THM-05, LEX-08, WSP-03, PHR-02"
+    },
+    "claims_with_evidence": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "67 of 67 claims cite evidence that is in the pack"
+    },
+    "relevance_rate": {
+     "value": 0.328,
+     "target": 0.6,
+     "pass": false,
+     "detail": "101 relevant of 308 kept posts; weakest kept sources: youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung (28% of 43), tiktok:#wärmepumpe (34% of 47)"
+    },
+    "source_diversity": {
+     "value": 4,
+     "target": 3,
+     "pass": true,
+     "detail": "reddit, tiktok, web_forum, youtube"
+    },
+    "allocation_efficiency": {
+     "value": 0.79,
+     "target": "agent >= equal split",
+     "pass": false,
+     "detail": "agent 88 relevant posts vs. equal split ~111 from 343 items over 7 units; per USD 44.9 vs. 56.7",
+     "simulated": true,
+     "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
+     "relevant_per_usd": {
+      "agent": 44.9,
+      "equal_split": 56.7
+     },
+     "units": 7
+    },
+    "loop_health": {
+     "value": {
+      "tool_calls": 11,
+      "finish_reason": "finish",
+      "fallback_used": false,
+      "top_up_used": true,
+      "max_tool_calls": 30
+     },
+     "target": "finish, no fallback",
+     "pass": true,
+     "detail": "11 tool calls, finished by 'finish', top-up used"
+    },
+    "cost_usd": {
+     "value": 3.17,
+     "target": 10.0,
+     "pass": true,
+     "detail": "Apify $1.16 + Anthropic $2.01; typical $5.00-7.00, hard cap $10.00 (NFR2)"
+    },
+    "latency_min": {
+     "value": 21.2,
+     "target": 12,
+     "pass": false,
+     "detail": "21.2 min end to end (NFR1: about 12 min)"
+    },
+    "peak_mem_mb": {
+     "value": 191.6,
+     "target": 400,
+     "pass": true,
+     "detail": "191.6 MB peak (NFR9 applies to Standard runs)"
+    },
+    "schema_valid": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "valid Context Pack 1.0"
+    }
+   },
+   "expectations": [
+    {
+     "check": "market is DE",
+     "pass": true,
+     "detail": "interpreted market: DE"
+    },
+    {
+     "check": "de posts in the corpus",
+     "pass": true,
+     "detail": "92% of kept posts"
+    },
+    {
+     "check": "compliance area energy_environmental",
+     "pass": true,
+     "detail": "interpreted: energy_environmental; 8 compliance flag(s) in the pack"
+    }
+   ],
+   "clarifying_question": {
+    "question": null,
+    "options": [],
+    "answer": null
+   },
+   "entailment": {
+    "checked": 30,
+    "sampled": 30,
+    "counts": {
+     "supported": 11,
+     "partially_supported": 19,
+     "not_supported": 0,
+     "unchecked": 0
+    },
+    "entailed": 18,
+    "rate": 0.6,
+    "strict_rate": 0.3667,
+    "rows": [
+     {
+      "id": "OBJ-09",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One commenter calls the numbers far-fetched for a horror scenario, but it's a single reaction to one specific post, not heat pump figures in general."
+     },
+     {
+      "id": "LEX-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One post uses 'Heizungsbauer' for the installer (criticised); the others don't, and nothing shows it is the everyday word."
+     },
+     {
+      "id": "LEX-14",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "The post covers Eigenleistung limited to material and needing a Heizungsbauer's sign-off for funding, but doesn't mention cutting cost."
+     },
+     {
+      "id": "OBJ-07",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts speak negatively of Thermondo and Enpal, but they are opinions from two commenters, and the claim is a first-person decision."
+     },
+     {
+      "id": "OBJ-08",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The post says §14a EnWG allows the heat pump to be throttled when too many load the grid."
+     },
+     {
+      "id": "LEX-05",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0041 says Heizlast is worst-case, not average."
+     },
+     {
+      "id": "THM-10",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Posters give real figures (JAZ 4.55, 4,500 kWh vs 18,000 kWh gas) and report good results."
+     },
+     {
+      "id": "LEX-12",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One post uses LWWP alongside a running-cost comparison, but it doesn't show people generally use the abbreviation for this."
+     },
+     {
+      "id": "PHR-05",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A poster states heat pumps are electric heating and that anyone who calculates them favourably is only soothing their conscience."
+     },
+     {
+      "id": "OBJ-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One post asserts old buildings with heat pumps are cold and expensive, and another says a wrong choice can be costly; neither is a general statement that they don't work well."
+     },
+     {
+      "id": "SEG-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Several posters describe older houses with oil or gas heating and are planning a switch to a heat pump."
+     },
+     {
+      "id": "WSP-06",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One poster says they keep reading it's hard to find a reputable energy consultant who knows the subject, but doesn't say they couldn't find one, and it's a single post."
+     },
+     {
+      "id": "MOT-05",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0056 wants pre-filled forms as a purchase argument, implying wanting paperwork relief, but doesn't say it's a burden; other posts are irrelevant."
+     },
+     {
+      "id": "MOT-06",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0005 sarcastically says heat pumps in old buildings are ice-cold, and EV-0058 complains about cold temperatures, but neither states a personal fear clearly."
+     },
+     {
+      "id": "LEX-10",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The post says many call heat pumps Stromfresser and then argues against it with the 1 kW to 4 kW heat ratio."
+     },
+     {
+      "id": "MOM-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show cold-weather efficiency problems (electric backup below 4°C, idle in winter), but don't explicitly frame cold as the test of comfort and efficiency."
+     },
+     {
+      "id": "THM-05",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "EV-0016 says finding a serious, knowledgeable consultant is difficult and EV-0017 hints at few craftspeople, but availability is only implied; EV-0018 is about prices."
+     },
+     {
+      "id": "SEG-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Both posters run heat pumps and compare with gas (JAZ, 4,500 kWh electricity vs 18,000 kWh gas)."
+     },
+     {
+      "id": "LEX-08",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One post advises limiting Vorlauftemperatur to 55 degrees to test; evidence doesn't show it's a go-to tip generally."
+     },
+     {
+      "id": "LEX-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0040 says the Heizstab is only for emergencies and infers the pump is working almost only on it, implying a problem; EV-0021 shows high costs."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The post says to try limiting temperature and see, ending with 'Versuch macht klug'."
+     },
+     {
+      "id": "WSP-03",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts show a banker and installer/consultant uncertain or giving differing views on residency, but not that 'nobody serves it' or that it's a common question."
+     },
+     {
+      "id": "MOT-07",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0015 shows asking about the KfW process, but the snippet doesn't mention paying a lot upfront."
+     },
+     {
+      "id": "PHR-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One post is titled 'Wärmepumpe nach 1 Jahr', but it's a single example, not evidence of people generally."
+     },
+     {
+      "id": "WSP-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts say comparison with others is unhelpful because houses and residents differ, but don't show owners want a reliable benchmark or that nobody offers one."
+     },
+     {
+      "id": "CUL-03",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "One post addresses someone as 'Forumsfreund' and asks about tariff/costs, and another references 'Forumsfreunden', but 'compare in detail' is only loosely shown."
+     },
+     {
+      "id": "TEN-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts note PV delivers least in winter when heat pumps need most, but the poster's own desire to cut running costs with PV is only loosely implied (PV+WP advocated in EV-0004)."
+     },
+     {
+      "id": "THM-06",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts call the 50 ct/kWh tariff outrageously expensive and a problem for heat pump costs, but personal worry is not explicitly stated."
+     },
+     {
+      "id": "MOM-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "One post wants PV installed by year end for guaranteed funding; another plans to start heat pump work at year end with KfW funding context."
+     },
+     {
+      "id": "PHR-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0041 states heating load is worst-case, not average."
+     }
+    ],
+    "usd": 0.044
+   },
+   "units": [
+    "reddit:r/de",
+    "reddit:r/finanzen",
+    "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
+    "reddit:search:wärmepumpe lohnt sich erfahrung",
+    "reddit:wärmepumpe erfahrungen kosten förderung",
+    "tiktok:#wärmepumpe",
+    "web:energie-fachberater.de",
+    "web:finanztip.de",
+    "web:hausbau-forum.de",
+    "web:haustechnikdialog.de",
+    "web:heizungsforum.de",
+    "web:knx-user-forum.de",
+    "web:photovoltaikforum.com",
+    "web:search:photovoltaikforum wärmepumpe erfahrungen altbau jaz",
+    "web:zukunft-altbau.de",
+    "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
+    "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
+    "youtube:search:wärmepumpe installateur angebot wartezeit jahresarbeitszahl vorlauftemperatur",
+    "youtube:wärmepumpe erfahrungsbericht kosten nach einem jahr"
+   ]
+  },
+  {
+   "id": "snacks_vague",
+   "brief": "snacks",
+   "mode": "quick",
+   "pack_id": "pk_r5nbddoJzHFK",
+   "run_id": "run_jYQh2iFILJrXGTYg",
+   "reused": false,
+   "note": "Vague and thin on purpose. The clarifying question is recorded; the run takes the first option.",
+   "interpreted": {
+    "topic": "snacking habits, preferences and attitudes toward snacks (sweet, salty, healthy)",
+    "market": "NL",
+    "languages": [
+     "nl",
+     "en"
+    ]
+   },
+   "coverage_grade": "b",
+   "relevant_posts": 117,
+   "thin_evidence": true,
+   "thin_evidence_note": "below the content bar or the minimum relevant posts for quick (60); the pack says so instead of padding",
+   "metrics": {
+    "quote_groundedness": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "104 of 104 quotes are exact substrings of their evidence"
+    },
+    "claim_entailment": {
+     "value": 0.8,
+     "target": 0.95,
+     "pass": false,
+     "detail": "24 of 30 sampled claims entailed (strictly supported: 53%); not entailed: THM-04, THM-06, LEX-05, THM-03, THM-09, LEX-02"
+    },
+    "claims_with_evidence": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "57 of 57 claims cite evidence that is in the pack"
+    },
+    "relevance_rate": {
+     "value": 0.502,
+     "target": 0.6,
+     "pass": false,
+     "detail": "117 relevant of 233 kept posts; weakest kept sources: youtube:search:snacks proeven review nederland (30% of 30), reddit:r/thenetherlands (33% of 18)"
+    },
+    "source_diversity": {
+     "value": 4,
+     "target": 3,
+     "pass": null,
+     "detail": "reddit, tiktok, web_forum, youtube (this brief is exempt, PRD 14.3)"
+    },
+    "allocation_efficiency": {
+     "value": 1.55,
+     "target": "agent >= equal split",
+     "pass": true,
+     "detail": "agent 117 relevant posts vs. equal split ~76 from 256 items over 4 units; per USD 105.3 vs. 68.1",
+     "simulated": true,
+     "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
+     "relevant_per_usd": {
+      "agent": 105.3,
+      "equal_split": 68.1
+     },
+     "units": 4
+    },
+    "loop_health": {
+     "value": {
+      "tool_calls": 8,
+      "finish_reason": "finish",
+      "fallback_used": false,
+      "top_up_used": false,
+      "max_tool_calls": 15
+     },
+     "target": "finish, no fallback",
+     "pass": true,
+     "detail": "8 tool calls, finished by 'finish'"
+    },
+    "cost_usd": {
+     "value": 1.9,
+     "target": 4.2,
+     "pass": true,
+     "detail": "Apify $0.46 + Anthropic $1.44; typical $1.50-3.00, hard cap $4.20 (NFR2)"
+    },
+    "latency_min": {
+     "value": 11.3,
+     "target": 7,
+     "pass": false,
+     "detail": "11.3 min end to end (NFR1: about 7 min)"
+    },
+    "peak_mem_mb": {
+     "value": 191.6,
+     "target": 400,
+     "pass": null,
+     "detail": "191.6 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
+    },
+    "schema_valid": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "valid Context Pack 1.0"
+    }
+   },
+   "expectations": [
+    {
+     "check": "asks one clarifying question with options",
+     "pass": true,
+     "detail": "\"Which market and audience should we research for snacks?\" (5 options; run answered: Young adults in the Netherlands)"
+    }
+   ],
+   "clarifying_question": {
+    "question": "Which market and audience should we research for snacks?",
+    "options": [
+     "Young adults in the Netherlands",
+     "Young adults in the United States",
+     "Health-conscious adults in the United Kingdom",
+     "Parents buying snacks for children in Germany",
+     "Global English-speaking snack fans"
+    ],
+    "answer": "Young adults in the Netherlands"
+   },
+   "entailment": {
+    "checked": 30,
+    "sampled": 30,
+    "counts": {
+     "supported": 16,
+     "partially_supported": 14,
+     "not_supported": 0,
+     "unchecked": 0
+    },
+    "entailed": 24,
+    "rate": 0.8,
+    "strict_rate": 0.5333,
+    "rows": [
+     {
+      "id": "THM-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Several posters name specific brands and flavours they go for (e.g., Lays Oven Baked Paprika, Walkers Salt & Vinegar)."
+     },
+     {
+      "id": "MOT-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Posters lament favourite snacks no longer found or removed from shelves (Golden Wonder, Bruine Beertjes, Cheetos Frites)."
+     },
+     {
+      "id": "WSP-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show speculation about ownership (Smiths bought by Lays, three giants), but 'people wonder' and lack of clear answer are only loosely shown."
+     },
+     {
+      "id": "OBJ-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Some posts call prices high (airport, Lays ribbelchips 'wel duur'), but not snacks in general being far too expensive."
+     },
+     {
+      "id": "LEX-20",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The post simply names 'Borrelnoten' as an answer to the snack question."
+     },
+     {
+      "id": "THM-04",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Bruine Beertjes poster explicitly still misses it; others note items gone or hard to find, but not all say they still miss them."
+     },
+     {
+      "id": "THM-06",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts complain about changed recipes making chips/snacks worse, but not that the poster's own favourites no longer taste right in the generalized sense."
+     },
+     {
+      "id": "WSP-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One post says veg isn't comparable to a savoury chip and asks for healthy ideas, but the claim that nobody serves it isn't shown."
+     },
+     {
+      "id": "SEG-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Posters say their favourite chip changed (recipe, shrinkflation, replaced) and they no longer have a favourite."
+     },
+     {
+      "id": "PHR-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A post says 'Belachelijke prijzen' about Schiphol."
+     },
+     {
+      "id": "CUL-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts answer with brief lists such as 'Lays Pickles / Lays Cheese Onion / Kettle Black Pepper'."
+     },
+     {
+      "id": "LEX-05",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "The poster says paprika ribbel chips are hard to find and only available at one shop, but 'people' hunting is just one poster."
+     },
+     {
+      "id": "SEG-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts praise Lidl items and cheapness (salami, ice cream, surimi), but only Lidl is named, and not all are snacks; Aldi value isn't shown."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A user writes 'Croky Saté RIP' alongside favourites, using RIP for a snack; fits discontinued sense though only one instance."
+     },
+     {
+      "id": "SEG-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A poster asks for responsible snacks as chip alternatives and gets suggestions."
+     },
+     {
+      "id": "OBJ-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Multiple posts say new recipes ruined Doritos, Smiths, Duyvis, Lays etc."
+     },
+     {
+      "id": "LEX-17",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A user calls Pringles 'meuk'."
+     },
+     {
+      "id": "THM-08",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts cite ridiculous prices and bad quality at Schiphol."
+     },
+     {
+      "id": "MOM-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Evidence mentions evening couch snacking and a pre-dinner snack meal, though in third-person/other voices."
+     },
+     {
+      "id": "THM-03",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts praise tasty Lidl items and some cheap prices, but Aldi barely covered and items aren't all snacks."
+     },
+     {
+      "id": "THM-09",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Kipcordonbleu from the freezer is praised, but 'easy go-to' is only implied."
+     },
+     {
+      "id": "MOT-06",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts mention frozen oven snacks but don't state the desire for minimal effort."
+     },
+     {
+      "id": "WSP-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "People ask about discontinued items, but the evidence doesn't show that nobody answered or brands being quiet; one brand did reply."
+     },
+     {
+      "id": "LEX-13",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Pomtips and Sun Moon Stars are called 'verslavend' and described as light, crunchy and salty."
+     },
+     {
+      "id": "THM-05",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts mention childhood lunchbox favourite hagelslag, nostalgic dinosaur chips, and snacks tasting like 1996."
+     },
+     {
+      "id": "LEX-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Kaassticks are called zoutjes and 'japanse zoutjes' appears, but no post defines zoutjes as the general word for salty snacks."
+     },
+     {
+      "id": "MOT-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts ask for responsible snacks and note veggies don't compare to chips, implying craving satisfaction, but not stated as a personal requirement exactly."
+     },
+     {
+      "id": "LEX-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One user uses 'beknibbelflatie' about Lays after changes, but evidence doesn't show people generally use it for shrinkflation."
+     },
+     {
+      "id": "LEX-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts use 'A-merk' for big-brand chips/food companies, implicitly versus others."
+     },
+     {
+      "id": "LEX-12",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Post says lots of paprika on Croky chips gives 'rode klauwen' after one chip."
+     }
+    ],
+    "usd": 0.0405
+   },
+   "units": [
+    "reddit:r/thenetherlands",
+    "tiktok:#snacktok",
+    "web:ah.nl",
+    "web:forum.fok.nl",
+    "web:search:forum.fok.nl favoriete snack chips zoutjes",
+    "youtube:search:snacks proeven review nederland",
+    "youtube:snack review nederland proeven"
+   ]
+  }
+ ],
+ "eval_cost_usd": 0.1627,
+ "notes": [
+  "Allocation efficiency is SIMULATED (see each brief's assumption).",
+  "Cost and latency come from the run record; a run whose analysis was redone later includes that extra time and spend."
+ ]
+}
