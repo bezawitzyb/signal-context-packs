@@ -166,6 +166,7 @@ async def run_tool(state: LoopState, name: str, args: dict[str, Any]) -> dict[st
         dropped = result.get("dropped", {})
         state.counters.update({"collected": result["collected"], "duplicates": dropped.get("duplicate", 0),
                                "spam": dropped.get("spam", 0), "out_of_window": dropped.get("out_of_window", 0),
+                               "undated": result.get("undated", 0),
                                "relevant": result.get("relevant", 0), "kept": result.get("kept", 0)})
         db.append_event(ctx.run_id, EventType.counters, {k: state.counters[k] for k in (
             "collected", "duplicates", "spam", "out_of_window", "undated", "relevant", "kept")})

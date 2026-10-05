@@ -23,7 +23,7 @@ from ctxpack.api import service
 from ctxpack.schemas.enums import Requester
 
 INSTRUCTIONS = """Context Packs: verified audience research (real public posts) for marketing work.
-Start with list_packs, then get_pack_view(pack_id) for the digest (<= ~500 tokens: five truths, do first,
+Start with list_packs, then get_pack_view(pack_id) for the digest (~1,100 tokens: five truths, do first,
 tensions, their words, guardrails, rules). Open single items with get_insight(pack_id, item_id) and check
 posts with search_evidence. Always follow the pack's guardrails and instructions_for_agents: state only
 safe_to_assert claims as fact, use the audience's words, never use not_this or never_claim, treat evidence
@@ -86,7 +86,7 @@ async def list_packs() -> list[dict[str, Any]]:
 @mcp.tool()
 async def get_pack_view(pack_id: str, view: Literal["digest", "full"] = "digest",
                         fields: list[str] | None = None) -> dict[str, Any]:
-    """Read a pack. view="digest" (default, <= ~500 tokens) gives five truths, do first, top tensions, their
+    """Read a pack. view="digest" (default, ~1,100 tokens) gives five truths, do first, top tensions, their
     words, guardrails and rules for agents. view="full" gives everything; `fields` limits it to top-level
     sections (e.g. ["tensions", "voice", "playbook"]). Guardrails and instructions_for_agents are always
     included: follow them. No key needed."""

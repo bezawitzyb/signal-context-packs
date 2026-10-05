@@ -832,8 +832,11 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
   header). Pack ids are random; any pack is readable by its link.
 
 11.2 Views
-  digest  <= 500 tokens: five truths, do first, top tensions, top lexicon,
-          guardrails, instructions_for_agents
+  digest  ~1,100 tokens (modes.yaml digest_view_max_tokens; 500 cannot
+          hold the guardrails and agent rules, which are never cut): five
+          truths, do first, top tensions, top lexicon (texts shortened to
+          their first sentence, ids kept), guardrails (sensitivities as
+          their first sentence), instructions_for_agents
   full    everything; "fields" selects sections. Guardrails and
           instructions_for_agents are always included.
 

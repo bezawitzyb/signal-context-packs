@@ -240,7 +240,7 @@ async def _finish_collection(ctx: RunContext, tool: str, unit_label: str, drafts
     relevant_share = round(s["relevant"] / s["kept"], 2) if s["kept"] else 0.0
     return {
         "status": "ok", "tool": tool, "source_unit": unit_label,
-        "collected": s["collected"], "kept": s["kept"], "relevant": s["relevant"],
+        "collected": s["collected"], "kept": s["kept"], "relevant": s["relevant"], "undated": s["undated"],
         "relevant_share": relevant_share,
         "dropped": {k: s[k] for k in ("out_of_window", "duplicate", "spam") if s[k]},
         "new_terms": _new_terms(ctx, result.documents),

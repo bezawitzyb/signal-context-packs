@@ -73,6 +73,8 @@ async def test_queued_run_goes_through_every_stage(offline):
     judged = {s["source_unit"] for s in run.collection["sources_used"] + run.collection["sources_dropped"]}
     assert judged == {"reddit:r/MealPrepSunday", "tiktok:#mealprep", "youtube:search:student meal prep"}
     assert events(run_id, EventType.counters)[-1].payload["kept"] == db.count_documents(run_id) > 0
+    assert events(run_id, EventType.counters)[-1].payload["undated"] == sum(
+        d.posted_at is None for d in db.get_documents(run_id))                   # the live counter is right
     assert run.tool_calls == 3
     assert run.peak_mem_mb and run.peak_mem_mb > 0
     seqs = [e.seq for e in events(run_id)]

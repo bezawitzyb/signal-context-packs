@@ -89,7 +89,8 @@ content_bar:
 # Exports (guide Step 3.6, PRD 6.7, 11.2). Token counts are estimated as chars / chars_per_token.
 exports:
   chars_per_token: 3.0          # conservative for Dutch/German (English is nearer 4)
-  digest_view_max_tokens: 500   # PRD 11.2 digest view
+  digest_view_max_tokens: 1600  # PRD 11.2 says 500, but guardrails + agent rules alone are ~600 (never cut);
+                                # 1600 estimated (~1,100 real tokens) fits 5 truths, 3 actions, 3 tensions, 8 words
   prompt_block_max_tokens: 1800
   skill_body_max_tokens: 2000   # PRD 6.7 (Anthropic allows < 5k; ours is stricter)
   skill_name_max_chars: 64      # Anthropic SKILL.md rules (checked 2026-10-05)

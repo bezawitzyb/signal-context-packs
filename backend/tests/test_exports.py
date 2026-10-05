@@ -106,7 +106,11 @@ def test_markdown_follows_the_pack_page_and_states_confidence_in_words(pack):
 
 def test_views_always_include_guardrails_and_instructions(pack):
     d = digest_view(pack)
-    assert d["guardrails"] == pack["guardrails"] and d["instructions_for_agents"] == pack["instructions_for_agents"]
+    g = pack["guardrails"]
+    assert d["instructions_for_agents"] == pack["instructions_for_agents"]
+    for rule in ("say_this", "not_this", "never_claim", "quote_reuse_note"):     # never cut
+        assert d["guardrails"][rule] == g[rule]
+    assert len(d["guardrails"]["sensitivities"]) == len(g["sensitivities"]) and "view=full" in d["more"]
     assert d["five_truths"] and d["do_first"]
     part = full_view(pack, ["tensions"])
     assert set(part) == {"tensions", "schema_version", "pack_id", "generated_at", "guardrails",
@@ -137,3 +141,14 @@ def test_weak_items_are_collapsed_in_markdown_but_kept_in_json(pack):
     weak["confidence"]["label"] = "speculative"
     md = to_markdown(p)
     assert f"[{weak['id']}]" in md and "Also seen (weaker evidence, speculative)" in md
+
+
+
+def test_digest_keeps_five_truths_when_guardrails_are_long(pack):
+    p = copy.deepcopy(pack)
+    p["guardrails"]["sensitivities"] = ["A long first sentence about a sensitive topic; then much more detail " * 3] * 5
+    p["guardrails"]["never_claim"] = [f"risky claim number {n}" for n in range(10)]
+    d = digest_view(p)
+    assert len(d["five_truths"]) == len(p["snapshot"]["five_truths"]) and len(d["do_first"]) == len(p["do_first"])
+    assert all(len(x) <= 120 for x in d["guardrails"]["sensitivities"])
+    assert d["guardrails"]["never_claim"] == p["guardrails"]["never_claim"]

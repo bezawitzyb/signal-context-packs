@@ -45,7 +45,7 @@ def run(coro):
     return asyncio.run(coro)
 
 
-SUMMARY_KEYS = {"status", "source_unit", "collected", "kept", "relevant", "relevant_share", "new_terms",
+SUMMARY_KEYS = {"status", "source_unit", "collected", "kept", "relevant", "undated", "relevant_share", "new_terms",
                 "samples", "budget_left", "calls_left", "seconds_left"}
 
 
@@ -53,6 +53,7 @@ def check_contract(summary, stored):
     assert summary["status"] == "ok", summary
     assert SUMMARY_KEYS <= set(summary)
     assert summary["collected"] > 0 and summary["kept"] == len(stored)
+    assert summary["undated"] == sum(d.posted_at is None for d in stored)
     assert len(summary["samples"]) <= 3
     for s in summary["samples"]:
         assert s.startswith("<untrusted_user_content") and len(s) < 300
