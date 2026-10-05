@@ -293,3 +293,22 @@ def test_first_names_in_the_post_are_redacted(text, expected):
 ])
 def test_ordinary_text_is_left_alone(text):
     assert _redact(text) == (text, False)
+
+
+# --- escaped emoji and forum image markup (Day 5 data fix) --------------------------------
+
+from ctxpack.collect.cleaning import normalise_text as _normalise  # noqa: E402
+
+
+@_pytest.mark.parametrize("raw,expected", [
+    (r"\ud83d\udc40 A few simple swaps", "👀 A few simple swaps"),
+    (r"love it \ud83c\udf6b\ud83c\udf7f", "love it 🍫🍿"),
+    ("De chips ![:9~](http://i.fok.nl/s/kwijl.gif) lekker", "De chips :9~ lekker"),
+    ("![](https://example.com/a.png) foto", "foto"),
+    (r"caf\u00e9", "café"),
+    (r"half \ud83d emoji", "half emoji"),
+    (r"a path C:\users stays", r"a path C:\users stays"),
+    ("normal [link](https://x.nl) stays", "normal [link](https://x.nl) stays"),   # only images are unwrapped
+])
+def test_escaped_emoji_and_image_markup_become_what_the_reader_saw(raw, expected):
+    assert _normalise(raw) == expected

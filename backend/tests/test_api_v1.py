@@ -317,3 +317,17 @@ async def test_run_status_shows_the_agents_verdicts_once_collection_is_done(api)
     col = status["collection"]
     assert col["sources_used"] and {"source_unit", "reason"} <= set(col["sources_used"][0])
     assert "finish_reason" in col and TEST_KEY not in json.dumps(status)
+
+
+def test_evals_placeholder_is_public_and_honest(api):
+    body = client.get("/api/v1/evals").json()
+    assert body["status"] == "not_run_yet" and body["results"] == []
+
+
+def test_clean_text_and_escape_debris_in_new_terms():
+    from ctxpack.maintenance import RedactReport, clean_text, redact_tree
+
+    assert clean_text(r"\ud83d\udc40 lekker ![:P](http://i.fok.nl/s/puh2.gif)") == ("👀 lekker :P", True)
+    rep = RedactReport()
+    tree = redact_tree({"payload": {"new_terms": ["chips", "ud83d", "ud83e udd63", "lekker"]}}, rep)
+    assert tree["payload"]["new_terms"] == ["chips", "lekker"] and rep.strings_changed == 2

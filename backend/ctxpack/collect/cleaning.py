@@ -40,9 +40,28 @@ _ZERO_WIDTH = re.compile("[​‌‍⁠﻿]")
 _SPACES = re.compile(r"[ \t  -   　]+")
 
 
+# Some scrapers return emoji as escaped text ("\\ud83d\\udc40") and forums write smileys as image markup
+# ("![:9~](http://i.fok.nl/s/kwijl.gif)"). Both become what the reader saw: the emoji, or the smiley's text.
+_UNICODE_ESCAPE = re.compile(r"\\u([dD][89abAB][0-9a-fA-F]{2})\\u([dD][c-fC-F][0-9a-fA-F]{2})|\\u([0-9a-fA-F]{4})")
+_MD_IMAGE = re.compile(r"!\[([^\]\n]{0,40})\]\(https?://[^)\s]+\)")
+
+
+def _decode_escape(m: re.Match) -> str:
+    if m.group(1):
+        hi, lo = int(m.group(1), 16), int(m.group(2), 16)
+        return chr(0x10000 + ((hi - 0xD800) << 10) + (lo - 0xDC00))
+    code = int(m.group(3), 16)
+    return "" if 0xD800 <= code <= 0xDFFF else chr(code)  # a lone half of an emoji is dropped
+
+
+def tidy_markup(text: str) -> str:
+    """Escaped emoji -> the emoji; forum image markup -> its alt text (the smiley as written)."""
+    return _MD_IMAGE.sub(lambda m: m.group(1), _UNICODE_ESCAPE.sub(_decode_escape, text))
+
+
 def normalise_text(text: str) -> str:
-    """HTML entities, Unicode NFC, invisible characters and whitespace runs."""
-    text = unicodedata.normalize("NFC", html.unescape(text or ""))
+    """Escaped emoji and image markup, HTML entities, Unicode NFC, invisible characters and whitespace runs."""
+    text = unicodedata.normalize("NFC", tidy_markup(html.unescape(text or "")))
     text = _ZERO_WIDTH.sub("", text).replace("\r\n", "\n").replace("\r", "\n")
     lines = [_SPACES.sub(" ", line).strip() for line in text.split("\n")]
     return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()

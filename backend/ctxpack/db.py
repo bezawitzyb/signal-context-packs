@@ -498,16 +498,26 @@ def delete_expired_documents(now: datetime | None = None) -> int:
 
 
 def load_featured(folder: Path = FEATURED_DIR) -> int:
-    """Insert featured packs from featured/*.json if missing. Returns how many were added."""
+    """Featured packs from featured/*.json: added if missing, and updated if the file changed (the file in the
+    repo is the published version, e.g. after a privacy or cleaning fix). Returns how many were added or updated."""
     if not folder.is_dir():
         return 0
-    added = 0
+    changed = 0
     for path in sorted(folder.glob("*.json")):
         pack = ContextPack.model_validate_json(path.read_text(encoding="utf-8"))
-        if get_pack(pack.pack_id) is None:
-            save_pack(pack, featured=True)
-            added += 1
-    return added
+        data = pack.model_dump(mode="json")
+        with session() as s:
+            row = s.get(PackRow, pack.pack_id)
+            if row is None:
+                s.close()
+                save_pack(pack, featured=True)
+                changed += 1
+            elif row.pack != data or not row.featured:
+                row.pack, row.featured = data, True  # keep its run link
+                s.add(row)
+                s.commit()
+                changed += 1
+    return changed
 
 
 def mark_stale_runs_interrupted(now: datetime | None = None) -> list[str]:

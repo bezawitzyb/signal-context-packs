@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from ctxpack import db
-from ctxpack.collect.cleaning import redact
+from ctxpack.collect.cleaning import redact, tidy_markup
 
 SKIP_KEYS = {"id", "pack_id", "run_id", "doc_id", "url", "permalink", "text_fragment_url", "author_hash",
              "generated_at", "created_at", "posted_at", "evidence_id", "item_id", "cluster_id", "schema_version"}
@@ -29,14 +29,35 @@ class RedactReport:
     packs_saved: list[str] = field(default_factory=list)
 
 
+_ESCAPE_TOKEN = re.compile(r"^(?:ud[89a-f][0-9a-f]{2}\s?)+$")  # "ud83d", "ud83e udd63": escaped-emoji debris
+
+
+def clean_text(value: str) -> tuple[str, bool]:
+    """The current text rules on one stored string: tidy markup, then redaction."""
+    tidied = tidy_markup(value)
+    out, _ = redact(tidied)
+    return out, out != value
+
+
 def redact_tree(value: Any, report: RedactReport) -> Any:
-    """Every human-text string in a JSON-like tree, redacted; ids, urls, hashes and dates untouched."""
+    """Every human-text string in a JSON-like tree, cleaned and redacted; ids, urls, hashes and dates untouched.
+    new_terms lists also lose escaped-emoji debris ("ud83d")."""
     if isinstance(value, dict):
-        return {k: (v if k in SKIP_KEYS else redact_tree(v, report)) for k, v in value.items()}
+        out = {}
+        for k, v in value.items():
+            if k in SKIP_KEYS:
+                out[k] = v
+            elif k == "new_terms" and isinstance(v, list):
+                kept = [t for t in v if not (isinstance(t, str) and _ESCAPE_TOKEN.match(t))]
+                report.strings_changed += len(v) - len(kept)
+                out[k] = redact_tree(kept, report)
+            else:
+                out[k] = redact_tree(v, report)
+        return out
     if isinstance(value, list):
         return [redact_tree(v, report) for v in value]
     if isinstance(value, str):
-        out, changed = redact(value)
+        out, changed = clean_text(value)
         report.strings_changed += changed
         return out
     return value
@@ -111,8 +132,8 @@ def redact_run(run_id: str) -> RedactReport:
 
     changed_docs = []
     for d in db.get_documents(run_id):
-        text, t1 = redact(d.text)
-        text_en, t2 = redact(d.text_en) if d.text_en else (None, False)
+        text, t1 = clean_text(d.text)
+        text_en, t2 = clean_text(d.text_en) if d.text_en else (None, False)
         extraction = redact_tree(d.extraction, report) if d.extraction else d.extraction
         anchors_pii = bool(d.fragment_anchor_start) and not anchors_ok(d.fragment_anchor_start,
                                                                       d.fragment_anchor_end, text)
