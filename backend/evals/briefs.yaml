@@ -11,13 +11,13 @@ briefs:
     brief: Gen Z and meal prep
     mode: standard
     expect: {market: global, languages: [en]}
-    reuse_pack: pk_74QaEuaavYgs   # rebuilt in Step 5.4 (was pk_CamfAsJ7Zbdr)
+    reuse_pack: pk_FSdLk4CH1zZO   # rebuilt in Step 5.4 twice (was pk_CamfAsJ7Zbdr, then pk_74QaEuaavYgs)
 
   - id: nl_snack_brand
     brief: Launching a snack brand in the Netherlands
     mode: standard
     expect: {market: NL, languages: [nl, en]}
-    reuse_pack: pk_2cfiymbkno_7   # rebuilt in Step 5.4 (was pk_wrvZBhDFsLR9)
+    reuse_pack: pk_i4iFso1HnLWR   # rebuilt in Step 5.4 twice (was pk_wrvZBhDFsLR9, then pk_2cfiymbkno_7)
 
   - id: de_heat_pumps
     brief: Heat pumps for homeowners in Germany

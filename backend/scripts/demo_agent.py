@@ -34,7 +34,7 @@ from ctxpack.config import REPO_DIR, get_settings, model_for
 from ctxpack.exports.skill import references, skill_body
 from ctxpack.llm.client import call, cost_usd, load_prompt, untrusted
 
-NL_PACK = "pk_2cfiymbkno_7"   # the rebuilt NL pack (Step 5.4); examples/demo_agent.md was made with pk_wrvZBhDFsLR9
+NL_PACK = "pk_i4iFso1HnLWR"   # the rebuilt NL pack (Step 5.4); examples/demo_agent.md was made with pk_wrvZBhDFsLR9
 TASK = ("Write three TikTok scripts for a new snack brand launching in the Netherlands. "
         "The audience is Dutch snackers aged 18-40.")
 OUT = REPO_DIR / "examples" / "demo_agent.md"

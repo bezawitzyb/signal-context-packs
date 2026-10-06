@@ -7,27 +7,6 @@
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/937296/1/999",
-   "text_fragment_url": "https://forum.fok.nl/topic/937296/1/999#:~:text=he%20ja%21%206%20van,lekker%21%20maar%20ze%20verkochten",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "he ja!\n6 van die kleine zakjes in een zak, met vaak een cadeautje erbij.\nbacon-dinosaurussen, kaas-schildpadjes, en nog iets...\ndie waren echt ontzettend lekker!\n\nmaar ze verkochten ze volgens mij overal hoor",
-   "text_en": "Yes! 6 of those little bags in one bag, often with a toy inside. Bacon-dinosaurs, cheese-turtles, and something else... they were really incredibly tasty! But they sold them everywhere I think.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "f0c0d704dbeb0640362008cacd07a219bdb7e4b215c7e247940f9359a52fec61",
-   "emotion": [
-    "nostalgia",
-    "excitement"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0002",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/937296/1/999",
    "text_fragment_url": "https://forum.fok.nl/topic/937296/1/999#:~:text=De%20winner%20taco%20inderdaad%2C,winner%20taco%20te%20vermoorden%21%21",
    "posted_at": null,
    "date_precision": "unknown",
@@ -45,7 +24,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0003",
+   "id": "EV-0002",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/937296/1/999",
@@ -61,6 +40,27 @@
    "author_hash": "7a847bdacadf18ca26b2afc28935ce56a95d105a5b338fab566be21a622df0f5",
    "emotion": [
     "nostalgia"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0003",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/937296/1/999",
+   "text_fragment_url": "https://forum.fok.nl/topic/937296/1/999#:~:text=he%20ja%21%206%20van,lekker%21%20maar%20ze%20verkochten",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "he ja!\n6 van die kleine zakjes in een zak, met vaak een cadeautje erbij.\nbacon-dinosaurussen, kaas-schildpadjes, en nog iets...\ndie waren echt ontzettend lekker!\n\nmaar ze verkochten ze volgens mij overal hoor",
+   "text_en": "Yes! 6 of those little bags in one bag, often with a toy inside. Bacon-dinosaurs, cheese-turtles, and something else... they were really incredibly tasty! But they sold them everywhere I think.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "f0c0d704dbeb0640362008cacd07a219bdb7e4b215c7e247940f9359a52fec61",
+   "emotion": [
+    "nostalgia",
+    "excitement"
    ],
    "trust": "untrusted_user_content"
   },
@@ -147,27 +147,6 @@
   },
   {
    "id": "EV-0008",
-   "platform": "tiktok",
-   "source_unit": "tiktok:search:gezonde snacks supermarkt",
-   "url": "https://www.tiktok.com/@/video/7685047734293843231",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-13",
-   "date_precision": "day",
-   "language": "en",
-   "text": "might be. 👀\n\nA few simple swaps can mean less added sugar, fewer artificial dyes, better oils + ingredients you actually feel good about feeding your family.\n\nAnd the best part? You can still have the chocolate, popcorn + snacks you LOVE. 🍫🍿",
-   "text_en": null,
-   "redacted": true,
-   "short_form": false,
-   "engagement_percentile": 71.0,
-   "author_hash": "9953bd51fcfa069e2e36a97690df4468cfcbaa119b8482850e55b8e181d7ee83",
-   "emotion": [
-    "aspiration",
-    "anxiety"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0009",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/893854/1/999",
@@ -188,7 +167,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0010",
+   "id": "EV-0009",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
@@ -206,7 +185,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0011",
+   "id": "EV-0010",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
@@ -224,7 +203,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0012",
+   "id": "EV-0011",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -244,7 +223,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0014",
+   "id": "EV-0012",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -262,7 +241,27 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0015",
+   "id": "EV-0013",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/2646670/1/50",
+   "text_fragment_url": "https://forum.fok.nl/topic/2646670/1/50#:~:text=Heerlijk%2C%20zijn%20die.%20Sowieso,en%20niks%20in%20huis.",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "Heerlijk, zijn die. Sowieso alles met kaas.\n\nEn vlees. Enige nét iets mindere is een bamischijf/bal. Nasi is nog wel lekker.\n\ntevens honger hier en niks in huis.",
+   "text_en": "Delicious, those are. Everything with cheese anyway. And meat. The only slightly worse one is a bami slice/ball. Nasi is still tasty. Also hungry here and nothing in the house.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "b71b6e2941bb2476a99677b9591480faea84806a16ffe260bbcdb8232b4916aa",
+   "emotion": [
+    "indifference"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0014",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -282,27 +281,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0016",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/2646670/1/50",
-   "text_fragment_url": null,
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "Mensen die dat als eerste van een schaal bittergarnituur pakken kun je niet vertrouwen (behalve als ze dat doen om het in de prullenbak te gooien en andere te behoeden voor deze ellende)",
-   "text_en": "People who grab bittergarnituur (bitter snacks) first from a platter you can't trust (unless they do it to throw them in the bin and spare others from this misery).",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "fb6c93e8374a1c9612669858f5328fae29a869e51eecd3f21ce5088911c4b243",
-   "emotion": [
-    "humour"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0017",
+   "id": "EV-0015",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=9EvAVbvKRoc&lc=UgyfIe9O_GlrETTfaoN4AaABAg",
@@ -322,7 +301,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0018",
+   "id": "EV-0016",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=9EvAVbvKRoc&lc=UgzS7AC0L4ucCRHyQHd4AaABAg",
@@ -343,7 +322,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0019",
+   "id": "EV-0017",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=9EvAVbvKRoc&lc=UgxlVctZWZtlWSQHVuV4AaABAg",
@@ -364,7 +343,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0020",
+   "id": "EV-0018",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=9EvAVbvKRoc&lc=Ugze_B67Qt_stS5DHCJ4AaABAg",
@@ -385,7 +364,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0021",
+   "id": "EV-0019",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=9EvAVbvKRoc",
@@ -405,7 +384,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0022",
+   "id": "EV-0020",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=_7laf4UQb7w",
@@ -426,7 +405,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0023",
+   "id": "EV-0021",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=OkUsD418RFQ",
@@ -446,7 +425,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0024",
+   "id": "EV-0022",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=QXOcPCLSnEM",
@@ -466,7 +445,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0025",
+   "id": "EV-0023",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2312303/1/100",
@@ -486,7 +465,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0026",
+   "id": "EV-0024",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2312303/2/100",
@@ -506,7 +485,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0027",
+   "id": "EV-0025",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2312303/2/100",
@@ -526,7 +505,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0028",
+   "id": "EV-0026",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/893854/1/999",
@@ -544,7 +523,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0029",
+   "id": "EV-0027",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2312303/1/100",
@@ -562,7 +541,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0030",
+   "id": "EV-0028",
    "platform": "tiktok",
    "source_unit": "tiktok:search:gezonde snacks supermarkt",
    "url": "https://www.tiktok.com/@/video/7660146982693997857",
@@ -580,7 +559,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0031",
+   "id": "EV-0029",
    "platform": "reddit",
    "source_unit": "reddit:r/thenetherlands",
    "url": "https://www.reddit.com/r/thenetherlands/comments/1wiuqfl/supermarkt_producten_die_je_vaak_in_buitenland/padmkzp/",
@@ -600,7 +579,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0032",
+   "id": "EV-0030",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
@@ -618,27 +597,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0033",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/1678734/1/999",
-   "text_fragment_url": "https://forum.fok.nl/topic/1678734/1/999#:~:text=Die%20vind%20ik%20echt,hebben%20ze%20hier%20niet.",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "Die vind ik echt niet te eten ..\nHier verkopen ze alleen die met zeezout, die met zeezout en zwarte peper en die met zeezout en azijn (!).\nAndere smaken hebben ze hier niet. }:|",
-   "text_en": "I really can't eat those. Here they only sell those with sea salt, those with sea salt and black pepper and those with sea salt and vinegar (!). They don't have other flavours here.",
-   "redacted": true,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "08ff42930e3bdf5cbf964aa2eb9b5992112c876b738dab1a64c4a786ad898bb3",
-   "emotion": [
-    "frustration"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0034",
+   "id": "EV-0031",
    "platform": "reddit",
    "source_unit": "reddit:r/thenetherlands",
    "url": "https://www.reddit.com/r/thenetherlands/comments/1wiuqfl/supermarkt_producten_die_je_vaak_in_buitenland/",
@@ -659,7 +618,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0035",
+   "id": "EV-0032",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -677,7 +636,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0036",
+   "id": "EV-0033",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/937296/1/999",
@@ -697,7 +656,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0037",
+   "id": "EV-0034",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=ArMWsCYhD7o&lc=Ugz0qGt62tGe8Qd3j8B4AaABAg",
@@ -718,7 +677,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0038",
+   "id": "EV-0035",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
@@ -735,6 +694,62 @@
    "emotion": [
     "frustration"
    ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0036",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/2646670/1/50",
+   "text_fragment_url": "https://forum.fok.nl/topic/2646670/1/50#:~:text=De%20kaassouffl%C3%A9%20is%20de,meest%20lijpe%20schijtsnack%20ooit.",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "De kaassoufflé is de meest lijpe schijtsnack ooit.",
+   "text_en": "The cheese soufflé is the most disgusting crap snack ever.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "4c04c59e9255fcf81c0075471945fa2097199e2939c8854a4128861bdaad4433",
+   "emotion": [
+    "frustration"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0037",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/2025430/1/999",
+   "text_fragment_url": "https://forum.fok.nl/topic/2025430/1/999#:~:text=Frikandelbroodje%20met%20RedBull%2C%20jwtz.",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "Frikandelbroodje met RedBull, jwtz.",
+   "text_en": "Fried sausage roll with RedBull, you know.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0038",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/2025430/1/999",
+   "text_fragment_url": null,
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "Frikandelbroodjes sowieso",
+   "text_en": "Sausage roll anyway",
+   "redacted": false,
+   "short_form": true,
+   "engagement_percentile": null,
+   "author_hash": "b724abf612b85e0bbc3ca6ebfcb40f4e5eb4aa5dcfa2d791d7bbdb91c289d0ab",
+   "emotion": [],
    "trust": "untrusted_user_content"
   },
   {
@@ -759,42 +774,6 @@
    "id": "EV-0040",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/2025430/1/999",
-   "text_fragment_url": "https://forum.fok.nl/topic/2025430/1/999#:~:text=Frikandelbroodje%20met%20RedBull%2C%20jwtz.",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "Frikandelbroodje met RedBull, jwtz.",
-   "text_en": "Fried sausage roll with RedBull, you know.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0041",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/2025430/1/999",
-   "text_fragment_url": null,
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "Frikandelbroodjes sowieso",
-   "text_en": "Sausage roll anyway",
-   "redacted": false,
-   "short_form": true,
-   "engagement_percentile": null,
-   "author_hash": "b724abf612b85e0bbc3ca6ebfcb40f4e5eb4aa5dcfa2d791d7bbdb91c289d0ab",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0042",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
    "text_fragment_url": "https://forum.fok.nl/topic/2646670/1/50#:~:text=Een%20kaassouffl%C3%A9%2C%20want%20kaas",
    "posted_at": null,
@@ -812,7 +791,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0043",
+   "id": "EV-0041",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -830,27 +809,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0044",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/2646670/1/50",
-   "text_fragment_url": "https://forum.fok.nl/topic/2646670/1/50#:~:text=De%20kaassouffl%C3%A9%20is%20de,meest%20lijpe%20schijtsnack%20ooit.",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "De kaassoufflé is de meest lijpe schijtsnack ooit.",
-   "text_en": "The cheese soufflé is the most disgusting crap snack ever.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "4c04c59e9255fcf81c0075471945fa2097199e2939c8854a4128861bdaad4433",
-   "emotion": [
-    "frustration"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0045",
+   "id": "EV-0042",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/893854/1/999",
@@ -868,7 +827,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0046",
+   "id": "EV-0043",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/893854/1/999",
@@ -886,7 +845,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0047",
+   "id": "EV-0044",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -906,7 +865,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0048",
+   "id": "EV-0045",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -924,7 +883,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0049",
+   "id": "EV-0046",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -944,7 +903,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0050",
+   "id": "EV-0047",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
@@ -964,7 +923,27 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0051",
+   "id": "EV-0048",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/2646670/1/50",
+   "text_fragment_url": null,
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "Mensen die dat als eerste van een schaal bittergarnituur pakken kun je niet vertrouwen (behalve als ze dat doen om het in de prullenbak te gooien en andere te behoeden voor deze ellende)",
+   "text_en": "People who grab bittergarnituur (bitter snacks) first from a platter you can't trust (unless they do it to throw them in the bin and spare others from this misery).",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "fb6c93e8374a1c9612669858f5328fae29a869e51eecd3f21ce5088911c4b243",
+   "emotion": [
+    "humour"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0049",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2312303/1/100",
@@ -984,7 +963,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0052",
+   "id": "EV-0050",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/937296/1/999",
@@ -1002,7 +981,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0053",
+   "id": "EV-0051",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/893854/1/999",
@@ -1022,7 +1001,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0054",
+   "id": "EV-0052",
    "platform": "tiktok",
    "source_unit": "tiktok:search:gezonde snacks supermarkt",
    "url": "https://www.tiktok.com/@/video/7660146982693997857",
@@ -1042,7 +1021,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0055",
+   "id": "EV-0053",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
@@ -1062,27 +1041,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0056",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/2025430/1/999",
-   "text_fragment_url": "https://forum.fok.nl/topic/2025430/1/999#:~:text=2%20frikandelbroodjes%2C%201%20kroketbroodje%2C,en%20een%2010pack%20mergpijpen",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "2 frikandelbroodjes, 1 kroketbroodje, 2 kaasbroodjes, 3 blikjes slammers energy en een 10pack mergpijpen\n\n:')",
-   "text_en": "2 sausage rolls, 1 croquette roll, 2 cheese rolls, 3 cans of slammers energy and a 10pack mergpijpen",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "7a13ad60746e1f416c6f9b9a5f06a78a6337b0643ae852d7a9aa4ccaae57c46b",
-   "emotion": [
-    "excitement"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0057",
+   "id": "EV-0054",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/893854/1/999",
@@ -1102,28 +1061,68 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0058",
-   "platform": "youtube",
-   "source_unit": "youtube:search:gezonde snacks test eiwit supermarkt",
-   "url": "https://www.youtube.com/watch?v=gjEK_aqoMmQ&lc=Ugyhhjb341Mkbxm4ur14AaABAg",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-23",
-   "date_precision": "day",
-   "language": "en",
-   "text": "David bars honestly taste like flavored CARDBOARD. Shocked they’re rated so highly here",
-   "text_en": null,
+   "id": "EV-0055",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/2025430/1/999",
+   "text_fragment_url": "https://forum.fok.nl/topic/2025430/1/999#:~:text=2%20frikandelbroodjes%2C%201%20kroketbroodje%2C,en%20een%2010pack%20mergpijpen",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "2 frikandelbroodjes, 1 kroketbroodje, 2 kaasbroodjes, 3 blikjes slammers energy en een 10pack mergpijpen\n\n:')",
+   "text_en": "2 sausage rolls, 1 croquette roll, 2 cheese rolls, 3 cans of slammers energy and a 10pack mergpijpen",
    "redacted": false,
    "short_form": false,
-   "engagement_percentile": 35.7,
-   "author_hash": "429d06871ef421b55ea48edcebc89372fd42643776870c85381fe72ac67ccf7b",
+   "engagement_percentile": null,
+   "author_hash": "7a13ad60746e1f416c6f9b9a5f06a78a6337b0643ae852d7a9aa4ccaae57c46b",
    "emotion": [
-    "frustration",
-    "skepticism"
+    "excitement"
    ],
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0059",
+   "id": "EV-0056",
+   "platform": "tiktok",
+   "source_unit": "tiktok:search:gezonde snacks supermarkt",
+   "url": "https://www.tiktok.com/@/video/7685047734293843231",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-13",
+   "date_precision": "day",
+   "language": "en",
+   "text": "might be. 👀\n\nA few simple swaps can mean less added sugar, fewer artificial dyes, better oils + ingredients you actually feel good about feeding your family.\n\nAnd the best part? You can still have the chocolate, popcorn + snacks you LOVE. 🍫🍿",
+   "text_en": null,
+   "redacted": true,
+   "short_form": false,
+   "engagement_percentile": 71.0,
+   "author_hash": "9953bd51fcfa069e2e36a97690df4468cfcbaa119b8482850e55b8e181d7ee83",
+   "emotion": [
+    "aspiration",
+    "anxiety"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0057",
+   "platform": "youtube",
+   "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
+   "url": "https://www.youtube.com/watch?v=uiOYt8yFGac",
+   "text_fragment_url": null,
+   "posted_at": "2026-07-16",
+   "date_precision": "day",
+   "language": "nl",
+   "text": "weer tijd voor een nieuwe aflevering van Vet Benieuwd! De supermarkten liggen weer vol met nieuwe producten en natuurlijk konden wij het niet laten om weer een flinke boodschappentas mee naar huis te nemen. Van opvallende popcornsmaken en bijzondere chips tot gezondere snacks,",
+   "text_en": null,
+   "redacted": true,
+   "short_form": false,
+   "engagement_percentile": 98.8,
+   "author_hash": "27d654bfda182a26e71e1ea9daa40bb09eaba25dea38f6b016c48267532a2275",
+   "emotion": [
+    "excitement"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0058",
    "platform": "youtube",
    "source_unit": "youtube:search:gezonde snacks test eiwit supermarkt",
    "url": "https://www.youtube.com/watch?v=gjEK_aqoMmQ&lc=Ugy4_-I_WV4YuNWOVsd4AaABAg",
@@ -1141,47 +1140,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0060",
-   "platform": "tiktok",
-   "source_unit": "tiktok:search:gezonde snacks supermarkt",
-   "url": "https://www.tiktok.com/@/video/7682974556939717901",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-08",
-   "date_precision": "day",
-   "language": "en",
-   "text": "I hate how healthier food is not accessible to everyone 😕",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 53.8,
-   "author_hash": "63bf165d17e3b63232b7d1cd83286cfb4d1a71975687a54ec6f69048be19824f",
-   "emotion": [
-    "frustration"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0061",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/1678734/1/999",
-   "text_fragment_url": null,
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "De chips van Lays is echt veel lekkerder geworden nu het 25% minder zout bevat. :9~",
-   "text_en": "The chips from Lays are really much tastier now that it contains 25% less salt.",
-   "redacted": true,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "8f4472fe14441fb98103a45c6a91c049f2de8129416297b3f371352435d2b6bb",
-   "emotion": [
-    "excitement"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0062",
+   "id": "EV-0059",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2312303/1/100",
@@ -1201,7 +1160,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0063",
+   "id": "EV-0060",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
@@ -1217,6 +1176,67 @@
    "author_hash": "e9fdad1338cfa0bffc34c8b3c781344ef65fa100c1b1316b842b8e416b86e9aa",
    "emotion": [
     "frustration"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0061",
+   "platform": "reddit",
+   "source_unit": "reddit:r/thenetherlands",
+   "url": "https://www.reddit.com/r/thenetherlands/comments/1w5bexj/waarom_is_het_gehaktbalbroodje_verdwenen/",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-02",
+   "date_precision": "day",
+   "language": "nl",
+   "text": "Waarom is het gehaktbalbroodje verdwenen?\n\nFirst world problems, ofzoiets, maar: vroeger had iedere supermarkt ze bij de bakkerij, het was gewoon een frikandelbroodje, maar dan met een gehaktbal en satésaus. Het was altijd mijn favoriet van de hartige snacks, maar ik heb ze al",
+   "text_en": "Why has the minced meat roll disappeared? First world problems, or something, but: in the past every supermarket had them at the bakery, it was basically a sausage roll, but then with a meatball and satay sauce. It was always my favorite of the savory snacks, but I haven't seen them in years. I thought, they probably weren't popular, but Albert Heijn even has a 'chicken nugget roll' and 'chicken-mango-roll' and I can hardly imagine that the meatball roll did worse than those. So, does anyone know why they disappeared? Edit: I shop in principle at AH, Dirk or Lidl, all three don't have them anymore (at least, not here) but it seems like at least PLUS still has them.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 81.2,
+   "author_hash": "cd7f093cfc8a0c154466ff2e1b9e9307ebfb4906bcb2327a5b05538c6baa2288",
+   "emotion": [
+    "frustration",
+    "nostalgia"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0062",
+   "platform": "tiktok",
+   "source_unit": "tiktok:#snacktip",
+   "url": "https://www.tiktok.com/@/video/7661473851125157133",
+   "text_fragment_url": null,
+   "posted_at": "2026-07-12",
+   "date_precision": "day",
+   "language": "en",
+   "text": "I’ve made this recipe so many times so u have to make it\n#Recipe #highprotein #ricecake #gym",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 79.5,
+   "author_hash": "8f39799ef01b431974438d67325d123e21bf4aaf381ec947b9e5d6d00cb42119",
+   "emotion": [
+    "pride"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0063",
+   "platform": "tiktok",
+   "source_unit": "tiktok:#snacktip",
+   "url": "https://www.tiktok.com/@/video/7692109553336438029",
+   "text_fragment_url": null,
+   "posted_at": "2026-10-02",
+   "date_precision": "day",
+   "language": "en",
+   "text": "[user] Nutrition count your days 😭\n\nSN: The Chips are fire 🔥 especially this flavor. Pair with some guacamole and you have a light snack with a little protein and I do mean A LITTLE.\n\n#healthylifestyle #questnutrition #HTX #snacks #healthy",
+   "text_en": null,
+   "redacted": true,
+   "short_form": false,
+   "engagement_percentile": 38.4,
+   "author_hash": "d0f5d2f6eac88397c159552af002546c5a1b99fdce3867cf52ef90f6ac699b8f",
+   "emotion": [
+    "excitement"
    ],
    "trust": "untrusted_user_content"
   },
@@ -1258,66 +1278,6 @@
   },
   {
    "id": "EV-0066",
-   "platform": "tiktok",
-   "source_unit": "tiktok:#snacktip",
-   "url": "https://www.tiktok.com/@/video/7661473851125157133",
-   "text_fragment_url": null,
-   "posted_at": "2026-07-12",
-   "date_precision": "day",
-   "language": "en",
-   "text": "I’ve made this recipe so many times so u have to make it\n#Recipe #highprotein #ricecake #gym",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 79.5,
-   "author_hash": "8f39799ef01b431974438d67325d123e21bf4aaf381ec947b9e5d6d00cb42119",
-   "emotion": [
-    "pride"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0067",
-   "platform": "tiktok",
-   "source_unit": "tiktok:#snacktip",
-   "url": "https://www.tiktok.com/@/video/7692109553336438029",
-   "text_fragment_url": null,
-   "posted_at": "2026-10-02",
-   "date_precision": "day",
-   "language": "en",
-   "text": "[user] Nutrition count your days 😭\n\nSN: The Chips are fire 🔥 especially this flavor. Pair with some guacamole and you have a light snack with a little protein and I do mean A LITTLE.\n\n#healthylifestyle #questnutrition #HTX #snacks #healthy",
-   "text_en": null,
-   "redacted": true,
-   "short_form": false,
-   "engagement_percentile": 38.4,
-   "author_hash": "d0f5d2f6eac88397c159552af002546c5a1b99fdce3867cf52ef90f6ac699b8f",
-   "emotion": [
-    "excitement"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0068",
-   "platform": "youtube",
-   "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
-   "url": "https://www.youtube.com/watch?v=uiOYt8yFGac",
-   "text_fragment_url": null,
-   "posted_at": "2026-07-16",
-   "date_precision": "day",
-   "language": "nl",
-   "text": "weer tijd voor een nieuwe aflevering van Vet Benieuwd! De supermarkten liggen weer vol met nieuwe producten en natuurlijk konden wij het niet laten om weer een flinke boodschappentas mee naar huis te nemen. Van opvallende popcornsmaken en bijzondere chips tot gezondere snacks,",
-   "text_en": null,
-   "redacted": true,
-   "short_form": false,
-   "engagement_percentile": 98.8,
-   "author_hash": "27d654bfda182a26e71e1ea9daa40bb09eaba25dea38f6b016c48267532a2275",
-   "emotion": [
-    "excitement"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0069",
    "platform": "youtube",
    "source_unit": "youtube:search:gezonde snacks test eiwit supermarkt",
    "url": "https://www.youtube.com/watch?v=gjEK_aqoMmQ&lc=UgzDMQQYxIcB69uvDyh4AaABAg",
@@ -1337,7 +1297,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0070",
+   "id": "EV-0067",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
@@ -1357,7 +1317,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0071",
+   "id": "EV-0068",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2312303/2/100",
@@ -1375,7 +1335,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0072",
+   "id": "EV-0069",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2312303/1/100",
@@ -1395,7 +1355,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0073",
+   "id": "EV-0070",
    "platform": "tiktok",
    "source_unit": "tiktok:search:gezonde snacks supermarkt",
    "url": "https://www.tiktok.com/@/video/7660146982693997857",
@@ -1415,7 +1375,28 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0074",
+   "id": "EV-0071",
+   "platform": "youtube",
+   "source_unit": "youtube:search:gezonde snacks test eiwit supermarkt",
+   "url": "https://www.youtube.com/watch?v=gjEK_aqoMmQ&lc=Ugyhhjb341Mkbxm4ur14AaABAg",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-23",
+   "date_precision": "day",
+   "language": "en",
+   "text": "David bars honestly taste like flavored CARDBOARD. Shocked they’re rated so highly here",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 35.7,
+   "author_hash": "429d06871ef421b55ea48edcebc89372fd42643776870c85381fe72ac67ccf7b",
+   "emotion": [
+    "frustration",
+    "skepticism"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0072",
    "platform": "youtube",
    "source_unit": "youtube:search:gezonde snacks test eiwit supermarkt",
    "url": "https://www.youtube.com/watch?v=gjEK_aqoMmQ&lc=UgyQ-G4rapffMIC1D9l4AaABAg",
@@ -1436,7 +1417,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0075",
+   "id": "EV-0073",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -1456,7 +1437,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0076",
+   "id": "EV-0074",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/893854/1/999",
@@ -1476,7 +1457,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0077",
+   "id": "EV-0075",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2646670/1/50",
@@ -1491,6 +1472,46 @@
    "engagement_percentile": null,
    "author_hash": "591d394643956d171a1ce164b58b339304d5b565e3bb5ca75e3e83b62f6dcb91",
    "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0076",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/1678734/1/999",
+   "text_fragment_url": null,
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "De chips van Lays is echt veel lekkerder geworden nu het 25% minder zout bevat. :9~",
+   "text_en": "The chips from Lays are really much tastier now that it contains 25% less salt.",
+   "redacted": true,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "8f4472fe14441fb98103a45c6a91c049f2de8129416297b3f371352435d2b6bb",
+   "emotion": [
+    "excitement"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0077",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/1678734/1/999",
+   "text_fragment_url": null,
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "Zijn ze zwart dan? Als er iets dicht in de buurt komt van de definitie van 'chips' dan is het Kettle wel en Lay's niet.",
+   "text_en": "Are they black then? If something comes close to the definition of 'chips' then it's Kettle, and Lay's is not.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "753482322d96ded65d03b79ee9e47fd42d5897eacb297349efd632f3dd9de7e7",
+   "emotion": [
+    "skepticism"
+   ],
    "trust": "untrusted_user_content"
   },
   {
@@ -1515,26 +1536,6 @@
   },
   {
    "id": "EV-0079",
-   "platform": "youtube",
-   "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
-   "url": "https://www.youtube.com/watch?v=ArMWsCYhD7o&lc=UgwFvL_PfpDTX9uJCkd4AaABAg",
-   "text_fragment_url": null,
-   "posted_at": "2026-04-05",
-   "date_precision": "month",
-   "language": "nl",
-   "text": "Die croky frikandel speciaal chips smaakt exact naar de croky patatje speciaal die ze een aantal jaar terug hadden",
-   "text_en": "Those Croky frikandel special chips taste exactly like the Croky fries special they had a number of years back",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 39.5,
-   "author_hash": "3e485e9f21c2472cd2a3cd788b260d4d9e0986ca0e8eee1d18c602fcf04d14d4",
-   "emotion": [
-    "nostalgia"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0080",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/937296/1/999",
@@ -1554,7 +1555,45 @@
    "trust": "untrusted_user_content"
   },
   {
+   "id": "EV-0080",
+   "platform": "youtube",
+   "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
+   "url": "https://www.youtube.com/watch?v=ArMWsCYhD7o&lc=UgwFvL_PfpDTX9uJCkd4AaABAg",
+   "text_fragment_url": null,
+   "posted_at": "2026-04-05",
+   "date_precision": "month",
+   "language": "nl",
+   "text": "Die croky frikandel speciaal chips smaakt exact naar de croky patatje speciaal die ze een aantal jaar terug hadden",
+   "text_en": "Those Croky frikandel special chips taste exactly like the Croky fries special they had a number of years back",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 39.5,
+   "author_hash": "3e485e9f21c2472cd2a3cd788b260d4d9e0986ca0e8eee1d18c602fcf04d14d4",
+   "emotion": [
+    "nostalgia"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
    "id": "EV-0081",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/1678734/1/999",
+   "text_fragment_url": "https://forum.fok.nl/topic/1678734/1/999#:~:text=Die%20van%20de%20aldi%2C,in%20die%20blauwe%20zak",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "Die van de aldi, in de smaak peper en zout in die blauwe zak :9~",
+   "text_en": "The one from Aldi, in the flavour pepper and salt in that blue bag",
+   "redacted": true,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "2f6f664d57374b8ababc3d95541abb36669ddc2abb15120ae8fcc495f3cc885e",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0082",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=uiOYt8yFGac&lc=UgyxfS_tfv9tz6P1HIV4AaABAg",
@@ -1572,24 +1611,6 @@
     "excitement",
     "pride"
    ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0082",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/1678734/1/999",
-   "text_fragment_url": "https://forum.fok.nl/topic/1678734/1/999#:~:text=Die%20van%20de%20aldi%2C,in%20die%20blauwe%20zak",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "Die van de aldi, in de smaak peper en zout in die blauwe zak :9~",
-   "text_en": "The one from Aldi, in the flavour pepper and salt in that blue bag",
-   "redacted": true,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "2f6f664d57374b8ababc3d95541abb36669ddc2abb15120ae8fcc495f3cc885e",
-   "emotion": [],
    "trust": "untrusted_user_content"
   },
   {
@@ -1635,26 +1656,6 @@
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
-   "text_fragment_url": null,
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "nl",
-   "text": "Zijn ze zwart dan? Als er iets dicht in de buurt komt van de definitie van 'chips' dan is het Kettle wel en Lay's niet.",
-   "text_en": "Are they black then? If something comes close to the definition of 'chips' then it's Kettle, and Lay's is not.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "753482322d96ded65d03b79ee9e47fd42d5897eacb297349efd632f3dd9de7e7",
-   "emotion": [
-    "skepticism"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0086",
-   "platform": "web_forum",
-   "source_unit": "web:forum.fok.nl",
-   "url": "https://forum.fok.nl/topic/1678734/1/999",
    "text_fragment_url": "https://forum.fok.nl/topic/1678734/1/999#:~:text=Eet%20ook%20niet%20vrij,tijden%20niet%20meer%20gehad.",
    "posted_at": null,
    "date_precision": "unknown",
@@ -1671,7 +1672,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0087",
+   "id": "EV-0086",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/2312303/1/100",
@@ -1689,28 +1690,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0088",
-   "platform": "reddit",
-   "source_unit": "reddit:r/thenetherlands",
-   "url": "https://www.reddit.com/r/thenetherlands/comments/1w5bexj/waarom_is_het_gehaktbalbroodje_verdwenen/",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-02",
-   "date_precision": "day",
-   "language": "nl",
-   "text": "Waarom is het gehaktbalbroodje verdwenen?\n\nFirst world problems, ofzoiets, maar: vroeger had iedere supermarkt ze bij de bakkerij, het was gewoon een frikandelbroodje, maar dan met een gehaktbal en satésaus. Het was altijd mijn favoriet van de hartige snacks, maar ik heb ze al",
-   "text_en": "Why has the minced meat roll disappeared? First world problems, or something, but: in the past every supermarket had them at the bakery, it was basically a sausage roll, but then with a meatball and satay sauce. It was always my favorite of the savory snacks, but I haven't seen them in years. I thought, they probably weren't popular, but Albert Heijn even has a 'chicken nugget roll' and 'chicken-mango-roll' and I can hardly imagine that the meatball roll did worse than those. So, does anyone know why they disappeared? Edit: I shop in principle at AH, Dirk or Lidl, all three don't have them anymore (at least, not here) but it seems like at least PLUS still has them.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 81.2,
-   "author_hash": "cd7f093cfc8a0c154466ff2e1b9e9307ebfb4906bcb2327a5b05538c6baa2288",
-   "emotion": [
-    "frustration",
-    "nostalgia"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0089",
+   "id": "EV-0087",
    "platform": "youtube",
    "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
    "url": "https://www.youtube.com/watch?v=uiOYt8yFGac&lc=UgwRmioQVA3ciH01Ixp4AaABAg",
@@ -1731,7 +1711,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0090",
+   "id": "EV-0088",
    "platform": "web_forum",
    "source_unit": "web:forum.fok.nl",
    "url": "https://forum.fok.nl/topic/1678734/1/999",
@@ -1746,6 +1726,145 @@
    "engagement_percentile": null,
    "author_hash": "816744c5a128220de4bd516964af56bc317a3e1f804d944e190f94510779e69a",
    "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0089",
+   "platform": "reddit",
+   "source_unit": "reddit:r/thenetherlands",
+   "url": "https://www.reddit.com/r/thenetherlands/comments/1sshsvy/nieuw_onderzoek_wijst_uit_niet_avondsnacken/ohlzjts/",
+   "text_fragment_url": null,
+   "posted_at": "2026-04-22",
+   "date_precision": "day",
+   "language": "nl",
+   "text": "Maar het is zo lekker",
+   "text_en": "But it's so tasty",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 93.8,
+   "author_hash": "5e418ad657e1855b0a41424f0e0848c49dd0f8fb40f0da4f2e9361f957442e6b",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0090",
+   "platform": "youtube",
+   "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
+   "url": "https://www.youtube.com/watch?v=uiOYt8yFGac&lc=Ugw4fO66v5yet-GqpOZ4AaABAg",
+   "text_fragment_url": null,
+   "posted_at": "2026-08-05",
+   "date_precision": "month",
+   "language": "nl",
+   "text": "Wat is jouw ultieme ijs? Welk merk of welke smaak? Laat het vooral weten! 🤩 Ps: ik upload om de week in de zomer dus de volgende video is op 30 juli! 🥰",
+   "text_en": "What is your ultimate ice cream? Which brand or flavour? Let me know! 🤩 Ps: I upload every two weeks in the summer so the next video is on 30 July! 🥰",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 87.2,
+   "author_hash": "4f6d2919c009d368a0debbdcae1664444d19e517a1ba19cb24f083c8ca7d1772",
+   "emotion": [
+    "excitement"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0091",
+   "platform": "youtube",
+   "source_unit": "youtube:search:nieuwe snacks proberen albert heijn jumbo",
+   "url": "https://www.youtube.com/watch?v=9EvAVbvKRoc&lc=UgwqOj93U6Ps1bA0sBx4AaABAg",
+   "text_fragment_url": null,
+   "posted_at": "2026-06-05",
+   "date_precision": "month",
+   "language": "nl",
+   "text": "Jullie zouden echt eens Friese dúmkes (duimpjes), sûkerbôle (suikerbrood) en oranjekoek moeten testen 🙂\n\nDúmkes zijn typisch Friese koekjes met anijs en hazelnoten. Sûkerbôle is zoet Fries suikerbrood met kaneel en suikerstukken erin (ook lekker met een laag roomboter erop",
+   "text_en": "You should really test Frisian dúmkes (thumbs), sûkerbôle (sugar bread) and oranjekoek (orange cake) 🙂 Dúmkes are typical Frisian cookies with anise and hazelnuts. Sûkerbôle is sweet Frisian sugar bread with cinnamon and sugar pieces in it (also nice with a layer of butter spread on top), and oranjekoek is a somewhat soft pink cake with anise flavor😄. Extra tasty fresh from the bakery, but not required. I think surprisingly few people outside Friesland know this well, so it seems perfect material for a video.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 84.9,
+   "author_hash": "b15fde30a1498a940a0a03c592f6aa20af5d11f46ceef9bf2db4cf3b2e3571a2",
+   "emotion": [
+    "pride",
+    "nostalgia"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0092",
+   "platform": "tiktok",
+   "source_unit": "tiktok:search:gezonde snacks supermarkt",
+   "url": "https://www.tiktok.com/@/video/7655203320700685600",
+   "text_fragment_url": null,
+   "posted_at": "2026-06-25",
+   "date_precision": "day",
+   "language": "nl",
+   "text": "Nieuw in de supermarkt!🥹🥹\n[user] Heijn\n\n#gezondetip #supermarkttip #gezondechips #gezondesnack #new",
+   "text_en": "New in the supermarket!",
+   "redacted": true,
+   "short_form": false,
+   "engagement_percentile": 82.4,
+   "author_hash": "833ee356c036c57a91802e821fc79afd6bc9cb4aeb4f19fb9236b8bd6f71f0dc",
+   "emotion": [
+    "excitement"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0093",
+   "platform": "youtube",
+   "source_unit": "youtube:search:gezonde snacks test eiwit supermarkt",
+   "url": "https://www.youtube.com/watch?v=lSKCswXJg18&lc=UgwBx4AvEdg2l5_zMJN4AaABAg",
+   "text_fragment_url": null,
+   "posted_at": "2026-10-01",
+   "date_precision": "day",
+   "language": "en",
+   "text": "love those tortillas. I was worried about potential bloating, but thankfully I dont experience that issue. very filling",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 35.7,
+   "author_hash": "4a0146a90f7e713c3a351a61a26bcd3c0c5c0660356ee7a99ffb786f90179b11",
+   "emotion": [
+    "pride"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0094",
+   "platform": "tiktok",
+   "source_unit": "tiktok:search:gezonde snacks supermarkt",
+   "url": "https://www.tiktok.com/@/video/7682974556939717901",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-08",
+   "date_precision": "day",
+   "language": "en",
+   "text": "I hate how healthier food is not accessible to everyone 😕",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 53.8,
+   "author_hash": "63bf165d17e3b63232b7d1cd83286cfb4d1a71975687a54ec6f69048be19824f",
+   "emotion": [
+    "frustration"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0095",
+   "platform": "web_forum",
+   "source_unit": "web:forum.fok.nl",
+   "url": "https://forum.fok.nl/topic/1678734/1/999",
+   "text_fragment_url": "https://forum.fok.nl/topic/1678734/1/999#:~:text=Die%20vind%20ik%20echt,hebben%20ze%20hier%20niet.",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "nl",
+   "text": "Die vind ik echt niet te eten ..\nHier verkopen ze alleen die met zeezout, die met zeezout en zwarte peper en die met zeezout en azijn (!).\nAndere smaken hebben ze hier niet. }:|",
+   "text_en": "I really can't eat those. Here they only sell those with sea salt, those with sea salt and black pepper and those with sea salt and vinegar (!). They don't have other flavours here.",
+   "redacted": true,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "08ff42930e3bdf5cbf964aa2eb9b5992112c876b738dab1a64c4a786ad898bb3",
+   "emotion": [
+    "frustration"
+   ],
    "trust": "untrusted_user_content"
   }
  ]

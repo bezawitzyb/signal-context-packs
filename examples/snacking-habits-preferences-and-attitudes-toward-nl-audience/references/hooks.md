@@ -1,29 +1,26 @@
 # Hooks and this week
 Hooks are starting points in the audience's voice. Respect the flags.
 
-- Ik check eerst kcal en suiker, dan pas de voorkant van de zak. Dus hier is het etiket, zonder praatjes 👀 (HOOK-01; builds on TEN-01, THM-02, SEG-01, OPP-03)
-- Protein op de zak, maar hoeveel zit er écht in? Wij lezen het etiket hardop voor je 🤓 (HOOK-02; builds on TEN-01, MOT-02, OPP-02, HYP-04)
-  - CHECK WITH LEGAL (food_nutrition): It implies other 'protein' products overstate their protein and could lead to a protein claim of our own without meeting the 'source/high protein' conditions. Safer: Eiwit staat op de zak. Wij lezen het etiket hardop voor je, zodat je zelf de hoeveelheid ziet.
-- Gatverdamme, een proteïnereep die smaakt als karton. Kan een snack met eiwit ook gewoon lekker zijn? Wij proeven live. (HOOK-03; builds on TEN-01, OBJ-03, BRD-11, LEX-12)
-  - CHECK WITH LEGAL (food_nutrition): It disparages a product category and implies a protein benefit for our snack that must meet the legal claim conditions. Safer: Eiwitrijke snacks hebben soms een reputatie van droog. Wij proeven live hoe deze snack smaakt.
-- Minder zout is prima, zolang het geen schijtsnack wordt. Wie proeft er mee? 😅 (HOOK-04; builds on TEN-02, THM-11, LEX-12)
-  - CHECK WITH LEGAL (food_nutrition): 'Minder zout' is a comparative nutrition claim that is only allowed if the 30% reduction against a similar product can be shown, and the vulgar wording adds a tone risk. Safer: Wij proeven samen of een snack met minder zout nog lekker smaakt. Wie proeft er mee? (Gebruik 'minder zout' alleen als het product dit aantoonbaar is.)
-- 'Minder zout' bij de borrelnootjes? Laat ze dat maar eens proberen. Wij testen eerst of de smaak blijft. (HOOK-05; builds on TEN-02, LEX-07, THM-11)
-  - CHECK WITH LEGAL (food_nutrition): It uses a reduced-salt claim that needs proof of at least 30% less versus comparable products, and it mocks other brands' attempts. Safer: Wij testen of de smaak van borrelnootjes met minder zout blijft. Check het etiket voor de zoutwaarden.
-- Oh wat mis ik die! Welke snack is uit het schap verdwenen en wil jij terug? Jeugdsentiment alert 😭 (HOOK-06; builds on TEN-01, THM-01, WSP-01, PHR-01, LEX-10)
-- Waarom verdween jouw favoriete snack uit de supermarkt? Wij zoeken het uit, zodat jij dat niet hoeft te doen. (HOOK-07; builds on TEN-01, WSP-01, OPP-01, PHR-04)
-- Paprika, bolognese, kaas of naturel: kies je kant. 'Maakt me niet uit' telt niet 😤 (HOOK-08; builds on TEN-02, THM-03, SEG-02)
-- Te duur! Voor een zak chips die half lucht is? Dan laten wij de prijs én wat erin zit gewoon zien. (HOOK-09; builds on TEN-01, PHR-05, OBJ-02, MOT-06, OPP-04)
-  - CHECK WITH LEGAL (other): It suggests competing chips are overpriced and half empty, and the claim that we show price and content could be read as implying we are better value, without proof. Safer: Wat kost een zak chips en wat zit erin? Wij laten de prijs en het gewicht op het etiket zien.
-- Ribbelchips: te slap, te hard of precies goed? Tien seconden crunchtest, en ik zeg eerlijk wat ik hoor 🔊 (HOOK-10; builds on TEN-02, THM-07, LEX-04)
-- Frikandelbroodje van de snackbar of een snack uit de supermarkt? Zeg welke regio het beste doet, ik lees alles 👇 (HOOK-11; builds on TEN-01, LEX-01, LEX-06, CUL-03, THM-05)
-- Nieuwe producten uit de supermarkt proberen, zodat jij dat niet hoeft te doen. Vandaag: een snack mét dip 🥣 (HOOK-12; builds on TEN-01, THM-06, THM-10, MOT-04, PHR-04)
-- Snacks die je alleen in het buitenland vindt: waarom liggen die niet gewoon hier in het schap? 🤔 (HOOK-13; builds on TEN-02, THM-09, MOT-01, WSP-03)
-- Bittergarnituur op tafel: wie pakt als eerste wat? Je snackkeuze verraadt je 😂 (HOOK-14; builds on TEN-01, CUL-02, LEX-08, MOT-05)
+- Check de kcal en de suiker per 100 g voordat je 'gezond' gelooft. Wij zetten de cijfers gewoon vooraan. Ook de saaie. (HOOK-01; builds on TEN-01, CUL-01, THM-02, MOT-03)
+- Paprika, bolognese of cheese onion: kies je kant. Welke chipsmaak is voor jou verslavend lekker? (HOOK-02; builds on TEN-01, THM-03, LEX-11, MOT-05)
+  - CHECK WITH LEGAL (food_nutrition): Calling a snack 'addictive' trivialises addiction and can imply overconsumption of a high-fat/salt food. Safer: Paprika, bolognese of cheese onion: kies je kant. Welke chipsmaak vind jij onweerstaanbaar lekker?
+- Winner taco, Yes bar... welke snack mis jij nog? Jeugdsentiment, en niemand legt uit waarom hij uit de schappen verdween. (HOOK-03; builds on TEN-01, THM-01, WSP-01, LEX-10)
+- Bamischijf: top of gatverdamme? Zeg het eerlijk, we oordelen niet 😂 (HOOK-04; builds on TEN-01, THM-04, LEX-03, PHR-01)
+- Wie als eerste de kaassoufflé van de bittergarnituur pakt, kun je niet vertrouwen. En wie laat de nasi en bamischijf liggen? 🙈 (HOOK-05; builds on TEN-01, CUL-02, LEX-02, LEX-08)
+- Lekker is niet genoeg: ook crunch. Te slap, te hard, te weinig smaak. Welke chip faalt bij jou? (HOOK-06; builds on TEN-01, THM-07, MOT-05)
+- Welke snack of smaak uit het buitenland mis je in de Nederlandse schappen? Wij zoeken wat hier nog niet ligt. (HOOK-07; builds on TEN-01, THM-09, WSP-04, MOT-01)
+- De saus maakt de snack. Welke dip hoort bij jouw zoutje? 😄 (HOOK-08; builds on TEN-01, THM-10, LEX-13)
+- Wij proeven de nieuwe snacks, zodat jij dat niet hoeft te doen. Wat eerst: chips of zoet? (HOOK-09; builds on TEN-01, PHR-02, THM-06, MOT-04, PERF-02)
+- Groningse eierbal, Brabantse eierkoeken, gebak uit Dordrecht: welke streeksnack moet heel Nederland proeven? (HOOK-10; builds on TEN-01, THM-05, LEX-05, PERF-07)
+- Smaak, crunch én prijs naast elkaar. Is het écht 4 cent goedkoper bij Aldi, en proef je dat verschil? (HOOK-11; builds on TEN-01, THM-08, OBJ-02, BRD-05)
+  - CHECK WITH LEGAL (other): A named-competitor price comparison must be verifiable, current and like-for-like, and 'taste the difference' implies superiority. Safer: Smaak, crunch én prijs naast elkaar: wat vind jij van de verschillen? (Alleen met actuele, controleerbare prijzen op een vermelde datum.)
+- Eiwit en vezels op de zak: hoeveel zit er écht in? Wij noemen het getal, ook als het 'een beetje' is. (HOOK-12; builds on TEN-01, MOT-02, OPP-01)
+  - CHECK WITH LEGAL (food_nutrition): Highlighting protein and fibre may be read as a nutrition claim ('source of'/'high in') that is only allowed when thresholds are met. Safer: Eiwit en vezels staan in de voedingswaarde-tabel: hoeveel zit er per 100 g in? Wij noemen het getal, zonder er een claim van te maken.
+- Vegetarische snacks die op vlees willen lijken: megool of schijtsnack? Jouw verdict. (HOOK-13; builds on TEN-01, OBJ-06, LEX-14, LEX-12)
 
 ## This week
-- monday: web_forum Question thread - HOOK-06 - Ask which snack disappeared from the shelf and who still misses it. Reply to every answer and log the names.. Why now: Starts the week with the strongest, safest theme and gives us early audience words and range ideas.
-- tuesday: tiktok 20-second label read-out - HOOK-01 - Turn the bag around and read kcal, sugar and price. Then give a one-line verdict on taste.. Why now: Tests the number-first style while the forum thread builds trust.
-- wednesday: youtube Short supermarket-test pitch and sample seeding - HOOK-12 - Send a sample and the full label to supermarket-test creators and ask for an honest try, including a dip pairing.. Why now: Reviews take time to produce, so pitches should go out early in the week.
-- thursday: tiktok 10-second crunch test - HOOK-10 - Compare how the chips sound and what the flavour is like, including honest remarks if it is not perfect.. Why now: Crunch and flavour are recurring annoyances, and a short sound-first video is quick to film.
-- saturday: web_forum Flavour poll - HOOK-08 - Ask people to choose between paprika, bolognese, cheese and plain, and ask which flavour is missing in the supermarket.. Why now: Weekend borrel and snack time makes flavour talk easy, and the answers show which flavours people are loyal to.
+- monday: reddit question post - HOOK-03 - Ask which vanished snack people miss (Winner taco, Yes bar) and what it tasted like; reply to every comment and note the flavours named.. Why now: Low-effort start that listens first; the 'why is it gone' post type invites memories and feeds the product direction.
+- tuesday: tiktok label-reading short (Dutch, English cut) - HOOK-01 - Show kcal, sugar and protein per 100 g of the snack on screen with the ingredient list readable, including the numbers that aren't flattering.. Why now: Numbers-first content pre-empts the kcal-and-sugar comment reflex seen on health snack content.
+- wednesday: youtube timestamped taste test / seeding pitch - HOOK-09 - Pitch supermarket-test creators, and draft your own dated, timestamped test of familiar chips and snack-bar snacks next to yours.. Why now: Supermarket test videos with dated titles and product lists are where new products get discovered; pitching takes lead time.
+- thursday: web_forum poll thread - HOOK-04 - Open a bamischijf-top-or-gatverdamme poll and let the thread argue; use results to avoid assuming snack-bar items are universally loved.. Why now: Divided snack-bar opinions generate replies and show where the audience disagrees.
+- saturday: tiktok short video - HOOK-07 - Ask which snack or flavour from abroad Dutch shops lack, and react to the answers in follow-up clips.. Why now: Weekend browsing and snack-trying time; tests whether the 'not yet in Dutch shops' angle works on a smaller platform.

@@ -20,8 +20,13 @@ Rules for every item:
   quote that is not an exact copy will be removed.
 - claim: one sentence a person could say out loud, in the audience's
   framing. summary_for_humans: one or two plain-English sentences.
-- claim_type: "observed" if the posts say it directly, "inferred" if it
-  is your reading of them. Never use outside facts.
+- Write only what the cited posts show; never widen it. No "people" or
+  other plurals when one post says it; no "often", "usually", "common",
+  "a typical format" or "the go-to"; never make a feeling stronger than the post
+  (no "hate" when they say "annoying"). Code adds who and how many.
+- claim_type: "observed" only if a cited post says it directly, at that
+  strength; "inferred" if it is your reading of them. Never use outside
+  facts.
 - NEVER write counts, percentages, shares or strength words such as
   "most", "many" or "a majority": code adds the numbers.
 - segment_cluster_ids: segment clusters (from the segment list) the item

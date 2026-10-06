@@ -8,26 +8,26 @@ description: "Real audience research on Gen Z adults aged 18-27, students and ea
 Who: Gen Z adults aged 18-27, students and early-career, cooking for themselves on a budget. Market global, languages en. Built from 76 real public posts (coverage grade c; thin evidence - treat findings as early signals).
 
 ## Do first
-- Post a week-of-dinners breakdown in a budget or college meal prep community on Reddit. Title it 'College student mealprep: dinners for the week for about $50'. Show the total cost, the components, and what you'd swap if you got bored. (DO-01)
-- Publish a short freeze-and-reheat how-to on chicken enchiladas and fajitas. Cover freezing, then microwave vs air fryer, and say how long reheating takes. Then answer the matching questions in meal prep threads. (DO-02)
-- Answer 'what can I make ahead for breakfast?' threads on Reddit with a concrete freezer-friendly swap, such as homemade McMuffins or overnight oats. Add that it keeps you full through an early shift. (DO-03)
+- Publish a freeze-and-reheat cheat sheet for enchiladas and fajitas (can it be frozen, how to reheat, how long reheating takes), and post it in a Reddit meal-prep or college-cooking community as a reply-friendly guide. (DO-01)
+- Post a 'College student mealprep for the week' on Reddit that lists every dish, the recipes and the total spent, built on pantry staples such as rice, pasta, eggs, beans and potatoes. (DO-02)
+- Post a short make-ahead breakfast reply or post (freezer breakfast sandwiches and overnight oats) in a thread where someone wants to stop buying breakfast, with a simple how-to. (DO-03)
 
 ## Five truths
-- I plan meals or prep only components instead of full meals. (SEG-03)
-- I prep components instead of whole meals so I can switch things around and not get bored. (THM-09)
-- I need breakfast ready before my early work shift starts. (MOM-03)
-- The meal kit food is good, but the portions are small, it gets pricey, and things go missing or aren't fresh. (THM-01)
-- When reheating takes forever, meal prep stops feeling worth it. (MOT-03)
+- I find cooking for one challenging and need simple meals that suit just me. (MOT-06)
+- I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating. (SEG-01)
+- I prep components, not whole meals, so I keep room to change things. (SEG-03)
+- I prep ingredients and components, not whole meals, so I can still switch things around. (THM-09)
+- I start work early and need breakfast I don't have to buy each day. (MOM-03)
 
 ## Voice
-Tone: Casual, practical and frank about money. Lowercase asides, occasional emoji, and plain how-to language. Mild self-deprecating humour about being broke or tired. Reviews are more evaluative and mixed.
-Their words: Sunday (ingredient) prep day = a weekly session to prep ingredients and components; macro-friendly = a meal fitting protein, carb and fat targets; Meal Prep for Weight Loss = a post format for fat-loss meal prep; decision fatigue = tiredness from having to choose what to eat; Food is fuel = eating for performance; Pb and J = peanut butter and jelly sandwich; Shefs order = ordering from Shef home-cook delivery; Frozen anything = freeze-friendly staples; anything frozen works
+Tone: Practical, casual and budget-aware. Posters share what they made and ask direct how-to questions. There is light self-deprecating humour ("I'm broke") and occasional emoji. Meal kit reviews read as plain verdicts.
+Their words: Sunday (ingredient) prep day = a weekly session to prep ingredients and components rather than whole meals; macro-friendly = a meal that fits protein, carb and fat targets; Meal Prep for Weight Loss = a post label for fat-loss-oriented meal prep; decision fatigue = tiredness from having to choose what to eat; Food is fuel = eating to power performance; Pb and J = peanut butter and jelly sandwich; Shefs order = ordering from Shef, a home-cook meal delivery service; Frozen anything = freeze-friendly foods as staples
 
 ## Guardrails
-Say: cheap, simple meals from staples you already have; freeze half and reheat later; prep components so you can switch things up; dinners for the week for about $50; quick make-ahead breakfasts and lunches; macro-friendly
-Not: long ingredient lists of items people don't have; assuming everyone wants to spend Sunday filling containers; promising meal kit value without addressing portion size; glossy or premium framing that ignores tight budgets
-Never claim: dinners for the week for about $50; cheap? also yes.; what you get for what you pay; which one actually saves your lunch?; cheap, simple meals from staples; macro-friendly; food is fuel; keeps me full till lunch; fight to cancel; say how long reheating takes; keeps you full through an early shift
-Sensitive: The evidence is mostly Reddit, forum and review text, with no TikTok or influencer content. Claims about trends, slang or creators would be unsupported.; Meal kit complaints come from reviewers who seem to be households or couples, not clearly Gen Z. Applying them to students may be a misreading.; Messaging that says meal prep is easy or quick could backfire with people who report hours of effort or who dislike eating leftovers.; Food safety claims about freezing, reheating and storing chopped veg need to be accurate, because people are asking these questions directly.; Several clusters rest on few posts, so treat them as signals, not settled findings. The price-and-quality complaint about kits comes from a single post.
+Say: Cheap dinners for the week; Prep ingredients and components so you can switch things around; Freeze half and reheat later; Quick meals under 5 minutes; Cheap meals from pantry staples already in the kitchen
+Not: Pushing a full Sunday of filling containers as the only way to prep; Assuming meal kits are either great or bad: reviews praise taste but flag small portions, price and missing items; Recipes needing long ingredient lists the reader doesn't own; Hype or pressure about perfect prep
+Never claim: stop buying McMuffins ... freezer sandwiches; a cheap week; portions were small, something was missing; Macro-friendly prep; Own the cheap-week prep; Make-ahead filling breakfasts
+Sensitive: Kit complaints are about delivery problems, produce, missing items and small portions in specific reviews. Brands should not read them as a verdict on the whole category, and the web reviews are not necessarily Gen Z.; Much of the evidence is Reddit and review text from posters whose age is unknown, and several cluster points rest on only a few posts. Present findings as signals, not as the voice of all Gen Z.; Pushing meal prep as the answer could backfire with people who say it stresses them out or who dislike leftovers. Flexible planning (prepping components) may fit them better.; Food-storage and reheating advice touches on food safety. Any guidance given on freezing or storing prepped food should be accurate and sourced.
 Quotes: Real people's words are for insight and briefs, not for ads without permission.
 
 ## Rules
@@ -47,4 +47,4 @@ Quotes: Real people's words are for insight and briefs, not for ads without perm
 - references/channels.md: where to show up, how each platform sounds, public communities - open when planning channels
 - references/evidence.json: the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim
 
-Pack pk_74QaEuaavYgs, generated 2026-10-05T21:01:56.823105Z.
+Pack pk_FSdLk4CH1zZO, generated 2026-10-06T13:12:08.327416Z.
