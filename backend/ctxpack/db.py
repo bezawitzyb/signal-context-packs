@@ -508,14 +508,16 @@ def delete_expired_documents(now: datetime | None = None) -> int:
 
 def load_featured(folder: Path = FEATURED_DIR) -> int:
     """Featured packs from featured/*.json: added if missing, and updated if the file changed (the file in the
-    repo is the published version, e.g. after a privacy or cleaning fix). Returns how many were added or updated."""
+    repo is the published version, e.g. after a privacy or cleaning fix); featured packs without a file are
+    un-featured. Returns how many were added, updated or un-featured."""
     if not folder.is_dir():
         return 0
-    changed = 0
+    changed, on_disk = 0, set()
     for path in sorted(folder.glob("*.json")):
         if path.stem.startswith("evals"):  # evals.json, evals_human.json: eval results, not packs
             continue
         pack = ContextPack.model_validate_json(path.read_text(encoding="utf-8"))
+        on_disk.add(pack.pack_id)
         data = pack.model_dump(mode="json")
         with session() as s:
             row = s.get(PackRow, pack.pack_id)
@@ -528,6 +530,15 @@ def load_featured(folder: Path = FEATURED_DIR) -> int:
                 s.add(row)
                 s.commit()
                 changed += 1
+    # The files are the list: a pack featured in the database without a file (replaced by a rebuilt
+    # version) is no longer featured. The pack itself stays readable by its id.
+    with session() as s:
+        for row in s.exec(select(PackRow).where(PackRow.featured == True)).all():  # noqa: E712
+            if row.id not in on_disk:
+                row.featured = False
+                s.add(row)
+                changed += 1
+        s.commit()
     return changed
 
 

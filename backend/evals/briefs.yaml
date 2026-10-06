@@ -4,30 +4,33 @@
 # reuse_pack: a finished pack that is scored as it is (no new run, no new spend).
 # Without it, `eval` runs the brief (the cost estimate is shown first) unless --reuse is given;
 # with --reuse the newest finished pack for the same brief text is scored instead.
+# All four now point at saved packs, so a plain `eval` never starts a paid research run.
 
 briefs:
   - id: genz_meal_prep
     brief: Gen Z and meal prep
     mode: standard
     expect: {market: global, languages: [en]}
-    reuse_pack: pk_CamfAsJ7Zbdr
+    reuse_pack: pk_74QaEuaavYgs   # rebuilt in Step 5.4 (was pk_CamfAsJ7Zbdr)
 
   - id: nl_snack_brand
     brief: Launching a snack brand in the Netherlands
     mode: standard
     expect: {market: NL, languages: [nl, en]}
-    reuse_pack: pk_wrvZBhDFsLR9
+    reuse_pack: pk_2cfiymbkno_7   # rebuilt in Step 5.4 (was pk_wrvZBhDFsLR9)
 
   - id: de_heat_pumps
     brief: Heat pumps for homeowners in Germany
     mode: standard
     expect: {market: DE, languages: [de], compliance_category: energy_environmental}
+    reuse_pack: pk_WPKWWfPABYxN   # researched in Step 5.1, rebuilt in Step 5.4 (was pk_0yCXA3I3WI--)
     note: B2B-like; energy and green claims. Becomes the third example (feature it after a privacy check).
 
   - id: snacks_vague
     brief: snacks
     mode: quick
     expect: {clarifying_question: true}
+    reuse_pack: pk_r5nbddoJzHFK   # researched in Step 5.1; not rebuilt (Quick analysis budget nearly spent)
     source_diversity_exempt: true
     note: Vague and thin on purpose. The clarifying question is recorded; the run takes the first option.
 

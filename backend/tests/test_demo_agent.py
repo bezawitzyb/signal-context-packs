@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from ctxpack.evaluation import claim_items
 from scripts import demo_agent as da
 from tests.test_cluster import fake  # noqa: F401  (fixture)
 
@@ -29,17 +30,23 @@ def test_good_scripts_pass_every_check():
 
 
 def test_checks_catch_each_problem():
-    quote = next(e["text"] for e in PACK["evidence"] if len(e["text"].split()) > 12)
-    s = [script(hook="Er staat 'gezond' op de zak", cited=("THM-01", "XYZ-99"),
-                facts=(("Gezonde snacks zijn duur.", "TEN-01"), ("Iedereen snackt.", "")),
+    import copy
+
+    pack = copy.deepcopy(PACK)
+    pack["guardrails"]["never_claim"].append("verslavend lekker")   # a term that is also banned in full
+    banned = pack["guardrails"]["never_claim"][0]
+    unsafe = next(x["id"] for x in claim_items(pack) if not x.get("safe_to_assert"))
+    quote = next(e["text"] for e in pack["evidence"] if len(e["text"].split()) > 12)
+    s = [script(hook=banned, cited=("THM-01", "XYZ-99"),
+                facts=(("Gezonde snacks zijn duur.", unsafe), ("Iedereen snackt.", "")),
                 extra="verslavend lekker " + quote)]
-    res = {c["check"]: c for c in da.check(s, PACK)}
+    res = {c["check"]: c for c in da.check(s, pack)}
     assert res[">= 3 lexicon terms"]["pass"] is False                          # verslavend lekker does not count
     assert "verslavend lekker" in res[">= 3 lexicon terms"]["detail"]          # ... and says why
     assert res["0 not_this / never_claim phrases"]["pass"] is False
-    assert "'gezond' op de zak" in res["0 not_this / never_claim phrases"]["detail"]
+    assert banned in res["0 not_this / never_claim phrases"]["detail"]
     assert res["facts only from safe_to_assert items"]["pass"] is False
-    assert "TEN-01" in res["facts only from safe_to_assert items"]["detail"]
+    assert unsafe in res["facts only from safe_to_assert items"]["detail"]
     assert "no id" in res["facts only from safe_to_assert items"]["detail"]
     assert res["cited ids exist"]["pass"] is False and "XYZ-99" in res["cited ids exist"]["detail"]
     assert res["no copied quotes"]["pass"] is False

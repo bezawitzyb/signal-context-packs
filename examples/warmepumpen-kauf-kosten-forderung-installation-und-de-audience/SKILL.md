@@ -8,27 +8,26 @@ description: "Real audience research on Hausbesitzer in Deutschland (ca. 35-65 J
 Who: Hausbesitzer in Deutschland (ca. 35-65 Jahre), Eigentümer von Ein- und Zweifamilienhäusern, die Heizungstausch oder Neubau erwägen oder bereits eine Wärmepumpe betreiben. Market DE, languages de. Built from 101 real public posts (coverage grade a; thin evidence - treat findings as early signals).
 
 ## Do first
-- Publish a YouTube video titled around "Wärmepumpe nach 1 Jahr" in which a real operator shows the annual electricity bill (kWh Strom, JAZ) next to the previous gas or oil consumption, with the price basis for both periods stated on screen. Frame it as one house, not a promise. (DO-01)
-- Post a short TikTok series plus a one-page checklist on setting Heizkurve and Vorlauftemperatur after installation. Open with "Dein Heizungsbauer hat angeschlossen, die Einstellungen bleiben bei dir?" and end with one concrete step per clip. (DO-02)
-- Post a house-specific Q&A in Reddit homeowner threads and heating forums about split trades, separate tank disposal and the occupancy rule for the Geschwindigkeitsbonus. Present peer answers as observations and link the official KfW/BEG sources. Don't guess. (DO-03)
+- Publish a YouTube video titled along the lines of 'Wärmepumpe nach 1 Jahr: meine echte Rechnung gegen die Gas-Abrechnung'. Show annual kWh and euro for the heat pump next to the baseline gas year, including the unflattering lines, and state house type and Vorlauftemperatur. (DO-01)
+- Post a Reddit thread in a German heat pump or home-owner community that follows the house-data format: year built, current heating, windows, insulation, radiators vs FBH, Heizlast estimate, real consumption. Ask 'Reicht eine WP hier, und bei welcher VL Temperatur?' and answer every reply with numbers. (DO-02)
+- Film a short TikTok that shows how to check and adjust Heizkurve and Vorlauftemperatur after commissioning, using a handover checklist for the Heizungsbauer as the on-screen prop. Name one common fault and its cause in a few lines. (DO-03)
 
 ## Five truths
-- I wonder whether solar power and a battery really make a heat pump pay off, given winter. (THM-01)
-- I need help setting the heating curve and flow temperature correctly. (MOT-02)
-- I want to see honest numbers on what a heat pump really uses and costs compared to my old gas heating. (MOT-01)
-- I want PV to cut my heat pump's running costs, but PV delivers least when I need heat most. (TEN-02)
-- After a year we look at the electricity bill and compare it with gas. (MOM-01)
+- I wonder whether PV and storage really help a heat pump, since solar is weakest in winter when heat is needed. (THM-01)
+- I want help setting the heating curve and flow temperature correctly. (MOT-02)
+- I want honest numbers on what the heat pump really uses and costs compared to my old heating. (MOT-01)
+- People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most. (TEN-02)
 
 ## Voice
-Tone: Pragmatic, sceptical and numbers-driven; informal du-register in forums, a dry, sometimes sarcastic edge, and almost no emoji.
-Code-switching: Mostly pure German with technical abbreviations (WP, JAZ, FBH, PV, BEV, V2H); only a few English acronyms mixed in.
-Their words: WP = Wärmepumpe (heat pump); Heizungsbauer = Heating installer; Heizstab = Electric heating rod used as backup; Heizlast = Heating load, used for sizing the heat pump; Mikroblasenabscheider = Microbubble separator; VL Temperatur = Vorlauftemperatur, the flow temperature of the heating water; Vorlauftemperatur = Flow temperature of the heating water; Schorni = Colloquial word for the chimney sweep; Stromfresser = Power guzzler; a myth label applied to heat pumps; Stromheizungen = Electric heaters; a critical label for heat pumps; LWWP = Luft-Wasser-Wärmepumpe (air-to-water heat pump); FBH = Fußbodenheizung (underfloor heating)
+Tone: Sober, number-driven and sceptical, in an informal forum register. Humour is dry and sarcastic, emoji are rare (at most a single smiley), and kWh, euro and temperature figures carry the arguments.
+Code-switching: German throughout, with technical abbreviations (WP, JAZ, PV, FBH, LWWP) and some English terms (Bat., BEV, V2H, worst-case) mixed in. One commenter wrote in German while saying they were Dutch.
+Their words: WP = Wärmepumpe (heat pump); Heizungsbauer = heating installer; JAZ = Jahresarbeitszahl, the annual efficiency of the heat pump; Heizstab = electric heating rod used as backup; Heizlast = heating load used for sizing; Mikroblasenabscheider = microbubble separator; VL Temperatur = Vorlauftemperatur, flow temperature; Vorlauftemperatur = flow temperature of the heating water; Schorni = colloquial for chimney sweep (Schornsteinfeger); Stromfresser = power guzzler, a myth label for heat pumps; Stromheizungen = electric heaters, a critical label for heat pumps
 
 ## Guardrails
-Say: Rechne mit echten Zahlen: kWh Strom gegenüber kWh Gas und JAZ; Jahresrechnung und ehrliche Bilanz; Jedes Gebäude individuell betrachten; Heizlast und Vorlauftemperatur sauber einstellen; Konkrete Schritte zur Förderung (KfW, Geschwindigkeitsbonus)
-Not: Automatische Ersparnis versprechen; Altbau-Bedenken wegwischen; Wärmepumpe als Stromfresser oder Stromheizung abtun oder umgekehrt ohne Rechnung; Vage Pauschalpreise ohne Aufschlüsselung; Fachjargon ohne Erklärung
-Never claim: zeig dir die Jahresrechnung (Altbau mit Wärmepumpe); kWh Strom gegen kWh Gas, Preise damals und heute; Nicht mal der Bankberater blickt durch; ob sich die WP für mein Haus rechnet; annual bill next to previous gas or oil consumption; annual kWh Strom against previous gas consumption; honest before/after running-cost cases; keep funding eligibility, and in what order to apply
-Sensitive: Marketing savings claims without a transparent before/after calculation may be called fake or 'schön gerechnet' and trigger backlash from sceptics.; Promising funding outcomes (occupancy, split trades, tank disposal) may mislead, because even advisers disagree. Wrong advice could cost buyers their subsidy.; The topic is politically charged, and messaging that sounds like a push from the Heizungsgesetz may confirm the sense of being forced.; Recommending heat pumps for old buildings without caveats risks credibility given the strong doubts about cold rooms and cost. The PV synergy claim also risks being challenged because of the winter gap.; Large turnkey providers are already distrusted, so associating with them or comparing offers publicly may draw criticism.; Several clusters rest on only one or two posts, so conclusions on them (such as §14a, cash-flow before payout) should be treated cautiously.
+Say: Wärmepumpe or WP, with real kWh and euro figures; Heizungsbauer and Fachbetrieb for installers; Förderung and KfW Ablauf, explained step by step; JAZ, Vorlauftemperatur and Heizlast when talking to operators; Rechnung and Abrechnung: show the comparison with gas
+Not: Stromfresser or Stromheizung as your own framing; Blanket claims that heat pumps always save money, since the posts doubt this in old houses; Vague promises about subsidies when posters find the rules confusing; Treating all Altbau as the same: posters say each building is individual; Hype without numbers
+Never claim: Wärmepumpe-Rechnung neben Gas-Abrechnung; Die Einstellung vom Fachbetrieb, naja; bis sich die Anlage amortisiert hat; Was kostet eine kWh Wärme; Bank und Heizungsbauer kommen ins Schwimmen; Geschwindigkeitsbonus bekommen, Einzug im Haus; meine echte Rechnung gegen die Gas-Abrechnung; WP-Stromrechnung neben Gas-Basisjahr; actual annual bills against previous gas or oil; Fair benchmarks for consumption
+Sensitive: Promising specific savings or efficiency without showing the baseline will trigger the 'fake numbers' reaction and disbelief.; Messaging that sounds like government-backed pressure to switch can fuel the sense of a politically forced change and a backlash against subsidies.; Promoting heat pumps for old unrenovated houses without caveats risks credibility, because many see that as a cold and expensive combination.; Naming or comparing Enpal, Thermondo or other providers could draw legal or reputation issues, since the criticism rests on a few forum opinions.; Giving subsidy advice (occupancy, split trades, advance payment) as fact is risky because even advisors disagree and rules may change.; Selling PV plus heat pump as a cost cure ignores the winter shortfall that the audience already points out.
 Quotes: Real people's words are for insight and briefs, not for ads without permission.
 
 ## Rules
@@ -48,4 +47,4 @@ Quotes: Real people's words are for insight and briefs, not for ads without perm
 - references/channels.md: where to show up, how each platform sounds, public communities - open when planning channels
 - references/evidence.json: the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim
 
-Pack pk_0yCXA3I3WI--, generated 2026-10-05T20:19:11.772242Z.
+Pack pk_WPKWWfPABYxN, generated 2026-10-06T09:24:45.191502Z.

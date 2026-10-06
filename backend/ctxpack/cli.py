@@ -869,7 +869,8 @@ def export(pack_id: str = typer.Argument(..., help="A saved pack id")) -> None:
 
 
 @app.command()
-def feature(pack_id: str = typer.Argument(..., help="A finished pack to publish as featured")) -> None:
+def feature(pack_id: str = typer.Argument(..., help="A finished pack to publish as featured"),
+            replaces: str = typer.Option("", "--replaces", help="An older featured pack this one replaces")) -> None:
     """Privacy check, then featured/<pack_id>.json + examples/<slug>.json, .md and the skill folder (free).
 
     Stops (and writes nothing) on any email, phone, @handle, profile URL or quote over 280 characters.
@@ -890,6 +891,12 @@ def feature(pack_id: str = typer.Argument(..., help="A finished pack to publish 
         raise typer.Exit(1)
     db.set_featured(pack_id)
     console.print(f"{OK} privacy check passed; featured {pack_id}")
+    if replaces and replaces != pack_id:
+        from ctxpack.db import FEATURED_DIR
+
+        (FEATURED_DIR / f"{replaces}.json").unlink(missing_ok=True)
+        db.set_featured(replaces, False)
+        console.print(f"  replaced      {replaces} (file removed, no longer featured; still readable by id)")
     for kind, path in paths.items():
         console.print(f"  {kind:<13} {path}", highlight=False)
 
@@ -1065,22 +1072,29 @@ def eval_cmd(
         clarifying[spec["id"]] = clar
         prev[spec["id"]] = None
 
-    scored, eval_usd = [], 0.0
-    with tracking(None) as t:
+    async def paid_checks() -> dict[str, dict]:
+        """Every paid eval call in ONE event loop (the spend tracker's lock belongs to one loop)."""
+        ents: dict[str, dict] = {}
         for spec in specs:
             if spec["id"] not in found:
                 continue
-            pack, run = found[spec["id"]]
+            pack = found[spec["id"]][0]
             if spec["id"] in need_ask:
-                clarifying[spec["id"]] = asyncio.run(_ask_question(spec["brief"], spec["mode"]))
+                clarifying[spec["id"]] = await _ask_question(spec["brief"], spec["mode"])
             ent = (prev.get(spec["id"]) or {}).get("entailment")
             if recheck or not ent:
                 console.print(f"re-checking {n} claims of {pack['pack_id']} ({spec['id']})...", highlight=False)
-                ent = asyncio.run(ev.recheck_claims(pack, n))
-            scored.append(ev.score_brief(spec, pack, run, targets, entailment=ent,
-                                         clarifying=clarifying.get(spec["id"]),
-                                         reused=spec["id"] not in {s["id"] for s in to_run}))
+                ent = await ev.recheck_claims(pack, n)
+            ents[spec["id"]] = ent
+        return ents
+
+    with tracking(None) as t:
+        ents = asyncio.run(paid_checks())
         eval_usd = t.spent_usd
+    scored = [ev.score_brief(spec, found[spec["id"]][0], found[spec["id"]][1], targets, entailment=ents[spec["id"]],
+                             clarifying=clarifying.get(spec["id"]),
+                             reused=spec["id"] not in {s["id"] for s in to_run})
+              for spec in specs if spec["id"] in found]
     if not scored:
         console.print(f"{BAD} nothing to score")
         raise typer.Exit(1)

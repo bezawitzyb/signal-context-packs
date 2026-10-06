@@ -7,26 +7,6 @@
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
-   "text_fragment_url": "https://ca.trustpilot.com/review/hellofresh.com#:~:text=The%20portions%20are%20really,vegetables%20such%20as%20tomatoes...",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "en",
-   "text": "The portions are really small.I barely get two meals out of it. I may not continue with the orders.I think they're very expensive for what I get. I end up using some of my vegetables such as tomatoes...",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 32.6,
-   "author_hash": null,
-   "emotion": [
-    "frustration"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0002",
-   "platform": "web_review",
-   "source_unit": "web:ca.trustpilot.com",
-   "url": "https://ca.trustpilot.com/review/hellofresh.com",
    "text_fragment_url": "https://ca.trustpilot.com/review/hellofresh.com#:~:text=The%20meals%20are%20great,a%20challenge%20to%20wor...",
    "posted_at": null,
    "date_precision": "unknown",
@@ -43,7 +23,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0003",
+   "id": "EV-0002",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -63,7 +43,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0004",
+   "id": "EV-0003",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -72,6 +52,26 @@
    "date_precision": "unknown",
    "language": "en",
    "text": "Food options are good and prices are okay but the amount of food received per serving is very small and often not filling. There has been some delivery/delay issues. Hello fresh does not return your...",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 32.6,
+   "author_hash": null,
+   "emotion": [
+    "frustration"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0004",
+   "platform": "web_review",
+   "source_unit": "web:ca.trustpilot.com",
+   "url": "https://ca.trustpilot.com/review/hellofresh.com",
+   "text_fragment_url": "https://ca.trustpilot.com/review/hellofresh.com#:~:text=The%20portions%20are%20really,vegetables%20such%20as%20tomatoes...",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "en",
+   "text": "The portions are really small.I barely get two meals out of it. I may not continue with the orders.I think they're very expensive for what I get. I end up using some of my vegetables such as tomatoes...",
    "text_en": null,
    "redacted": false,
    "short_form": false,
@@ -216,24 +216,6 @@
    "id": "EV-0012",
    "platform": "reddit",
    "source_unit": "reddit:r/EatCheapAndHealthy",
-   "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wgrpm0/reccomendations_for_easy_lunchessnacks/pa1a0y3/",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-15",
-   "date_precision": "day",
-   "language": "en",
-   "text": "Pb and J on whole wheat is pretty good and healthy ish depending on the ingredients. Costco has great pb.",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 21.4,
-   "author_hash": "b33257f0530efeeac5330484e47dbf359ca9e3cebc266e1702562000220ce7ea",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0013",
-   "platform": "reddit",
-   "source_unit": "reddit:r/EatCheapAndHealthy",
    "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wgrpm0/reccomendations_for_easy_lunchessnacks/p9wl8v9/",
    "text_fragment_url": null,
    "posted_at": "2026-09-15",
@@ -249,7 +231,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0014",
+   "id": "EV-0013",
    "platform": "reddit",
    "source_unit": "reddit:r/EatCheapAndHealthy",
    "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wkx0vp/i_live_in_an_apartment_and_need_help_knowing_what/pau60ea/",
@@ -267,7 +249,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0015",
+   "id": "EV-0014",
    "platform": "reddit",
    "source_unit": "reddit:r/EatCheapAndHealthy",
    "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wuvcbp/i_need_to_stop_eating_mcmuffins/",
@@ -288,28 +270,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0016",
-   "platform": "reddit",
-   "source_unit": "reddit:r/EatCheapAndHealthy",
-   "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wgrpm0/reccomendations_for_easy_lunchessnacks/",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-15",
-   "date_precision": "day",
-   "language": "en",
-   "text": "cafeteria on the other side of the campus, which I really really don't like going to. Some days I also just don't feel like going to the cafeteria to eat.\n\nThis leads me to feel pretty hungry near the end of school days. A lot of days end four hours after lunch and so even if",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 55.7,
-   "author_hash": "73edb1ec6f0b9001b9299caf70f729e297e7f85285a2938af6a4704da2fabbd1",
-   "emotion": [
-    "frustration",
-    "anxiety"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0017",
+   "id": "EV-0015",
    "platform": "reddit",
    "source_unit": "reddit:r/MealPrepSunday",
    "url": "https://www.reddit.com/r/MealPrepSunday/comments/1wrydx3/college_student_mealprep_for_next_week/",
@@ -329,7 +290,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0018",
+   "id": "EV-0016",
    "platform": "reddit",
    "source_unit": "reddit:r/MealPrepSunday",
    "url": "https://www.reddit.com/r/MealPrepSunday/comments/1wkzmw4/college_student_mealprep_for_weekday_dinners/",
@@ -350,7 +311,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0019",
+   "id": "EV-0017",
    "platform": "reddit",
    "source_unit": "reddit:r/MealPrepSunday",
    "url": "https://www.reddit.com/r/MealPrepSunday/comments/1v8r540/beginner_i_need_help_with_my_meal_prep_issues/",
@@ -370,7 +331,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0020",
+   "id": "EV-0018",
    "platform": "reddit",
    "source_unit": "reddit:r/MealPrepSunday",
    "url": "https://www.reddit.com/r/MealPrepSunday/comments/1v8r540/beginner_i_need_help_with_my_meal_prep_issues/p080hpb/",
@@ -388,7 +349,25 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0021",
+   "id": "EV-0019",
+   "platform": "reddit",
+   "source_unit": "reddit:r/MealPrepSunday",
+   "url": "https://www.reddit.com/r/MealPrepSunday/comments/1w1w8hp/can_i_freeze_cooked_chicken_fajitas/",
+   "text_fragment_url": null,
+   "posted_at": "2026-08-29",
+   "date_precision": "day",
+   "language": "en",
+   "text": "Chicken Fajitas?\n\nJust what the question says. Im a college student wanting to start meal prepping food, and one of my favorite recipes is sheet pan chicken fajitas with peppers and onions. I have a really weird class schedule so I don’t have enough time to freeze it before",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 60.0,
+   "author_hash": "0af5d28e3d0ac474cebce64c73e6c98db3cd29ff6f9c2fd23cce88767854463a",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0020",
    "platform": "web_editorial",
    "source_unit": "web:physicalkitchness.com",
    "url": "https://physicalkitchness.com/why-i-dont-meal-prep/",
@@ -408,7 +387,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0022",
+   "id": "EV-0021",
    "platform": "web_editorial",
    "source_unit": "web:physicalkitchness.com",
    "url": "https://physicalkitchness.com/why-i-dont-meal-prep/",
@@ -428,7 +407,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0023",
+   "id": "EV-0022",
    "platform": "reddit",
    "source_unit": "reddit:r/MealPrepSunday",
    "url": "https://www.reddit.com/r/MealPrepSunday/comments/1wx6i8l/meal_prep_for_weight_loss_healthier_pasta_bake/",
@@ -448,7 +427,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0024",
+   "id": "EV-0023",
    "platform": "reddit",
    "source_unit": "reddit:r/MealPrepSunday",
    "url": "https://www.reddit.com/r/MealPrepSunday/comments/1wv7q2l/lunches_for_the_week/",
@@ -470,7 +449,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0025",
+   "id": "EV-0024",
    "platform": "reddit",
    "source_unit": "reddit:r/MealPrepSunday",
    "url": "https://www.reddit.com/r/MealPrepSunday/comments/1wucza7/meal_plan_services_with_grocery_lists_and_prep/pdfaywp/",
@@ -488,7 +467,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0026",
+   "id": "EV-0025",
    "platform": "reddit",
    "source_unit": "reddit:r/MealPrepSunday",
    "url": "https://www.reddit.com/r/MealPrepSunday/comments/1wxdada/sunday_ingredient_prep_day_week_41/",
@@ -508,7 +487,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0027",
+   "id": "EV-0026",
    "platform": "web_editorial",
    "source_unit": "web:physicalkitchness.com",
    "url": "https://physicalkitchness.com/why-i-dont-meal-prep/",
@@ -529,7 +508,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0028",
+   "id": "EV-0027",
    "platform": "reddit",
    "source_unit": "reddit:r/EatCheapAndHealthy",
    "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wk7ngg/my_potatoes_rice_pasta_method/paonyoz/",
@@ -547,7 +526,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0029",
+   "id": "EV-0028",
    "platform": "web_forum",
    "source_unit": "web:careervillage.org",
    "url": "https://www.careervillage.org/questions/719776/what-is-the-best-way-to-meal-prep-in-college-on-a-budget-should-i-sign-up-for-door-delivery-or-make-smart-shopping-decisions-spring23",
@@ -565,6 +544,24 @@
     "excitement",
     "frustration"
    ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0029",
+   "platform": "reddit",
+   "source_unit": "reddit:r/EatCheapAndHealthy",
+   "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wgrpm0/reccomendations_for_easy_lunchessnacks/pa1a0y3/",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-15",
+   "date_precision": "day",
+   "language": "en",
+   "text": "Pb and J on whole wheat is pretty good and healthy ish depending on the ingredients. Costco has great pb.",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 21.4,
+   "author_hash": "b33257f0530efeeac5330484e47dbf359ca9e3cebc266e1702562000220ce7ea",
+   "emotion": [],
    "trust": "untrusted_user_content"
   },
   {
@@ -623,24 +620,6 @@
   },
   {
    "id": "EV-0033",
-   "platform": "reddit",
-   "source_unit": "reddit:r/MealPrepSunday",
-   "url": "https://www.reddit.com/r/MealPrepSunday/comments/1w1w8hp/can_i_freeze_cooked_chicken_fajitas/",
-   "text_fragment_url": null,
-   "posted_at": "2026-08-29",
-   "date_precision": "day",
-   "language": "en",
-   "text": "Chicken Fajitas?\n\nJust what the question says. Im a college student wanting to start meal prepping food, and one of my favorite recipes is sheet pan chicken fajitas with peppers and onions. I have a really weird class schedule so I don’t have enough time to freeze it before",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 60.0,
-   "author_hash": "0af5d28e3d0ac474cebce64c73e6c98db3cd29ff6f9c2fd23cce88767854463a",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0034",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -660,7 +639,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0035",
+   "id": "EV-0034",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -677,6 +656,24 @@
    "emotion": [
     "pride"
    ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0035",
+   "platform": "web_forum",
+   "source_unit": "web:careervillage.org",
+   "url": "https://www.careervillage.org/questions/719776/what-is-the-best-way-to-meal-prep-in-college-on-a-budget-should-i-sign-up-for-door-delivery-or-make-smart-shopping-decisions-spring23",
+   "text_fragment_url": "https://www.careervillage.org/questions/719776/what-is-the-best-way-to-meal-prep-in-college-on-a-budget-should-i-sign-up-for-door-delivery-or-make-smart-shopping-decisions-spring23#:~:text=Many%20times%20in%20life%2C,spend%20on%20food%20delivery.",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "en",
+   "text": "Many times in life, you will trade off time and money. Sometimes, you pay money to save time and sometimes you put in time to save money. Food is one of those areas where you can easily see that tradeoff: the closer your food is to \"ready-to-eat\", the more expensive it usually",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "4e7fa707d2eb32b11ac9d58792e3677d1c15b6d08f2125ee65d6c13aad56bac3",
+   "emotion": [],
    "trust": "untrusted_user_content"
   },
   {
@@ -702,24 +699,6 @@
   },
   {
    "id": "EV-0037",
-   "platform": "web_forum",
-   "source_unit": "web:careervillage.org",
-   "url": "https://www.careervillage.org/questions/719776/what-is-the-best-way-to-meal-prep-in-college-on-a-budget-should-i-sign-up-for-door-delivery-or-make-smart-shopping-decisions-spring23",
-   "text_fragment_url": "https://www.careervillage.org/questions/719776/what-is-the-best-way-to-meal-prep-in-college-on-a-budget-should-i-sign-up-for-door-delivery-or-make-smart-shopping-decisions-spring23#:~:text=Many%20times%20in%20life%2C,spend%20on%20food%20delivery.",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "en",
-   "text": "Many times in life, you will trade off time and money. Sometimes, you pay money to save time and sometimes you put in time to save money. Food is one of those areas where you can easily see that tradeoff: the closer your food is to \"ready-to-eat\", the more expensive it usually",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "4e7fa707d2eb32b11ac9d58792e3677d1c15b6d08f2125ee65d6c13aad56bac3",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0038",
    "platform": "reddit",
    "source_unit": "reddit:r/MealPrepSunday",
    "url": "https://www.reddit.com/r/MealPrepSunday/comments/1wxl6o9/6x_dinners_and_lunches_for_the_week/",
@@ -740,7 +719,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0039",
+   "id": "EV-0038",
    "platform": "web_editorial",
    "source_unit": "web:physicalkitchness.com",
    "url": "https://physicalkitchness.com/why-i-dont-meal-prep/",
@@ -760,7 +739,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0040",
+   "id": "EV-0039",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -778,65 +757,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0041",
-   "platform": "web_review",
-   "source_unit": "web:ca.trustpilot.com",
-   "url": "https://ca.trustpilot.com/review/hellofresh.com",
-   "text_fragment_url": "https://ca.trustpilot.com/review/hellofresh.com#:~:text=I%20love%20the%20ease,months%20we%27ve%20been%20disa...",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "en",
-   "text": "I love the ease and variety of meals we get from hello fresh. We've order consistently for a year and it's been a fantastic resource for my husband and I. However the last three months we've been disa...",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 32.6,
-   "author_hash": null,
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0042",
-   "platform": "web_review",
-   "source_unit": "web:ca.trustpilot.com",
-   "url": "https://ca.trustpilot.com/review/hellofresh.com",
-   "text_fragment_url": "https://ca.trustpilot.com/review/hellofresh.com#:~:text=the%20variety%20of%20meals,other.%20Unfortunately%20the%20veggi...",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "en",
-   "text": "We love the variety of meals that we receive, learning new ways to use standard pantry items, and we enjoy the time together on date nights preparing new meals with each other. Unfortunately the veggi...",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 32.6,
-   "author_hash": null,
-   "emotion": [
-    "excitement"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0043",
-   "platform": "reddit",
-   "source_unit": "reddit:r/EatCheapAndHealthy",
-   "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wk7ngg/my_potatoes_rice_pasta_method/",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-19",
-   "date_precision": "day",
-   "language": "en",
-   "text": "My potatoes, rice, pasta method\n\nA few years ago when we had our child, I stayed home with her for a little over a year before I went back to work part time and it was another year before I went full time so money was tight. Bills were paid but no extras.\n\nDuring that time, I",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 95.7,
-   "author_hash": "e80f108d368863d2f8819e46127236c684245f6e290ffbcd6e80a3a59f9026f6",
-   "emotion": [
-    "aspiration"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0044",
+   "id": "EV-0040",
    "platform": "reddit",
    "source_unit": "reddit:r/EatCheapAndHealthy",
    "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wkx0vp/i_live_in_an_apartment_and_need_help_knowing_what/pauahge/",
@@ -854,7 +775,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0045",
+   "id": "EV-0041",
    "platform": "reddit",
    "source_unit": "reddit:r/EatCheapAndHealthy",
    "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wo82ib/what_can_i_make_with_stuff_already_in_my_kitchen/pbkruru/",
@@ -872,7 +793,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0046",
+   "id": "EV-0042",
    "platform": "web_forum",
    "source_unit": "web:careervillage.org",
    "url": "https://www.careervillage.org/questions/719776/what-is-the-best-way-to-meal-prep-in-college-on-a-budget-should-i-sign-up-for-door-delivery-or-make-smart-shopping-decisions-spring23",
@@ -892,7 +813,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0047",
+   "id": "EV-0043",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -910,25 +831,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0048",
-   "platform": "reddit",
-   "source_unit": "reddit:r/EatCheapAndHealthy",
-   "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wkx0vp/i_live_in_an_apartment_and_need_help_knowing_what/",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-19",
-   "date_precision": "day",
-   "language": "en",
-   "text": "and need help knowing what foods to get\n\nI always lived in a very ingredient household and was always hungry but I rly never knew what to get because I just never had an understanding of what I needed to have.\n\nI just want some help from people who do always have a full fridge",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 72.9,
-   "author_hash": "0367014fe596d1230147f5b8d422ba3fe7ee2ccf58bf3d4bdbbf18ed6d70acba",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0049",
+   "id": "EV-0044",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -946,7 +849,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0050",
+   "id": "EV-0045",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -966,27 +869,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0051",
-   "platform": "web_review",
-   "source_unit": "web:ca.trustpilot.com",
-   "url": "https://ca.trustpilot.com/review/hellofresh.com",
-   "text_fragment_url": "https://ca.trustpilot.com/review/hellofresh.com#:~:text=I%20have%20not%20been,with%20all%20ice%20melted",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "en",
-   "text": "I have not been a customer long but I cancelled. I was happy with the food but i received 2 separate shipments that had bad produce. The last shipment was 2 days late and arrived with all ice melted",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 10.9,
-   "author_hash": null,
-   "emotion": [
-    "frustration"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0052",
+   "id": "EV-0046",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -1006,7 +889,27 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0053",
+   "id": "EV-0047",
+   "platform": "web_review",
+   "source_unit": "web:ca.trustpilot.com",
+   "url": "https://ca.trustpilot.com/review/hellofresh.com",
+   "text_fragment_url": "https://ca.trustpilot.com/review/hellofresh.com#:~:text=I%20have%20not%20been,with%20all%20ice%20melted",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "en",
+   "text": "I have not been a customer long but I cancelled. I was happy with the food but i received 2 separate shipments that had bad produce. The last shipment was 2 days late and arrived with all ice melted",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 10.9,
+   "author_hash": null,
+   "emotion": [
+    "frustration"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0048",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -1026,7 +929,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0054",
+   "id": "EV-0049",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -1046,7 +949,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0055",
+   "id": "EV-0050",
    "platform": "web_review",
    "source_unit": "web:ca.trustpilot.com",
    "url": "https://ca.trustpilot.com/review/hellofresh.com",
@@ -1064,7 +967,45 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0056",
+   "id": "EV-0051",
+   "platform": "reddit",
+   "source_unit": "reddit:r/EatCheapAndHealthy",
+   "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wk7ngg/my_potatoes_rice_pasta_method/",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-19",
+   "date_precision": "day",
+   "language": "en",
+   "text": "My potatoes, rice, pasta method\n\nA few years ago when we had our child, I stayed home with her for a little over a year before I went back to work part time and it was another year before I went full time so money was tight. Bills were paid but no extras.\n\nDuring that time, I",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 95.7,
+   "author_hash": "e80f108d368863d2f8819e46127236c684245f6e290ffbcd6e80a3a59f9026f6",
+   "emotion": [
+    "aspiration"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0052",
+   "platform": "reddit",
+   "source_unit": "reddit:r/EatCheapAndHealthy",
+   "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1wkx0vp/i_live_in_an_apartment_and_need_help_knowing_what/",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-19",
+   "date_precision": "day",
+   "language": "en",
+   "text": "and need help knowing what foods to get\n\nI always lived in a very ingredient household and was always hungry but I rly never knew what to get because I just never had an understanding of what I needed to have.\n\nI just want some help from people who do always have a full fridge",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 72.9,
+   "author_hash": "0367014fe596d1230147f5b8d422ba3fe7ee2ccf58bf3d4bdbbf18ed6d70acba",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0053",
    "platform": "reddit",
    "source_unit": "reddit:r/EatCheapAndHealthy",
    "url": "https://www.reddit.com/r/EatCheapAndHealthy/comments/1ws0csa/vegetables_that_dont_have_to_be_precooked_before/",
@@ -1081,24 +1022,6 @@
    "emotion": [
     "aspiration"
    ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0057",
-   "platform": "reddit",
-   "source_unit": "reddit:r/MealPrepSunday",
-   "url": "https://www.reddit.com/r/MealPrepSunday/comments/1v8r540/beginner_i_need_help_with_my_meal_prep_issues/p080h6z/",
-   "text_fragment_url": null,
-   "posted_at": "2026-07-28",
-   "date_precision": "day",
-   "language": "en",
-   "text": "Personally I'd go for a microwave, but an airfryer will probably gove you more possibilities when cooking. The reheating time with a microwave is only gonna be 5 minutes though, idk about the airfryer.\n\nA vegetarian budget meal I like to make and that prepa really well is a",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 23.3,
-   "author_hash": "8016e8754393a673cebb4758907eb458c1894c8aa215f5c127f455f6b9b0ce8b",
-   "emotion": [],
    "trust": "untrusted_user_content"
   }
  ]

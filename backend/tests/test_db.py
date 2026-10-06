@@ -138,3 +138,16 @@ def test_featured_packs_are_added_and_updated_from_their_files(temp_db, tmp_path
     (tmp_path / f"{fixture['pack_id']}.json").write_text(json.dumps(fixture), encoding="utf-8")
     assert temp_db.load_featured(tmp_path) == 1                       # changed file: the database follows it
     assert temp_db.get_pack(fixture["pack_id"])["digest"] == "A cleaned digest."
+
+
+def test_featured_pack_without_a_file_is_unfeatured(temp_db, tmp_path):
+    import json
+    from pathlib import Path
+
+    fixture = json.loads((Path(__file__).parent / "fixtures" / "example_pack.json").read_text(encoding="utf-8"))
+    path = tmp_path / f"{fixture['pack_id']}.json"
+    path.write_text(json.dumps(fixture), encoding="utf-8")
+    assert temp_db.load_featured(tmp_path) == 1
+    path.unlink()                                                     # replaced by a rebuilt pack
+    assert temp_db.load_featured(tmp_path) == 1 and temp_db.list_featured_packs() == []
+    assert temp_db.get_pack(fixture["pack_id"]) is not None           # still readable by id

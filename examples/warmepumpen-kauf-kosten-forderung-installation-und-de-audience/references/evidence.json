@@ -24,24 +24,6 @@
   },
   {
    "id": "EV-0002",
-   "platform": "reddit",
-   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
-   "url": "https://www.reddit.com/r/DeutschePhotovoltaik/comments/1wuupcc/pv_anlage_auf_winkelbungalow/",
-   "text_fragment_url": null,
-   "posted_at": "2026-10-01",
-   "date_precision": "day",
-   "language": "de",
-   "text": "PV Anlage auf Winkelbungalow\n\nHi,\n\nzum Jahresende möchte ich mir gerne noch eine PV Anlage installieren lassen. Ziel ist es vor allem die garantierte Förderung mitzunehmen.\n\nZusammengefasst sind es\n\n17kWp verteilt auf Ost, West und Süd\n\ndavon 14 Module in Südrichtung und je 11",
-   "text_en": "PV system on angled bungalow. Hi, by year-end I would like to have a PV system installed. The main goal is to take advantage of the guaranteed subsidies. In summary, it is: 17 kWp distributed across east, west and south. 14 modules facing south and 11 modules each facing west and east. 13.5 kWh storage from Tesla. Emergency power. 22 kW wallbox. I think the storage is oversized, but it should be designed for future use with an electric car and heat pump. Does that work or is further information needed for evaluation? Thanks in advance.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 13.1,
-   "author_hash": "be3725f93bec5b95be88b814de2bb67d44919c75d44a297987185a1b5746f73a",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0003",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=JTHPQE6uX6I&lc=UgyU2awi9eldVpSQRcR4AaABAg",
@@ -61,7 +43,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0004",
+   "id": "EV-0003",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/wohnen/comments/1wuvsq3/welche_ma%C3%9Fnahme_f%C3%BCr_unser_haus_aus_1978/pd6juue/",
@@ -79,7 +61,43 @@
    "trust": "untrusted_user_content"
   },
   {
+   "id": "EV-0004",
+   "platform": "reddit",
+   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
+   "url": "https://www.reddit.com/r/DeutschePhotovoltaik/comments/1wuupcc/pv_anlage_auf_winkelbungalow/",
+   "text_fragment_url": null,
+   "posted_at": "2026-10-01",
+   "date_precision": "day",
+   "language": "de",
+   "text": "PV Anlage auf Winkelbungalow\n\nHi,\n\nzum Jahresende möchte ich mir gerne noch eine PV Anlage installieren lassen. Ziel ist es vor allem die garantierte Förderung mitzunehmen.\n\nZusammengefasst sind es\n\n17kWp verteilt auf Ost, West und Süd\n\ndavon 14 Module in Südrichtung und je 11",
+   "text_en": "PV system on angled bungalow. Hi, by year-end I would like to have a PV system installed. The main goal is to take advantage of the guaranteed subsidies. In summary, it is: 17 kWp distributed across east, west and south. 14 modules facing south and 11 modules each facing west and east. 13.5 kWh storage from Tesla. Emergency power. 22 kW wallbox. I think the storage is oversized, but it should be designed for future use with an electric car and heat pump. Does that work or is further information needed for evaluation? Thanks in advance.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 13.1,
+   "author_hash": "be3725f93bec5b95be88b814de2bb67d44919c75d44a297987185a1b5746f73a",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
    "id": "EV-0005",
+   "platform": "reddit",
+   "source_unit": "reddit:search:wärmepumpe lohnt sich erfahrung",
+   "url": "https://www.reddit.com/r/DeutschePhotovoltaik/comments/1wybuja/pvplanung_mit_fronius_verto_plus_wohin_mit_der/",
+   "text_fragment_url": null,
+   "posted_at": "2026-10-05",
+   "date_precision": "day",
+   "language": "de",
+   "text": "PV-Planung mit Fronius Verto Plus: Wohin mit der NO-Seite? (SW + SO voll, kein MPPT mehr frei)\n\nHallo zusammen,\n\nich stecke gerade in der Detailplanung meiner Photovoltaikanlage und stehe bezüglich der MPPT-Belegung und Wechselrichter-Auswahl vor einer Denkaufgabe. Vielleicht",
+   "text_en": "PV planning with Fronius Verto Plus: Where to put the NE side? (SW + SO full, no MPPT left)\n\nHello everyone,\n\nI'm currently in the detailed planning of my photovoltaic system and am facing a mental puzzle regarding MPPT allocation and inverter selection. Maybe someone here has experience with similar setups or a tip for an elegant solution.\n\n**The starting situation & planned areas:**\n\n* **South-West (main roof):** approx. 13 kWp (requires 2 MPPTs according to electrician)\n* **South-East (garage):** just under 3 kWp (occupies the 3rd MPPT)\n* **North-East (back of main roof with windows):** approx. 8 kWp – I would like to include this area directly to capture yield from diffuse light and mornings. This side is probably relatively productive especially in the colder season, or helps fill the storage at all.\n\n**Planned hardware:**\n\n* **Inverter:** Fronius Verto Plus (20 or 25 kW)\n* **Storage:** Fronius Reserva Pro (is to be used/expanded in conjunction with a heat pump coming soon)\n\n**The problem:** The Fronius Verto Plus offers 3 MPPTs. With the SW main roof (2 MPPTs) and garage (1 MPPT) all connections are occupied. For the North-East area with its ~8 kWp I have no MPPT tracker free at the main inverter.\n\nOf course, I would be very happy to connect everything to just one inverter and not have to buy a second one just for that. Then I would probably leave the North-East side alone.\n\n**My questions to the community:**\n\n1. **How do I best solve the NE roof?**\n* Integrate a second smaller inverter (e.g., a separate Fronius Primo/Symo) just for the 8 kWp NE side?\n* Can the 13 kWp on South-West be placed on *one* MPPT under certain conditions (e.g., by parallel connection of identical strings, provided the Verto Plus current/voltage allow it)?\n* Or could micro-inverters / module optimizers at location X make sense here?\n2. **Experiences / Tips:** Does anyone have a similar multi-orientation setup with Fronius and Reserva Pro in use?\n\nThank you in advance for your input and assessments!",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 62.7,
+   "author_hash": "f4370efc43e0f4fd7b8be67c9d2b5808123def24bbc72405507c990c79a65e8b",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0006",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
    "url": "https://www.youtube.com/watch?v=bw6tH8UkZn0&lc=UgzqDLJAvTgCmMQY9wV4AaABAg",
@@ -99,7 +117,47 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0006",
+   "id": "EV-0007",
+   "platform": "youtube",
+   "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
+   "url": "https://www.youtube.com/watch?v=Kqv359VGwC8",
+   "text_fragment_url": null,
+   "posted_at": "2026-06-21",
+   "date_precision": "day",
+   "language": "de",
+   "text": "steigende Energiekosten wissen müssen.\n\nDenn nicht jede Wärmepumpe spart automatisch Geld. Besonders im Altbau kann eine falsche Entscheidung schnell teuer werden. Gleichzeitig ist auch die Gasheizung keine perfekte Lösung für die Zukunft, da klimaneutrale Brennstoffe und",
+   "text_en": "Heat pump or gas? The decision that can cost you €30,000. What heating installers don't say. Heat pump or gas heating in 2026? This decision can cost German homeowners tens of thousands of euros. Many owners are currently asking themselves: Should I install a heat pump? Is a new gas heating still allowed? What does the new heating law really mean? And is the subsidy actually worth it? In this video you'll learn what homeowners in Germany now need to know about the Building Energy Act, the heat pump mandate, gas heating, subsidies, old building renovation and rising energy costs. Because not every heat pump automatically saves money. Especially in old buildings, a wrong decision can quickly become expensive. At the same time, gas heating is not a perfect solution for the future either, as climate-neutral fuels and rising energy prices will play a role in the long term. We talk about: – Heat pump vs. gas heating 2026 – What changed in the heating law – Whether gas heaters are allowed again – What costs really arise with a heat pump – Why old building owners need to be particularly careful – How much subsidy there really is – What mistakes homeowners should avoid – Why an independent energy consultant is important – When district heating or solar thermal energy might make sense – Which heating decision can be best for pensioners, families and owners – This video is especially important for everyone who owns a single-family house, has an old heating system in the basement, or is facing the decision of whether to modernize now, wait, or switch to a new gas heating system. Before you sign a contract, you should know this information. Important: This video does not replace individual energy consulting. Always have your house inspected by an independent energy consultant before making a heating decision.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 84.9,
+   "author_hash": "c4ca14bb034936a9c70b46ca4d04e0bed68760168793e3cb55ca4cedf89c5e31",
+   "emotion": [
+    "anxiety"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0008",
+   "platform": "youtube",
+   "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
+   "url": "https://www.youtube.com/watch?v=MSGbsAAaJS0&lc=UgxWk3pVcvDid8bRLV94AaABAg",
+   "text_fragment_url": null,
+   "posted_at": "2026-08-05",
+   "date_precision": "month",
+   "language": "de",
+   "text": "der Begriff \"Altbau\" Etikettenschwindel. Mit Maßnahmen wie neue Fenster, Dämmung, Anpassung der Heizflächen plus einer PV-Anlage im Rücken kann ich sicherlich gut und relativ effizient mit einer Wärmepumpe heizen. Aber der ehemalige Altbau wurde vorher eben auch auf den nahezu",
+   "text_en": "Sorry, but for me the term 'old building' is a misnomer. With measures like new windows, insulation, adjustment of heating surfaces plus a PV system in the background, I can certainly heat efficiently with a heat pump. But the former old building was previously upgraded to nearly the latest standard. And just comparing the energy price or consumption price is misleading. You have to include the production costs, i.e. all the necessary structural measures to make the old building heat pump compatible so that you can ultimately achieve the consumption price, and factor that into the cost calculation.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 28.8,
+   "author_hash": "f59dfff8f6b9a3c1044a116a87ac13ae988460602fb7aa6fc4a7b9236a1a0574",
+   "emotion": [
+    "frustration"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0009",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wrrsu1/alte_%C3%B6lheizung_durch_w%C3%A4rmepumpe_ersetzen_sinnvoll/",
@@ -120,85 +178,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0007",
-   "platform": "youtube",
-   "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
-   "url": "https://www.youtube.com/watch?v=MSGbsAAaJS0&lc=UgxWk3pVcvDid8bRLV94AaABAg",
-   "text_fragment_url": null,
-   "posted_at": "2026-08-05",
-   "date_precision": "month",
-   "language": "de",
-   "text": "der Begriff \"Altbau\" Etikettenschwindel. Mit Maßnahmen wie neue Fenster, Dämmung, Anpassung der Heizflächen plus einer PV-Anlage im Rücken kann ich sicherlich gut und relativ effizient mit einer Wärmepumpe heizen. Aber der ehemalige Altbau wurde vorher eben auch auf den nahezu",
-   "text_en": "Sorry, but for me the term 'old building' is a misnomer. With measures like new windows, insulation, adjustment of heating surfaces plus a PV system in the background, I can certainly heat efficiently with a heat pump. But the former old building was previously upgraded to nearly the latest standard. And just comparing the energy price or consumption price is misleading. You have to include the production costs, i.e. all the necessary structural measures to make the old building heat pump compatible so that you can ultimately achieve the consumption price, and factor that into the cost calculation.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 28.8,
-   "author_hash": "f59dfff8f6b9a3c1044a116a87ac13ae988460602fb7aa6fc4a7b9236a1a0574",
-   "emotion": [
-    "frustration"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0008",
-   "platform": "youtube",
-   "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
-   "url": "https://www.youtube.com/watch?v=Kqv359VGwC8",
-   "text_fragment_url": null,
-   "posted_at": "2026-06-21",
-   "date_precision": "day",
-   "language": "de",
-   "text": "steigende Energiekosten wissen müssen.\n\nDenn nicht jede Wärmepumpe spart automatisch Geld. Besonders im Altbau kann eine falsche Entscheidung schnell teuer werden. Gleichzeitig ist auch die Gasheizung keine perfekte Lösung für die Zukunft, da klimaneutrale Brennstoffe und",
-   "text_en": "Heat pump or gas? The decision that can cost you €30,000. What heating installers don't say. Heat pump or gas heating in 2026? This decision can cost German homeowners tens of thousands of euros. Many owners are currently asking themselves: Should I install a heat pump? Is a new gas heating still allowed? What does the new heating law really mean? And is the subsidy actually worth it? In this video you'll learn what homeowners in Germany now need to know about the Building Energy Act, the heat pump mandate, gas heating, subsidies, old building renovation and rising energy costs. Because not every heat pump automatically saves money. Especially in old buildings, a wrong decision can quickly become expensive. At the same time, gas heating is not a perfect solution for the future either, as climate-neutral fuels and rising energy prices will play a role in the long term. We talk about: – Heat pump vs. gas heating 2026 – What changed in the heating law – Whether gas heaters are allowed again – What costs really arise with a heat pump – Why old building owners need to be particularly careful – How much subsidy there really is – What mistakes homeowners should avoid – Why an independent energy consultant is important – When district heating or solar thermal energy might make sense – Which heating decision can be best for pensioners, families and owners – This video is especially important for everyone who owns a single-family house, has an old heating system in the basement, or is facing the decision of whether to modernize now, wait, or switch to a new gas heating system. Before you sign a contract, you should know this information. Important: This video does not replace individual energy consulting. Always have your house inspected by an independent energy consultant before making a heating decision.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 84.9,
-   "author_hash": "c4ca14bb034936a9c70b46ca4d04e0bed68760168793e3cb55ca4cedf89c5e31",
-   "emotion": [
-    "anxiety"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0009",
-   "platform": "youtube",
-   "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
-   "url": "https://www.youtube.com/watch?v=WX4HL8Tb6Mc&lc=UgxTer2EJvNBDv29B5R4AaABAg",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-05",
-   "date_precision": "month",
-   "language": "de",
-   "text": "Minute 3:20 ungefähr: Früher 28.000 kwh Wärme gebraucht, jetzt plötzlich nur 21.000. Ja so geht die Rechnung natürlich auf.... Erst wenn die Wärmepumpe billiger ist mit 28.000kwh Produktion ist sie rentabel....",
-   "text_en": "Around minute 3:20: Previously needed 28,000 kWh of heat, now suddenly only 21,000. Yes, the calculation works that way of course.... Only when the heat pump is cheaper with 28,000 kWh production is it profitable....",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 28.8,
-   "author_hash": "d2000d11c05986f450734b9d9190b5f0193b9b988f9e97c903c80b13bbaacc6b",
-   "emotion": [
-    "skepticism"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
    "id": "EV-0010",
-   "platform": "youtube",
-   "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
-   "url": "https://www.youtube.com/watch?v=bw6tH8UkZn0&lc=UgxooT7nQAHkLUCpegl4AaABAg",
-   "text_fragment_url": null,
-   "posted_at": "2026-08-05",
-   "date_precision": "month",
-   "language": "de",
-   "text": "Wenn mann isoliert, dan sinkt der energiebedarf sowieso. Und wenn das haus isoliert ist, dan wird der gasbedarf so gering, dass es auch dann nicht lohnt um eine warmepumpe zu kaufen (entschuldige meine schreibefehler, ich bin Hollander)",
-   "text_en": "If you insulate, then energy demand decreases anyway. And if the house is insulated, then the gas demand becomes so low that it is not worth buying a heat pump either (excuse my spelling errors, I am Dutch)",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 80.9,
-   "author_hash": "e65e2aff047abe31655e614fda7eb3cfe7cb26dda00852767c08954521ed81a3",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0011",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=WX4HL8Tb6Mc&lc=UgxVBJj10SCzw-_Bhcx4AaABAg",
@@ -218,7 +198,45 @@
    "trust": "untrusted_user_content"
   },
   {
+   "id": "EV-0011",
+   "platform": "youtube",
+   "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
+   "url": "https://www.youtube.com/watch?v=WX4HL8Tb6Mc&lc=UgxTer2EJvNBDv29B5R4AaABAg",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-05",
+   "date_precision": "month",
+   "language": "de",
+   "text": "Minute 3:20 ungefähr: Früher 28.000 kwh Wärme gebraucht, jetzt plötzlich nur 21.000. Ja so geht die Rechnung natürlich auf.... Erst wenn die Wärmepumpe billiger ist mit 28.000kwh Produktion ist sie rentabel....",
+   "text_en": "Around minute 3:20: Previously needed 28,000 kWh of heat, now suddenly only 21,000. Yes, the calculation works that way of course.... Only when the heat pump is cheaper with 28,000 kWh production is it profitable....",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 28.8,
+   "author_hash": "d2000d11c05986f450734b9d9190b5f0193b9b988f9e97c903c80b13bbaacc6b",
+   "emotion": [
+    "skepticism"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
    "id": "EV-0012",
+   "platform": "youtube",
+   "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
+   "url": "https://www.youtube.com/watch?v=bw6tH8UkZn0&lc=UgxooT7nQAHkLUCpegl4AaABAg",
+   "text_fragment_url": null,
+   "posted_at": "2026-08-05",
+   "date_precision": "month",
+   "language": "de",
+   "text": "Wenn mann isoliert, dan sinkt der energiebedarf sowieso. Und wenn das haus isoliert ist, dan wird der gasbedarf so gering, dass es auch dann nicht lohnt um eine warmepumpe zu kaufen (entschuldige meine schreibefehler, ich bin Hollander)",
+   "text_en": "If you insulate, then energy demand decreases anyway. And if the house is insulated, then the gas demand becomes so low that it is not worth buying a heat pump either (excuse my spelling errors, I am Dutch)",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 80.9,
+   "author_hash": "e65e2aff047abe31655e614fda7eb3cfe7cb26dda00852767c08954521ed81a3",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0013",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1ws9r2i/bafa_f%C3%B6rderung/pcjm08k/",
@@ -235,26 +253,6 @@
    "emotion": [
     "skepticism",
     "frustration"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0013",
-   "platform": "reddit",
-   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
-   "url": "https://www.reddit.com/r/Waermepumpe/comments/1wpag7g/tankentsorgung_separat_vergebbar/",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-24",
-   "date_precision": "day",
-   "language": "de",
-   "text": "Tankentsorgung separat vergebbar?\n\nHi zusammen,\n\nBin jetzt in den letzten Zügen bei einer Entscheidung des WP Einbaus.\n\nJetzt bin ich verwirrt und wollte doch mal die Profis hier Fragen.\n\nMuss die Tankentsorgung Teil des Angebots des Heizungsbauers sein? Ich habe eine SHKler der",
-   "text_en": null,
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 52.3,
-   "author_hash": "3f0bc5e35d1f8c0cd164eee4d2b844f20e5fe45c4428e82d219946a1fb663603",
-   "emotion": [
-    "anxiety"
    ],
    "trust": "untrusted_user_content"
   },
@@ -303,6 +301,46 @@
    "id": "EV-0016",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
+   "url": "https://www.reddit.com/r/Waermepumpe/comments/1wpag7g/tankentsorgung_separat_vergebbar/",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-24",
+   "date_precision": "day",
+   "language": "de",
+   "text": "Tankentsorgung separat vergebbar?\n\nHi zusammen,\n\nBin jetzt in den letzten Zügen bei einer Entscheidung des WP Einbaus.\n\nJetzt bin ich verwirrt und wollte doch mal die Profis hier Fragen.\n\nMuss die Tankentsorgung Teil des Angebots des Heizungsbauers sein? Ich habe eine SHKler der",
+   "text_en": null,
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 52.3,
+   "author_hash": "3f0bc5e35d1f8c0cd164eee4d2b844f20e5fe45c4428e82d219946a1fb663603",
+   "emotion": [
+    "anxiety"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0017",
+   "platform": "reddit",
+   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
+   "url": "https://www.reddit.com/r/Handwerker/comments/1wwv3e7/w%C3%A4rmepumpe_mit_kfwf%C3%B6rderung_oder_doch_ohne/",
+   "text_fragment_url": null,
+   "posted_at": "2026-10-03",
+   "date_precision": "day",
+   "language": "de",
+   "text": "Wärmepumpe mit KFW-Förderung? Oder doch ohne?\n\nWir möchten ein Reihenmittelhaus aus den 70ern (ca. 110 m²) kernsanieren, unter anderem mit neuer Fußbodenheizung und Luft/Wasser-Wärmepumpe.\n\nFür **FBH + Wärmepumpe komplett** habe ich von einer Fachfirma ein Angebot über ca.",
+   "text_en": "Heat pump with KFW funding? Or without? We want to completely core-renovate a row-house middle unit from the 70s (approx. 110 m²), including a new underfloor heating and air/water heat pump. For FBH + heat pump complete, I got a quote from a specialist firm for approx. 52,000 €. Despite possible 70% KfW funding, I find that very high, especially since the eligible costs are limited. Therefore I'm considering awarding the trades separately. For underfloor heating I'm at around 6,000 € for 110 m², including milling, pipes, sealing, heating circuit distributor and installation. The company has already worked for my cousin and did good work there. For the heat pump I have a self-employed plumber, who I know well and who has already renovated my apartment. The heat pump I could procure myself or he could pass it on to me at cost. The problem: He has not yet accompanied KfW funding and doesn't know the process. Therefore my questions: Can an energy consultant apply for and oversee KfW funding, even though FBH and heat pump are carried out by different companies? What about self-performed work? Can I e.g. do the foundation for the external unit, core drilling and other preparatory work myself, while connection, electrical work and commissioning are of course handled by the specialist? And lastly: Which air/water heat pump with good value for money could you recommend for a heating load of approximately 5–7 kW? Which matching hot water tank would you take with it? It's important to me to buy something sensible and durable and not to cut corners in the wrong places. Has anyone implemented a similar project with separate awarding and still received funding?",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 13.1,
+   "author_hash": "ba95499a070e005120b8476e82f2a3b3842e1a8d6f005f5bee3f67bfde0f8747",
+   "emotion": [
+    "anxiety"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0018",
+   "platform": "reddit",
+   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wqslw8/energieberater_main_kinzig_kreis/",
    "text_fragment_url": null,
    "posted_at": "2026-09-26",
@@ -320,7 +358,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0017",
+   "id": "EV-0019",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wuchvt/w%C3%A4rmepumpenangebot_im_altbau_sind_710k_aufschlag/pd20jm9/",
@@ -340,7 +378,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0018",
+   "id": "EV-0020",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wuchvt/w%C3%A4rmepumpenangebot_im_altbau_sind_710k_aufschlag/",
@@ -361,7 +399,28 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0019",
+   "id": "EV-0021",
+   "platform": "web_forum",
+   "source_unit": "web:finanztip.de",
+   "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
+   "text_fragment_url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/#:~:text=ein%20%C3%A4lteres%20Haus%20saniert%2C,und%20gibt%20mittels%20Heizschlan",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "de",
+   "text": "Wenn man ein älteres Haus saniert, baut man sicherlich auch eine neue Heizung ein. Ob das zwingend eine Wärmepumpe sein muß, sei mal dahingestellt. Herr Habeck möchte das so. Ob man selbst das möchte, ist längst noch nicht so sicher.\n>",
+   "text_en": "If you renovate an older house, you'll certainly install a new heating system. Whether a heat pump must be the choice is debatable. Mr. Habeck wants it that way. Whether you personally want it is far from certain. [Quoted text about renovation with architect and energy consultant taking almost two years, contractor overload, difficulty getting appointments, high costs.] This situation will probably not end soon. For your renovation, there must be heating demand calculations. Ask your architect about them (or the energy consultant). If something should be wrong, the contractor must of course fix it. Don't let that go too long, warranty periods run out. [Quoted text asking about heating rod / heating element.] Every refrigerator and every air conditioner contains a heat pump. In a closed circuit, a transfer medium circulates. It is compressed by a pump, which makes it warm, warmer than the surroundings, and provides via heating hose...",
+   "redacted": true,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "25afe08b334cd245015a25163ca4a32e6ba55c9541043a30c20181add91c6938",
+   "emotion": [
+    "frustration",
+    "skepticism"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0022",
    "platform": "web_forum",
    "source_unit": "web:finanztip.de",
    "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
@@ -381,28 +440,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0020",
-   "platform": "web_forum",
-   "source_unit": "web:finanztip.de",
-   "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
-   "text_fragment_url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/#:~:text=Bei%20uns%20l%C3%A4uft%20eine,ca.%2010c%2FkWh%20Gas%20aus",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "de",
-   "text": "Irgendwas wurde hier richtig verpfuscht, denn bei einer JAZ von 3 (für ein saniertes Haus eher mittelmäßig) wäre das ein Wärmebedarf von 42 000 kWh und die sind selbst für ein unsaniertes Haus von 1970 in dieser Größe sehr schlecht. Wirklich sinnvoll passt das nur zum",
-   "text_en": "We have a heat pump running; however, the first full winter is still ahead. The problem is certainly not to be found in the heat pump itself, but elsewhere. Something went really wrong here, because with a JAZ of 3 (for a renovated house rather mediocre) that would be a heat requirement of 42,000 kWh, and those are very bad even for an unrenovated house from 1970 of this size. It really only makes sense with permanent immersion heater operation. Was an energy consultant involved in the renovation? What order of magnitude did he calculate as the new energy requirement? In addition, there's the high electricity price. 38 cents is really no bargain; we concluded at 29.x cents this fall. With us, everything runs through one meter, since the difference between heat electricity and household electricity is too small. In fairness, it must be said that a reasonably well-adjusted heat pump with JAZ=3 at 30c/kWh electricity is about even with gas heating. The portals spit out about 10c/kWh gas for me.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "f7b92a495db710d76e0abd6bf946efa37550b70fac3c5f76af99113e990676bf",
-   "emotion": [
-    "skepticism",
-    "anxiety"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0021",
+   "id": "EV-0023",
    "platform": "web_forum",
    "source_unit": "web:finanztip.de",
    "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
@@ -423,7 +461,28 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0022",
+   "id": "EV-0024",
+   "platform": "web_forum",
+   "source_unit": "web:finanztip.de",
+   "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
+   "text_fragment_url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/#:~:text=Bei%20uns%20l%C3%A4uft%20eine,ca.%2010c%2FkWh%20Gas%20aus",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "de",
+   "text": "Irgendwas wurde hier richtig verpfuscht, denn bei einer JAZ von 3 (für ein saniertes Haus eher mittelmäßig) wäre das ein Wärmebedarf von 42 000 kWh und die sind selbst für ein unsaniertes Haus von 1970 in dieser Größe sehr schlecht. Wirklich sinnvoll passt das nur zum",
+   "text_en": "We have a heat pump running; however, the first full winter is still ahead. The problem is certainly not to be found in the heat pump itself, but elsewhere. Something went really wrong here, because with a JAZ of 3 (for a renovated house rather mediocre) that would be a heat requirement of 42,000 kWh, and those are very bad even for an unrenovated house from 1970 of this size. It really only makes sense with permanent immersion heater operation. Was an energy consultant involved in the renovation? What order of magnitude did he calculate as the new energy requirement? In addition, there's the high electricity price. 38 cents is really no bargain; we concluded at 29.x cents this fall. With us, everything runs through one meter, since the difference between heat electricity and household electricity is too small. In fairness, it must be said that a reasonably well-adjusted heat pump with JAZ=3 at 30c/kWh electricity is about even with gas heating. The portals spit out about 10c/kWh gas for me.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "f7b92a495db710d76e0abd6bf946efa37550b70fac3c5f76af99113e990676bf",
+   "emotion": [
+    "skepticism",
+    "anxiety"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0025",
    "platform": "web_forum",
    "source_unit": "web:finanztip.de",
    "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
@@ -444,27 +503,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0023",
-   "platform": "reddit",
-   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
-   "url": "https://www.reddit.com/r/Waermepumpe/comments/1wrrsu1/alte_%C3%B6lheizung_durch_w%C3%A4rmepumpe_ersetzen_sinnvoll/pcf3ggz/",
-   "text_fragment_url": null,
-   "posted_at": "2026-09-27",
-   "date_precision": "day",
-   "language": "de",
-   "text": "Begrenze die Vorlauftemperatur in dieser Heizperiode einfach mal auf 55 Grad und schau wie es sich verhält.\nKann dir aus eigener Erfahrung nur sagen, dass wir bis dato noch kejn einziges Haus hatten bei dem es noch nicht funktioniert hat.\nVersuch macht klug. :)",
-   "text_en": "Simply limit the flow temperature to 55 degrees during this heating season and see how it behaves. I can only tell you from my own experience that we haven't had a single house yet where it didn't work. Trial and error teaches us. :)",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 77.6,
-   "author_hash": "74433c3483a9a14ae15feb7bb77435dd34a30a18b955936d7d693b74eed39440",
-   "emotion": [
-    "pride"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0024",
+   "id": "EV-0026",
    "platform": "web_forum",
    "source_unit": "web:finanztip.de",
    "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
@@ -484,7 +523,27 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0025",
+   "id": "EV-0027",
+   "platform": "reddit",
+   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
+   "url": "https://www.reddit.com/r/Waermepumpe/comments/1wrrsu1/alte_%C3%B6lheizung_durch_w%C3%A4rmepumpe_ersetzen_sinnvoll/pcf3ggz/",
+   "text_fragment_url": null,
+   "posted_at": "2026-09-27",
+   "date_precision": "day",
+   "language": "de",
+   "text": "Begrenze die Vorlauftemperatur in dieser Heizperiode einfach mal auf 55 Grad und schau wie es sich verhält.\nKann dir aus eigener Erfahrung nur sagen, dass wir bis dato noch kejn einziges Haus hatten bei dem es noch nicht funktioniert hat.\nVersuch macht klug. :)",
+   "text_en": "Simply limit the flow temperature to 55 degrees during this heating season and see how it behaves. I can only tell you from my own experience that we haven't had a single house yet where it didn't work. Trial and error teaches us. :)",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 77.6,
+   "author_hash": "74433c3483a9a14ae15feb7bb77435dd34a30a18b955936d7d693b74eed39440",
+   "emotion": [
+    "pride"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0028",
    "platform": "web_forum",
    "source_unit": "web:finanztip.de",
    "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
@@ -502,7 +561,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0026",
+   "id": "EV-0029",
    "platform": "web_forum",
    "source_unit": "web:finanztip.de",
    "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
@@ -520,27 +579,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0027",
-   "platform": "reddit",
-   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
-   "url": "https://www.reddit.com/r/Handwerker/comments/1wwv3e7/w%C3%A4rmepumpe_mit_kfwf%C3%B6rderung_oder_doch_ohne/",
-   "text_fragment_url": null,
-   "posted_at": "2026-10-03",
-   "date_precision": "day",
-   "language": "de",
-   "text": "Wärmepumpe mit KFW-Förderung? Oder doch ohne?\n\nWir möchten ein Reihenmittelhaus aus den 70ern (ca. 110 m²) kernsanieren, unter anderem mit neuer Fußbodenheizung und Luft/Wasser-Wärmepumpe.\n\nFür **FBH + Wärmepumpe komplett** habe ich von einer Fachfirma ein Angebot über ca.",
-   "text_en": "Heat pump with KFW funding? Or without? We want to completely core-renovate a row-house middle unit from the 70s (approx. 110 m²), including a new underfloor heating and air/water heat pump. For FBH + heat pump complete, I got a quote from a specialist firm for approx. 52,000 €. Despite possible 70% KfW funding, I find that very high, especially since the eligible costs are limited. Therefore I'm considering awarding the trades separately. For underfloor heating I'm at around 6,000 € for 110 m², including milling, pipes, sealing, heating circuit distributor and installation. The company has already worked for my cousin and did good work there. For the heat pump I have a self-employed plumber, who I know well and who has already renovated my apartment. The heat pump I could procure myself or he could pass it on to me at cost. The problem: He has not yet accompanied KfW funding and doesn't know the process. Therefore my questions: Can an energy consultant apply for and oversee KfW funding, even though FBH and heat pump are carried out by different companies? What about self-performed work? Can I e.g. do the foundation for the external unit, core drilling and other preparatory work myself, while connection, electrical work and commissioning are of course handled by the specialist? And lastly: Which air/water heat pump with good value for money could you recommend for a heating load of approximately 5–7 kW? Which matching hot water tank would you take with it? It's important to me to buy something sensible and durable and not to cut corners in the wrong places. Has anyone implemented a similar project with separate awarding and still received funding?",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 13.1,
-   "author_hash": "ba95499a070e005120b8476e82f2a3b3842e1a8d6f005f5bee3f67bfde0f8747",
-   "emotion": [
-    "anxiety"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0028",
+   "id": "EV-0030",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/heatpumps/comments/1wy3ay8/warum_sind_w%C3%A4rmepumpen_in_deutschland_so_teuer/",
@@ -561,25 +600,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0029",
-   "platform": "youtube",
-   "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
-   "url": "https://www.youtube.com/watch?v=bw6tH8UkZn0&lc=UgwWPXbaeYLeP1gf-6V4AaABAg",
-   "text_fragment_url": null,
-   "posted_at": "2026-08-05",
-   "date_precision": "month",
-   "language": "de",
-   "text": "formuliert, liegt aber im Prinzip richtig. Punkt 1 man muss sich intensiv mit der Materie auseinander setzen und jedes Gebäude muss individuell betrachtet werden. Punkt 2. Was kann man mit Dämmung erreichen. Hier braucht es oft nicht die grosse Lösung meist können auch Maßnahmen",
-   "text_en": "The article is of course somewhat sensationalized, but it's basically right. Point 1: you have to engage intensively with the subject and every building must be considered individually. Point 2: what can you achieve with insulation? Often you don't need the big solution - usually measures like roof and windows can already do a lot. Point 3: size the heating correctly and if necessary evaluate alternatives.",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 30.3,
-   "author_hash": "0c396d88d0c37e1ac61a28eed0b5d5185142ff943bc1ccec9e719b62849a2495",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0030",
+   "id": "EV-0031",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wt4jju/starke_abweichung_berechnete_heizlast_realer/pcrudju/",
@@ -599,7 +620,25 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0031",
+   "id": "EV-0032",
+   "platform": "youtube",
+   "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
+   "url": "https://www.youtube.com/watch?v=bw6tH8UkZn0&lc=UgwWPXbaeYLeP1gf-6V4AaABAg",
+   "text_fragment_url": null,
+   "posted_at": "2026-08-05",
+   "date_precision": "month",
+   "language": "de",
+   "text": "formuliert, liegt aber im Prinzip richtig. Punkt 1 man muss sich intensiv mit der Materie auseinander setzen und jedes Gebäude muss individuell betrachtet werden. Punkt 2. Was kann man mit Dämmung erreichen. Hier braucht es oft nicht die grosse Lösung meist können auch Maßnahmen",
+   "text_en": "The article is of course somewhat sensationalized, but it's basically right. Point 1: you have to engage intensively with the subject and every building must be considered individually. Point 2: what can you achieve with insulation? Often you don't need the big solution - usually measures like roof and windows can already do a lot. Point 3: size the heating correctly and if necessary evaluate alternatives.",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 30.3,
+   "author_hash": "0c396d88d0c37e1ac61a28eed0b5d5185142ff943bc1ccec9e719b62849a2495",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0033",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wt4jju/starke_abweichung_berechnete_heizlast_realer/",
@@ -620,7 +659,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0032",
+   "id": "EV-0034",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=JTHPQE6uX6I&lc=UgyKkWirbdrJe-eo8Ml4AaABAg",
@@ -641,7 +680,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0033",
+   "id": "EV-0035",
    "platform": "web_forum",
    "source_unit": "web:finanztip.de",
    "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
@@ -662,7 +701,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0034",
+   "id": "EV-0036",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=MSGbsAAaJS0&lc=UgzAljooSQtY4A6GpTR4AaABAg",
@@ -683,25 +722,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0035",
-   "platform": "tiktok",
-   "source_unit": "tiktok:#wärmepumpe",
-   "url": "https://www.tiktok.com/@/video/7630154543401061664",
-   "text_fragment_url": null,
-   "posted_at": "2026-04-19",
-   "date_precision": "day",
-   "language": "de",
-   "text": "Darf man Mikroblasenabscheider im freien montieren? Regen, Schnee usw. kein Problem?",
-   "text_en": "Is it allowed to mount microbubble separators outdoors? No problem with rain, snow, etc.?",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 4.3,
-   "author_hash": "071fb22a69d1493385196ad756bbdcc1432aff6a68aaabf6a68dfb5ce8a5d3e8",
-   "emotion": [],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0036",
+   "id": "EV-0037",
    "platform": "tiktok",
    "source_unit": "tiktok:#wärmepumpe",
    "url": "https://www.tiktok.com/@/video/7630450172366966049",
@@ -721,7 +742,25 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0037",
+   "id": "EV-0038",
+   "platform": "tiktok",
+   "source_unit": "tiktok:#wärmepumpe",
+   "url": "https://www.tiktok.com/@/video/7630154543401061664",
+   "text_fragment_url": null,
+   "posted_at": "2026-04-19",
+   "date_precision": "day",
+   "language": "de",
+   "text": "Darf man Mikroblasenabscheider im freien montieren? Regen, Schnee usw. kein Problem?",
+   "text_en": "Is it allowed to mount microbubble separators outdoors? No problem with rain, snow, etc.?",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 4.3,
+   "author_hash": "071fb22a69d1493385196ad756bbdcc1432aff6a68aaabf6a68dfb5ce8a5d3e8",
+   "emotion": [],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0039",
    "platform": "tiktok",
    "source_unit": "tiktok:#wärmepumpe",
    "url": "https://www.tiktok.com/@/video/7630154543401061664",
@@ -741,7 +780,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0038",
+   "id": "EV-0040",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=WX4HL8Tb6Mc&lc=Ugw47Rlt7Bb99-TtB-x4AaABAg",
@@ -762,28 +801,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0039",
-   "platform": "web_forum",
-   "source_unit": "web:finanztip.de",
-   "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
-   "text_fragment_url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/#:~:text=Von%20MProfit%20an%20die,hierf%C3%BCr%21%21%20Sch%C3%B6nen%20Sonntag%20w%C3%BCnscht",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "de",
-   "text": "Gaszentralheizung hatte, kann ich nur die Jahresrechnung vom GAS mit der neuen Jahresrechnung NACH Umbau mit dem Strom vergleichen.\n\nEs kann sein dass in den letzten Jahren auch der Gaspreis gestiegen ist so dass ein Vergleich Heizkosten GAS vor 2 oder 3 Jahren und früher auch",
-   "text_en": null,
-   "redacted": true,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "4317de399c0876dc4c9d0e3d077f5b395d0eb7f985079460067ce0e20a74a77f",
-   "emotion": [
-    "frustration",
-    "anxiety"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0040",
+   "id": "EV-0041",
    "platform": "web_forum",
    "source_unit": "web:finanztip.de",
    "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
@@ -804,7 +822,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0041",
+   "id": "EV-0042",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wt4jju/starke_abweichung_berechnete_heizlast_realer/pcr0x41/",
@@ -822,7 +840,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0042",
+   "id": "EV-0043",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=MSGbsAAaJS0&lc=Ugz8P5kprAfPk-avPbZ4AaABAg",
@@ -840,7 +858,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0043",
+   "id": "EV-0044",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/heizungsforum/comments/1wuempn/alte_%C3%B6lheizung_ersetzen_g%C3%BCnstige_gebrauchte/pd2l4n1/",
@@ -860,7 +878,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0044",
+   "id": "EV-0045",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=WX4HL8Tb6Mc&lc=UgzIb8f9L46E8-Rg6-p4AaABAg",
@@ -880,7 +898,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0045",
+   "id": "EV-0046",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Handwerker/comments/1wwv3e7/w%C3%A4rmepumpe_mit_kfwf%C3%B6rderung_oder_doch_ohne/pds35rr/",
@@ -900,7 +918,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0046",
+   "id": "EV-0047",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Hausbau/comments/1wt0y1v/kernsanierung_altbau_1960er_vs_neubau_sind_die/pcqaeg5/",
@@ -922,7 +940,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0047",
+   "id": "EV-0048",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=9-b6o2Ei_aQ",
@@ -938,27 +956,6 @@
    "author_hash": "d838ebc416a6716d0c1be07a4c4d0b321a14aee6d579a2ae0ff8c9c3aec3c324",
    "emotion": [
     "skepticism"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0048",
-   "platform": "reddit",
-   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
-   "url": "https://www.reddit.com/r/wohnen/comments/1wuvsq3/welche_ma%C3%9Fnahme_f%C3%BCr_unser_haus_aus_1978/",
-   "text_fragment_url": null,
-   "posted_at": "2026-10-01",
-   "date_precision": "day",
-   "language": "de",
-   "text": "mit folgenden Eckdaten:\n\n*Baujahr 1978\n\n*Ölheizung, jedoch immer gepflegt und mit aktuellem \"Raketenbrenner\".\n\n*Alufenster im Erdgeschoss, insgesamt 170m2\n\n*Moderene Kunststofffenster aus den 2010ern im Obergeschoss - dort sind auch Klimaanlagen verbaut, insgesamt",
-   "text_en": "Which measure for our house from 1978\n\nHello everyone,\n\nwe bought an existing property last year with the following key facts:\n\n*Built in 1978\n\n*Oil heating, but always well-maintained and with current \"rocket burner\".\n\n*Aluminum windows on the ground floor, total 170m2\n\n*Modern plastic windows from the 2010s on the upper floor - there are also air conditioning units installed there, total 130m2\n\n*Oil consumption from November 25 to September 26: about 4000 liters of oil.\n\n*We have had an e-car since September 26\n\nI worked out a few scenarios with the help of Perplexity, but I definitely still need an assessment of what makes the most sense:\n\nI currently have about 15,000–20,000 € available and am wondering how to use it most sensibly:\n\n1. PV expansion to 19 kWp + wallbox + 3 air conditioning units (complete package for approx. 15,800 €).\n\n•Goal: More self-consumption for electric car and climate-heating, significantly reduce oil consumption.\n•Battery remains at 9 kWh.\n\n2. Complete conversion to heat pump (oil out, heat pump in).\n\n•We already have a quote for a Samsung Mono-HT R290-16 (16 kW) with 260-liter storage tank for approx. 33,900 € gross.\n\n•With funding (KfW, oil heating replacement) that would perhaps be 13,000–19,000 € remaining costs.\n\n•Question: Is it worth it with our high consumption and existing PV?\n\n3. Replace windows in ground floor (16 panes, approx. 20,000 €).\n\n•Would reduce heating requirements, but the amortization looks rather mediocre so far (70+ years according to my calculation).\n\n•More of a comfort and value investment than an economic measure.\n\nQuestions for you:\n\n•Would you expand PV first or switch directly to a heat pump given our situation?\n•Do you see the combination of PV + climate-heating as a sensible interim solution before switching completely to heat pump?\n•Is the window replacement worth it at all, or should one rather invest the money in PV/heat pump?\n•Does anyone have similar experiences with oil consumption, PV and climate-heating in an old building of this size?\nThanks in advance for your assessments!",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 39.8,
-   "author_hash": "32202280626aa66fab08360a46e002daaae9cc231a5d562cfb76e3548aeeabe8",
-   "emotion": [
-    "skepticism",
-    "aspiration"
    ],
    "trust": "untrusted_user_content"
   },
@@ -984,6 +981,27 @@
   },
   {
    "id": "EV-0050",
+   "platform": "reddit",
+   "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
+   "url": "https://www.reddit.com/r/wohnen/comments/1wuvsq3/welche_ma%C3%9Fnahme_f%C3%BCr_unser_haus_aus_1978/",
+   "text_fragment_url": null,
+   "posted_at": "2026-10-01",
+   "date_precision": "day",
+   "language": "de",
+   "text": "mit folgenden Eckdaten:\n\n*Baujahr 1978\n\n*Ölheizung, jedoch immer gepflegt und mit aktuellem \"Raketenbrenner\".\n\n*Alufenster im Erdgeschoss, insgesamt 170m2\n\n*Moderene Kunststofffenster aus den 2010ern im Obergeschoss - dort sind auch Klimaanlagen verbaut, insgesamt",
+   "text_en": "Which measure for our house from 1978\n\nHello everyone,\n\nwe bought an existing property last year with the following key facts:\n\n*Built in 1978\n\n*Oil heating, but always well-maintained and with current \"rocket burner\".\n\n*Aluminum windows on the ground floor, total 170m2\n\n*Modern plastic windows from the 2010s on the upper floor - there are also air conditioning units installed there, total 130m2\n\n*Oil consumption from November 25 to September 26: about 4000 liters of oil.\n\n*We have had an e-car since September 26\n\nI worked out a few scenarios with the help of Perplexity, but I definitely still need an assessment of what makes the most sense:\n\nI currently have about 15,000–20,000 € available and am wondering how to use it most sensibly:\n\n1. PV expansion to 19 kWp + wallbox + 3 air conditioning units (complete package for approx. 15,800 €).\n\n•Goal: More self-consumption for electric car and climate-heating, significantly reduce oil consumption.\n•Battery remains at 9 kWh.\n\n2. Complete conversion to heat pump (oil out, heat pump in).\n\n•We already have a quote for a Samsung Mono-HT R290-16 (16 kW) with 260-liter storage tank for approx. 33,900 € gross.\n\n•With funding (KfW, oil heating replacement) that would perhaps be 13,000–19,000 € remaining costs.\n\n•Question: Is it worth it with our high consumption and existing PV?\n\n3. Replace windows in ground floor (16 panes, approx. 20,000 €).\n\n•Would reduce heating requirements, but the amortization looks rather mediocre so far (70+ years according to my calculation).\n\n•More of a comfort and value investment than an economic measure.\n\nQuestions for you:\n\n•Would you expand PV first or switch directly to a heat pump given our situation?\n•Do you see the combination of PV + climate-heating as a sensible interim solution before switching completely to heat pump?\n•Is the window replacement worth it at all, or should one rather invest the money in PV/heat pump?\n•Does anyone have similar experiences with oil consumption, PV and climate-heating in an old building of this size?\nThanks in advance for your assessments!",
+   "redacted": false,
+   "short_form": false,
+   "engagement_percentile": 39.8,
+   "author_hash": "32202280626aa66fab08360a46e002daaae9cc231a5d562cfb76e3548aeeabe8",
+   "emotion": [
+    "skepticism",
+    "aspiration"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0051",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
    "url": "https://www.youtube.com/watch?v=JnhPsDa7QB4&lc=UgwxliKb6i_dd-C2mkR4AaABAg",
@@ -1000,24 +1018,6 @@
    "emotion": [
     "pride"
    ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0051",
-   "platform": "reddit",
-   "source_unit": "reddit:search:wärmepumpe lohnt sich erfahrung",
-   "url": "https://www.reddit.com/r/DeutschePhotovoltaik/comments/1wybuja/pvplanung_mit_fronius_verto_plus_wohin_mit_der/",
-   "text_fragment_url": null,
-   "posted_at": "2026-10-05",
-   "date_precision": "day",
-   "language": "de",
-   "text": "PV-Planung mit Fronius Verto Plus: Wohin mit der NO-Seite? (SW + SO voll, kein MPPT mehr frei)\n\nHallo zusammen,\n\nich stecke gerade in der Detailplanung meiner Photovoltaikanlage und stehe bezüglich der MPPT-Belegung und Wechselrichter-Auswahl vor einer Denkaufgabe. Vielleicht",
-   "text_en": "PV planning with Fronius Verto Plus: Where to put the NE side? (SW + SO full, no MPPT left)\n\nHello everyone,\n\nI'm currently in the detailed planning of my photovoltaic system and am facing a mental puzzle regarding MPPT allocation and inverter selection. Maybe someone here has experience with similar setups or a tip for an elegant solution.\n\n**The starting situation & planned areas:**\n\n* **South-West (main roof):** approx. 13 kWp (requires 2 MPPTs according to electrician)\n* **South-East (garage):** just under 3 kWp (occupies the 3rd MPPT)\n* **North-East (back of main roof with windows):** approx. 8 kWp – I would like to include this area directly to capture yield from diffuse light and mornings. This side is probably relatively productive especially in the colder season, or helps fill the storage at all.\n\n**Planned hardware:**\n\n* **Inverter:** Fronius Verto Plus (20 or 25 kW)\n* **Storage:** Fronius Reserva Pro (is to be used/expanded in conjunction with a heat pump coming soon)\n\n**The problem:** The Fronius Verto Plus offers 3 MPPTs. With the SW main roof (2 MPPTs) and garage (1 MPPT) all connections are occupied. For the North-East area with its ~8 kWp I have no MPPT tracker free at the main inverter.\n\nOf course, I would be very happy to connect everything to just one inverter and not have to buy a second one just for that. Then I would probably leave the North-East side alone.\n\n**My questions to the community:**\n\n1. **How do I best solve the NE roof?**\n* Integrate a second smaller inverter (e.g., a separate Fronius Primo/Symo) just for the 8 kWp NE side?\n* Can the 13 kWp on South-West be placed on *one* MPPT under certain conditions (e.g., by parallel connection of identical strings, provided the Verto Plus current/voltage allow it)?\n* Or could micro-inverters / module optimizers at location X make sense here?\n2. **Experiences / Tips:** Does anyone have a similar multi-orientation setup with Fronius and Reserva Pro in use?\n\nThank you in advance for your input and assessments!",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 62.7,
-   "author_hash": "f4370efc43e0f4fd7b8be67c9d2b5808123def24bbc72405507c990c79a65e8b",
-   "emotion": [],
    "trust": "untrusted_user_content"
   },
   {
@@ -1040,6 +1040,27 @@
   },
   {
    "id": "EV-0053",
+   "platform": "web_forum",
+   "source_unit": "web:finanztip.de",
+   "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
+   "text_fragment_url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/#:~:text=Von%20MProfit%20an%20die,hierf%C3%BCr%21%21%20Sch%C3%B6nen%20Sonntag%20w%C3%BCnscht",
+   "posted_at": null,
+   "date_precision": "unknown",
+   "language": "de",
+   "text": "Gaszentralheizung hatte, kann ich nur die Jahresrechnung vom GAS mit der neuen Jahresrechnung NACH Umbau mit dem Strom vergleichen.\n\nEs kann sein dass in den letzten Jahren auch der Gaspreis gestiegen ist so dass ein Vergleich Heizkosten GAS vor 2 oder 3 Jahren und früher auch",
+   "text_en": null,
+   "redacted": true,
+   "short_form": false,
+   "engagement_percentile": null,
+   "author_hash": "4317de399c0876dc4c9d0e3d077f5b395d0eb7f985079460067ce0e20a74a77f",
+   "emotion": [
+    "frustration",
+    "anxiety"
+   ],
+   "trust": "untrusted_user_content"
+  },
+  {
+   "id": "EV-0054",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=MSGbsAAaJS0&lc=UgyFfouRK0UqWxbOKBx4AaABAg",
@@ -1059,7 +1080,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0054",
+   "id": "EV-0055",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wrrsu1/alte_%C3%B6lheizung_durch_w%C3%A4rmepumpe_ersetzen_sinnvoll/pcf3ja6/",
@@ -1077,7 +1098,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0055",
+   "id": "EV-0056",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Handwerker/comments/1wvpue9/enpal_w%C3%A4rmepumpe_angebot/",
@@ -1098,7 +1119,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0056",
+   "id": "EV-0057",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
    "url": "https://www.youtube.com/watch?v=JnhPsDa7QB4&lc=UgwAo3b1KUOQx6aIkyh4AaABAg",
@@ -1116,7 +1137,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0057",
+   "id": "EV-0058",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wpag7g/tankentsorgung_separat_vergebbar/pbyq59g/",
@@ -1136,7 +1157,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0058",
+   "id": "EV-0059",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=MSGbsAAaJS0&lc=UgyvYXCmPUT3stF-Aud4AaABAg",
@@ -1157,7 +1178,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0059",
+   "id": "EV-0060",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=WX4HL8Tb6Mc&lc=Ugw8TRXZSxzuf-mkzPx4AaABAg",
@@ -1178,7 +1199,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0060",
+   "id": "EV-0061",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten",
    "url": "https://www.youtube.com/watch?v=WX4HL8Tb6Mc&lc=UgxYRCUEhQV6HNkJ1dJ4AaABAg",
@@ -1199,7 +1220,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0061",
+   "id": "EV-0062",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
    "url": "https://www.youtube.com/watch?v=bw6tH8UkZn0&lc=Ugxs0ljYNa54P6VU6dx4AaABAg",
@@ -1217,7 +1238,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0062",
+   "id": "EV-0063",
    "platform": "reddit",
    "source_unit": "reddit:r/de",
    "url": "https://www.reddit.com/r/de/comments/1v0vm89/thermondo_lobt_sinkend_f%C3%B6rderung_schwarzrot/oyia4bk/",
@@ -1237,7 +1258,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0063",
+   "id": "EV-0064",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Handwerker/comments/1wvpue9/enpal_w%C3%A4rmepumpe_angebot/pddt8aa/",
@@ -1255,7 +1276,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0064",
+   "id": "EV-0065",
    "platform": "youtube",
    "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
    "url": "https://www.youtube.com/watch?v=bw6tH8UkZn0&lc=UgxkcQu677YZy4i58mR4AaABAg",
@@ -1273,27 +1294,7 @@
    "trust": "untrusted_user_content"
   },
   {
-   "id": "EV-0065",
-   "platform": "youtube",
-   "source_unit": "youtube:search:wärmepumpe altbau lohnt sich nicht heizungsgesetz förderung",
-   "url": "https://www.youtube.com/watch?v=bw6tH8UkZn0&lc=UgzxU72Yg9kHzao11cd4AaABAg",
-   "text_fragment_url": null,
-   "posted_at": "2026-08-05",
-   "date_precision": "month",
-   "language": "de",
-   "text": "Was für ein übler Klamauk, vollkommen an den Haaren herbei gezogene Zahlen, um ein Hororzenario darzustellen.\nDu solltest besser in Hollywood anfangen?",
-   "text_en": "What a terrible farce, completely fabricated numbers to present a horror scenario. You should start in Hollywood instead?",
-   "redacted": false,
-   "short_form": false,
-   "engagement_percentile": 30.3,
-   "author_hash": "0e14905bdb74b61eb3a6850ed8ac48cfb91b75da583e07db008e80724b7bd470",
-   "emotion": [
-    "skepticism"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0066",
+   "id": "EV-0067",
    "platform": "reddit",
    "source_unit": "reddit:search:heizungsgesetz wärmepumpe förderung kfw 458",
    "url": "https://www.reddit.com/r/Waermepumpe/comments/1wriw3p/w%C3%A4rmepumpe_wird_konkret_wie_ist_der_kfw_ablauf/pccuq6y/",
@@ -1308,27 +1309,6 @@
    "engagement_percentile": 27.0,
    "author_hash": "d425b5d2d2be1316cad63fc58d16157f5c9ed45c796b8f77de123e592ff6ac14",
    "emotion": [
-    "skepticism"
-   ],
-   "trust": "untrusted_user_content"
-  },
-  {
-   "id": "EV-0067",
-   "platform": "web_forum",
-   "source_unit": "web:finanztip.de",
-   "url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/",
-   "text_fragment_url": "https://www.finanztip.de/community/forum/thema/20370-wer-hat-echte-erfahrung-nach-dem-einbau-einer-w%C3%A4rmepumpe/#:~:text=ein%20%C3%A4lteres%20Haus%20saniert%2C,und%20gibt%20mittels%20Heizschlan",
-   "posted_at": null,
-   "date_precision": "unknown",
-   "language": "de",
-   "text": "Wenn man ein älteres Haus saniert, baut man sicherlich auch eine neue Heizung ein. Ob das zwingend eine Wärmepumpe sein muß, sei mal dahingestellt. Herr Habeck möchte das so. Ob man selbst das möchte, ist längst noch nicht so sicher.\n>",
-   "text_en": "If you renovate an older house, you'll certainly install a new heating system. Whether a heat pump must be the choice is debatable. Mr. Habeck wants it that way. Whether you personally want it is far from certain. [Quoted text about renovation with architect and energy consultant taking almost two years, contractor overload, difficulty getting appointments, high costs.] This situation will probably not end soon. For your renovation, there must be heating demand calculations. Ask your architect about them (or the energy consultant). If something should be wrong, the contractor must of course fix it. Don't let that go too long, warranty periods run out. [Quoted text asking about heating rod / heating element.] Every refrigerator and every air conditioner contains a heat pump. In a closed circuit, a transfer medium circulates. It is compressed by a pump, which makes it warm, warmer than the surroundings, and provides via heating hose...",
-   "redacted": true,
-   "short_form": false,
-   "engagement_percentile": null,
-   "author_hash": "25afe08b334cd245015a25163ca4a32e6ba55c9541043a30c20181add91c6938",
-   "emotion": [
-    "frustration",
     "skepticism"
    ],
    "trust": "untrusted_user_content"

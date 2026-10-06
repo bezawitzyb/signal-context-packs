@@ -5,7 +5,13 @@ Your sections (call A): the landscape and the voice.
   differently there), citing evidence from that platform.
 - lexicon: one entry per lexicon cluster: term exactly as written,
   meaning in English, language (ISO 639-1), and a quote showing the
-  term in use.
+  term in use. The claim says only how the term is used in the cited
+  posts ("X is used for Y", "X comes up when Z"). Never call a term
+  "the everyday word", "the go-to", "classic", "common" or "a sign of
+  pride", and never say "people generally": the posts cannot show how
+  widely a word is used, and code adds the counts. claim_type is
+  "observed" only if a cited post itself shows what the term means;
+  if the meaning is your gloss, it is "inferred".
 - phrases: recurring phrases the audience uses, each copied exactly
   from cited evidence (text) with its language; tie each to the cluster
   it comes from.

@@ -8,27 +8,27 @@ description: "Real audience research on Dutch snackers aged 18-40 buying everyda
 Who: Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers. Market NL, languages nl, en. Built from 233 real public posts (coverage grade a; thin evidence - treat findings as early signals).
 
 ## Do first
-- Post a 'Welke snack mis je nog?' thread in Dutch snack/food forums and on Reddit. Ask people to name the snack they grew up with and say why they miss it (jeugdsentiment). Reply to everyone, and do not pitch any product yet. (DO-01)
-- Film a 30-45 second TikTok in Dutch where you turn 3 snack bags that say 'healthy' around and read out kcal, sugar and the ingredient list on camera. Use #gezondechips and #gezondesnack. Close with a question: 'welke zak moet ik hierna checken?' (DO-02)
-- Build a one-page fact sheet (kcal, sugar, protein and fibre per portion if applicable, and a short ingredient list). Pitch it with samples to public creators who run monthly 'nieuw in de supermarkt' tests with timestamps, so the product can be tested 'zodat jij dat niet hoeft te doen'. (DO-03)
+- Film a 20-second TikTok in Dutch where someone turns a snack bag around and reads kcal, sugar and price out loud before saying anything about taste. Then take one bite and give a short verdict on flavour and crunch. Use only numbers from the real label. (DO-01)
+- Post a thread in a Dutch web forum asking 'Welke snack is uit het schap verdwenen en mis jij nog?', using 'Oh wat mis ik die!' and 'jeugdsentiment'. Reply to every answer, and note flavours and snacks people name for later product and range choices. (DO-02)
+- Make a shortlist of public YouTube and TikTok supermarket-test series in the PROEFWERK style, then pitch them a sample with the full label and price. Ask them to try it honestly, including the flavour, the crunch and what is in the bag. (DO-03)
 
 ## Five truths
-- I can't find the product I want in my own supermarket. (MOT-01)
-- I still miss that snack I grew up with and can't believe it was taken off the shelves. (THM-01)
-- I buy snacks and flavours abroad because I can't get them in the Netherlands. (THM-09)
-- If a snack is sold as healthy I check the calories, sugar and additives myself, because the label often doesn't hold up. (THM-02)
-- People ask why a favourite snack was pulled from shops; nobody explains because brands stay silent about delistings. (WSP-02)
+- I want a product that my shops simply don't have on the shelf. (MOT-01)
+- I still miss that snack I loved, and it's ridiculous that it disappeared. (THM-01)
+- I look for snacks and flavours abroad because Dutch shops don't sell them. (THM-09)
+- I like having a mix of flavours and snacks to pick from. (MOT-05)
+- People ask why a favourite snack was pulled from the supermarket. (WSP-01)
 
 ## Voice
-Tone: Casual and direct. Forum posts are blunt and joking, with strong reactions (love or 'gatverdamme') and forum smilies. YouTube is warmer, with emoji and compliments. TikTok is sceptical and quick, using calorie numbers and 🙈/😂.
-Code-switching: Mostly Dutch, with English product names and flavours (Nacho Cheese, Thai Sweet Chili, Cool America, 'flashback', 'content'). TikTok health creators sometimes write fully in English ('check everything', 'readlabels').
-Their words: frikandelbroodje = sausage roll with frikandel; kaassoufflé = fried cheese pastry snack; bamischijf = fried bami noodle slice; ribbelchips = ridged chips; eierbal = fried egg-and-meat ball snack; snackbar = Dutch fast-food snack shop; borrelnootjes = party nuts served at drinks; bittergarnituur = assorted fried bar snacks on a platter; kroepoek = shrimp crackers; jeugdsentiment = childhood nostalgia; verslavend lekker = addictively tasty; schijtsnack = crap snack, very bad snack
+Tone: Casual, direct and often funny. Short verdicts, mock outrage, emoticons and emoji, and a plain Dutch register with slang. People praise with 'lekker' and 'top' and reject with 'gatverdamme'. On TikTok the tone is sceptical and number-driven.
+Code-switching: Mostly Dutch. English appears in flavour and product names (Nacho Cheese, Cool American, Thai Sweet Chili, salt-vinegar), in some TikTok posts, and in words like 'flashback' and 'content'.
+Their words: frikandelbroodje = sausage roll with frikandel; kaassoufflé = fried cheese pastry snack; bamischijf = fried bami noodle slice; ribbelchips = ridged chips; eierbal = fried egg-and-meat ball snack; snackbar = Dutch fast-food snack shop; borrelnootjes = party nuts served with drinks; bittergarnituur = assorted fried bar snacks on a platter; kroepoek = shrimp crackers; jeugdsentiment = childhood nostalgia; verslavend lekker = addictively tasty; schijtsnack = crap snack, very bad snack
 
 ## Guardrails
-Say: name the exact flavour and brand (e.g. paprika, Nacho Cheese, bolognese); lekker / verslavend lekker for taste; supermarket tests and 'nieuwe producten' for discovery; real numbers (kcal, sugar) to back health claims; regional or childhood nostalgia (jeugdsentiment, typisch Brabants)
-Not: vague 'healthy' claims without kcal, sugar or ingredient detail; pushing 'less salt' with no mention of taste; bami or nasi as the safe crowd-pleaser on a platter; overly polished or formal ad language; assuming the snackbar is a premium place
-Never claim: 'gezond' op de zak; Eiwit in je snack, hoeveel gram; verslavend lekker; Minder zout in de borrelnootjes; Ribbelchips met minder zout; snack die zich 'beter' noemt; niet bepaald gezond maar verslavend lekker; RedBull, niet gezond, verslavend lekker; #gezondechips #gezondesnack; Pitch with samples to creators
-Sensitive: Health claims will be challenged publicly; unclear or exaggerated 'healthy' wording invites mocking replies about calories and sugar.; Healthier or lower-salt reformulations can be seen as a taste downgrade; shoppers already complain when salt is cut.; Premium pricing for healthy snacks may feel exclusionary and spark backlash or a 'too expensive' reaction.; Loyalty to classic Dutch chips, snack-bar items and discontinued favourites is emotional; replacements such as the Magnum stick are criticised, and cheap or imitation products are rejected.; Some clusters rest on one or two posts and several are English-language TikTok or YouTube comments, so they may not reflect Dutch snackers; do not over-generalise.
+Say: Name the concrete flavour or snack (paprika, bolognese, frikandelbroodje); Say what the taste or crunch is like; Show the numbers: kcal, sugar, price; Use the language of nostalgia: jeugdsentiment; Say 'nieuwe producten uit de supermarkt' and 'proberen'
+Not: Vague 'healthy' claims without ingredient and calorie facts; Promising less salt without proving the taste holds; Treating a snack as universally loved: bami, eierbal and kaassoufflé divide people; Premium pricing without a reason for the price; Formal or corporate wording
+Never claim: Protein op de zak, hoeveel zit er écht in?; proteïnereep die smaakt als karton; Minder zout is prima; 'Minder zout' bij de borrelnootjes?; zak chips die half lucht is; pitch sample to creators, honest try; sample seeding for supermarket-test creators; clear, credible protein and fibre amounts; Lead with ... lower sugar; Healthy snacks at everyday prices
+Sensitive: Health or 'better-for-you' claims that do not hold up on calories, sugar or additives can trigger mocking and backlash.; Protein or health bars are judged harshly on taste, so a health-first message without a taste proof can backfire.; Cutting salt or changing a familiar recipe may be welcomed on one product and rejected on another, so reformulation could alienate loyal fans.; Promoting a product that people cannot find in their shops, or that was pulled, could frustrate rather than attract them.; Several clusters rest on very few posts (e.g. too-sweet, small portions, vegetarian imitations, flavour range), so they could be misread as broad market needs.
 Quotes: Real people's words are for insight and briefs, not for ads without permission.
 
 ## Rules
@@ -48,4 +48,4 @@ Quotes: Real people's words are for insight and briefs, not for ads without perm
 - references/channels.md: where to show up, how each platform sounds, public communities - open when planning channels
 - references/evidence.json: the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim
 
-Pack pk_wrvZBhDFsLR9, generated 2026-10-05T13:07:26.423992Z.
+Pack pk_2cfiymbkno_7, generated 2026-10-05T21:05:16.687933Z.
