@@ -2,13 +2,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 import { ArrowRight, Hourglass, Square } from "lucide-react";
-import { getRun, stopRun, ApiError, type RunStatus } from "../lib/api";
+import { friendlyError, getRun, stopRun, ApiError, type RunStatus } from "../lib/api";
 import { explain, readRunKey } from "../lib/runKey";
 import { summarize } from "../lib/runSummary";
 import { useRunEvents } from "../lib/useRunEvents";
 import { AgentLog, Announcer, CoverageBars, Counters, Notices, SourcesVerdict, StageStepper } from "../components/Theatre";
 import { ReplayPage } from "./ReplayPage";
 import { Skeleton } from "../components/Skeleton";
+import { ErrorNote } from "../components/ErrorNote";
 
 const FINISHED = ["complete", "partial", "failed", "stopped"];
 
@@ -68,10 +69,10 @@ function LiveRun({ runId }: { runId: string }) {
   const last = events[events.length - 1];
 
   useEffect(() => {
-    getRun(runId).then(setRun).catch((e: Error) => setError(e.message));
+    getRun(runId).then(setRun).catch((e) => setError(friendlyError(e)));
   }, [runId, last?.seq, summary.step]);
 
-  if (error) return <p className="text-ink-2">{error}</p>;
+  if (error) return <ErrorNote message={error} />;
   if (!run) return <Skeleton lines={3} label="Loading the run" />;
   const finished = FINISHED.includes(run.status);
   const packId = summary.packId ?? run.pack_id;

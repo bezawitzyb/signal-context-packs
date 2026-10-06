@@ -1140,6 +1140,27 @@ def _print_eval(result: dict) -> None:
                       highlight=False)
 
 
+@app.command("demo-check")
+def demo_check(
+    url: str = typer.Option("https://signal-l2w5.onrender.com", help="The public URL"),
+    paid: bool = typer.Option(True, "--paid/--no-paid", help="Include the tiny Anthropic call (< $0.001)"),
+) -> None:
+    """Before the demo: live service, keep-alive, mirror, MCP, accounts, spend, and the security check.
+
+    The real RUN_KEY is compared inside the check and never printed.
+    """
+    from ctxpack.demo_check import run_all
+
+    checks = run_all(url, paid=paid)
+    for c in checks:
+        console.print(OK if c.ok else BAD, end=" ")
+        console.print(f"{c.name}: {c.detail}", highlight=False, markup=False)
+    bad = [c for c in checks if not c.ok]
+    console.print("\n[green]ALL GREEN[/green]" if not bad else f"\n[red]{len(bad)} not green[/red]")
+    if bad:
+        raise typer.Exit(1)
+
+
 @app.command()
 def version() -> None:
     """Print the package version."""

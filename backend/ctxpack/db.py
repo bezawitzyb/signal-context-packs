@@ -148,9 +148,13 @@ def init_engine(url: str | None = None) -> Engine:
     global _engine
     if url is None:
         settings = get_settings()
-        if not settings.is_set("DATABASE_URL"):
+        if settings.is_set("DATABASE_URL"):
+            url = settings.database_url.get_secret_value()
+        elif settings.offline:  # keyless local demo (README): a local SQLite file
+            settings.data_path.mkdir(parents=True, exist_ok=True)
+            url = f"sqlite:///{settings.data_path / 'local.db'}"
+        else:
             raise RuntimeError("DATABASE_URL is not set - run the doctor command")
-        url = settings.database_url.get_secret_value()
     url = sqlalchemy_url(url)
     if _engine is not None:
         _engine.dispose()

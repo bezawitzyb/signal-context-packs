@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { Braces, History, Share2 } from "lucide-react";
-import { getPack, type ContextPack, type InsightLike, type Label } from "../lib/api";
+import { friendlyError, getPack, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
 import { ConfidenceBadge, IdTag, ModeBadge } from "../components/badges";
@@ -15,6 +15,7 @@ import { EvidenceDrawer } from "../components/EvidenceDrawer";
 import { AgentJson } from "../components/AgentJson";
 import { Handoff } from "../components/Handoff";
 import { Skeleton } from "../components/Skeleton";
+import { ErrorNote } from "../components/ErrorNote";
 
 const NAV: [string, string][] = [
   ["summary", "Summary"], ["channels", "Channels & this week"], ["voice", "Voice"], ["tensions", "Tensions & motivations"],
@@ -556,9 +557,9 @@ export function PackPage() {
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     setPack(null);
-    getPack(packId).then(setPack).catch((e: Error) => setError(e.message));
+    getPack(packId).then(setPack).catch((e) => setError(friendlyError(e)));
   }, [packId]);
-  if (error) return <p className="text-ink-2">{error}</p>;
+  if (error) return <ErrorNote message={error} />;
   if (!pack) return <div className="max-w-[760px] lg:ml-[15.5rem]"><Skeleton lines={4} label="Loading the pack" /></div>;
   return <PackBody pack={pack} />;
 }

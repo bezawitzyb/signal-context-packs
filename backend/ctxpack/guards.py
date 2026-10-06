@@ -51,8 +51,11 @@ class GuardError(Exception):
 
 def check_run_key(given: str | None) -> None:
     """The run key must match RUN_KEY (constant-time). If RUN_KEY is not set, nobody can start runs."""
-    expected = get_settings().run_key
+    settings = get_settings()
+    expected = settings.run_key
     if expected is None or not expected.get_secret_value().strip():
+        if settings.offline:  # keyless local demo: recorded data and the fake model, nothing is paid
+            return
         raise GuardError(503, "starting runs is switched off on this server")
     if not given or not secrets.compare_digest(given.strip().encode(), expected.get_secret_value().strip().encode()):
         raise GuardError(401, "a valid run key is needed to start runs (header X-API-Key)")

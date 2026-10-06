@@ -66,7 +66,32 @@ export class ApiError extends Error {
 
 const BASE = "/api/v1";
 
+// Read-only static mirror on GitHub Pages (guide B15): built with VITE_MIRROR=1, it reads the
+// featured packs from pre-built files under data/ and never calls the API.
+export const MIRROR = import.meta.env.VITE_MIRROR === "1";
+export const LIVE_URL = "https://signal-l2w5.onrender.com";
+export const MIRROR_URL = "https://bezawitzyb.github.io/signal-context-packs/";
+const DATA = `${import.meta.env.BASE_URL}data`;
+const NOT_IN_MIRROR = "This read-only mirror only shows the featured packs. Live research runs happen on the live app.";
+
+async function staticJson<T>(path: string): Promise<T> {
+  const res = await fetch(`${DATA}/${path}`);
+  if (!res.ok) throw new ApiError(res.status, res.status === 404 ? "This pack is not in the mirror." : `Could not load (${res.status}).`);
+  return res.json() as Promise<T>;
+}
+
+/** A message a person can act on; never a stack trace or a bare status code. */
+export function friendlyError(e: unknown): string {
+  if (e instanceof ApiError) {
+    if (e.status >= 500 || e.status === 0) return "The live service is not answering right now (it may be waking up). Try again in a minute.";
+    return e.message;
+  }
+  if (e instanceof TypeError) return "The live service could not be reached (it may be waking up). Try again in a minute.";
+  return e instanceof Error ? e.message : "Something went wrong.";
+}
+
 async function request<T>(path: string, init: RequestInit = {}, runKey?: string): Promise<T> {
+  if (MIRROR) throw new ApiError(400, NOT_IN_MIRROR);
   const headers = new Headers(init.headers);
   if (init.body) headers.set("Content-Type", "application/json");
   if (runKey) headers.set("X-API-Key", runKey);
@@ -84,8 +109,11 @@ async function request<T>(path: string, init: RequestInit = {}, runKey?: string)
 }
 
 // --- packs (public) ---------------------------------------------------------------
-export const listPacks = () => request<FeaturedPack[]>("/packs");
-export const getPack = (packId: string) => request<ContextPack>(`/packs/${encodeURIComponent(packId)}`);
+export const listPacks = () => MIRROR ? staticJson<FeaturedPack[]>("packs.json") : request<FeaturedPack[]>("/packs");
+export const getPack = (packId: string) => MIRROR
+  ? staticJson<ContextPack>(`packs/${encodeURIComponent(packId)}/context_pack.json`)
+  : request<ContextPack>(`/packs/${encodeURIComponent(packId)}`);
+export const getEvals = <T,>() => MIRROR ? staticJson<T>("evals.json") : request<T>("/evals");
 export const getDigest = (packId: string) =>
   request<Record<string, unknown>>(`/packs/${encodeURIComponent(packId)}?view=digest`);
 export const getItem = (packId: string, itemId: string, evidence = 3) =>
@@ -94,8 +122,10 @@ export const searchEvidence = (packId: string, q: string, opts: { platform?: str
   const params = new URLSearchParams({ q, ...opts });
   return request<EvidenceResult>(`/packs/${encodeURIComponent(packId)}/evidence?${params}`);
 };
-export const exportUrl = (packId: string, kind: "json" | "md" | "prompt" | "skill") =>
-  `${BASE}/packs/${encodeURIComponent(packId)}/export/${kind}`;
+const MIRROR_FILES = { json: "context_pack.json", md: "brief.md", prompt: "prompt_block.txt", skill: "skill.zip" };
+export const exportUrl = (packId: string, kind: "json" | "md" | "prompt" | "skill") => MIRROR
+  ? `${DATA}/packs/${encodeURIComponent(packId)}/${MIRROR_FILES[kind]}`
+  : `${BASE}/packs/${encodeURIComponent(packId)}/export/${kind}`;
 
 export interface Estimate { mode: string; max_usd: number; typical_usd_low: number; typical_usd_high: number;
   typical_minutes: number; collection_secs: number; max_tool_calls: number }

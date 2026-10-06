@@ -97,14 +97,18 @@ Read the relevant step before working. Do only that step.
 
 ## Commands (keep updated)
 - Backend CLI: cd backend && uv run python -m ctxpack.cli <command>
-  (doctor, catalog, tool, classify, plan, research, extract, cluster, write, verify, pack, export, feature, redact-run, overlap, export-schema,
-  version)
+  (doctor, catalog, tool, classify, plan, research, extract, cluster, write, verify, pack, export, feature
+  [--replaces OLD_ID], redact-run, overlap, export-schema, eval [--reuse] [--only ID] [--recheck],
+  demo-check [--no-paid], version)
 - Research run: ... research "<brief>" --mode quick|standard [--fixtures]
   [--auto-approve] [--no-apify] [--apify-max USD] [--record]
 - Analysis on a saved corpus: ... extract --from-run RUN_ID, then
   ... cluster --from-run RUN_ID [--redo], then write, verify and pack --from-run RUN_ID
   [--redo] (estimate shown first); pack [--brand-voice] [--test-hook] writes
   every export to data/packs/<pack_id>/; export PACK_ID re-exports (free)
+- Scripts: cd backend && uv run python -m scripts.demo_agent [--pack ID];
+  uv run python -m scripts.build_mirror (static mirror into mirror/, not committed)
+- Keyless local demo: USE_FIXTURES=true LLM_FAKE=true ./start.sh (local SQLite, no keys)
 - Tests: cd backend && uv run pytest
 - Local app: ./start.sh (builds frontend/, then serves it and the API on :7860)
 - Frontend: cd frontend && npm run dev (:5173, /api proxied to :7860);

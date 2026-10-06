@@ -12,7 +12,7 @@ from importlib.metadata import version as pkg_version
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse
 from sqlalchemy import text
 
 from ctxpack import db, mcp_server, worker
@@ -84,6 +84,17 @@ app = FastAPI(title="SIGNAL - Context Packs", version=VERSION, lifespan=lifespan
 app.include_router(router)
 app.mount("/mcp", mcp_app)
 
+MIRROR_URL = "https://bezawitzyb.github.io/signal-context-packs/"
+
+
+@app.exception_handler(Exception)
+async def friendly_error(request, exc: Exception) -> JSONResponse:
+    """Anything unexpected: a plain message, never a stack trace (logged as its type only)."""
+    log.error("unhandled %s on %s", type(exc).__name__, request.url.path)
+    return JSONResponse(status_code=500, content={
+        "detail": "Something went wrong on our side. Please try again in a minute. The featured packs are "
+                  f"also in the read-only mirror: {MIRROR_URL}"})
+
 
 @app.middleware("http")
 async def mcp_without_slash(request, call_next):
@@ -111,9 +122,18 @@ def _database_reachable() -> bool:
 
 @app.get("/health")
 def health() -> dict:
-    """App status + version + whether the database answers SELECT 1."""
+    """App status + version + whether the database answers SELECT 1, and whether new runs are accepted
+    today (false once the daily spend cap is reached). No amounts: those stay private."""
+    from ctxpack.guards import daily_spend_left
+
     database = _database_reachable()
-    return {"ok": database, "version": VERSION, "database": database}
+    accepting = None
+    if database:
+        try:
+            accepting = daily_spend_left() > 0
+        except Exception as exc:
+            log.warning("health: spend check failed (%s)", type(exc).__name__)
+    return {"ok": database, "version": VERSION, "database": database, "accepting_runs": accepting}
 
 
 # The built web app (frontend/dist). Locally next to backend/, in the image at /app/frontend/dist.

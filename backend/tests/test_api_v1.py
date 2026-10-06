@@ -80,8 +80,9 @@ def test_starting_runs_needs_the_key(api, monkeypatch):
     assert client.post("/api/v1/runs", json=body, headers={"X-API-Key": "wrong"}).status_code == 401
     assert client.post("/api/v1/runs/run_x/start", headers={"X-API-Key": "wrong"}).status_code == 401
     monkeypatch.setenv("RUN_KEY", "")  # empty on purpose: the owner's local key is never used in tests
+    monkeypatch.setenv("LLM_FAKE", "false")  # a real server (not the offline demo): runs switched off
     get_settings.cache_clear()
-    assert client.post("/api/v1/runs", json=body, headers=KEY).status_code == 503   # runs switched off
+    assert client.post("/api/v1/runs", json=body, headers=KEY).status_code == 503   # refused before any call
 
 
 def test_plan_then_start_then_the_queue(api):
@@ -326,3 +327,28 @@ def test_clean_text_and_escape_debris_in_new_terms():
     rep = RedactReport()
     tree = redact_tree({"payload": {"new_terms": ["chips", "ud83d", "ud83e udd63", "lekker"]}}, rep)
     assert tree["payload"]["new_terms"] == ["chips", "lekker"] and rep.strings_changed == 2
+
+
+def test_offline_demo_needs_no_keys(monkeypatch, tmp_path):
+    """A fresh clone without .env (README): fixtures + fake model -> local SQLite, demo salt, no run key."""
+    from ctxpack import guards
+    from ctxpack.collect.cleaning import hash_author  # noqa: F401
+    for name in ("DATABASE_URL", "RUN_KEY", "AUTHOR_HASH_SALT"):
+        monkeypatch.setenv(name, "")
+    monkeypatch.setenv("USE_FIXTURES", "true")
+    monkeypatch.setenv("LLM_FAKE", "true")
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    get_settings.cache_clear()
+    try:
+        assert get_settings().offline
+        engine = db.init_engine()
+        assert str(engine.url).startswith("sqlite") and (tmp_path / "local.db").name in str(engine.url)
+        guards.check_run_key(None)                                       # no key needed offline
+        monkeypatch.setenv("LLM_FAKE", "false")                          # anything paid possible -> key needed
+        get_settings.cache_clear()
+        with pytest.raises(guards.GuardError):
+            guards.check_run_key(None)
+    finally:
+        db.get_engine().dispose()
+        db._engine = None
+        get_settings.cache_clear()

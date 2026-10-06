@@ -2,10 +2,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { FastForward, Pause, Play } from "lucide-react";
-import { getPack, getRun, type ContextPack, type RunStatus } from "../lib/api";
+import { friendlyError, getPack, getRun, type ContextPack, type RunStatus } from "../lib/api";
 import { summarize } from "../lib/runSummary";
 import type { RunEvent } from "../lib/useRunEvents";
 import { TheatreLayout } from "./RunPage";
+import { ErrorNote } from "../components/ErrorNote";
 
 const QUIET = new Set(["cost", "counters", "queue"]); // shown, but without a pause
 
@@ -28,7 +29,7 @@ export function ReplayPage({ runId, packId: packIdProp }: { runId?: string; pack
       }
       setPack(await getPack(id!));
     };
-    load().catch((e: Error) => setError(e.message));
+    load().catch((e) => setError(friendlyError(e)));
   }, [runId, packIdFromUrl]);
 
   const events: RunEvent[] = useMemo(
@@ -51,7 +52,7 @@ export function ReplayPage({ runId, packId: packIdProp }: { runId?: string; pack
     // A pack copies its events while it is built, before "pack ready" exists: the end of a replay is done.
     return finishedPlaying && pack ? { ...sum, packId: pack.pack_id, milestones: [...sum.milestones, "The pack is ready"] } : sum;
   }, [events, shown, finishedPlaying, pack]);
-  if (error) return <p className="text-ink-2">{error}</p>;
+  if (error) return <ErrorNote message={error} />;
   if (!pack) return <p className="text-ink-3">Loading the replay…</p>;
   const finished = shown >= events.length;
   const c = pack.coverage;

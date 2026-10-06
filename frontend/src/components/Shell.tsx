@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet } from "react-router";
+import { LIVE_URL, MIRROR } from "../lib/api";
 
 export function Shell() {
   const nav = ({ isActive }: { isActive: boolean }) =>
@@ -16,19 +17,24 @@ export function Shell() {
             <span className="hidden text-sm text-ink-3 sm:inline">Context Packs</span>
           </Link>
           <nav aria-label="Main" className="flex items-center gap-1">
-            <NavLink to="/" end className={nav}>Ask</NavLink>
+            <NavLink to="/" end className={nav}>{MIRROR ? "Home" : "Ask"}</NavLink>
             <NavLink to="/packs" className={nav}>Packs</NavLink>
-            <a href="/docs" className="rounded px-2 py-1 text-sm text-ink-2 hover:text-ink">API</a>
+            <a href={MIRROR ? `${LIVE_URL}/docs` : "/docs"} className="rounded px-2 py-1 text-sm text-ink-2 hover:text-ink">API</a>
           </nav>
         </div>
       </header>
+      {MIRROR && (
+        <p className="border-b border-line bg-wash px-4 py-2 text-center text-sm text-ink-2 print:hidden">
+          Read-only mirror of the featured packs. Live research: <a href={LIVE_URL} className="text-ink underline">{LIVE_URL.replace("https://", "")}</a>
+        </p>
+      )}
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         <Outlet />
       </main>
       <footer className="border-t border-line print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 px-4 py-4 text-xs text-ink-3">
           <span>Real public posts, in their own words. Quotes are for insight, not for ads without permission.</span>
-          <span className="flex gap-3 font-mono"><a href="/evals" className="hover:text-ink">evals</a><a href="/docs" className="hover:text-ink">/api/v1</a><span>/mcp</span></span>
+          <span className="flex gap-3 font-mono"><Link to="/evals" className="hover:text-ink">evals</Link><a href={MIRROR ? `${LIVE_URL}/docs` : "/docs"} className="hover:text-ink">/api/v1</a><span>/mcp</span></span>
         </div>
       </footer>
     </div>

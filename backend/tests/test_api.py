@@ -27,6 +27,18 @@ def test_health_ok_with_database(temp_db):
     assert body["version"]
 
 
+def test_health_says_when_the_daily_cap_stops_runs(temp_db, monkeypatch):
+    from ctxpack.config import get_settings
+
+    assert client.get("/health").json()["accepting_runs"] is True
+    monkeypatch.setenv("DAILY_SPEND_CAP_USD", "0.01")           # the cap test (guide Step 5.5)
+    get_settings.cache_clear()
+    temp_db.add_spend(llm_usd=0.02)
+    body = client.get("/health").json()
+    get_settings.cache_clear()
+    assert body["accepting_runs"] is False and "usd" not in str(body).lower()
+
+
 def test_health_reports_unreachable_database(monkeypatch):
     def broken():
         raise RuntimeError("no database")
@@ -76,3 +88,16 @@ def test_placeholder_page_without_a_build(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "DIST", tmp_path / "missing")
     assert "SIGNAL" in client.get("/").text
     assert client.get("/packs/x").status_code == 404
+
+
+def test_unexpected_errors_are_friendly(monkeypatch):
+    from ctxpack.api import routes
+
+    def boom():
+        raise RuntimeError("internal detail that must not leak")
+
+    monkeypatch.setattr(routes.service, "featured", boom)
+    response = TestClient(app, raise_server_exceptions=False).get("/api/v1/packs")
+    assert response.status_code == 500
+    assert "try again" in response.json()["detail"] and "internal detail" not in response.text
+    assert "Traceback" not in response.text

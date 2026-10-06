@@ -88,3 +88,28 @@ Memory test: both Standard runs peak below 400 MB, so Step 2.6 (Modal) is not ne
 |------|-------|-----|--------|
 | `pk_wrvZBhDFsLR9` | Launching a snack brand in the Netherlands | `run_wOcIwOgGDnDUITS2` (fresh, 1,042 s) | strong 3, moderate 8, emerging 22, speculative 27 |
 | `pk_CamfAsJ7Zbdr` | Gen Z and meal prep | `run_bz5PBTd-Pr6Xp3f2` (thin evidence) | emerging 23, speculative 24 |
+
+## Static mirror (GitHub Pages, guide B15)
+
+- `.github/workflows/mirror.yml` builds a read-only copy of the web app with the featured packs
+  (`backend/scripts/build_mirror.py`) and publishes it to
+  https://bezawitzyb.github.io/signal-context-packs/ on every push that changes `featured/` or the
+  frontend. It needs no secrets.
+- One-time setup: GitHub -> the repo -> **Settings -> Pages -> Build and deployment -> Source:
+  GitHub Actions**. Then GitHub -> **Actions -> mirror -> Run workflow** once.
+- Try it locally: `cd backend && uv run python -m scripts.build_mirror --base /` and open
+  `mirror/index.html` through any static server.
+
+## Before the demo: demo-check
+
+`cd backend && uv run python -m ctxpack.cli demo-check` checks the live service (/ping, /health, new runs
+accepted today, featured packs, MCP), the last keep-alive run, the static mirror, a tiny Anthropic call
+(< $0.001) and Apify, today's local spend, and security (the real run key appears in no file, no commit,
+no web build and not on the live site - compared inside the script, never printed - plus gitleaks).
+
+## Cap test (Step 5.5)
+
+1. Render -> the service -> **Environment** -> `DAILY_SPEND_CAP_USD` = `0.01` -> Save (Render restarts).
+2. `https://signal-l2w5.onrender.com/health` shows `"accepting_runs": false`; starting a run in the web
+   app is refused with a friendly message; featured packs still open.
+3. Set `DAILY_SPEND_CAP_USD` back to `25` -> Save. `/health` shows `"accepting_runs": true` again.

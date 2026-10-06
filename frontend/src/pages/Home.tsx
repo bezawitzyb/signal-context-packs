@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
-import { listPacks, type FeaturedPack } from "../lib/api";
+import { friendlyError, listPacks, LIVE_URL, MIRROR, type FeaturedPack } from "../lib/api";
+import { ErrorNote } from "../components/ErrorNote";
 import { ModeBadge } from "../components/badges";
 import { AskFlow } from "./Ask";
 import { Skeleton } from "../components/Skeleton";
@@ -36,7 +37,7 @@ export function useFeatured() {
   const [packs, setPacks] = useState<FeaturedPack[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    listPacks().then(setPacks).catch((e: Error) => setError(e.message));
+    listPacks().then(setPacks).catch((e) => setError(friendlyError(e)));
   }, []);
   return { packs, error };
 }
@@ -57,13 +58,16 @@ export function Home() {
       </section>
       <section aria-labelledby="featured">
         <h2 id="featured" className="mb-3 text-lg font-semibold text-ink">See a sample pack</h2>
-        {error && <p className="text-sm text-ink-2">Could not load the packs: {error}</p>}
+        {error && <ErrorNote message={error} />}
         {!packs && !error && <Skeleton lines={1} label="Loading the sample packs" />}
         {packs && <PackCards packs={packs} />}
       </section>
       <section aria-labelledby="ask">
         <h2 id="ask" className="mb-3 text-lg font-semibold text-ink">Research your own brief</h2>
-        <AskFlow />
+        {MIRROR
+          ? <p className="text-ink-2">This is the read-only mirror of the featured packs. Research your own brief on
+              the <a href={LIVE_URL} className="text-ink underline">live app</a>.</p>
+          : <AskFlow />}
       </section>
     </div>
   );
@@ -74,7 +78,7 @@ export function Packs() {
   return (
     <div>
       <h1 className="mb-4 text-2xl font-semibold tracking-tight text-ink">Featured packs</h1>
-      {error && <p className="text-sm text-ink-2">Could not load the packs: {error}</p>}
+      {error && <ErrorNote message={error} />}
       {packs && <PackCards packs={packs} />}
     </div>
   );

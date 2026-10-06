@@ -16,6 +16,8 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent
 REPO_DIR = BACKEND_DIR.parent
 CONFIG_DIR = Path(__file__).resolve().parent / "config"
 
+OFFLINE_SALT = "fixtures-only-not-a-secret"  # offline demo only: recorded data, nothing real is hashed
+
 SECRET_NAMES = (
     "ANTHROPIC_API_KEY",
     "APIFY_API_TOKEN",
@@ -53,6 +55,12 @@ class Settings(BaseSettings):
         """True if the secret has a non-empty value. Never returns the value."""
         value = getattr(self, name.lower())
         return value is not None and value.get_secret_value().strip() != ""
+
+    @property
+    def offline(self) -> bool:
+        """Recorded data AND the fake model: nothing can be paid for. A fresh clone with no .env runs
+        this way (README): local SQLite, a fixed demo salt, and runs start without a run key."""
+        return self.use_fixtures and self.llm_fake
 
     @property
     def data_path(self) -> Path:

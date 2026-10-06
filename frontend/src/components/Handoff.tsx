@@ -2,7 +2,7 @@
 // the MCP command uses the <YOUR_KEY> placeholder.
 import { useEffect, useRef, useState } from "react";
 import { Bot, Check, Copy, Download, FileText, Printer, Users, X } from "lucide-react";
-import { exportUrl } from "../lib/api";
+import { exportUrl, LIVE_URL, MIRROR } from "../lib/api";
 import { markdownToHtml } from "../lib/markdown";
 
 async function copyText(url: string): Promise<void> {
@@ -78,7 +78,7 @@ export function Handoff({ packId, open, onClose }: { packId: string; open: boole
     if (open && !d.open) d.showModal();
     if (!open && d.open) d.close();
   }, [open]);
-  const mcp = `${window.location.origin}/mcp`;
+  const mcp = `${MIRROR ? LIVE_URL : window.location.origin}/mcp`;  // the mirror has no server
   return (
     <dialog ref={ref} onClose={onClose} aria-labelledby="handoff-title"
             className="m-auto w-full max-w-2xl rounded-xl border border-line bg-paper p-0 text-ink backdrop:bg-ink/30">

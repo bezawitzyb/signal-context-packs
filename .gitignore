@@ -37,3 +37,6 @@ npm-debug.log*
 # --- Playwright ---
 test-results/
 playwright-report/
+
+# --- Static mirror build output (published by .github/workflows/mirror.yml) ---
+mirror/

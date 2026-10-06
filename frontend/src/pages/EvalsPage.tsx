@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Skeleton } from "../components/Skeleton";
+import { friendlyError, getEvals } from "../lib/api";
 
 interface Metric {
   value: number | string | Record<string, unknown> | null;
@@ -97,7 +98,7 @@ export function EvalsPage() {
   const [data, setData] = useState<Evals | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    fetch("/api/v1/evals").then((r) => r.json()).then(setData).catch(() => setError("Could not load the evaluations."));
+    getEvals<Evals>().then(setData).catch((e) => setError(friendlyError(e)));
   }, []);
   const human = data?.human;
   const target = human?.target_would_use_share ?? 0.6;

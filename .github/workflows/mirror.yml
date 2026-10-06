@@ -1,0 +1,58 @@
+# Static mirror of the featured packs on GitHub Pages (guide B15): demo insurance that works
+# with the live service switched off. Rebuilt whenever featured packs or the web app change.
+# Needs no secrets: it only reads featured/ (finished, privacy-checked packs) and builds the frontend.
+# One-time setup: GitHub -> Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+name: mirror
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "featured/**"
+      - "frontend/**"
+      - "backend/ctxpack/exports/**"
+      - "backend/ctxpack/evaluation.py"
+      - "backend/scripts/build_mirror.py"
+      - ".github/workflows/mirror.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend packages
+        run: npm ci
+        working-directory: frontend
+      - name: Build the mirror
+        run: uv run python -m scripts.build_mirror --base "/${{ github.event.repository.name }}/"
+        working-directory: backend
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: mirror
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

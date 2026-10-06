@@ -253,8 +253,13 @@ def make_draft(
 ) -> Draft:
     """Normalise + privacy in ONE function: the raw author name dies here (CLAUDE.md)."""
     if salt is None:
-        secret = get_settings().author_hash_salt
+        settings = get_settings()
+        secret = settings.author_hash_salt
         salt = secret.get_secret_value() if secret else ""
+        if not salt and settings.offline:
+            from ctxpack.config import OFFLINE_SALT
+
+            salt = OFFLINE_SALT
     author_hash = hash_author(str(platform), author, salt)
     del author  # never stored, logged, cached or prompted
     clean, changed = redact(normalise_text(text), page_names)
