@@ -13,7 +13,7 @@ async function noSeriousA11yIssues(page: Page, where: string) {
 
 test("brief to pack, with the evidence drawer and accessibility checks", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "See a sample pack" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "See an example pack" })).toBeVisible();
   await expect(page.getByText("See the pack").first()).toBeVisible();
   await noSeriousA11yIssues(page, "Ask page");
 

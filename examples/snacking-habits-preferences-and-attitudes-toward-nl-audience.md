@@ -220,6 +220,7 @@
 ## Playbook
 
 ### Hooks
+*Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.*
 - Check de kcal en de suiker per 100 g voordat je 'gezond' gelooft. Wij zetten de cijfers gewoon vooraan. Ook de saaie. *[HOOK-01; TEN-01, CUL-01, THM-02, MOT-03]*
 - Paprika, bolognese of cheese onion: kies je kant. Welke chipsmaak is voor jou verslavend lekker? *[HOOK-02; TEN-01, THM-03, LEX-11, MOT-05]* **[check with legal: food_nutrition, CMP-01]**
 - Winner taco, Yes bar... welke snack mis jij nog? Jeugdsentiment, en niemand legt uit waarom hij uit de schappen verdween. *[HOOK-03; TEN-01, THM-01, WSP-01, LEX-10]*
@@ -275,11 +276,11 @@
 
 - **Never claim:** verslavend lekker; 4 cent goedkoper bij Aldi; Eiwit en vezels op de zak; your snack next to familiar chips; test of familiar chips next to yours; Lead with actual protein and fibre amounts; gentle-on-the-stomach angle; Affordable healthier snack range; less sugar and fewer additives
 - **Sensitivities:** Health positioning invites push-back. Posts check calories and sugar and question the word 'gezond', so unproven claims could draw sceptical replies.; Reformulation such as less salt can split fans. One post prefers the lower-salt chips, another is annoyed by a 'minder zout' trend, so test with loyal buyers.; Protein or health bars face open taste scorn in comments, even when a reviewer praises them. Credibility depends on honest taste claims.; Nostalgia is emotional. Removing or replacing a loved product can draw angry posts, and a stand-in is judged against the original.; The evidence on many topics is thin, often one or two posts, and mostly comes from forums and video comments. Do not treat it as a full picture of Dutch snackers.
-- **Quotes:** Real people's words are for insight and briefs, not for ads without permission.
+- **Quotes:** Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.
 
 ## Method
 
-Collected 467, duplicates 2, spam 9, out of window 16, kept 440 (undated 243), relevant 233. Agent tool calls: 10, finished by finish.
+Collected 467, duplicates 2, spam 9, out of window 16, kept 440 (undated 243), relevant 233. Research moves: 10, finished by finish.
 
 **Sources used:**
 - web:forum.fok.nl (web_forum): 243 kept, 63% relevant - High-relevance Dutch first-person talk on chips and snacks, with brands, flavours and slang.
@@ -291,6 +292,8 @@ Collected 467, duplicates 2, spam 9, out of window 16, kept 440 (undated 243), r
 **Sources dropped:**
 - tiktok:#snacktip: Mostly English, US-centric and low relevance (11%); not the Dutch market.
 
-**Privacy:** authors are stored only as salted hashes; personal details are redacted. Quotes are real people's words: Real people's words are for insight and briefs, not for ads without permission. Raw run data at our scraping provider expires under its standard retention.
+**Privacy:** authors are stored only as salted hashes; personal details are redacted. Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material. Collected posts are deleted after 30 days. Author names are never stored.
 
-**Confidence labels:** strong, moderate, emerging, speculative (PRD 5.4). "Safe to state" = strong, observed and verified. Evidence ids (EV-...) point to the posts in context_pack.json.
+**Confidence labels:** strong, moderate, emerging, speculative. "Safe to state" = strong, observed and confirmed by the claim check. Evidence ids (EV-...) point to the posts in context_pack.json.
+
+*AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.*

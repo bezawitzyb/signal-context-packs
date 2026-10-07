@@ -7,6 +7,19 @@ import re
 from ctxpack.config import load_yaml
 
 
+# Plain words every export carries (commercial messaging; not in the pack itself).
+DISCLAIMER = ("AI-assisted analysis of public online conversations; it may contain errors. "
+              "Compliance flags are not legal advice.")
+HOOKS_NOTE = ("Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL "
+              "need sign-off.")
+
+
+def privacy_line() -> str:
+    from ctxpack.config import get_settings
+
+    return f"Collected posts are deleted after {get_settings().retention_days} days. Author names are never stored."
+
+
 def cfg() -> dict:
     return load_yaml("modes")["exports"]
 

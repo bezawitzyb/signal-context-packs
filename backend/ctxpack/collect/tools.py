@@ -142,7 +142,7 @@ def _general_limit(ctx: RunContext) -> str | None:
     return None
 
 
-NO_APIFY_CREDIT = ("apify is unavailable for this run (credit used up or switched off): Reddit, TikTok, "
+NO_APIFY_CREDIT = ("social sources are unavailable for this run: Reddit, TikTok, "
                    "YouTube, Instagram and Trends cannot run; use web_search and fetch_and_segment")
 
 
@@ -348,7 +348,7 @@ async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platfor
     src = _catalog()["sources"][source]
     expected = apify.expected_cost(src["actor"], limit)
     if ctx.apify_usd + ctx.pending_apify_usd + expected > apify_cap(ctx):
-        return _limit_reached(ctx, f"apify budget (this call ~{expected} USD)")
+        return _limit_reached(ctx, "social-source budget for this run is used up")
     ctx.call_keys.add(key)
     ctx.calls += 1
     ctx.queries.append(target)
@@ -578,7 +578,7 @@ async def get_trends(ctx: RunContext, terms: list[str], geo: str = "", reason: s
 
     expected = apify.expected_cost(src["actor"], limit_for(src["actor"]))
     if ctx.apify_usd + expected > apify_cap(ctx):
-        return _limit_reached(ctx, f"apify budget (this call ~{expected} USD)")
+        return _limit_reached(ctx, "social-source budget for this run is used up")
     ctx.call_keys.add(key)
     ctx.calls += 1
     tf, tr = _timeframe(ctx.window_days)

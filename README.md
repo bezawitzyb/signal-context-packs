@@ -1,6 +1,6 @@
 # SIGNAL - Context Packs
 
-**Verified audience research for marketers and AI agents.** Give SIGNAL a brief ("Launching a snack
+**Evidence-linked audience research for marketers and AI agents.** Give SIGNAL a brief ("Launching a snack
 brand in the Netherlands"). An agent decides where the audience really talks, collects real public
 posts in the right market and language, and returns a **Context Pack**: their words, tensions,
 objections, white space and a playbook. Every claim is tied to the posts behind it and carries a
@@ -21,8 +21,8 @@ block, a Claude skill, MCP).
    in the Netherlands, or heat pumps for homeowners in Germany. Click any `EV-` reference to open the
    real posts, use **View as agent** to see the JSON an agent reads, and **Replay the research** to watch
    the agent's decisions again.
-2. **Run your own brief.** Live runs need the run key **provided with your judging materials** (it is
-   never shown on screen). A Quick run takes about 7-11 minutes; one run at a time, later ones queue.
+2. **Run your own brief.** Live runs need an access key (the run key); it is never shown on screen.
+   A Quick run takes about 7-11 minutes; one run at a time, later ones queue.
 3. If the live app is slow to answer, the free server is waking up (about a minute). The
    [read-only mirror](https://bezawitzyb.github.io/signal-context-packs/) has every featured pack, the
    evidence drawer and all downloads.
@@ -61,7 +61,7 @@ guardrails and instructions for agents.
 
 - [docs/SCHEMA.md](docs/SCHEMA.md) explains every field. Confidence is **strong / moderate / emerging /
   speculative** from evidence count, authors, platforms, sources, recency and the verifier. Only strong,
-  observed, verified claims are `safe_to_assert`.
+  observed claims confirmed by the claim check are `safe_to_assert`.
 - [examples/](examples/) has the three featured packs as JSON and Markdown, each with its exported skill
   folder, and [examples/demo_agent.md](examples/demo_agent.md): an agent writing TikTok scripts with and
   without a pack, with automatic checks.
@@ -75,13 +75,14 @@ guardrails and instructions for agents.
   never stored, logged or sent to a model. Emails, phone numbers, handles and profile links are redacted.
 - Scraped text is treated as untrusted data and is wrapped as such in every prompt.
 - Collected posts expire after 30 days. Packs keep at most short excerpts (280 characters) with links.
-- Quotes are for insight and briefs, **not for ads without permission** - every pack says so.
+- Quoted excerpts are for internal research and briefs only, **not for ads or other public material** -
+  every pack says so. Exports note that the analysis is AI-assisted and that compliance flags are not legal advice.
 - The repo is public and contains no keys: gitleaks runs on every commit, and `demo-check` also
   searches the files, the git history and the web builds for the real run key.
 
 ## Evaluation results
 
-Four test briefs that mirror the judges' tests (details and reasons on [/evals](https://signal-l2w5.onrender.com/evals)):
+Four test briefs (details and reasons on [/evals](https://signal-l2w5.onrender.com/evals)):
 
 | Metric | Result | Target |
 |---|---|---|
@@ -139,7 +140,7 @@ More in [docs/DEPLOY.md](docs/DEPLOY.md).
 ## Architecture
 
 ```
- Browser (marketer, judge)                 AI agents (Claude, MCP clients)
+ Browser (marketer)                        AI agents (Claude, MCP clients)
            |                                            |
            v                                            v
  +---------------------------------------------------------------------+

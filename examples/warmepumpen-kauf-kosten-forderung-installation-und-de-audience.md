@@ -225,6 +225,7 @@
 ## Playbook
 
 ### Hooks
+*Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.*
 - Wärmepumpe nach 1 Jahr: meine Rechnung neben der Gas-Abrechnung vom Vorjahr. Mit kWh und Euro, auch die unschönen Zeilen. *[HOOK-01; TEN-01, MOM-01, CUL-04, PERF-02, MOT-01, PHR-05]* **[check with legal: energy_environmental, CMP-01]**
 - Altbau, nicht gedämmt, normale Heizkörper, keine FBH. Hier sind meine Vorlauftemperatur und meine JAZ. Ob das reicht, entscheidet ihr. *[HOOK-02; TEN-01, CUL-01, LEX-13, LEX-07, LEX-03, HYP-02]*
 - PV im Dezember: Wie viel kWh liefert das Dach tatsächlich, wenn die WP am meisten braucht? Ich lege meine Zahlen offen. *[HOOK-03; TEN-02, THM-01, WSP-03, LEX-01]*
@@ -295,11 +296,11 @@
 
 - **Never claim:** Wärmepumpe-Rechnung neben Gas-Abrechnung; Die Einstellung vom Fachbetrieb, naja; bis sich die Anlage amortisiert hat; Was kostet eine kWh Wärme; Bank und Heizungsbauer kommen ins Schwimmen; Geschwindigkeitsbonus bekommen, Einzug im Haus; meine echte Rechnung gegen die Gas-Abrechnung; WP-Stromrechnung neben Gas-Basisjahr; actual annual bills against previous gas or oil; Fair benchmarks for consumption
 - **Sensitivities:** Promising specific savings or efficiency without showing the baseline will trigger the 'fake numbers' reaction and disbelief.; Messaging that sounds like government-backed pressure to switch can fuel the sense of a politically forced change and a backlash against subsidies.; Promoting heat pumps for old unrenovated houses without caveats risks credibility, because many see that as a cold and expensive combination.; Naming or comparing Enpal, Thermondo or other providers could draw legal or reputation issues, since the criticism rests on a few forum opinions.; Giving subsidy advice (occupancy, split trades, advance payment) as fact is risky because even advisors disagree and rules may change.; Selling PV plus heat pump as a cost cure ignores the winter shortfall that the audience already points out.
-- **Quotes:** Real people's words are for insight and briefs, not for ads without permission.
+- **Quotes:** Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.
 
 ## Method
 
-Collected 372, duplicates 1, spam 5, out of window 58, kept 308 (undated 13), relevant 101. Agent tool calls: 11, finished by finish, top-up used.
+Collected 372, duplicates 1, spam 5, out of window 58, kept 308 (undated 13), relevant 101. Research moves: 11, finished by finish; more evidence was collected from sources already working.
 
 **Sources used:**
 - youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten (youtube): 33 kept, 61% relevant - Hohe Relevanz (61 %): Betreiberzahlen, Hersteller und Kosten.
@@ -319,6 +320,8 @@ Collected 372, duplicates 1, spam 5, out of window 58, kept 308 (undated 13), re
 - web:photovoltaikforum.com: dropped: nothing usable came back
 - youtube:search:wärmepumpe installateur angebot wartezeit jahresarbeitszahl vorlauftemperatur: dropped: nothing usable came back
 
-**Privacy:** authors are stored only as salted hashes; personal details are redacted. Quotes are real people's words: Real people's words are for insight and briefs, not for ads without permission. Raw run data at our scraping provider expires under its standard retention.
+**Privacy:** authors are stored only as salted hashes; personal details are redacted. Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material. Collected posts are deleted after 30 days. Author names are never stored.
 
-**Confidence labels:** strong, moderate, emerging, speculative (PRD 5.4). "Safe to state" = strong, observed and verified. Evidence ids (EV-...) point to the posts in context_pack.json.
+**Confidence labels:** strong, moderate, emerging, speculative. "Safe to state" = strong, observed and confirmed by the claim check. Evidence ids (EV-...) point to the posts in context_pack.json.
+
+*AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.*

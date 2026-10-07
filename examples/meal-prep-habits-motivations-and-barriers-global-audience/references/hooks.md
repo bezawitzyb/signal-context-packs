@@ -1,5 +1,5 @@
 # Hooks and this week
-Hooks are starting points in the audience's voice. Respect the flags.
+Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.
 
 - College student mealprep for the week: every dish, every recipe, and exactly what I spent. (HOOK-01; builds on TEN-01, PHR-02, CUL-02, PERF-04)
 - I made a double batch, froze half, and now future me doesn't have to cook. Frozen anything is my whole personality. (HOOK-02; builds on TEN-01, THM-02, LEX-08, CUL-01)

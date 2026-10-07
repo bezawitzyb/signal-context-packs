@@ -163,7 +163,7 @@ def test_apify_budget_uses_expected_cost(offline):
     ctx, _ = make_ctx()
     ctx.apify_usd = ctx.limits["apify_usd"] - 0.001
     out = run(tools.search_tiktok(ctx, "#mealprep", 20, "test"))
-    assert out["status"] == "limit_reached" and "apify budget" in out["reason"]
+    assert out["status"] == "limit_reached" and "social-source budget" in out["reason"]
 
 
 def test_dropped_unit_is_never_called_again(offline):

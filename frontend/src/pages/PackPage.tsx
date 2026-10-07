@@ -25,11 +25,11 @@ const NAV: [string, string][] = [
 ];
 const GLYPH: Record<Label, string> = { strong: "●", moderate: "◐", emerging: "○", speculative: "◌" };
 const STOPPED: Record<string, string> = {
-  finish: "finished when it judged the evidence enough", tool_call_limit: "stopped at the tool-call limit",
+  finish: "finished when it judged the evidence enough", tool_call_limit: "stopped at its move limit",
   time_limit: "stopped at the time limit", budget_limit: "stopped at the budget limit",
   no_tool_call: "stopped when it made no further call", error: "stopped after an error", stopped: "was stopped by hand",
 };
-const PRIVACY_LINE = "Raw run data at our scraping provider expires under its standard retention.";
+const PRIVACY_LINE = "Collected posts are deleted after 30 days. Author names are never stored.";
 
 type Tension = InsightLike & { want: { text: string; evidence_ids: string[] }; but: { text: string; evidence_ids: string[] } };
 const asItems = (x: unknown) => x as InsightLike[];
@@ -276,6 +276,8 @@ function Playbook({ pack }: { pack: ContextPack }) {
   return (
     <>
       <Sub title={`Hooks (${pb.hooks.length})`}>
+        <p className="mb-3 text-sm text-ink-3">Drafts written by AI from the research. Review before use; items marked
+          "check with legal" need sign-off.</p>
         <div className="space-y-3">{pb.hooks.map((h) => <HookCard key={h.id} hook={h} flags={flagsFor(h.id)} />)}</div>
       </Sub>
       {cb && (
@@ -349,9 +351,9 @@ function Method({ pack }: { pack: ContextPack }) {
           ))}
         </ul>
         <p className="mt-2 text-sm text-ink-3">
-          {n.undated} of {n.kept} kept posts have no date. The agent made {c.loop.tool_calls} tool calls and{" "}
+          {n.undated} of {n.kept} kept posts have no date. The research agent made {c.loop.tool_calls} moves and{" "}
           {STOPPED[c.loop.finish_reason] ?? `stopped (${c.loop.finish_reason.replace(/_/g, " ")})`}
-          {c.loop.fallback_used ? "; the fallback plan was used" : ""}{c.loop.top_up_used ? "; evidence was topped up from kept sources" : ""}.
+          {c.loop.fallback_used ? "; the remaining planned sources were collected automatically" : ""}{c.loop.top_up_used ? "; more evidence was collected from sources already working" : ""}.
         </p>
       </Sub>
       <Sub title="Sources kept and dropped">
@@ -361,7 +363,7 @@ function Method({ pack }: { pack: ContextPack }) {
         </div>
       </Sub>
       <Sub title="Decision log">
-        <TableSection caption="Every agent tool call" rowKey={(r) => String(r.seq)}
+        <TableSection caption="Every research move" rowKey={(r) => String(r.seq)}
                       rows={[...c.decision_log].sort((a, b) => a.seq - b.seq)} columns={[
           { header: "#", cell: (r) => r.seq, kind: "data" },
           { header: "Move", cell: (r) => <>{r.tool.replace(/_/g, " ")}<span className="block font-mono text-xs text-ink-3 break-all">{r.source_unit ?? ""}</span></> },
@@ -372,11 +374,12 @@ function Method({ pack }: { pack: ContextPack }) {
       <Sub title="Privacy and limits">
         <div className="space-y-2 text-sm text-ink-2">
           <p>Only public posts are used. Authors are stored as salted hashes, never names; emails, phone numbers, @handles and
-            names written in posts are removed before analysis. Quotes are real people's words: for insight and briefs, not for
-            ads without permission. {PRIVACY_LINE}</p>
+            names written in posts are removed before analysis. Quoted excerpts are for internal research and briefs only,
+            not for ads or other public material. {PRIVACY_LINE}</p>
           <p>Counts and confidence are computed in code from posts checked to belong to each finding; every quote is copied
             word for word from its post. Labels: strong, moderate, emerging, speculative. "Safe to state" means strong, observed
-            and verified.</p>
+            and confirmed by the claim check. This is AI-assisted analysis and may contain errors; compliance flags are not
+            legal advice.</p>
           <p><Link to={`/packs/${pack.pack_id}/replay`} className="inline-flex items-center gap-1 text-ink underline"><History aria-hidden="true" size={14} /> Replay the research</Link></p>
         </div>
       </Sub>
@@ -456,7 +459,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
               </LimitationCallout>
             )}
             {pack.coverage.loop.fallback_used && (
-              <LimitationCallout title="Fallback used">The agent loop failed, so the fallback plan collected the evidence.</LimitationCallout>
+              <LimitationCallout title="Collected automatically">The research agent stopped early, so the remaining planned sources were collected automatically.</LimitationCallout>
             )}
           </div>
 

@@ -52,14 +52,14 @@ export function Home() {
         </h1>
         <p className="mt-3 text-ink-2">
           Give a brief. An agent listens to real public posts in the right market and language, and builds a
-          verified Context Pack: tensions, their words, objections and a playbook, every claim tied to the posts
+          evidence-linked Context Pack: tensions, their words, objections and a playbook, every claim tied to the posts
           behind it. Ready for your team and for AI agents.
         </p>
       </section>
       <section aria-labelledby="featured">
-        <h2 id="featured" className="mb-3 text-lg font-semibold text-ink">See a sample pack</h2>
+        <h2 id="featured" className="mb-3 text-lg font-semibold text-ink">See an example pack</h2>
         {error && <ErrorNote message={error} />}
-        {!packs && !error && <Skeleton lines={1} label="Loading the sample packs" />}
+        {!packs && !error && <Skeleton lines={1} label="Loading the example packs" />}
         {packs && <PackCards packs={packs} />}
       </section>
       <section aria-labelledby="ask">

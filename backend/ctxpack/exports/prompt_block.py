@@ -7,7 +7,7 @@ never trimmed.
 
 from __future__ import annotations
 
-from ctxpack.exports.common import cfg, inline, tokens
+from ctxpack.exports.common import DISCLAIMER, cfg, inline, tokens
 
 
 def to_prompt_block(pack: dict) -> str:
@@ -44,6 +44,7 @@ def to_prompt_block(pack: dict) -> str:
         L += [f"- {w['day']}: {w['platform']} {inline(w['format'])} - {w['hook_id']} - {inline(w['angle'])}"
               for w in pb["this_week"][:sizes["week"]]]
         L += ["", "RULES FOR AI TOOLS:"] + [f"- {r}" for r in pack["instructions_for_agents"]]
+        L += ["", DISCLAIMER]
         return "\n".join(L) + "\n"
 
     text = build()

@@ -199,6 +199,7 @@
 ## Playbook
 
 ### Hooks
+*Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.*
 - College student mealprep for the week: every dish, every recipe, and exactly what I spent. *[HOOK-01; TEN-01, PHR-02, CUL-02, PERF-04]*
 - I made a double batch, froze half, and now future me doesn't have to cook. Frozen anything is my whole personality. *[HOOK-02; TEN-01, THM-02, LEX-08, CUL-01]*
 - Tired of eating the same leftovers? Prep ingredients, not whole meals, and switch it up all week. *[HOOK-03; TEN-02, THM-09, SEG-03, PHR-01]*
@@ -251,8 +252,8 @@
 - Source dropped: web:sitejabber.com - Reviews out of window or irrelevant to meal prep; 0 relevant.
 - Source dropped: web:trustpilot.com - Factor75 reviews were collected but judged not relevant (0 relevant).
 - Source dropped: web:forums.studentdoctor.net - Thread entirely out of window; nothing kept.
-- Source dropped: tiktok:#mealprep - Call refused: Apify budget exhausted; no data collected.
-- Source dropped: youtube:meal prep for college students - Call refused: Apify budget exhausted; no data collected.
+- Source dropped: tiktok:#mealprep - Call refused: social-source budget used up; no data collected.
+- Source dropped: youtube:meal prep for college students - Call refused: social-source budget used up; no data collected.
 - Source dropped: web:academichelp.net - dropped: nothing usable came back
 - Source dropped: web:aol.com - dropped: nothing usable came back
 - Source dropped: web:hercampus.com - dropped: nothing usable came back
@@ -272,11 +273,11 @@
 
 - **Never claim:** stop buying McMuffins ... freezer sandwiches; a cheap week; portions were small, something was missing; Macro-friendly prep; Own the cheap-week prep; Make-ahead filling breakfasts
 - **Sensitivities:** Kit complaints are about delivery problems, produce, missing items and small portions in specific reviews. Brands should not read them as a verdict on the whole category, and the web reviews are not necessarily Gen Z.; Much of the evidence is Reddit and review text from posters whose age is unknown, and several cluster points rest on only a few posts. Present findings as signals, not as the voice of all Gen Z.; Pushing meal prep as the answer could backfire with people who say it stresses them out or who dislike leftovers. Flexible planning (prepping components) may fit them better.; Food-storage and reheating advice touches on food safety. Any guidance given on freezing or storing prepped food should be accurate and sourced.
-- **Quotes:** Real people's words are for insight and briefs, not for ads without permission.
+- **Quotes:** Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.
 
 ## Method
 
-Collected 256, duplicates 0, spam 1, out of window 114, kept 141 (undated 73), relevant 76. Agent tool calls: 23, finished by finish, top-up used.
+Collected 256, duplicates 0, spam 1, out of window 114, kept 141 (undated 73), relevant 76. Research moves: 23, finished by finish; more evidence was collected from sources already working.
 
 **Sources used:**
 - reddit:r/MealPrepSunday (reddit): 30 kept, 73% relevant - Relevant share 0.73. Student budget preps, boredom, reheating problems and ingredient-prep habits.
@@ -293,8 +294,8 @@ Collected 256, duplicates 0, spam 1, out of window 114, kept 141 (undated 73), r
 - web:sitejabber.com: Reviews out of window or irrelevant to meal prep; 0 relevant.
 - web:trustpilot.com: Factor75 reviews were collected but judged not relevant (0 relevant).
 - web:forums.studentdoctor.net: Thread entirely out of window; nothing kept.
-- tiktok:#mealprep: Call refused: Apify budget exhausted; no data collected.
-- youtube:meal prep for college students: Call refused: Apify budget exhausted; no data collected.
+- tiktok:#mealprep: Call refused: social-source budget used up; no data collected.
+- youtube:meal prep for college students: Call refused: social-source budget used up; no data collected.
 - web:academichelp.net: dropped: nothing usable came back
 - web:aol.com: dropped: nothing usable came back
 - web:hercampus.com: dropped: nothing usable came back
@@ -305,6 +306,8 @@ Collected 256, duplicates 0, spam 1, out of window 114, kept 141 (undated 73), r
 - web:thekitchn.com: dropped: nothing usable came back
 - web:theodysseyonline.com: dropped: nothing usable came back
 
-**Privacy:** authors are stored only as salted hashes; personal details are redacted. Quotes are real people's words: Real people's words are for insight and briefs, not for ads without permission. Raw run data at our scraping provider expires under its standard retention.
+**Privacy:** authors are stored only as salted hashes; personal details are redacted. Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material. Collected posts are deleted after 30 days. Author names are never stored.
 
-**Confidence labels:** strong, moderate, emerging, speculative (PRD 5.4). "Safe to state" = strong, observed and verified. Evidence ids (EV-...) point to the posts in context_pack.json.
+**Confidence labels:** strong, moderate, emerging, speculative. "Safe to state" = strong, observed and confirmed by the claim check. Evidence ids (EV-...) point to the posts in context_pack.json.
+
+*AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.*

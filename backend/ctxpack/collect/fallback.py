@@ -23,7 +23,7 @@ from ctxpack.schemas.enums import EventType, FinishReason
 from ctxpack.schemas.plan import Interpretation, StartingSourceUnit
 
 # A result with one of these reasons ends the fallback: nothing more can run.
-_FINAL = ("max_tool_calls reached", "collection time is up", "llm budget spent", "item budget spent", "apify budget")
+_FINAL = ("max_tool_calls reached", "collection time is up", "llm budget spent", "item budget spent", "social-source budget")
 
 
 def _agent_cfg() -> dict[str, Any]:

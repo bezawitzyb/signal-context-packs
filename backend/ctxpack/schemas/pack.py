@@ -516,7 +516,7 @@ class Guardrails(Strict):
     never_claim: list[str] = Field(default_factory=list, description="Claims never to make.")
     sensitivities: list[str] = Field(default_factory=list, description="Topics to handle with care.")
     quote_reuse_note: str = Field(
-        default="Real people's words are for insight and briefs, not for ads without permission.",
+        default="Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.",
         description="Quote-reuse rule (PRD FR-D7).")
 
 

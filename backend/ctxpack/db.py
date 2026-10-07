@@ -277,6 +277,12 @@ def append_event(run_id: str, type: EventType, payload: dict[str, Any] | None = 
     raise RuntimeError(f"could not append event for run {run_id}")
 
 
+def list_runs(limit: int = 50) -> list[Run]:
+    """The newest runs first (owner cost view)."""
+    with session() as s:
+        return list(s.exec(select(Run).order_by(Run.created_at.desc()).limit(limit)))
+
+
 def queued_runs() -> list[Run]:
     """Waiting runs, first in line first (an interrupted run keeps its old place)."""
     with session() as s:

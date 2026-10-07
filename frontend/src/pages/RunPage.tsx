@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 import { ArrowRight, Hourglass, Square } from "lucide-react";
-import { friendlyError, getRun, stopRun, ApiError, type RunStatus } from "../lib/api";
+import { friendlyError, getOwnerRunCost, getRun, stopRun, ApiError, type RunStatus } from "../lib/api";
 import { explain, readRunKey } from "../lib/runKey";
 import { summarize } from "../lib/runSummary";
 import { useRunEvents } from "../lib/useRunEvents";
@@ -17,9 +17,9 @@ function minutes(secs: number) {
   return secs < 60 ? "under a minute" : `about ${Math.round(secs / 60)} min`;
 }
 
-export function TheatreLayout({ title, status, summary, collection, children }: {
+export function TheatreLayout({ title, status, summary, collection, children, ownerCost = null }: {
   title: string; status: React.ReactNode; summary: ReturnType<typeof summarize>;
-  collection: RunStatus["collection"]; children?: React.ReactNode;
+  collection: RunStatus["collection"]; children?: React.ReactNode; ownerCost?: { apify_usd: number; llm_usd: number } | null;
 }) {
   const done = Boolean(summary.packId);
   return (
@@ -40,7 +40,7 @@ export function TheatreLayout({ title, status, summary, collection, children }: 
         <aside className="space-y-6">
           <section aria-labelledby="funnel">
             <h2 id="funnel" className="mb-2 text-sm font-semibold uppercase tracking-wide text-ink-3">Posts so far</h2>
-            <Counters counters={summary.counters} cost={summary.cost} />
+            <Counters counters={summary.counters} cost={ownerCost} />
           </section>
           {summary.coverage.length > 0 && (
             <section aria-labelledby="cov">
@@ -64,6 +64,8 @@ function LiveRun({ runId }: { runId: string }) {
   const [run, setRun] = useState<RunStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [stopping, setStopping] = useState(false);
+  // The owner key is in this tab: show what the run costs (live events first, else the saved totals).
+  const [ownerCost, setOwnerCost] = useState<{ apify_usd: number; llm_usd: number } | null>(null);
   const { events, live } = useRunEvents(runId);
   const summary = useMemo(() => summarize(events), [events]);
   const last = events[events.length - 1];
@@ -71,6 +73,12 @@ function LiveRun({ runId }: { runId: string }) {
   useEffect(() => {
     getRun(runId).then(setRun).catch((e) => setError(friendlyError(e)));
   }, [runId, last?.seq, summary.step]);
+
+  useEffect(() => {
+    const key = readRunKey();
+    if (key) getOwnerRunCost(key, runId).then((c) => setOwnerCost({ apify_usd: c.apify_usd, llm_usd: c.anthropic_usd }))
+      .catch(() => setOwnerCost(null));
+  }, [runId, summary.packId]);
 
   if (error) return <ErrorNote message={error} />;
   if (!run) return <Skeleton lines={3} label="Loading the run" />;
@@ -98,7 +106,8 @@ function LiveRun({ runId }: { runId: string }) {
     : <p>{live ? "Live" : "Reconnecting…"} · {run.mode === "standard" ? "Standard" : "Quick"} · started {new Date(run.created_at).toLocaleTimeString()}</p>;
 
   return (
-    <TheatreLayout title={run.brief} status={status} summary={summary} collection={run.collection}>
+    <TheatreLayout title={run.brief} status={status} summary={summary} collection={run.collection}
+                   ownerCost={ownerCost && (summary.cost ?? ownerCost)}>
       <div className="flex flex-wrap gap-2">
         {packId && (
           <Link to={`/packs/${packId}`} className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-ink">

@@ -114,7 +114,7 @@ async def test_tiny_apify_budget_refuses_the_call_without_running_it(offline, mo
     run_id = await approved_run()
     out = await run(run_id, scripted([[REDDIT], [COVERAGE], finish_all()]))
     assert out.finish_reason == FinishReason.finish and ran == []
-    assert out.collection["decision_log"][0]["result_summary"].startswith("limit_reached: apify budget")
+    assert out.collection["decision_log"][0]["result_summary"].startswith("limit_reached: social-source budget")
 
 
 async def test_tool_call_limit_ends_the_loop(offline, monkeypatch):
@@ -481,7 +481,7 @@ async def test_a_lower_apify_cap_for_one_run(offline, monkeypatch):
     run_id = await approved_run()
     ctx = orchestrator.loop_state(run_id, apify_usd_cap=0.01).ctx
     out = await tools.search_reddit(ctx, "r/MealPrepSunday", 40, "too big for the cap")
-    assert out["status"] == "limit_reached" and out["reason"].startswith("apify budget")
+    assert out["status"] == "limit_reached" and out["reason"].startswith("social-source budget")
     assert out["budget_left"]["apify_usd"] == 0.01
 
 

@@ -122,5 +122,7 @@ Read the relevant step before working. Do only that step.
   npm run e2e (Playwright with the installed Chrome, fixtures mode)
 - Deploy: git push origin main (Render redeploys; at most twice a day,
   never during judging)
+- Run costs (owner only): /runs in the web app with the main run key
+  (API: GET /api/v1/owner/runs; the guest key is refused; customers never see costs)
 - Public URL: see docs/DEPLOY.md; read-only mirror:
   https://bezawitzyb.github.io/signal-context-packs/ (mirror.yml)

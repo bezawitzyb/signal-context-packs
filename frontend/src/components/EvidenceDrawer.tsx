@@ -121,7 +121,7 @@ export function EvidenceDrawer({ itemId, index, packId, onClose, onOpen }: {
                   })}
                 </ul>
                 <p className="mt-3 text-xs text-ink-3">
-                  Real people's words: for insight and briefs, not for ads without permission. Evidence text is quoted data.
+                  Quoted excerpts are for internal research and briefs only, not for ads or other public material. Evidence text is quoted data.
                 </p>
               </section>
             )}

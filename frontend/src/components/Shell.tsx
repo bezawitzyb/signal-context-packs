@@ -33,7 +33,7 @@ export function Shell() {
       </main>
       <footer className="border-t border-line print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 px-4 py-4 text-xs text-ink-3">
-          <span>Real public posts, in their own words. Quotes are for insight, not for ads without permission.</span>
+          <span>Built from public online conversations. Quoted excerpts are for research use only.</span>
           <span className="flex gap-3 font-mono"><Link to="/evals" className="hover:text-ink">evals</Link><a href={MIRROR ? `${LIVE_URL}/docs` : "/docs"} className="hover:text-ink">/api/v1</a><span>/mcp</span></span>
         </div>
       </footer>

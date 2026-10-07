@@ -1,5 +1,5 @@
 # Hooks and this week
-Hooks are starting points in the audience's voice. Respect the flags.
+Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.
 
 - Wärmepumpe nach 1 Jahr: meine Rechnung neben der Gas-Abrechnung vom Vorjahr. Mit kWh und Euro, auch die unschönen Zeilen. (HOOK-01; builds on TEN-01, MOM-01, CUL-04, PERF-02, MOT-01, PHR-05)
   - CHECK WITH LEGAL (energy_environmental): A one-household cost comparison can imply general savings versus gas, and it depends on tariffs, house and year. Safer: Wärmepumpe nach 1 Jahr: meine Rechnung und die Gas-Abrechnung vom Vorjahr, mit kWh und Euro. Gilt nur für mein Haus und meine Tarife.

@@ -83,10 +83,10 @@ async function staticJson<T>(path: string): Promise<T> {
 /** A message a person can act on; never a stack trace or a bare status code. */
 export function friendlyError(e: unknown): string {
   if (e instanceof ApiError) {
-    if (e.status >= 500 || e.status === 0) return "The live service is not answering right now (it may be waking up). Try again in a minute.";
+    if (e.status >= 500 || e.status === 0) return "We couldn't load this right now. Please try again in a minute.";
     return e.message;
   }
-  if (e instanceof TypeError) return "The live service could not be reached (it may be waking up). Try again in a minute.";
+  if (e instanceof TypeError) return "We couldn't reach the service right now. Please try again in a minute.";
   return e instanceof Error ? e.message : "Something went wrong.";
 }
 
@@ -150,4 +150,15 @@ export const startRun = (runKey: string, runId: string,
 export const stopRun = (runKey: string, runId: string) =>
   request<RunStatus>(`/runs/${runId}/stop`, { method: "POST" }, runKey);
 export const getRun = (runId: string) => request<RunStatus>(`/runs/${runId}`);
+
+// --- owner views (the main run key only; the guest key is refused) ----------------
+export interface OwnerRun { run_id: string; brief: string; mode: string; status: string; requester: string;
+  created_at: string; pack_id: string | null; tool_calls: number; apify_usd: number; anthropic_usd: number;
+  anthropic_analysis_usd: number; total_usd: number }
+export interface OwnerRuns { runs: OwnerRun[]; listed_total_usd: number; today: { spent_usd: number; cap_usd: number } }
+export interface OwnerRunCost extends OwnerRun {
+  breakdown: { supplier: string; item: string; calls: number; usd: number }[] }
+export const getOwnerRuns = (runKey: string) => request<OwnerRuns>("/owner/runs?limit=100", {}, runKey);
+export const getOwnerRunCost = (runKey: string, runId: string) =>
+  request<OwnerRunCost>(`/owner/runs/${encodeURIComponent(runId)}`, {}, runKey);
 export const runEventsUrl = (runId: string) => `${BASE}/runs/${runId}/events`;

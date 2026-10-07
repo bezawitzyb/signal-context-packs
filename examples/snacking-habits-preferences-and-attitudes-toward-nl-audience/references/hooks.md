@@ -1,5 +1,5 @@
 # Hooks and this week
-Hooks are starting points in the audience's voice. Respect the flags.
+Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.
 
 - Check de kcal en de suiker per 100 g voordat je 'gezond' gelooft. Wij zetten de cijfers gewoon vooraan. Ook de saaie. (HOOK-01; builds on TEN-01, CUL-01, THM-02, MOT-03)
 - Paprika, bolognese of cheese onion: kies je kant. Welke chipsmaak is voor jou verslavend lekker? (HOOK-02; builds on TEN-01, THM-03, LEX-11, MOT-05)

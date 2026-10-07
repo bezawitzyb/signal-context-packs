@@ -41,7 +41,7 @@ def daily_spend_left() -> float:
 def check_daily_cap() -> None:
     """Raise DailyCapReached if today's spend has reached the cap. Called before every paid call."""
     if daily_spend_left() <= 0:
-        raise DailyCapReached(f"daily spend cap of ${daily_cap_usd():.2f} reached - try again tomorrow")
+        raise DailyCapReached("today's research allowance is used up - new research can start again tomorrow")
 
 
 class GuardError(Exception):
@@ -83,13 +83,26 @@ def check_run_key(given: str | None) -> None:
     raise GuardError(401, "a valid run key is needed to start runs (header X-API-Key)")
 
 
+def check_owner_key(given: str | None) -> None:
+    """Owner-only views (run costs): the main RUN_KEY only - the guest key never opens them."""
+    settings = get_settings()
+    if not settings.is_set("RUN_KEY"):
+        if settings.offline:  # keyless local demo
+            return
+        raise GuardError(503, "owner views are switched off on this server")
+    key = (given or "").strip()
+    if key and _matches(key, settings.run_key):
+        return
+    raise GuardError(401, "this page needs the owner key")
+
+
 def check_can_queue() -> None:
     """Daily cap and queue size, checked before any paid call for a new run."""
     from ctxpack import db
     from ctxpack.schemas.enums import RunStatus
 
     if daily_spend_left() <= 0:
-        raise GuardError(429, f"today's spend cap of ${daily_cap_usd():.2f} is reached - featured packs still "
-                              "work; new runs can start again tomorrow")
+        raise GuardError(429, "Today's research allowance is used up. Your packs stay available; new research "
+                              "can start again tomorrow.")
     if len(db.runs_with_status(RunStatus.queued)) >= load_yaml("modes")["queue_max"]:
         raise GuardError(429, "queue full - try again in a few minutes")

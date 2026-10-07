@@ -113,7 +113,7 @@ def test_queue_full_and_daily_cap_refuse_politely(api, monkeypatch):
     get_settings.cache_clear()
     db.add_spend(llm_usd=1.0)
     capped = client.post("/api/v1/runs", json={"brief": "Gen Z"}, headers=KEY)
-    assert capped.status_code == 429 and "spend cap" in capped.json()["detail"]
+    assert capped.status_code == 429 and "research allowance" in capped.json()["detail"]
     assert client.get("/api/v1/packs").status_code == 200                            # featured packs still work
 
 
@@ -381,4 +381,24 @@ def test_short_guest_key_is_ignored_and_guest_alone_opens_nothing(api, monkeypat
     get_settings.cache_clear()
     r = client.post("/api/v1/runs", json=body, headers={"X-API-Key": "guest-key-for-a-tester-only"})
     assert r.status_code == 503                                      # no main key: runs are off for everyone
+    get_settings.cache_clear()
+
+
+def test_owner_cost_view_needs_the_main_key_not_the_guest_key(api, monkeypatch):
+    made = client.post("/api/v1/runs", json={"brief": "Gen Z and meal prep"}, headers=KEY).json()
+    db.update_run(made["run_id"], cost_apify_usd=0.5, cost_llm_usd=1.25,
+                  cost_breakdown={"anthropic": {"reasoner/plan": {"calls": 1, "usd": 1.25}},
+                                  "apify": {"some/actor": {"runs": 2, "usd": 0.5}}})
+    assert client.get("/api/v1/owner/runs").status_code == 401                         # no key
+    monkeypatch.setenv("GUEST_RUN_KEY", "guest-key-for-a-tester-only")
+    get_settings.cache_clear()
+    guest = {"X-API-Key": "guest-key-for-a-tester-only"}
+    assert client.get("/api/v1/owner/runs", headers=guest).status_code == 401           # guest can run, not see costs
+    body = client.get("/api/v1/owner/runs", headers=KEY).json()
+    row = next(r for r in body["runs"] if r["run_id"] == made["run_id"])
+    assert row["total_usd"] == 1.75 and "cap_usd" in body["today"] and TEST_KEY not in json.dumps(body)
+    one = client.get(f"/api/v1/owner/runs/{made['run_id']}", headers=KEY).json()
+    assert [b["usd"] for b in one["breakdown"]] == [1.25, 0.5]
+    assert client.get("/api/v1/owner/runs/run_missing", headers=KEY).status_code == 404
+    assert "/api/v1/owner/runs" not in client.get("/openapi.json").text                 # not advertised
     get_settings.cache_clear()

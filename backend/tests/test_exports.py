@@ -100,7 +100,8 @@ def test_markdown_follows_the_pack_page_and_states_confidence_in_words(pack):
     assert positions == sorted(positions)
     t = pack["tensions"][0]
     assert f"{t['counts']['matching']} of {t['counts']['of_total']} posts" in md and t["confidence"]["label"] in md
-    assert "Raw run data at our scraping provider expires under its standard retention." in md
+    assert "Author names are never stored." in md and "scraping" not in md.lower()
+    assert "AI-assisted analysis" in md and "not legal advice" in md
     assert "Thin evidence" in md                                         # the fake corpus is thin
 
 

@@ -44,7 +44,7 @@ export function ClaimTypeTag({ type }: { type: "observed" | "inferred" | "extern
 export function SafeTag() {
   return (
     <span
-      title="Strong, observed and verified: safe to state as fact."
+      title="Strong, observed and confirmed by the claim check: safe to state as fact."
       className="inline-flex items-center gap-1 rounded border border-ink px-1.5 py-0.5 text-xs font-medium text-ink"
     >
       <ShieldCheck aria-hidden="true" size={13} strokeWidth={2} />

@@ -7,9 +7,8 @@ quote-reuse note is repeated next to them.
 
 from __future__ import annotations
 
-from ctxpack.exports.common import badge, cell, inline
+from ctxpack.exports.common import DISCLAIMER, HOOKS_NOTE, badge, cell, inline, privacy_line
 
-PRIVACY_LINE = "Raw run data at our scraping provider expires under its standard retention."
 
 
 def _quotes(item: dict, limit: int = 1) -> list[str]:
@@ -170,6 +169,7 @@ def to_markdown(pack: dict) -> str:
 
     add("\n## Playbook\n")
     add("### Hooks")
+    add(f"*{HOOKS_NOTE}*")
     for h in pb["hooks"]:
         legal = "".join(f" **[check with legal: {f['category']}, {f['id']}]**" for f in flags_by_item.get(h["id"], []))
         add(f"- {inline(h['text'])} *[{h['id']}; {', '.join(h['why_ids'])}]*{legal}")
@@ -207,17 +207,18 @@ def to_markdown(pack: dict) -> str:
     n = cov["counts"]
     add(f"Collected {n['collected']}, duplicates {n['duplicates']}, spam {n['spam']}, out of window "
         f"{n['out_of_window']}, kept {n['kept']} (undated {n['undated']}), relevant {n['relevant']}. "
-        f"Agent tool calls: {cov['loop']['tool_calls']}, finished by {cov['loop']['finish_reason']}"
-        f"{', fallback used' if cov['loop']['fallback_used'] else ''}"
-        f"{', top-up used' if cov['loop']['top_up_used'] else ''}.")
+        f"Research moves: {cov['loop']['tool_calls']}, finished by {cov['loop']['finish_reason'].replace('_', ' ')}"
+        f"{'; remaining planned sources were collected automatically' if cov['loop']['fallback_used'] else ''}"
+        f"{'; more evidence was collected from sources already working' if cov['loop']['top_up_used'] else ''}.")
     add("\n**Sources used:**")
     L += [f"- {s['source_unit']} ({s['platform']}): {s['kept']} kept, {s['relevant_share']:.0%} relevant - "
           f"{inline(s['reason'])}" for s in cov["sources_used"][:6]] or ["- -"]
     if cov["sources_dropped"]:
         add("\n**Sources dropped:**")
         L += [f"- {s['source_unit']}: {inline(s['reason'])}" for s in cov["sources_dropped"]]
-    add("\n**Privacy:** authors are stored only as salted hashes; personal details are redacted. Quotes are real "
-        f"people's words: {g['quote_reuse_note']} {PRIVACY_LINE}")
-    add(f"\n**Confidence labels:** strong, moderate, emerging, speculative (PRD 5.4). \"Safe to state\" = strong, "
-        f"observed and verified. Evidence ids (EV-...) point to the posts in context_pack.json.")
+    add("\n**Privacy:** authors are stored only as salted hashes; personal details are redacted. "
+        f"{g['quote_reuse_note']} {privacy_line()}")
+    add(f"\n**Confidence labels:** strong, moderate, emerging, speculative. \"Safe to state\" = strong, "
+        f"observed and confirmed by the claim check. Evidence ids (EV-...) point to the posts in context_pack.json.")
+    add(f"\n*{DISCLAIMER}*")
     return "\n".join(L) + "\n"

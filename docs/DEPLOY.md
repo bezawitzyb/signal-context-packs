@@ -94,6 +94,12 @@ Memory test: both Standard runs peak below 400 MB, so Step 2.6 (Modal) is not ne
 | `pk_wrvZBhDFsLR9` | Launching a snack brand in the Netherlands | `run_wOcIwOgGDnDUITS2` (fresh, 1,042 s) | strong 3, moderate 8, emerging 22, speculative 27 |
 | `pk_CamfAsJ7Zbdr` | Gen Z and meal prep | `run_bz5PBTd-Pr6Xp3f2` (thin evidence) | emerging 23, speculative 24 |
 
+## Run costs (owner only)
+
+Open `https://signal-l2w5.onrender.com/runs` and enter the main run key: recent runs with their Apify and
+Anthropic cost, and today's spend against the daily cap. A run's live screen also shows "Cost so far" in
+a tab where the main key was entered. The guest key never opens costs; customers and testers see none.
+
 ## Guest access for a tester
 
 1. In **your own** Terminal (never in a chat): `openssl rand -base64 18` -> copy the result.

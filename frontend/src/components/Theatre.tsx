@@ -87,7 +87,8 @@ const COUNTER_LABELS: [string, string][] = [
   ["kept", "Kept"], ["relevant", "Relevant"],
 ];
 
-export function Counters({ counters, cost }: { counters: Summary["counters"]; cost: Summary["cost"] }) {
+/** Posts so far; "Cost so far" only when the page is opened with the owner key (cost = null otherwise). */
+export function Counters({ counters, cost = null }: { counters: Summary["counters"]; cost?: Summary["cost"] }) {
   return (
     <div className="grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-line bg-line">
       {COUNTER_LABELS.map(([k, label]) => (
@@ -98,7 +99,7 @@ export function Counters({ counters, cost }: { counters: Summary["counters"]; co
       ))}
       {cost && (
         <div className="col-span-3 bg-paper px-3 py-2">
-          <p className="text-[0.7rem] uppercase tracking-wide text-ink-3">Cost so far</p>
+          <p className="text-[0.7rem] uppercase tracking-wide text-ink-3">Cost so far (only you see this)</p>
           <p className="font-mono text-sm text-ink">
             ${(cost.apify_usd + cost.llm_usd).toFixed(2)}
             <span className="text-ink-3"> · Apify ${cost.apify_usd.toFixed(2)} · Anthropic ${cost.llm_usd.toFixed(2)}</span>
@@ -155,7 +156,7 @@ export function Notices({ summary }: { summary: Summary }) {
       {summary.fallbacks.map((f, n) => (
         <p key={n} className="flex gap-2 rounded-lg border border-line-strong bg-wash p-3 text-sm text-ink">
           <TriangleAlert aria-hidden="true" size={16} className="mt-0.5 shrink-0" />
-          {f.kind === "top_up" ? "Evidence was short, so the agent topped up from sources it had kept. " : "The agent loop failed, so the fallback plan collected from the untried starting sources. "}
+          {f.kind === "top_up" ? "Evidence was short, so more was collected from sources that were already working. " : "The research agent stopped early, so the remaining planned sources were collected automatically. "}
           <span className="text-ink-2">{f.reason}</span>
         </p>
       ))}

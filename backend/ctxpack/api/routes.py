@@ -53,6 +53,33 @@ def _key(x_api_key: str | None) -> None:
         raise HTTPException(status_code=exc.status, detail=exc.message)
 
 
+def _owner(x_api_key: str | None) -> None:
+    try:
+        guards.check_owner_key(x_api_key)
+    except guards.GuardError as exc:
+        raise HTTPException(status_code=exc.status, detail=exc.message)
+
+
+# --------------------------------------------------------------------------
+# Owner views (main run key only; not in the public API docs)
+# --------------------------------------------------------------------------
+
+
+@router.get("/owner/runs", include_in_schema=False)
+async def owner_runs(limit: int = Query(default=50, ge=1, le=200),
+                     x_api_key: str | None = Header(default=None)) -> Any:
+    """Recent runs with their cost (Apify + Anthropic) and today's spend against the cap."""
+    _owner(x_api_key)
+    return await _call(asyncio.to_thread, service.owner_runs, limit)
+
+
+@router.get("/owner/runs/{run_id}", include_in_schema=False)
+async def owner_run_cost(run_id: str, x_api_key: str | None = Header(default=None)) -> Any:
+    """One run's cost and where it went."""
+    _owner(x_api_key)
+    return await _call(asyncio.to_thread, service.owner_run_cost, run_id)
+
+
 # --------------------------------------------------------------------------
 # Packs (public)
 # --------------------------------------------------------------------------

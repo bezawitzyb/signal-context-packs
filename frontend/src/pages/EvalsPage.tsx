@@ -108,7 +108,7 @@ export function EvalsPage() {
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight text-ink">Evaluations</h1>
         <p className="max-w-3xl text-ink-2">
-          Four test briefs that mirror the judges' live tests: a global English brief, a Dutch launch, a German
+          Four test briefs: a global English brief, a Dutch launch, a German
           B2B-like brief with energy claims, and a deliberately vague one. Numbers are computed in code from the
           finished packs; claim entailment is a fresh re-check by a different model than the pipeline's verifier.
         </p>

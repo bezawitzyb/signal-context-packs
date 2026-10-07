@@ -1312,7 +1312,7 @@
           "type": "array"
         },
         "quote_reuse_note": {
-          "default": "Real people's words are for insight and briefs, not for ads without permission.",
+          "default": "Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.",
           "description": "Quote-reuse rule (PRD FR-D7).",
           "title": "Quote Reuse Note",
           "type": "string"

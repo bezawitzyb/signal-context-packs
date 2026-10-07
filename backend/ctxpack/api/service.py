@@ -241,3 +241,37 @@ def stop_run(run_id: str) -> dict[str, Any]:
         raise NotFound(f"run {run_id} not found")
     orchestrator.request_stop(run_id)
     return run_status(run_id)
+
+
+# --------------------------------------------------------------------------
+# Owner views (main run key only, checked by the caller): what each run cost
+# --------------------------------------------------------------------------
+
+
+def _cost_row(run: db.Run) -> dict[str, Any]:
+    return {"run_id": run.id, "brief": run.brief_text[:120], "mode": str(run.mode), "status": run.status.value,
+            "requester": str(run.requester), "created_at": run.created_at.isoformat(), "pack_id": run.pack_id,
+            "tool_calls": run.tool_calls, "apify_usd": round(run.cost_apify_usd, 4),
+            "anthropic_usd": round(run.cost_llm_usd, 4),
+            "anthropic_analysis_usd": round(run.cost_analysis_llm_usd or 0.0, 4),
+            "total_usd": round(run.cost_apify_usd + run.cost_llm_usd, 4)}
+
+
+def owner_runs(limit: int = 50) -> dict[str, Any]:
+    """Recent runs with their cost, and today's spend against the daily cap."""
+    rows = [_cost_row(r) for r in db.list_runs(limit)]
+    return {"runs": rows, "listed_total_usd": round(sum(r["total_usd"] for r in rows), 4),
+            "today": {"spent_usd": round(db.spend_today(), 4), "cap_usd": guards.daily_cap_usd()}}
+
+
+def owner_run_cost(run_id: str) -> dict[str, Any]:
+    """One run's cost, with where the money went (biggest first)."""
+    run = db.get_run(run_id)
+    if run is None:
+        raise NotFound(f"run {run_id} not found")
+    parts = run.cost_breakdown or {}
+    breakdown = [{"supplier": "anthropic", "item": name, "calls": int(v.get("calls", 0)), "usd": round(v.get("usd", 0.0), 4)}
+                 for name, v in parts.get("anthropic", {}).items()]
+    breakdown += [{"supplier": "apify", "item": name, "calls": int(v.get("runs", 0)), "usd": round(v.get("usd", 0.0), 4)}
+                  for name, v in parts.get("apify", {}).items()]
+    return {**_cost_row(run), "breakdown": sorted(breakdown, key=lambda b: -b["usd"])}

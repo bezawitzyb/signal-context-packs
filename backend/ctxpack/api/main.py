@@ -92,7 +92,7 @@ async def friendly_error(request, exc: Exception) -> JSONResponse:
     """Anything unexpected: a plain message, never a stack trace (logged as its type only)."""
     log.error("unhandled %s on %s", type(exc).__name__, request.url.path)
     return JSONResponse(status_code=500, content={
-        "detail": "Something went wrong on our side. Please try again in a minute. The featured packs are "
+        "detail": "Something went wrong on our side. Please try again in a minute. The example packs are "
                   f"also in the read-only mirror: {MIRROR_URL}"})
 
 

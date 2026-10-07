@@ -33,10 +33,6 @@ function useRotatingExample(paused: boolean) {
   return EXAMPLES[n];
 }
 
-function usd(x: number) {
-  return `$${x.toFixed(2)}`;
-}
-
 // --- the form -------------------------------------------------------------------------------
 
 export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
@@ -125,7 +121,7 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
                  aria-describedby="runkey-help"
                  className="w-full rounded-lg border border-line bg-paper px-3 py-2 font-mono text-sm text-ink md:max-w-sm" />
           <p id="runkey-help" className="mt-1 text-xs text-ink-3">
-            Judges: the run key was provided with your judging materials. It stays in this browser tab only.
+            Your key stays in this browser tab only.
           </p>
         </div>
         <button type="submit" disabled={busy}
@@ -136,8 +132,8 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
       </div>
       {est && (
         <p className="text-xs text-ink-3">
-          {mode === "quick" ? "Quick" : "Standard"}: about {est.typical_minutes} minutes, typically {usd(est.typical_usd_low)}–{usd(est.typical_usd_high)},
-          never more than {usd(est.max_usd)}. Planning first: nothing is collected until you press Start.
+          {mode === "quick" ? "Quick" : "Standard"}: about {est.typical_minutes} minutes. Planning first: nothing is
+          collected until you press Start.
         </p>
       )}
       {error && <p id="ask-error" role="alert" className="rounded-lg border border-line-strong bg-wash px-3 py-2 text-sm text-ink">{error}</p>}
@@ -317,9 +313,8 @@ export function PlanReview({ run }: { run: RunStatus }) {
       <section className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-line-strong p-4">
         <p className="text-sm text-ink-2">
           <span className="font-medium text-ink">{run.mode === "standard" ? "Standard" : "Quick"}</span>: about{" "}
-          {est.typical_minutes} minutes, typically ${est.typical_usd_low.toFixed(2)}–${est.typical_usd_high.toFixed(2)},
-          never more than ${est.max_usd.toFixed(2)}. If someone else's research is running, yours waits in line and
-          starts by itself.
+          {est.typical_minutes} minutes. If someone else's research is running, yours waits in line and starts by
+          itself.
         </p>
         <button type="button" onClick={start} disabled={busy}
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">

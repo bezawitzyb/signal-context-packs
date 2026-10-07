@@ -14,7 +14,7 @@ import io
 import json
 import zipfile
 
-from ctxpack.exports.common import badge, cfg, inline, slug, tokens
+from ctxpack.exports.common import DISCLAIMER, HOOKS_NOTE, badge, cfg, inline, slug, tokens
 
 REFERENCES = {
     "lexicon.md": "their words with meanings and real examples - open before writing any copy",
@@ -77,7 +77,7 @@ def skill_body(pack: dict) -> str:
               "safe_to_assert true may be stated as fact."]
         L += ["", "## Reference files (open only when needed)"]
         L += [f"- references/{name}: {why}" for name, why in REFERENCES.items()]
-        L += ["", f"Pack {pack['pack_id']}, generated {pack['generated_at']}."]
+        L += ["", f"Pack {pack['pack_id']}, generated {pack['generated_at']}. {DISCLAIMER}"]
         return "\n".join(L) + "\n"
 
     body = build()
@@ -121,7 +121,7 @@ def references(pack: dict) -> dict[str, str]:
     flags: dict[str, list[dict]] = {}
     for f in pack["compliance_flags"]:
         flags.setdefault(f["item_id"], []).append(f)
-    hooks = ["# Hooks and this week", "Hooks are starting points in the audience's voice. Respect the flags.", ""]
+    hooks = ["# Hooks and this week", HOOKS_NOTE, ""]
     for h in pb["hooks"]:
         hooks.append(f"- {inline(h['text'])} ({h['id']}; builds on {', '.join(h['why_ids'])})")
         hooks += [f"  - CHECK WITH LEGAL ({f['category']}): {inline(f['why'])} Safer: {inline(f['safer_wording'])}"
