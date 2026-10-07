@@ -36,7 +36,6 @@ One JSON object (`context_pack.json`) is behind every view of a pack: the web pa
 | `PERF` | performing post | `PERF-01` |
 | `TKW` | what-performs takeaway | `TKW-01` |
 | `MOM` | moment | `MOM-01` |
-| `WSP` | white space | `WSP-01` |
 | `OPP` | opportunity | `OPP-01` |
 | `DO` | do-first action | `DO-01` |
 | `CHN` | channel | `CHN-01` |
@@ -103,8 +102,7 @@ Used at: `(top level)`
 | `performance_takeaways` | list of [Takeaway](#takeaway) | no | What performs, as 1-3 recommendations (1.1). |  |
 | `sections_meta` | object | no | Per section: so_what, and empty_reason + next_steps when empty (1.1). |  |
 | `moments` | list of [Moment](#moment) | no | Layer 6: when it matters. |  |
-| `white_space` | list of [WhiteSpace](#whitespace) | no | Unmet needs nobody serves. |  |
-| `opportunities` | list of [Opportunity](#opportunity) | no | Scored opportunities (PRD 5.5). |  |
+| `opportunities` | list of [Opportunity](#opportunity) | no | Opportunities you can trust (1.1; replaces white_space and the scored opportunities). |  |
 | `channel_plan` | list of [Channel](#channel) | no | Where to show up, in priority order. |  |
 | `playbook` | [Playbook](#playbook) | no | Hooks, creative brief, keywords, this week. |  |
 | `hypotheses` | list of [Hypothesis](#hypothesis) | no | The plan's hypotheses and their verdicts. |  |
@@ -315,33 +313,28 @@ Plus every field of [InsightItem](#insightitem).
 | `name` | text | yes | Ritual, season, holiday or payday. | `"Sunday reset"` |
 | `timing` | text | yes | When it happens. | `"Sunday afternoons"` |
 
-### WhiteSpace
-
-Used at: `white_space[]`
-
-Plus every field of [InsightItem](#insightitem).
-
-| Field | Type | Required | Description | Example |
-|---|---|---|---|---|
-| `id` | text | yes | Stable white space id (WSP-NN). | `"WSP-01"` |
-| `type` | "white_space" | no | Item type, always "white_space". |  |
-| `kind` | enum [WhiteSpaceKind](#enum-whitespacekind) | yes | unmet_need, unanswered_question or unserved_segment. |  |
-
 ### Opportunity
 
-Used at: `opportunities[]`
+Used at: `opportunities[]` - One opportunity you can trust (1.1, V5): replaces white space and the scored opportunities.
 
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
 | `id` | text | yes | Stable opportunity id (OPP-NN). | `"OPP-01"` |
 | `type` | "opportunity" | no | Item type, always "opportunity". |  |
-| `title` | text | yes | Short name for the opportunity. |  |
-| `description` | text | yes | What to do and for whom. |  |
-| `builds_on` | list of text | yes | Need or white-space items it builds on. |  |
-| `cluster_id` | text or null | no | Cluster the score is computed from. |  |
-| `score` | number | yes | demand x dissatisfaction x novelty x (1 - saturation). |  |
-| `components` | [OpportunityComponents](#opportunitycomponents) | yes | The four score components (PRD 5.5). |  |
-| `evidence_ids` | list of text | no | Example evidence. |  |
+| `opportunity` | text | yes | The opportunity, worded as the gap the posts show (and, when solutions exist, the gap in how it is served). |  |
+| `kind` | enum [OpportunityKind](#enum-opportunitykind) | yes | content_idea, product_idea or positioning. |  |
+| `status` | enum [OpportunityStatus](#enum-opportunitystatus) | yes | supported, or signal ("early signal - check before acting"). |  |
+| `confidence` | [Confidence](#confidence) | yes | Score and label; a signal is at most emerging. |  |
+| `distinct_authors` | integer | yes | Distinct authors behind it (code). |  |
+| `communities` | list of text | no | Communities or sources it was seen in (code). |  |
+| `existing_solutions` | list of [ExistingSolution](#existingsolution) | no | What already addresses it (from a web search). |  |
+| `search_note` | text | no | e.g. "no existing solution found in our search". |  |
+| `evidence_ids` | list of text | no | Receipts. |  |
+| `builds_on` | list of text | no | Items it builds on (pain points, motivations). |  |
+| `related_ids` | list of text | no | Related items. |  |
+| `cluster_id` | text or null | no | The cluster behind it. |  |
+| `score` | number or null | no | PRD 5.5 score, when computed. |  |
+| `components` | [OpportunityComponents](#opportunitycomponents) or null | no | The score components (PRD 5.5). |  |
 
 ### Channel
 
@@ -682,6 +675,15 @@ Plus every field of [InsightItem](#insightitem).
 | `platform` | enum [Platform](#enum-platform) or null | no | Where it lives, if one platform. |  |
 | `url` | text or null | no | Public link (creators: public accounts only). |  |
 
+### ExistingSolution
+
+Used at: `opportunities[].existing_solutions[]`
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `name` | text | yes | Product, service or content that already addresses it. |  |
+| `url` | text | yes | Where the search found it. |  |
+
 ### OpportunityComponents
 
 Used at: `opportunities[].components` - PRD 5.5; all 0-1, computed in code and shown next to the score.
@@ -993,6 +995,18 @@ Effort or impact.
 
 `objection`, `myth`, `trust_marker`
 
+### Enum OpportunityKind
+
+What kind of opportunity (change V5).
+
+`content_idea`, `product_idea`, `positioning`
+
+### Enum OpportunityStatus
+
+supported: enough authors across communities; signal: an early signal - check before acting (V5).
+
+`supported`, `signal`
+
 ### Enum Platform
 
 Source family. All forum domains together are ONE platform (web_forum).
@@ -1012,7 +1026,3 @@ How one item connects to an item in another section (change V4).
 ### Enum Trend
 
 `rising`, `stable`, `fading`, `insufficient_data`
-
-### Enum WhiteSpaceKind
-
-`unmet_need`, `unanswered_question`, `unserved_segment`

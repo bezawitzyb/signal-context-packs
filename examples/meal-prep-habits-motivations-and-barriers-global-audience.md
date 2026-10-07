@@ -9,7 +9,7 @@
 ## Summary
 
 ### Do first
-1. **Publish a freeze-and-reheat cheat sheet for enchiladas and fajitas (can it be frozen, how to reheat, how long reheating takes), and post it in a Reddit meal-prep or college-cooking community as a reply-friendly guide.** - Students are asking whether these dishes freeze and how to reheat them, and slow reheating is a stated reason prep feels pointless. *[DO-01; effort low, impact high; Content lead with a home cook for testing; based on WSP-01, OPP-01, SEG-01, THM-06, PAIN-02]*
+1. **Publish a freeze-and-reheat cheat sheet for enchiladas and fajitas (can it be frozen, how to reheat, how long reheating takes), and post it in a Reddit meal-prep or college-cooking community as a reply-friendly guide.** - Students are asking whether these dishes freeze and how to reheat them, and slow reheating is a stated reason prep feels pointless. *[DO-01; effort low, impact high; Content lead with a home cook for testing; based on OPP-04, OPP-01, SEG-01, THM-06, PAIN-02]*
 1. **Post a 'College student mealprep for the week' on Reddit that lists every dish, the recipes and the total spent, built on pantry staples such as rice, pasta, eggs, beans and potatoes.** - Posts that show a full week with a cost figure and a student framing are the ones that read as practical and copyable. *[DO-02; effort medium, impact high; Community manager or a student creator; based on OPP-02, PERF-02, PERF-04, CUL-02, MOT-01]*
 1. **Post a short make-ahead breakfast reply or post (freezer breakfast sandwiches and overnight oats) in a thread where someone wants to stop buying breakfast, with a simple how-to.** - People who start work early want a filling breakfast they don't have to buy each day, and a concrete cheap swap is what worked in replies. *[DO-03; effort low, impact medium; Community manager; based on MOT-07, MOM-03, OPP-03, PERF-01, THM-04]*
 
@@ -39,7 +39,7 @@
    Formats: Weekly prep post with dishes and total cost, How-to question (freeze or reheat, microwave or air fryer), Short helpful reply with a make-ahead swap, Component breakdown post with cooking details. Where: r/MealPrep, r/EatCheapAndHealthy, r/budgetfood, College cooking communities. Tone: Practical, casual, budget-aware. Light self-deprecating humour ('I'm broke') and the occasional emoji. Share what you made and ask direct questions. No hype or pressure.
 2. **web_review** - Review sites are the second-largest source (26 posts). They show how people judge meal kits: praise for taste next to complaints about portions, price, missing items and subscriptions. The best-performing review ties convenience to a lower grocery bill. This channel is for listening and for positioning cheap DIY prep against kits, not for posting brand content. The evidence is mixed, so treat it as an observation. *[CHN-02; based on PLT-02, BRD-01, THM-01, PERF-06, OBJ-01, OBJ-03, OBJ-05]*  
    Formats: Listening and review mining, Comparison content on cost per meal and portions (observation only). Where: Meal kit review pages. Tone: Plain verdicts. Don't assume kits are either great or bad: credit the taste and acknowledge the portions, price and missing items.
-3. **web_editorial** - Budget Bytes is a named reference (8 posts): one commenter loves its sheet pan fajitas and freezes half of a double batch. A durable freeze-and-reheat guide fits this recipe-and-guide space. The evidence is one reference, so treat it as a test. *[CHN-03; based on CUL-01, OPP-01, THM-02, WSP-01]*  
+3. **web_editorial** - Budget Bytes is a named reference (8 posts): one commenter loves its sheet pan fajitas and freezes half of a double batch. A durable freeze-and-reheat guide fits this recipe-and-guide space. The evidence is one reference, so treat it as a test. *[CHN-03; based on CUL-01, OPP-01, THM-02, OPP-04]*  
    Formats: Freeze-and-reheat cheat sheet, Cheap-week prep guide with cost per week. Where: Recipe blogs, Budget cooking sites. Tone: Short, plain steps. Use ingredients people already own, with no long shopping lists.
 
 | Day | Platform | Format | Hook | Angle | Why now |
@@ -190,13 +190,16 @@
 - **Early morning work breakfast** - I start work early and need breakfast I don't have to buy each day. *[MOM-03; emerging, 3 of 75 posts, observed]*
   > I start work at 6:30 with my first break at 10:00. (EV-0014)
 
-## White space and opportunities
+## Opportunities
 
-- *Also seen (weaker evidence, speculative):* Students ask whether cooked dishes like fajitas and enchiladas can be frozen and how best to reheat them. [WSP-01]
-
-- **Freeze-and-reheat cheat sheet** (0.39) - Publish short freezing and reheating guidance for popular prep dishes such as enchiladas and fajitas, for college students who are new to meal prep. *[OPP-01; demand 0.39 x dissatisfaction 1.00 x novelty 1.0 x (1 - saturation 0.00); builds on WSP-01]*
-- **Own the cheap-week prep** (0.33) - Share budget meal-prep weeks built on pantry staples (rice, pasta, eggs, beans, potatoes) with a total cost per week. Aim it at students and early-career cooks on a tight budget. *[OPP-02; demand 1.00 x dissatisfaction 0.83 x novelty 0.4 x (1 - saturation 0.00); builds on MOT-01]*
-- **Make-ahead filling breakfasts** (0.19) - Show freezer breakfast sandwiches and overnight oats as a cheaper, make-ahead alternative to buying breakfast, for people with long active mornings. *[OPP-03; demand 0.39 x dissatisfaction 0.50 x novelty 1.0 x (1 - saturation 0.00); builds on MOT-07]*
+- **Freeze-and-reheat cheat sheet: Publish short freezing and reheating guidance for popular prep dishes such as enchiladas and fajitas, for college students who are new to meal prep.** *[OPP-01; product idea; Early signal - check before acting; speculative; 0 people in 0 communities]*
+  - Not checked: made before the existing-solution search.
+- **Own the cheap-week prep: Share budget meal-prep weeks built on pantry staples (rice, pasta, eggs, beans, potatoes) with a total cost per week. Aim it at students and early-career cooks on a tight budget.** *[OPP-02; product idea; Early signal - check before acting; emerging; 5 people in 2 communities]*
+  - Not checked: made before the existing-solution search.
+- **Make-ahead filling breakfasts: Show freezer breakfast sandwiches and overnight oats as a cheaper, make-ahead alternative to buying breakfast, for people with long active mornings.** *[OPP-03; product idea; Early signal - check before acting; emerging; 2 people in 1 community]*
+  - Not checked: made before the existing-solution search.
+- **Students ask whether cooked dishes like fajitas and enchiladas can be frozen and how best to reheat them.** *[OPP-04; content idea; Early signal - check before acting; speculative; 1 people in 1 community]*
+  - Not checked: made before the existing-solution search.
 
 ## Playbook
 
@@ -207,7 +210,7 @@
 - Tired of eating the same leftovers? Prep ingredients, not whole meals, and switch it up all week. *[HOOK-03; TEN-02, THM-09, SEG-03, PHR-01]*
 - Reheating took so long that meal prep felt pointless. Microwave or air fryer, and I'm on a budget? *[HOOK-04; TEN-01, PAIN-02, THM-06, PERF-08]*
 - I don't want to spend my whole weekend in the kitchen, so Sunday prep day is just ingredients and components. *[HOOK-05; TEN-01, LEX-01, THM-09, OBJ-04, THM-07]*
-- Can you freeze enchiladas? And how do you reheat them without ruining them? *[HOOK-06; TEN-02, WSP-01, OPP-01]*
+- Can you freeze enchiladas? And how do you reheat them without ruining them? *[HOOK-06; TEN-02, OPP-04, OPP-01]*
 - Decision fatigue at dinner is real. Here's what I prepped so I don't have to choose. *[HOOK-07; TEN-02, LEX-04, MOT-04]*
 - I'm broke and I want to stop buying McMuffins. Freezer breakfast sandwiches, here's how. *[HOOK-08; TEN-01, MOT-07, OPP-03, PERF-01]* **[check with legal: other, CMP-01]**
 - Rice, pasta, eggs, beans, potatoes: a cheap week from what's already in my kitchen. *[HOOK-09; TEN-01, THM-03, OPP-02, PERF-03]* **[check with legal: other, CMP-02]**
@@ -268,7 +271,7 @@
 - Evidence was short; collection was topped up from kept sources.
 - Small segments (under 5 posts): Flexible planners who avoid full prep.
 - No claim reached strong confidence: strong needs evidence from at least two platforms.
-- Minimum content bar not met: lexicon 8 of 15, tensions 2 of 3, white_space 1 of 2.
+- Minimum content bar not met: lexicon 8 of 15, tensions 2 of 3, unmet needs 1 of 2.
 - Public posts only: private groups, messaging apps and offline talk are not covered.
 
 ## Guardrails

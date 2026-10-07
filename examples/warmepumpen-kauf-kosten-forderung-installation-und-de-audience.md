@@ -41,7 +41,7 @@
    Formats: One-year real bill review (long), Altbau case study with Vorlauftemperatur and JAZ, Pinned comment with the full figures table. Where: #WärmepumpeNach1Jahr, #Altbau, #Wärmepumpe. Tone: Sober, number-driven, dry humour. Expect sharp one-liners in the comments and answer them with figures.
 3. **tiktok** - TikTok (16 posts) works for short technical explainers, myth-busting and troubleshooting tips. It suits tuning content for new operators. Evidence is smaller here, so treat reach as a test. *[CHN-03; based on PLT-03, PERF-04, PERF-07, PERF-09, OPP-02, THM-07]*  
    Formats: Troubleshooting tip (e.g. cycling and its cause), Heizkurve and Vorlauftemperatur in 30 seconds, Myth-check on running costs, without using the 'Stromfresser' label as our own framing. Where: #Wärmepumpe, #WP, #Heizkurve, #Altbau, #Heizungstausch. Tone: Short, technical and concrete. A dry joke is fine, but the tip has to carry information.
-4. **web_forum** - Only one item (CUL-02) points to forum threads where users swap tariff and consumption numbers as 'Forumsfreund'. The evidence is thin, so treat this channel as a test. It is useful for listening and for benchmark data. *[CHN-04; based on CUL-02, CUL-03, WSP-01, OPP-04]*  
+4. **web_forum** - Only one item (CUL-02) points to forum threads where users swap tariff and consumption numbers as 'Forumsfreund'. The evidence is thin, so treat this channel as a test. It is useful for listening and for benchmark data. *[CHN-04; based on CUL-02, CUL-03, OPP-06, OPP-04]*  
    Formats: Answer in existing threads with figures, Consumption benchmark table by house type and heated area. Where: Public heat pump forums (read the rules; no hidden promotion). Tone: Informal forum register, 'Forumsfreund', figures first. Disclose who you are.
 
 | Day | Platform | Format | Hook | Angle | Why now |
@@ -212,17 +212,26 @@
   > zum Jahresende möchte ich mir gerne noch eine PV Anlage installieren lassen (EV-0004)
 - *Also seen (weaker evidence, speculative):* Cold-season peak [MOM-02]
 
-## White space and opportunities
+## Opportunities
 
-- People don't know whether they have to already live in the house to get the subsidy bonus. *[WSP-02; emerging, 2 of 101 posts, observed]*
-  > Er wüsste selbst auch nicht wie das genau funktioniert. (EV-0013)
-- *Also seen (weaker evidence, speculative):* Owners lack a reliable benchmark to judge whether their heat pump consumption is normal. [WSP-01]; Nobody has answered how to bridge PV summer surplus and winter heating demand. [WSP-03]; Owners can't find independent energy consultants who really understand the subject. [WSP-05]
-
-- **Publish real running-cost comparisons** (1.00) - For owners and prospects, show actual annual kWh and euro bills against the previous gas or oil consumption, including the baseline year, so the 'before' figure is never missing. *[OPP-01; demand 1.00 x dissatisfaction 1.00 x novelty 1.0 x (1 - saturation 0.00); builds on MOT-01]*
-- **Tuning guides for heating curve and flow temperature** (0.80) - For new operators, offer simple step-by-step content and installer handover checklists for setting Heizkurve and Vorlauftemperatur. *[OPP-02; demand 1.00 x dissatisfaction 0.80 x novelty 1.0 x (1 - saturation 0.00); builds on MOT-02]*
-- **Itemised, comparable offer templates** (0.60) - For buyers comparing quotes, provide a template and checklist that splits equipment, labour and extras so offers can be compared. *[OPP-03; demand 0.60 x dissatisfaction 1.00 x novelty 1.0 x (1 - saturation 0.00); builds on MOT-04]*
-- **Fair benchmarks for consumption** (0.60) - For operators unsure whether their usage is normal, offer a benchmark by house type, heated area and setup instead of simple comparison with neighbours. *[OPP-04; demand 0.60 x dissatisfaction 1.00 x novelty 1.0 x (1 - saturation 0.00); builds on WSP-01]*
-- **Clarify occupancy rules for the subsidy** (0.40) - For owners who will move in after renovation or live elsewhere, explain in plain language when the speed bonus applies and who must be registered at the address. *[OPP-05; demand 0.40 x dissatisfaction 1.00 x novelty 1.0 x (1 - saturation 0.00); builds on WSP-02]*
+- **Publish real running-cost comparisons: For owners and prospects, show actual annual kWh and euro bills against the previous gas or oil consumption, including the baseline year, so the 'before' figure is never missing.** *[OPP-01; product idea; Early signal - check before acting; emerging; 5 people in 2 communities]*
+  - Not checked: made before the existing-solution search.
+- **Tuning guides for heating curve and flow temperature: For new operators, offer simple step-by-step content and installer handover checklists for setting Heizkurve and Vorlauftemperatur.** *[OPP-02; product idea; Early signal - check before acting; emerging; 4 people in 3 communities]*
+  - Not checked: made before the existing-solution search.
+- **Itemised, comparable offer templates: For buyers comparing quotes, provide a template and checklist that splits equipment, labour and extras so offers can be compared.** *[OPP-03; product idea; Early signal - check before acting; emerging; 3 people in 1 community]*
+  - Not checked: made before the existing-solution search.
+- **Fair benchmarks for consumption: For operators unsure whether their usage is normal, offer a benchmark by house type, heated area and setup instead of simple comparison with neighbours.** *[OPP-04; product idea; Early signal - check before acting; speculative; 0 people in 0 communities]*
+  - Not checked: made before the existing-solution search.
+- **Clarify occupancy rules for the subsidy: For owners who will move in after renovation or live elsewhere, explain in plain language when the speed bonus applies and who must be registered at the address.** *[OPP-05; product idea; Early signal - check before acting; speculative; 0 people in 0 communities]*
+  - Not checked: made before the existing-solution search.
+- **Owners lack a reliable benchmark to judge whether their heat pump consumption is normal.** *[OPP-06; product idea; Early signal - check before acting; speculative; 3 people in 1 community]*
+  - Not checked: made before the existing-solution search.
+- **People don't know whether they have to already live in the house to get the subsidy bonus.** *[OPP-07; content idea; Early signal - check before acting; emerging; 2 people in 1 community]*
+  - Not checked: made before the existing-solution search.
+- **Nobody has answered how to bridge PV summer surplus and winter heating demand.** *[OPP-08; content idea; Early signal - check before acting; speculative; 2 people in 2 communities]*
+  - Not checked: made before the existing-solution search.
+- **Owners can't find independent energy consultants who really understand the subject.** *[OPP-09; product idea; Early signal - check before acting; speculative; 1 people in 1 community]*
+  - Not checked: made before the existing-solution search.
 
 ## Playbook
 
@@ -230,7 +239,7 @@
 *Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.*
 - Wärmepumpe nach 1 Jahr: meine Rechnung neben der Gas-Abrechnung vom Vorjahr. Mit kWh und Euro, auch die unschönen Zeilen. *[HOOK-01; TEN-01, MOM-01, CUL-04, PERF-02, MOT-01, PHR-05]* **[check with legal: energy_environmental, CMP-01]**
 - Altbau, nicht gedämmt, normale Heizkörper, keine FBH. Hier sind meine Vorlauftemperatur und meine JAZ. Ob das reicht, entscheidet ihr. *[HOOK-02; TEN-01, CUL-01, LEX-13, LEX-07, LEX-03, HYP-02]*
-- PV im Dezember: Wie viel kWh liefert das Dach tatsächlich, wenn die WP am meisten braucht? Ich lege meine Zahlen offen. *[HOOK-03; TEN-02, THM-01, WSP-03, LEX-01]*
+- PV im Dezember: Wie viel kWh liefert das Dach tatsächlich, wenn die WP am meisten braucht? Ich lege meine Zahlen offen. *[HOOK-03; TEN-02, THM-01, OPP-08, LEX-01]*
 - Zeige mir einen Altbau mit Wärmepumpe? Bitte: Baujahr, Heizlast, Verbrauch, alles auf dem Tisch. *[HOOK-04; TEN-01, PHR-01, CUL-01, CUL-03, LEX-05]*
 - Die Einstellung vom Fachbetrieb, naja. Heizkurve und VL Temperatur nach der Inbetriebnahme: So gehe ich Schritt für Schritt vor. *[HOOK-05; TEN-01, THM-07, MOT-02, PHR-04, LEX-07, OPP-02]* **[check with legal: other, CMP-02]**
 - Heizlast online gerechnet, Verbrauch real gemessen. Passt das zusammen? Mein Vergleich im Altbau. *[HOOK-06; TEN-01, CUL-03, THM-09, LEX-05]*
@@ -238,10 +247,10 @@
 - Stromtarif 50 ct/kWh, unverschämt teuer, ja. Was kostet dann bei meiner JAZ eine kWh Wärme? Rechnung im Video. *[HOOK-08; TEN-02, THM-06, PHR-03, LEX-03, OBJ-05]* **[check with legal: energy_environmental, CMP-04]**
 - Ein Angebot, eine Summe, null Aufschlüsselung. So teile ich ein WP-Angebot in Gerät, Montage und Extras auf, damit ihr vergleichen könnt. *[HOOK-09; TEN-01, THM-08, MOT-04, OPP-03, PERF-10]*
 - KfW Ablauf, Schritt für Schritt. Und die Stellen, an denen selbst Bank und Heizungsbauer ins Schwimmen kommen. *[HOOK-10; TEN-01, THM-04, PAIN-01, BRD-01, LEX-02]* **[check with legal: finance, CMP-05]**
-- Muss ich schon im Haus wohnen, um den Geschwindigkeitsbonus zu bekommen? Genau hier sehe ich bei vielen Unsicherheit. *[HOOK-11; TEN-01, WSP-02, LEX-15, OPP-05]* **[check with legal: finance, CMP-06]**
+- Muss ich schon im Haus wohnen, um den Geschwindigkeitsbonus zu bekommen? Genau hier sehe ich bei vielen Unsicherheit. *[HOOK-11; TEN-01, OPP-07, LEX-15, OPP-05]* **[check with legal: finance, CMP-06]**
 - Springt bei Kälte der Heizstab an? Ich zeige die kältesten Tage und was der Zähler dazu sagt. *[HOOK-12; TEN-01, OBJ-06, MOM-02, LEX-04, PAIN-02]*
-- Erstes Heizjahr, erste Rechnung. Mein Verbrauch in kWh, aber ist das normal? Wer hat Vergleichswerte für ähnliche Fläche und Haustyp? *[HOOK-13; TEN-01, WSP-01, OPP-04, MOM-03, SEG-03]*
-- Das Dach liefert im Sommer Überschuss, die WP braucht ihn im Winter. Wer hat das gelöst, oder war es nur eine hübsche Excel-Tabelle? *[HOOK-14; TEN-02, WSP-03, SEG-02, THM-01]*
+- Erstes Heizjahr, erste Rechnung. Mein Verbrauch in kWh, aber ist das normal? Wer hat Vergleichswerte für ähnliche Fläche und Haustyp? *[HOOK-13; TEN-01, OPP-06, OPP-04, MOM-03, SEG-03]*
+- Das Dach liefert im Sommer Überschuss, die WP braucht ihn im Winter. Wer hat das gelöst, oder war es nur eine hübsche Excel-Tabelle? *[HOOK-14; TEN-02, OPP-08, SEG-02, THM-01]*
 
 ### Creative brief
 - **Objective:** Understand the audience and build credibility with German homeowners by publishing transparent, number-based content on real heat pump costs, tuning and subsidy process. The aim is trust and conversation, not hype.

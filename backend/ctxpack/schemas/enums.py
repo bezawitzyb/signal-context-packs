@@ -178,6 +178,21 @@ class WhiteSpaceKind(StrEnum):
     unserved_segment = "unserved_segment"
 
 
+class OpportunityKind(StrEnum):
+    """What kind of opportunity (change V5)."""
+
+    content_idea = "content_idea"
+    product_idea = "product_idea"
+    positioning = "positioning"
+
+
+class OpportunityStatus(StrEnum):
+    """supported: enough authors across communities; signal: an early signal - check before acting (V5)."""
+
+    supported = "supported"
+    signal = "signal"
+
+
 class TargetKind(StrEnum):
     community = "community"
     creator = "creator"

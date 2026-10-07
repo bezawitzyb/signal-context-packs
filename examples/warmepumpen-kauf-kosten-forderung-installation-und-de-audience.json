@@ -3746,209 +3746,33 @@
    "timing": "Year-end"
   }
  ],
- "white_space": [
-  {
-   "id": "WSP-01",
-   "claim": "Owners lack a reliable benchmark to judge whether their heat pump consumption is normal.",
-   "summary_for_humans": "Forum answers say comparing with others is of little use because houses and occupants differ, leaving owners without a yardstick; possibly because every house is individual.",
-   "cluster_id": "CL-60",
-   "counts": {
-    "matching": 3,
-    "of_total": 101
-   },
-   "confidence": {
-    "score": 0.24,
-    "label": "speculative"
-   },
-   "claim_type": "inferred",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 3,
-    "distinct_authors": 3,
-    "platforms": [
-     "web_forum"
-    ],
-    "engagement_percentile_median": null
-   },
-   "emotion": [
-    "anxiety",
-    "frustration"
-   ],
-   "trend": "insufficient_data",
-   "recency": null,
-   "evidence_ids": [
-    "EV-0071",
-    "EV-0028",
-    "EV-0053"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0071",
-     "text": "Denke der Vergleich mit anderen ist wenig hilfreich"
-    }
-   ],
-   "segment_ids": [
-    "SEG-03"
-   ],
-   "related_ids": [],
-   "relations": [],
-   "type": "white_space",
-   "kind": "unmet_need"
-  },
-  {
-   "id": "WSP-02",
-   "claim": "People don't know whether they have to already live in the house to get the subsidy bonus.",
-   "summary_for_humans": "A bank advisor admits not knowing, while an advisor and installer say registration is needed; possibly because the rule collides with people who move in after the renovation.",
-   "cluster_id": "CL-58",
-   "counts": {
-    "matching": 2,
-    "of_total": 101
-   },
-   "confidence": {
-    "score": 0.3,
-    "label": "emerging"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 2,
-    "distinct_authors": 2,
-    "platforms": [
-     "reddit"
-    ],
-    "engagement_percentile_median": 35.6
-   },
-   "emotion": [
-    "anxiety",
-    "frustration",
-    "skepticism"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-09",
-   "evidence_ids": [
-    "EV-0013",
-    "EV-0014"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0013",
-     "text": "Er wüsste selbst auch nicht wie das genau funktioniert."
-    },
-    {
-     "evidence_id": "EV-0014",
-     "text": "muss es sich dabei jedoch um selbstgenutztes Wohneigentum handeln"
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "relations": [],
-   "type": "white_space",
-   "kind": "unanswered_question"
-  },
-  {
-   "id": "WSP-03",
-   "claim": "Nobody has answered how to bridge PV summer surplus and winter heating demand.",
-   "summary_for_humans": "Posters note the summer/winter gap and say storage would be needed; possibly because seasonal storage isn't available to private owners.",
-   "cluster_id": "CL-62",
-   "counts": {
-    "matching": 2,
-    "of_total": 101
-   },
-   "confidence": {
-    "score": 0.37,
-    "label": "speculative"
-   },
-   "claim_type": "inferred",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 2,
-    "distinct_authors": 2,
-    "platforms": [
-     "web_forum",
-     "youtube"
-    ],
-    "engagement_percentile_median": 28.8
-   },
-   "emotion": [
-    "skepticism"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-09",
-   "evidence_ids": [
-    "EV-0001",
-    "EV-0002"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0002",
-     "text": "Überangebot im Sommer und Mangel im Winter"
-    }
-   ],
-   "segment_ids": [
-    "SEG-02"
-   ],
-   "related_ids": [],
-   "relations": [],
-   "type": "white_space",
-   "kind": "unanswered_question"
-  },
-  {
-   "id": "WSP-05",
-   "claim": "Owners can't find independent energy consultants who really understand the subject.",
-   "summary_for_humans": "One poster asks for consultant recommendations in the Frankfurt area after reading that good ones are hard to find.",
-   "cluster_id": "CL-61",
-   "counts": {
-    "matching": 1,
-    "of_total": 101
-   },
-   "confidence": {
-    "score": 0.25,
-    "label": "speculative"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 1,
-    "distinct_authors": 1,
-    "platforms": [
-     "reddit"
-    ],
-    "engagement_percentile_median": 39.8
-   },
-   "emotion": [
-    "frustration"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-09",
-   "evidence_ids": [
-    "EV-0018"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0018",
-     "text": "Es ist ein seriösen Energie zu finden, der auch tatsächlich was von der Materie versteht."
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "relations": [],
-   "type": "white_space",
-   "kind": "unmet_need"
-  }
- ],
  "opportunities": [
   {
    "id": "OPP-01",
    "type": "opportunity",
-   "title": "Publish real running-cost comparisons",
-   "description": "For owners and prospects, show actual annual kWh and euro bills against the previous gas or oil consumption, including the baseline year, so the 'before' figure is never missing.",
+   "opportunity": "Publish real running-cost comparisons: For owners and prospects, show actual annual kWh and euro bills against the previous gas or oil consumption, including the baseline year, so the 'before' figure is never missing.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.57,
+    "label": "emerging"
+   },
+   "distinct_authors": 5,
+   "communities": [
+    "web_forum",
+    "youtube"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0048",
+    "EV-0052",
+    "EV-0035"
+   ],
    "builds_on": [
     "MOT-01"
    ],
+   "related_ids": [],
    "cluster_id": "CL-11",
    "score": 1.0,
    "components": {
@@ -3956,21 +3780,35 @@
     "dissatisfaction": 1.0,
     "novelty": 1.0,
     "saturation": 0.0
-   },
-   "evidence_ids": [
-    "EV-0048",
-    "EV-0052",
-    "EV-0035"
-   ]
+   }
   },
   {
    "id": "OPP-02",
    "type": "opportunity",
-   "title": "Tuning guides for heating curve and flow temperature",
-   "description": "For new operators, offer simple step-by-step content and installer handover checklists for setting Heizkurve and Vorlauftemperatur.",
+   "opportunity": "Tuning guides for heating curve and flow temperature: For new operators, offer simple step-by-step content and installer handover checklists for setting Heizkurve and Vorlauftemperatur.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.6,
+    "label": "emerging"
+   },
+   "distinct_authors": 4,
+   "communities": [
+    "reddit",
+    "web_forum",
+    "youtube"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0027",
+    "EV-0043",
+    "EV-0028"
+   ],
    "builds_on": [
     "MOT-02"
    ],
+   "related_ids": [],
    "cluster_id": "CL-15",
    "score": 0.8,
    "components": {
@@ -3978,21 +3816,33 @@
     "dissatisfaction": 0.8,
     "novelty": 1.0,
     "saturation": 0.0
-   },
-   "evidence_ids": [
-    "EV-0027",
-    "EV-0043",
-    "EV-0028"
-   ]
+   }
   },
   {
    "id": "OPP-03",
    "type": "opportunity",
-   "title": "Itemised, comparable offer templates",
-   "description": "For buyers comparing quotes, provide a template and checklist that splits equipment, labour and extras so offers can be compared.",
+   "opportunity": "Itemised, comparable offer templates: For buyers comparing quotes, provide a template and checklist that splits equipment, labour and extras so offers can be compared.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.38,
+    "label": "emerging"
+   },
+   "distinct_authors": 3,
+   "communities": [
+    "reddit"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0020",
+    "EV-0017",
+    "EV-0056"
+   ],
    "builds_on": [
     "MOT-04"
    ],
+   "related_ids": [],
    "cluster_id": "CL-14",
    "score": 0.6,
    "components": {
@@ -4000,21 +3850,31 @@
     "dissatisfaction": 1.0,
     "novelty": 1.0,
     "saturation": 0.0
-   },
-   "evidence_ids": [
-    "EV-0020",
-    "EV-0017",
-    "EV-0056"
-   ]
+   }
   },
   {
    "id": "OPP-04",
    "type": "opportunity",
-   "title": "Fair benchmarks for consumption",
-   "description": "For operators unsure whether their usage is normal, offer a benchmark by house type, heated area and setup instead of simple comparison with neighbours.",
-   "builds_on": [
-    "WSP-01"
+   "opportunity": "Fair benchmarks for consumption: For operators unsure whether their usage is normal, offer a benchmark by house type, heated area and setup instead of simple comparison with neighbours.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.0,
+    "label": "speculative"
+   },
+   "distinct_authors": 0,
+   "communities": [],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0071",
+    "EV-0028",
+    "EV-0053"
    ],
+   "builds_on": [
+    "OPP-06"
+   ],
+   "related_ids": [],
    "cluster_id": "CL-60",
    "score": 0.6,
    "components": {
@@ -4022,21 +3882,30 @@
     "dissatisfaction": 1.0,
     "novelty": 1.0,
     "saturation": 0.0
-   },
-   "evidence_ids": [
-    "EV-0071",
-    "EV-0028",
-    "EV-0053"
-   ]
+   }
   },
   {
    "id": "OPP-05",
    "type": "opportunity",
-   "title": "Clarify occupancy rules for the subsidy",
-   "description": "For owners who will move in after renovation or live elsewhere, explain in plain language when the speed bonus applies and who must be registered at the address.",
-   "builds_on": [
-    "WSP-02"
+   "opportunity": "Clarify occupancy rules for the subsidy: For owners who will move in after renovation or live elsewhere, explain in plain language when the speed bonus applies and who must be registered at the address.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.0,
+    "label": "speculative"
+   },
+   "distinct_authors": 0,
+   "communities": [],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0013",
+    "EV-0014"
    ],
+   "builds_on": [
+    "OPP-07"
+   ],
+   "related_ids": [],
    "cluster_id": "CL-58",
    "score": 0.4,
    "components": {
@@ -4044,11 +3913,112 @@
     "dissatisfaction": 1.0,
     "novelty": 1.0,
     "saturation": 0.0
+   }
+  },
+  {
+   "id": "OPP-06",
+   "type": "opportunity",
+   "opportunity": "Owners lack a reliable benchmark to judge whether their heat pump consumption is normal.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.24,
+    "label": "speculative"
    },
+   "distinct_authors": 3,
+   "communities": [
+    "web_forum"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0071",
+    "EV-0028",
+    "EV-0053"
+   ],
+   "builds_on": [],
+   "related_ids": [],
+   "cluster_id": "CL-60",
+   "score": null,
+   "components": null
+  },
+  {
+   "id": "OPP-07",
+   "type": "opportunity",
+   "opportunity": "People don't know whether they have to already live in the house to get the subsidy bonus.",
+   "kind": "content_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.3,
+    "label": "emerging"
+   },
+   "distinct_authors": 2,
+   "communities": [
+    "reddit"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
    "evidence_ids": [
     "EV-0013",
     "EV-0014"
-   ]
+   ],
+   "builds_on": [],
+   "related_ids": [],
+   "cluster_id": "CL-58",
+   "score": null,
+   "components": null
+  },
+  {
+   "id": "OPP-08",
+   "type": "opportunity",
+   "opportunity": "Nobody has answered how to bridge PV summer surplus and winter heating demand.",
+   "kind": "content_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.37,
+    "label": "speculative"
+   },
+   "distinct_authors": 2,
+   "communities": [
+    "web_forum",
+    "youtube"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0001",
+    "EV-0002"
+   ],
+   "builds_on": [],
+   "related_ids": [],
+   "cluster_id": "CL-62",
+   "score": null,
+   "components": null
+  },
+  {
+   "id": "OPP-09",
+   "type": "opportunity",
+   "opportunity": "Owners can't find independent energy consultants who really understand the subject.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.25,
+    "label": "speculative"
+   },
+   "distinct_authors": 1,
+   "communities": [
+    "reddit"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0018"
+   ],
+   "builds_on": [],
+   "related_ids": [],
+   "cluster_id": "CL-61",
+   "score": null,
+   "components": null
   }
  ],
  "channel_plan": [
@@ -4141,7 +4111,7 @@
    "why_ids": [
     "CUL-02",
     "CUL-03",
-    "WSP-01",
+    "OPP-06",
     "OPP-04"
    ],
    "formats": [
@@ -4189,7 +4159,7 @@
     "why_ids": [
      "TEN-02",
      "THM-01",
-     "WSP-03",
+     "OPP-08",
      "LEX-01"
     ]
    },
@@ -4283,7 +4253,7 @@
     "text": "Muss ich schon im Haus wohnen, um den Geschwindigkeitsbonus zu bekommen? Genau hier sehe ich bei vielen Unsicherheit.",
     "why_ids": [
      "TEN-01",
-     "WSP-02",
+     "OPP-07",
      "LEX-15",
      "OPP-05"
     ]
@@ -4306,7 +4276,7 @@
     "text": "Erstes Heizjahr, erste Rechnung. Mein Verbrauch in kWh, aber ist das normal? Wer hat Vergleichswerte für ähnliche Fläche und Haustyp?",
     "why_ids": [
      "TEN-01",
-     "WSP-01",
+     "OPP-06",
      "OPP-04",
      "MOM-03",
      "SEG-03"
@@ -4318,7 +4288,7 @@
     "text": "Das Dach liefert im Sommer Überschuss, die WP braucht ihn im Winter. Wer hat das gelöst, oder war es nur eine hübsche Excel-Tabelle?",
     "why_ids": [
      "TEN-02",
-     "WSP-03",
+     "OPP-08",
      "SEG-02",
      "THM-01"
     ]
@@ -4497,7 +4467,7 @@
     "url": null,
     "why_ids": [
      "CUL-02",
-     "WSP-01"
+     "OPP-06"
     ]
    }
   ],
@@ -4779,7 +4749,7 @@
    "type": "risk",
    "text": "Giving subsidy advice (occupancy, split trades, advance payment) as fact is risky because even advisors disagree and rules may change.",
    "item_ids": [
-    "WSP-02"
+    "OPP-07"
    ]
   },
   {
@@ -4788,7 +4758,7 @@
    "text": "Selling PV plus heat pump as a cost cure ignores the winter shortfall that the audience already points out.",
    "item_ids": [
     "TEN-02",
-    "WSP-03"
+    "OPP-08"
    ]
   }
  ],

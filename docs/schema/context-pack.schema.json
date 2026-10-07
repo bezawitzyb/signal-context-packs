@@ -335,7 +335,7 @@
         },
         "item_id": {
           "description": "The hook or claim flagged.",
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|WSP|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -1325,6 +1325,27 @@
         "reason"
       ],
       "title": "ExcludedLanguage",
+      "type": "object"
+    },
+    "ExistingSolution": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Product, service or content that already addresses it.",
+          "title": "Name",
+          "type": "string"
+        },
+        "url": {
+          "description": "Where the search found it.",
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "url"
+      ],
+      "title": "ExistingSolution",
       "type": "object"
     },
     "FinishReason": {
@@ -2794,6 +2815,7 @@
     },
     "Opportunity": {
       "additionalProperties": false,
+      "description": "One opportunity you can trust (1.1, V5): replaces white space and the scored opportunities.",
       "properties": {
         "id": {
           "description": "Stable opportunity id (OPP-NN).",
@@ -2811,23 +2833,74 @@
           "title": "Type",
           "type": "string"
         },
-        "title": {
-          "description": "Short name for the opportunity.",
-          "title": "Title",
+        "opportunity": {
+          "description": "The opportunity, worded as the gap the posts show (and, when solutions exist, the gap in how it is served).",
+          "title": "Opportunity",
           "type": "string"
         },
-        "description": {
-          "description": "What to do and for whom.",
-          "title": "Description",
-          "type": "string"
+        "kind": {
+          "$ref": "#/$defs/OpportunityKind",
+          "description": "content_idea, product_idea or positioning."
         },
-        "builds_on": {
-          "description": "Need or white-space items it builds on.",
+        "status": {
+          "$ref": "#/$defs/OpportunityStatus",
+          "description": "supported, or signal (\"early signal - check before acting\")."
+        },
+        "confidence": {
+          "$ref": "#/$defs/Confidence",
+          "description": "Score and label; a signal is at most emerging."
+        },
+        "distinct_authors": {
+          "description": "Distinct authors behind it (code).",
+          "minimum": 0,
+          "title": "Distinct Authors",
+          "type": "integer"
+        },
+        "communities": {
+          "description": "Communities or sources it was seen in (code).",
           "items": {
             "type": "string"
           },
-          "minItems": 1,
+          "title": "Communities",
+          "type": "array"
+        },
+        "existing_solutions": {
+          "description": "What already addresses it (from a web search).",
+          "items": {
+            "$ref": "#/$defs/ExistingSolution"
+          },
+          "title": "Existing Solutions",
+          "type": "array"
+        },
+        "search_note": {
+          "default": "",
+          "description": "e.g. \"no existing solution found in our search\".",
+          "title": "Search Note",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "description": "Receipts.",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "builds_on": {
+          "description": "Items it builds on (pain points, motivations).",
+          "items": {
+            "type": "string"
+          },
           "title": "Builds On",
+          "type": "array"
+        },
+        "related_ids": {
+          "description": "Related items.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Related Ids",
           "type": "array"
         },
         "cluster_id": {
@@ -2841,36 +2914,44 @@
             }
           ],
           "default": null,
-          "description": "Cluster the score is computed from.",
+          "description": "The cluster behind it.",
           "title": "Cluster Id"
         },
         "score": {
-          "description": "demand x dissatisfaction x novelty x (1 - saturation).",
-          "maximum": 1,
-          "minimum": 0,
-          "title": "Score",
-          "type": "number"
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "PRD 5.5 score, when computed.",
+          "title": "Score"
         },
         "components": {
-          "$ref": "#/$defs/OpportunityComponents",
-          "description": "The four score components (PRD 5.5)."
-        },
-        "evidence_ids": {
-          "description": "Example evidence.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Evidence Ids",
-          "type": "array"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpportunityComponents"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The score components (PRD 5.5)."
         }
       },
       "required": [
         "id",
-        "title",
-        "description",
-        "builds_on",
-        "score",
-        "components"
+        "opportunity",
+        "kind",
+        "status",
+        "confidence",
+        "distinct_authors"
       ],
       "title": "Opportunity",
       "type": "object"
@@ -2916,6 +2997,25 @@
       ],
       "title": "OpportunityComponents",
       "type": "object"
+    },
+    "OpportunityKind": {
+      "description": "What kind of opportunity (change V5).",
+      "enum": [
+        "content_idea",
+        "product_idea",
+        "positioning"
+      ],
+      "title": "OpportunityKind",
+      "type": "string"
+    },
+    "OpportunityStatus": {
+      "description": "supported: enough authors across communities; signal: an early signal - check before acting (V5).",
+      "enum": [
+        "supported",
+        "signal"
+      ],
+      "title": "OpportunityStatus",
+      "type": "string"
     },
     "PackEvent": {
       "additionalProperties": false,
@@ -3408,7 +3508,7 @@
           "examples": [
             "OPP-01"
           ],
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|WSP|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -5007,201 +5107,6 @@
       ],
       "title": "WhatsNew",
       "type": "object"
-    },
-    "WhiteSpace": {
-      "additionalProperties": false,
-      "properties": {
-        "id": {
-          "description": "Stable white space id (WSP-NN).",
-          "examples": [
-            "WSP-01"
-          ],
-          "pattern": "^WSP-\\d{2,}$",
-          "title": "Id",
-          "type": "string"
-        },
-        "claim": {
-          "description": "One sentence a person could say out loud.",
-          "examples": [
-            "Students want to eat healthy but refuse to give up Sunday."
-          ],
-          "minLength": 1,
-          "title": "Claim",
-          "type": "string"
-        },
-        "summary_for_humans": {
-          "default": "",
-          "description": "A short plain-English explanation.",
-          "title": "Summary For Humans",
-          "type": "string"
-        },
-        "cluster_id": {
-          "anyOf": [
-            {
-              "pattern": "^CL-\\d{2,}$",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The verified cluster this claim summarises.",
-          "examples": [
-            "CL-07"
-          ],
-          "title": "Cluster Id"
-        },
-        "counts": {
-          "$ref": "#/$defs/Counts",
-          "description": "Verified members of total relevant posts."
-        },
-        "confidence": {
-          "$ref": "#/$defs/Confidence",
-          "description": "Score and label (PRD 5.4)."
-        },
-        "claim_type": {
-          "$ref": "#/$defs/ClaimType",
-          "description": "observed, inferred or external."
-        },
-        "safe_to_assert": {
-          "description": "True ONLY if strong AND observed AND verified.",
-          "title": "Safe To Assert",
-          "type": "boolean"
-        },
-        "non_obvious": {
-          "description": "True if not covered by the generic AI answer.",
-          "title": "Non Obvious",
-          "type": "boolean"
-        },
-        "strength": {
-          "$ref": "#/$defs/Strength",
-          "description": "Evidence strength, computed in code."
-        },
-        "emotion": {
-          "description": "Emotions expressed, where relevant.",
-          "items": {
-            "$ref": "#/$defs/Emotion"
-          },
-          "title": "Emotion",
-          "type": "array"
-        },
-        "trend": {
-          "$ref": "#/$defs/Trend",
-          "default": "insufficient_data",
-          "description": "Momentum over the time window."
-        },
-        "recency": {
-          "anyOf": [
-            {
-              "pattern": "^\\d{4}-\\d{2}(-\\d{2})?$",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Median date of dated evidence (YYYY-MM).",
-          "examples": [
-            "2026-08"
-          ],
-          "title": "Recency"
-        },
-        "evidence_ids": {
-          "description": "Receipts: up to 5 evidence ids from the cluster.",
-          "examples": [
-            [
-              "EV-0112",
-              "EV-0187"
-            ]
-          ],
-          "items": {
-            "type": "string"
-          },
-          "maxItems": 5,
-          "minItems": 1,
-          "title": "Evidence Ids",
-          "type": "array"
-        },
-        "quotes": {
-          "description": "Verbatim quotes from the cited evidence.",
-          "items": {
-            "$ref": "#/$defs/Quote"
-          },
-          "title": "Quotes",
-          "type": "array"
-        },
-        "segment_ids": {
-          "description": "Segments this applies to.",
-          "examples": [
-            [
-              "SEG-01"
-            ]
-          ],
-          "items": {
-            "type": "string"
-          },
-          "title": "Segment Ids",
-          "type": "array"
-        },
-        "related_ids": {
-          "description": "Related item ids.",
-          "examples": [
-            [
-              "HOOK-04",
-              "LEX-09"
-            ]
-          ],
-          "items": {
-            "type": "string"
-          },
-          "title": "Related Ids",
-          "type": "array"
-        },
-        "relations": {
-          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
-          "items": {
-            "$ref": "#/$defs/Relation"
-          },
-          "title": "Relations",
-          "type": "array"
-        },
-        "type": {
-          "const": "white_space",
-          "default": "white_space",
-          "description": "Item type, always \"white_space\".",
-          "title": "Type",
-          "type": "string"
-        },
-        "kind": {
-          "$ref": "#/$defs/WhiteSpaceKind",
-          "description": "unmet_need, unanswered_question or unserved_segment."
-        }
-      },
-      "required": [
-        "id",
-        "claim",
-        "counts",
-        "confidence",
-        "claim_type",
-        "safe_to_assert",
-        "non_obvious",
-        "strength",
-        "evidence_ids",
-        "kind"
-      ],
-      "title": "WhiteSpace",
-      "type": "object"
-    },
-    "WhiteSpaceKind": {
-      "enum": [
-        "unmet_need",
-        "unanswered_question",
-        "unserved_segment"
-      ],
-      "title": "WhiteSpaceKind",
-      "type": "string"
     }
   },
   "additionalProperties": false,
@@ -5353,16 +5258,8 @@
       "title": "Moments",
       "type": "array"
     },
-    "white_space": {
-      "description": "Unmet needs nobody serves.",
-      "items": {
-        "$ref": "#/$defs/WhiteSpace"
-      },
-      "title": "White Space",
-      "type": "array"
-    },
     "opportunities": {
-      "description": "Scored opportunities (PRD 5.5).",
+      "description": "Opportunities you can trust (1.1; replaces white_space and the scored opportunities).",
       "items": {
         "$ref": "#/$defs/Opportunity"
       },

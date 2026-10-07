@@ -58,7 +58,7 @@ def content_bar(sections: dict, parts: dict, mode: str) -> list[str]:
             "hooks": len(parts["playbook"]["hooks"]), "objections": len(sections["objections"]),
             "opportunities": len(sections["opportunities"]), "white_space": len(sections["white_space"]),
             "what_performs": len(sections["what_performs"]), "channel_plan": len(parts["channel_plan"])}
-    short = [f"{k} {have[k]} of {need}" for k, need in bar.items()
+    short = [f"{'unmet needs' if k == 'white_space' else k} {have[k]} of {need}" for k, need in bar.items()
              if have[k] < need and not (k == "white_space" and have[k] == 0)]  # white space: >= 2 or "none found"
     if len(parts["do_first"]) != 3:
         short.append(f"do_first {len(parts['do_first'])} of 3")
@@ -131,8 +131,8 @@ EMPTY = {
                    ["Name your offer or competitors in the brief", "Run Standard for more sources"]),
     "segments": ("Too few people described themselves to form segments.",
                  ["Add a role or audience to the brief", "Run Standard for more sources"]),
-    "white_space": ("Nothing missing was mentioned often enough to call it a gap.",
-                    ["Run Standard for more sources", "Widen the time window"]),
+    "opportunities": ("Nothing missing or unmet was mentioned often enough to call it an opportunity.",
+                      ["Run Standard for more sources", "Widen the time window"]),
     "what_performs": ("These sources show no engagement numbers, so nothing can be ranked by what performs.",
                       ["Include TikTok, YouTube or Reddit in the plan"]),
     "moments": ("No recurring times or occasions showed up in the posts.", ["Widen the time window"]),
@@ -145,7 +145,7 @@ def sections_meta(pack: dict, written: dict[str, dict], alive: set[str], interp:
     reason and next steps."""
     present = {"themes": pack["landscape"]["themes"], "pain_points": pack["pain_points"], "tensions": pack["tensions"],
                "motivations": pack["motivations"], "objections": pack["objections"], "segments": pack["segments"],
-               "white_space": pack["white_space"], "what_performs": pack["what_performs"],
+               "opportunities": pack["opportunities"], "what_performs": pack["what_performs"],
                "moments": pack["moments"], "platform_lens": pack["landscape"]["platform_lens"],
                "culture": [x for part in pack["culture"].values() for x in part]}
     out: dict[str, dict] = {}
@@ -160,15 +160,15 @@ def sections_meta(pack: dict, written: dict[str, dict], alive: set[str], interp:
     return out
 
 
-def snapshot(sections: dict, generic: list[str], grade: str) -> dict:
-    claims = sorted((it for n in ("themes", "pain_points", "tensions", "motivations", "objections", "white_space",
+def snapshot(sections: dict, generic: list[str], grade: str, opportunities: list[dict] = ()) -> dict:
+    claims = sorted((it for n in ("themes", "pain_points", "tensions", "motivations", "objections",
                                   "segments", "moments") for it in sections.get(n, [])), key=_rank_key)
     truths = [{"text": it["claim"], "item_ids": [it["id"]]} for it in claims[:5]]
     found = [{"text": it["claim"], "item_ids": [it["id"]]} for it in claims if it.get("non_obvious")][:5]
-    opp = sections["opportunities"][0] if sections["opportunities"] else None
+    opp = (opportunities or [None])[0]
     risk = sections["risks"][0] if sections["risks"] else None
     return {"five_truths": truths,
-            "top_opportunity": {"item_id": opp["id"], "text": opp["title"]} if opp else None,
+            "top_opportunity": {"item_id": opp["id"], "text": opp["opportunity"]} if opp else None,
             "top_risk": {"item_id": risk["id"], "text": risk["text"]} if risk else None,
             "coverage_grade": grade,
             "generic_vs_found": {"generic_points": generic, "what_we_found": found}}
@@ -222,11 +222,14 @@ def coverage(run: Any, docs: list[Any], evidence: list[dict], thin: bool) -> dic
 
 
 def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict], clusters: dict[str, Any],
-             docs: list[Any], brand_voice: str | None, extra_spots: list[str] = ()) -> tuple[P.ContextPack, list[str]]:
+             docs: list[Any], brand_voice: str | None, extra_spots: list[str] = (),
+             opportunities: list[dict] = (), id_map: dict[str, str] | None = None) -> tuple[P.ContextPack, list[str]]:
     """(validated ContextPack, content-bar shortfalls). Raises if the pack is invalid."""
     from ctxpack import db
 
-    s = draft["verified"]["sections"]
+    from ctxpack.schemas.migrate import rename_ids as _rename
+
+    s = _rename(draft["verified"]["sections"], id_map or {})
     evidence = draft["verified"]["evidence"]
     analysis = run.analysis or {}
     sections = {**s, "_evidence": evidence}
@@ -269,9 +272,8 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
         "culture": culture,
         "what_performs": [_fields(P.PerformingPost, it) for it in s["what_performs"]],
         "moments": [insight(P.Moment, it) for it in s["moments"]],
-        "white_space": [insight(P.WhiteSpace, it) for it in s["white_space"]],
-        "opportunities": [_fields(P.Opportunity, it, components=_fields(P.OpportunityComponents, it["components"]))
-                          for it in s["opportunities"]],
+        "opportunities": [_fields(P.Opportunity, it, components=_fields(P.OpportunityComponents, it["components"])
+                                  if it.get("components") else None) for it in opportunities],
         "channel_plan": parts["channel_plan"],
         "playbook": parts["playbook"],
         "hypotheses": [_fields(P.Hypothesis, it) for it in s["hypotheses"]],
@@ -292,13 +294,18 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
     alive = {i["id"] for n in ("pain_points", "tensions", "motivations", "objections", "white_space", "segments",
                                "moments", "culture", "lexicon", "phrases") for i in s.get(n, [])}
     alive |= {i["id"] for i in s["themes"]}
-    notes = draft.get("notes") or {}
+    from ctxpack.schemas.migrate import rename_ids
+
+    notes = rename_ids(draft.get("notes") or {}, id_map or {})
+    if "white_space" in notes.get("meta", {}):
+        notes["meta"]["opportunities"] = notes["meta"].pop("white_space")
+    alive |= {o["id"] for o in opportunities}
     perf = {p["id"] for p in s["what_performs"]}
     data["performance_takeaways"] = [{**t, "post_ids": [x for x in t["post_ids"] if x in perf]}
                                      for t in notes.get("takeaways", []) if s["what_performs"]]
     data["sections_meta"] = sections_meta(data, notes.get("meta", {}), alive, interp)
     data["snapshot"] = snapshot(s, draft.get("generic_points", []),
-                                analysis.get("coverage", {}).get("grade", "d"))
+                                analysis.get("coverage", {}).get("grade", "d"), list(opportunities))
     data["digest"] = digest(_jsonable(data), load_yaml("modes")["content_bar"]["digest_max_chars"])
     return P.ContextPack.model_validate(data), bar_short
 
@@ -372,7 +379,19 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
 
     clusters = {c.id: c for c in db.get_clusters(run_id)}
     docs = db.get_documents(run_id)
-    pack, out.bar_short = assemble(run, interp, draft, parts, flags, clusters, docs, voice)
+    # V5: one list of opportunities you can trust (saved: a retry never pays for the searches again)
+    from ctxpack.schemas.migrate import rename_ids
+    from ctxpack.synthesis import opportunities as opp
+
+    if not draft.get("opportunities_v5") or redo:
+        opps, mapping, usd = await opp.build(s, clusters, docs, interp)
+        out.usd += usd
+        draft["opportunities_v5"] = {"items": opps, "mapping": mapping}
+        db.update_run(run_id, draft=draft)
+    mapping = draft["opportunities_v5"]["mapping"]
+    parts, flags = rename_ids(parts, mapping), rename_ids(flags, mapping)
+    pack, out.bar_short = assemble(run, interp, draft, parts, flags, clusters, docs, voice,
+                                   opportunities=draft["opportunities_v5"]["items"], id_map=mapping)
     out.pack_id = db.save_pack(pack, run_id=run_id)
     log.info("run %s packaged %s (thin: %s)", run_id, out.pack_id, out.bar_short)
     return out

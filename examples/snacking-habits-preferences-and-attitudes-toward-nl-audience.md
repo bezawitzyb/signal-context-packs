@@ -9,7 +9,7 @@
 ## Summary
 
 ### Do first
-1. **Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name.** - Missing, vanished snacks is the strongest non-obvious theme, backed by a strong motivation (can't find what I want) and a 'why is it gone' post that invites memories. *[DO-01; effort low, impact high; Community manager; based on THM-01, PAIN-01, WSP-01, PERF-09, OPP-02]*
+1. **Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name.** - Missing, vanished snacks is the strongest non-obvious theme, backed by a strong motivation (can't find what I want) and a 'why is it gone' post that invites memories. *[DO-01; effort low, impact high; Community manager; based on THM-01, PAIN-01, OPP-06, PERF-09, OPP-02]*
 1. **Pitch a product sample and a timestamped slot to supermarket-test YouTubers (like the PROEFWERK series), and prepare your own 'zodat jij dat niet hoeft te doen' test video with a dated title and a product list, putting your snack next to familiar chips and snack-bar snacks.** - Viewers watch testers to learn which new supermarket products are worth it, and dated, timestamped test videos are the format that performs. *[DO-02; effort medium, impact high; Partnerships / influencer lead; based on THM-06, MOT-04, CUL-03, PERF-02, PERF-05, PHR-02]*
 1. **Film a TikTok label-reading short in Dutch (and an English cut) that shows the real kcal, sugar and protein per 100 g of your snack on screen, including the unflattering numbers, with the ingredient list readable in frame.** - Commenters answer 'healthy' snack content with kcal and sugar figures, so numbers up front pre-empt the scepticism; the figures must come from your actual product. *[DO-03; effort medium, impact high; Social video producer + product/QA team; based on CUL-01, THM-02, TEN-01, MOT-03, OPP-05, PLT-03]*
 
@@ -18,7 +18,7 @@
 - We still miss snacks that got discontinued, like the Winner taco and the Yes bar. *[THM-01]*
 - Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. *[THM-09]*
 - Posters question snacks sold as healthy by pointing to calories and sugar. *[THM-02]*
-- I want to know why a favourite snack disappeared from the shops. *[WSP-01]*
+- I want to know why a favourite snack disappeared from the shops. *[OPP-06]*
 
 **Top opportunity:** Show the real protein and fibre *[OPP-01]*  
 **Top risk:** Health positioning invites push-back. Posts check calories and sugar and question the word 'gezond', so unproven claims could draw sceptical replies. *[RSK-01]*
@@ -30,7 +30,7 @@
 | Taste and indulgence still come first, so a new brand must deliver great flavour and not just health claims. | We still miss snacks that got discontinued, like the Winner taco and the Yes bar. [THM-01] |
 | Price sensitivity is high in the Netherlands, and shoppers often buy promotions and private label from Albert Heijn, Jumbo, and Lidl. | Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. [THM-09] |
 | Supermarkets are the main purchase channel, with online grocery, convenience stores, and petrol stations as secondary channels for on-the-go snacking. | Posters question snacks sold as healthy by pointing to calories and sugar. [THM-02] |
-| Plant-based, vegan, high-protein, and low-sugar snacks are growing trends that appeal to health-conscious young adults. | I want to know why a favourite snack disappeared from the shops. [WSP-01] |
+| Plant-based, vegan, high-protein, and low-sugar snacks are growing trends that appeal to health-conscious young adults. | I want to know why a favourite snack disappeared from the shops. [OPP-06] |
 | Sustainability matters, including recyclable packaging, ethical sourcing, and a low carbon footprint, though people won't always pay extra for it. |  |
 
 ## Channels and this week
@@ -205,19 +205,26 @@
 
 - None found.
 
-## White space and opportunities
+## Opportunities
 
-- I want to know why a favourite snack disappeared from the shops. *[WSP-01; moderate, 4 of 216 posts, observed]*
-  > Waarom is het gehaktbalbroodje verdwenen? (EV-0061)
-- I hate how healthier food is not accessible to everyone. *[WSP-03; emerging, 2 of 216 posts, observed]*
-  > I hate how healthier food is not accessible to everyone (EV-0094)
-- *Also seen (weaker evidence, speculative):* I want snacks that don't cause bloating or upset my gut. [WSP-02]; Here they only sell a few chip flavours and I want others. [WSP-04]
-
-- **Show the real protein and fibre** (0.19) - Lead with the actual protein and fibre amounts on savoury snacks for gym and health-minded snackers, and keep the numbers honest, since one post notes the protein is only 'a little'. *[OPP-01; demand 0.86 x dissatisfaction 0.67 x novelty 1.0 x (1 - saturation 0.67); builds on MOT-02]*
-- **Explain delistings** (0.14) - Tell fans why a snack left the shelf, or bring back a limited run, for nostalgic snackers who miss a product. *[OPP-02; demand 0.57 x dissatisfaction 1.00 x novelty 1.0 x (1 - saturation 0.75); builds on WSP-01]*
-- **Speak to digestion** (0.14) - Test a gentle-on-the-stomach angle for snackers who worry about bloating, only if the product itself supports it. *[OPP-03; demand 0.43 x dissatisfaction 1.00 x novelty 1.0 x (1 - saturation 0.67); builds on WSP-02]*
-- **Affordable healthier range** (0.14) - Position a healthier snack at an accessible price for shoppers who say healthier food is out of reach. *[OPP-04; demand 0.29 x dissatisfaction 1.00 x novelty 1.0 x (1 - saturation 0.50); builds on WSP-03]*
-- **Show ingredients up front** (0.07) - Offer snacks with less sugar and fewer additives, and make the ingredient list easy to read for label-checking snackers. *[OPP-05; demand 0.71 x dissatisfaction 0.60 x novelty 0.4 x (1 - saturation 0.60); builds on MOT-03]*
+- **Show the real protein and fibre: Lead with the actual protein and fibre amounts on savoury snacks for gym and health-minded snackers, and keep the numbers honest, since one post notes the protein is only 'a little'.** *[OPP-01; product idea; Early signal - check before acting; emerging; 6 people in 2 communities]*
+  - Not checked: made before the existing-solution search.
+- **Explain delistings: Tell fans why a snack left the shelf, or bring back a limited run, for nostalgic snackers who miss a product.** *[OPP-02; product idea; Early signal - check before acting; speculative; 0 people in 0 communities]*
+  - Not checked: made before the existing-solution search.
+- **Speak to digestion: Test a gentle-on-the-stomach angle for snackers who worry about bloating, only if the product itself supports it.** *[OPP-03; product idea; Early signal - check before acting; speculative; 0 people in 0 communities]*
+  - Not checked: made before the existing-solution search.
+- **Affordable healthier range: Position a healthier snack at an accessible price for shoppers who say healthier food is out of reach.** *[OPP-04; product idea; Early signal - check before acting; speculative; 0 people in 0 communities]*
+  - Not checked: made before the existing-solution search.
+- **Show ingredients up front: Offer snacks with less sugar and fewer additives, and make the ingredient list easy to read for label-checking snackers.** *[OPP-05; product idea; Early signal - check before acting; emerging; 5 people in 1 community]*
+  - Not checked: made before the existing-solution search.
+- **I want to know why a favourite snack disappeared from the shops.** *[OPP-06; content idea; Early signal - check before acting; emerging; 4 people in 2 communities]*
+  - Not checked: made before the existing-solution search.
+- **I want snacks that don't cause bloating or upset my gut.** *[OPP-07; product idea; Early signal - check before acting; speculative; 3 people in 1 community]*
+  - Not checked: made before the existing-solution search.
+- **I hate how healthier food is not accessible to everyone.** *[OPP-08; product idea; Early signal - check before acting; emerging; 2 people in 1 community]*
+  - Not checked: made before the existing-solution search.
+- **Here they only sell a few chip flavours and I want others.** *[OPP-09; product idea; Early signal - check before acting; speculative; 1 people in 1 community]*
+  - Not checked: made before the existing-solution search.
 
 ## Playbook
 
@@ -225,11 +232,11 @@
 *Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.*
 - Check de kcal en de suiker per 100 g voordat je 'gezond' gelooft. Wij zetten de cijfers gewoon vooraan. Ook de saaie. *[HOOK-01; TEN-01, CUL-01, THM-02, MOT-03]*
 - Paprika, bolognese of cheese onion: kies je kant. Welke chipsmaak is voor jou verslavend lekker? *[HOOK-02; TEN-01, THM-03, LEX-11, MOT-05]* **[check with legal: food_nutrition, CMP-01]**
-- Winner taco, Yes bar... welke snack mis jij nog? Jeugdsentiment, en niemand legt uit waarom hij uit de schappen verdween. *[HOOK-03; TEN-01, THM-01, WSP-01, LEX-10]*
+- Winner taco, Yes bar... welke snack mis jij nog? Jeugdsentiment, en niemand legt uit waarom hij uit de schappen verdween. *[HOOK-03; TEN-01, THM-01, OPP-06, LEX-10]*
 - Bamischijf: top of gatverdamme? Zeg het eerlijk, we oordelen niet 😂 *[HOOK-04; TEN-01, THM-04, LEX-03, PHR-01]*
 - Wie als eerste de kaassoufflé van de bittergarnituur pakt, kun je niet vertrouwen. En wie laat de nasi en bamischijf liggen? 🙈 *[HOOK-05; TEN-01, CUL-02, LEX-02, LEX-08]*
 - Lekker is niet genoeg: ook crunch. Te slap, te hard, te weinig smaak. Welke chip faalt bij jou? *[HOOK-06; TEN-01, THM-07, MOT-05]*
-- Welke snack of smaak uit het buitenland mis je in de Nederlandse schappen? Wij zoeken wat hier nog niet ligt. *[HOOK-07; TEN-01, THM-09, WSP-04, PAIN-01]*
+- Welke snack of smaak uit het buitenland mis je in de Nederlandse schappen? Wij zoeken wat hier nog niet ligt. *[HOOK-07; TEN-01, THM-09, OPP-09, PAIN-01]*
 - De saus maakt de snack. Welke dip hoort bij jouw zoutje? 😄 *[HOOK-08; TEN-01, THM-10, LEX-13]*
 - Wij proeven de nieuwe snacks, zodat jij dat niet hoeft te doen. Wat eerst: chips of zoet? *[HOOK-09; TEN-01, PHR-02, THM-06, MOT-04, PERF-02]*
 - Groningse eierbal, Brabantse eierkoeken, gebak uit Dordrecht: welke streeksnack moet heel Nederland proeven? *[HOOK-10; TEN-01, THM-05, LEX-05, PERF-07]*

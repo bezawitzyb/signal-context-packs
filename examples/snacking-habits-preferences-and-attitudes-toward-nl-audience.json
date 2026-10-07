@@ -60,7 +60,7 @@
    "questions_asked": []
   }
  },
- "digest": "Context Pack: snacking habits, preferences and attitudes toward new snack brands (NL, Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers). Coverage grade a; 233 relevant posts. Thin evidence.\nFive truths: [PAIN-01] I can't find the product I want in my local shops. [THM-01] We still miss snacks that got discontinued, like the Winner taco and the Yes bar. [THM-09] Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. [THM-02] Posters question snacks sold as healthy by pointing to calories and sugar. [WSP-01] I want to know why a favourite snack disappeared from the shops.\nDo first: [DO-01] Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name. [DO-02] Pitch a product sample and a timestamped slot to supermarket-test YouTubers (like the PROEFWERK series), and prepare your own 'zodat jij dat niet hoeft te doen' test video with a dated title and a product list, putting your snack next to familiar chips and snack-bar snacks. [DO-03] Film a TikTok label-reading short in Dutch (and an English cut) that shows the real kcal, sugar and protein per 100 g of your snack on screen, including the unflattering numbers, with the ingredient list readable in frame.\nTensions: [TEN-01] I want healthier snacks, but a snack called healthy can still be judged unhealthy or taste bad.\nTheir words: frikandelbroodje (sausage roll with frikandel), kaassoufflé (fried cheese pastry snack), bamischijf (fried bami noodle slice), ribbelchips (ridged chips), eierbal (fried egg-and-meat ball snack), snackbar (Dutch fast-food snack shop), borrelnootjes (party nuts served with drinks), bittergarnituur (assorted fried bar snacks served on a platter)\nSay: Name the exact flavour or item (paprika,…",
+ "digest": "Context Pack: snacking habits, preferences and attitudes toward new snack brands (NL, Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers). Coverage grade a; 233 relevant posts. Thin evidence.\nFive truths: [PAIN-01] I can't find the product I want in my local shops. [THM-01] We still miss snacks that got discontinued, like the Winner taco and the Yes bar. [THM-09] Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. [THM-02] Posters question snacks sold as healthy by pointing to calories and sugar. [OPP-06] I want to know why a favourite snack disappeared from the shops.\nDo first: [DO-01] Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name. [DO-02] Pitch a product sample and a timestamped slot to supermarket-test YouTubers (like the PROEFWERK series), and prepare your own 'zodat jij dat niet hoeft te doen' test video with a dated title and a product list, putting your snack next to familiar chips and snack-bar snacks. [DO-03] Film a TikTok label-reading short in Dutch (and an English cut) that shows the real kcal, sugar and protein per 100 g of your snack on screen, including the unflattering numbers, with the ingredient list readable in frame.\nTensions: [TEN-01] I want healthier snacks, but a snack called healthy can still be judged unhealthy or taste bad.\nTheir words: frikandelbroodje (sausage roll with frikandel), kaassoufflé (fried cheese pastry snack), bamischijf (fried bami noodle slice), ribbelchips (ridged chips), eierbal (fried egg-and-meat ball snack), snackbar (Dutch fast-food snack shop), borrelnootjes (party nuts served with drinks), bittergarnituur (assorted fried bar snacks served on a platter)\nSay: Name the exact flavour or item (paprika,…",
  "snapshot": {
   "five_truths": [
    {
@@ -90,7 +90,7 @@
    {
     "text": "I want to know why a favourite snack disappeared from the shops.",
     "item_ids": [
-     "WSP-01"
+     "OPP-06"
     ]
    }
   ],
@@ -146,7 +146,7 @@
     {
      "text": "I want to know why a favourite snack disappeared from the shops.",
      "item_ids": [
-      "WSP-01"
+      "OPP-06"
      ]
     }
    ]
@@ -160,7 +160,7 @@
    "why_ids": [
     "THM-01",
     "PAIN-01",
-    "WSP-01",
+    "OPP-06",
     "PERF-09",
     "OPP-02"
    ],
@@ -3361,209 +3361,33 @@
  "performance_takeaways": [],
  "sections_meta": {},
  "moments": [],
- "white_space": [
-  {
-   "id": "WSP-01",
-   "claim": "I want to know why a favourite snack disappeared from the shops.",
-   "summary_for_humans": "Posts ask why a snack is gone, and one is upset about a pulled product. Possibly because brands rarely explain delistings, but that is our reading.",
-   "cluster_id": "CL-47",
-   "counts": {
-    "matching": 4,
-    "of_total": 216
-   },
-   "confidence": {
-    "score": 0.56,
-    "label": "moderate"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 4,
-    "distinct_authors": 4,
-    "platforms": [
-     "reddit",
-     "web_forum"
-    ],
-    "engagement_percentile_median": 81.2
-   },
-   "emotion": [
-    "frustration",
-    "nostalgia"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-09",
-   "evidence_ids": [
-    "EV-0061",
-    "EV-0001",
-    "EV-0060"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0061",
-     "text": "Waarom is het gehaktbalbroodje verdwenen?"
-    },
-    {
-     "evidence_id": "EV-0060",
-     "text": "snap niet waarom het hier uit de supermarkt is"
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "relations": [],
-   "type": "white_space",
-   "kind": "unanswered_question"
-  },
-  {
-   "id": "WSP-02",
-   "claim": "I want snacks that don't cause bloating or upset my gut.",
-   "summary_for_humans": "Two posts mention digestion as a factor when choosing a snack, one worried about bloating and one preferring a product that is better on the gut. Possibly because digestive comfort is rarely stated on packs.",
-   "cluster_id": "CL-48",
-   "counts": {
-    "matching": 3,
-    "of_total": 216
-   },
-   "confidence": {
-    "score": 0.33,
-    "label": "speculative"
-   },
-   "claim_type": "inferred",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 3,
-    "distinct_authors": 3,
-    "platforms": [
-     "youtube"
-    ],
-    "engagement_percentile_median": 35.7
-   },
-   "emotion": [
-    "anxiety",
-    "pride"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-09",
-   "evidence_ids": [
-    "EV-0093",
-    "EV-0065"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0093",
-     "text": "I was worried about potential bloating"
-    },
-    {
-     "evidence_id": "EV-0065",
-     "text": "it’s better on my gut"
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "relations": [],
-   "type": "white_space",
-   "kind": "unmet_need"
-  },
-  {
-   "id": "WSP-03",
-   "claim": "I hate how healthier food is not accessible to everyone.",
-   "summary_for_humans": "One post complains that healthier food is out of reach for some. Possibly because of price, but the post does not say.",
-   "cluster_id": "CL-49",
-   "counts": {
-    "matching": 2,
-    "of_total": 216
-   },
-   "confidence": {
-    "score": 0.32,
-    "label": "emerging"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 2,
-    "distinct_authors": 2,
-    "platforms": [
-     "tiktok"
-    ],
-    "engagement_percentile_median": 60.9
-   },
-   "emotion": [
-    "excitement",
-    "frustration",
-    "pride"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-08",
-   "evidence_ids": [
-    "EV-0094"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0094",
-     "text": "I hate how healthier food is not accessible to everyone"
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "relations": [],
-   "type": "white_space",
-   "kind": "unmet_need"
-  },
-  {
-   "id": "WSP-04",
-   "claim": "Here they only sell a few chip flavours and I want others.",
-   "summary_for_humans": "One post says the local shop only has sea salt, sea salt with black pepper and sea salt with vinegar.",
-   "cluster_id": "CL-50",
-   "counts": {
-    "matching": 1,
-    "of_total": 216
-   },
-   "confidence": {
-    "score": 0.16,
-    "label": "speculative"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 1,
-    "distinct_authors": 1,
-    "platforms": [
-     "web_forum"
-    ],
-    "engagement_percentile_median": null
-   },
-   "emotion": [
-    "frustration"
-   ],
-   "trend": "insufficient_data",
-   "recency": null,
-   "evidence_ids": [
-    "EV-0095"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0095",
-     "text": "Andere smaken hebben ze hier niet."
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "relations": [],
-   "type": "white_space",
-   "kind": "unmet_need"
-  }
- ],
  "opportunities": [
   {
    "id": "OPP-01",
    "type": "opportunity",
-   "title": "Show the real protein and fibre",
-   "description": "Lead with the actual protein and fibre amounts on savoury snacks for gym and health-minded snackers, and keep the numbers honest, since one post notes the protein is only 'a little'.",
+   "opportunity": "Show the real protein and fibre: Lead with the actual protein and fibre amounts on savoury snacks for gym and health-minded snackers, and keep the numbers honest, since one post notes the protein is only 'a little'.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.6,
+    "label": "emerging"
+   },
+   "distinct_authors": 6,
+   "communities": [
+    "tiktok",
+    "youtube"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0062",
+    "EV-0063",
+    "EV-0064"
+   ],
    "builds_on": [
     "MOT-02"
    ],
+   "related_ids": [],
    "cluster_id": "CL-13",
    "score": 0.19,
    "components": {
@@ -3571,21 +3395,31 @@
     "dissatisfaction": 0.667,
     "novelty": 1.0,
     "saturation": 0.667
-   },
-   "evidence_ids": [
-    "EV-0062",
-    "EV-0063",
-    "EV-0064"
-   ]
+   }
   },
   {
    "id": "OPP-02",
    "type": "opportunity",
-   "title": "Explain delistings",
-   "description": "Tell fans why a snack left the shelf, or bring back a limited run, for nostalgic snackers who miss a product.",
-   "builds_on": [
-    "WSP-01"
+   "opportunity": "Explain delistings: Tell fans why a snack left the shelf, or bring back a limited run, for nostalgic snackers who miss a product.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.0,
+    "label": "speculative"
+   },
+   "distinct_authors": 0,
+   "communities": [],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0061",
+    "EV-0001",
+    "EV-0060"
    ],
+   "builds_on": [
+    "OPP-06"
+   ],
+   "related_ids": [],
    "cluster_id": "CL-47",
    "score": 0.143,
    "components": {
@@ -3593,21 +3427,30 @@
     "dissatisfaction": 1.0,
     "novelty": 1.0,
     "saturation": 0.75
-   },
-   "evidence_ids": [
-    "EV-0061",
-    "EV-0001",
-    "EV-0060"
-   ]
+   }
   },
   {
    "id": "OPP-03",
    "type": "opportunity",
-   "title": "Speak to digestion",
-   "description": "Test a gentle-on-the-stomach angle for snackers who worry about bloating, only if the product itself supports it.",
-   "builds_on": [
-    "WSP-02"
+   "opportunity": "Speak to digestion: Test a gentle-on-the-stomach angle for snackers who worry about bloating, only if the product itself supports it.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.0,
+    "label": "speculative"
+   },
+   "distinct_authors": 0,
+   "communities": [],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0093",
+    "EV-0065"
    ],
+   "builds_on": [
+    "OPP-07"
+   ],
+   "related_ids": [],
    "cluster_id": "CL-48",
    "score": 0.143,
    "components": {
@@ -3615,20 +3458,29 @@
     "dissatisfaction": 1.0,
     "novelty": 1.0,
     "saturation": 0.667
-   },
-   "evidence_ids": [
-    "EV-0093",
-    "EV-0065"
-   ]
+   }
   },
   {
    "id": "OPP-04",
    "type": "opportunity",
-   "title": "Affordable healthier range",
-   "description": "Position a healthier snack at an accessible price for shoppers who say healthier food is out of reach.",
-   "builds_on": [
-    "WSP-03"
+   "opportunity": "Affordable healthier range: Position a healthier snack at an accessible price for shoppers who say healthier food is out of reach.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.0,
+    "label": "speculative"
+   },
+   "distinct_authors": 0,
+   "communities": [],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0094"
    ],
+   "builds_on": [
+    "OPP-08"
+   ],
+   "related_ids": [],
    "cluster_id": "CL-49",
    "score": 0.143,
    "components": {
@@ -3636,19 +3488,33 @@
     "dissatisfaction": 1.0,
     "novelty": 1.0,
     "saturation": 0.5
-   },
-   "evidence_ids": [
-    "EV-0094"
-   ]
+   }
   },
   {
    "id": "OPP-05",
    "type": "opportunity",
-   "title": "Show ingredients up front",
-   "description": "Offer snacks with less sugar and fewer additives, and make the ingredient list easy to read for label-checking snackers.",
+   "opportunity": "Show ingredients up front: Offer snacks with less sugar and fewer additives, and make the ingredient list easy to read for label-checking snackers.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.48,
+    "label": "emerging"
+   },
+   "distinct_authors": 5,
+   "communities": [
+    "tiktok"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0007",
+    "EV-0056",
+    "EV-0052"
+   ],
    "builds_on": [
     "MOT-03"
    ],
+   "related_ids": [],
    "cluster_id": "CL-12",
    "score": 0.069,
    "components": {
@@ -3656,12 +3522,111 @@
     "dissatisfaction": 0.6,
     "novelty": 0.4,
     "saturation": 0.6
+   }
+  },
+  {
+   "id": "OPP-06",
+   "type": "opportunity",
+   "opportunity": "I want to know why a favourite snack disappeared from the shops.",
+   "kind": "content_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.56,
+    "label": "emerging"
    },
+   "distinct_authors": 4,
+   "communities": [
+    "reddit",
+    "web_forum"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
    "evidence_ids": [
-    "EV-0007",
-    "EV-0056",
-    "EV-0052"
-   ]
+    "EV-0061",
+    "EV-0001",
+    "EV-0060"
+   ],
+   "builds_on": [],
+   "related_ids": [],
+   "cluster_id": "CL-47",
+   "score": null,
+   "components": null
+  },
+  {
+   "id": "OPP-07",
+   "type": "opportunity",
+   "opportunity": "I want snacks that don't cause bloating or upset my gut.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.33,
+    "label": "speculative"
+   },
+   "distinct_authors": 3,
+   "communities": [
+    "youtube"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0093",
+    "EV-0065"
+   ],
+   "builds_on": [],
+   "related_ids": [],
+   "cluster_id": "CL-48",
+   "score": null,
+   "components": null
+  },
+  {
+   "id": "OPP-08",
+   "type": "opportunity",
+   "opportunity": "I hate how healthier food is not accessible to everyone.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.32,
+    "label": "emerging"
+   },
+   "distinct_authors": 2,
+   "communities": [
+    "tiktok"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0094"
+   ],
+   "builds_on": [],
+   "related_ids": [],
+   "cluster_id": "CL-49",
+   "score": null,
+   "components": null
+  },
+  {
+   "id": "OPP-09",
+   "type": "opportunity",
+   "opportunity": "Here they only sell a few chip flavours and I want others.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.16,
+    "label": "speculative"
+   },
+   "distinct_authors": 1,
+   "communities": [
+    "web_forum"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0095"
+   ],
+   "builds_on": [],
+   "related_ids": [],
+   "cluster_id": "CL-50",
+   "score": null,
+   "components": null
   }
  ],
  "channel_plan": [
@@ -3792,7 +3757,7 @@
     "why_ids": [
      "TEN-01",
      "THM-01",
-     "WSP-01",
+     "OPP-06",
      "LEX-10"
     ]
    },
@@ -3835,7 +3800,7 @@
     "why_ids": [
      "TEN-01",
      "THM-09",
-     "WSP-04",
+     "OPP-09",
      "PAIN-01"
     ]
    },
@@ -4280,7 +4245,7 @@
    "type": "risk",
    "text": "Nostalgia is emotional. Removing or replacing a loved product can draw angry posts, and a stand-in is judged against the original.",
    "item_ids": [
-    "WSP-01",
+    "OPP-06",
     "PAIN-01"
    ]
   },
@@ -4292,7 +4257,7 @@
     "PAIN-03",
     "PAIN-02",
     "OBJ-06",
-    "WSP-04"
+    "OPP-09"
    ]
   }
  ],

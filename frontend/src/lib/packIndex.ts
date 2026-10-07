@@ -52,8 +52,8 @@ export function evidenceIdsOf(item: AnyItem): string[] {
 /** "label · n of N posts" counts across the pack's claim sections. */
 export function labelCounts(pack: ContextPack): Record<string, number> {
   const counts: Record<string, number> = { strong: 0, moderate: 0, emerging: 0, speculative: 0 };
-  const lists: unknown[][] = [pack.landscape.themes, pack.tensions, pack.motivations, pack.objections, pack.segments,
-    pack.white_space, pack.moments, pack.voice.lexicon, pack.voice.phrases];
+  const lists: unknown[][] = [pack.landscape.themes, pack.pain_points ?? [], pack.tensions, pack.motivations,
+    pack.objections, pack.segments, pack.opportunities, pack.moments, pack.voice.lexicon, pack.voice.phrases];
   for (const list of lists) for (const it of list as { confidence?: { label: string } }[]) {
     if (it.confidence) counts[it.confidence.label] = (counts[it.confidence.label] ?? 0) + 1;
   }

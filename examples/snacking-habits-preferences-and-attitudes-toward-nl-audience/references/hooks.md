@@ -4,11 +4,11 @@ Drafts written by AI from the research. Review before use; items marked CHECK WI
 - Check de kcal en de suiker per 100 g voordat je 'gezond' gelooft. Wij zetten de cijfers gewoon vooraan. Ook de saaie. (HOOK-01; builds on TEN-01, CUL-01, THM-02, MOT-03)
 - Paprika, bolognese of cheese onion: kies je kant. Welke chipsmaak is voor jou verslavend lekker? (HOOK-02; builds on TEN-01, THM-03, LEX-11, MOT-05)
   - CHECK WITH LEGAL (food_nutrition): Calling a snack 'addictive' trivialises addiction and can imply overconsumption of a high-fat/salt food. Safer: Paprika, bolognese of cheese onion: kies je kant. Welke chipsmaak vind jij onweerstaanbaar lekker?
-- Winner taco, Yes bar... welke snack mis jij nog? Jeugdsentiment, en niemand legt uit waarom hij uit de schappen verdween. (HOOK-03; builds on TEN-01, THM-01, WSP-01, LEX-10)
+- Winner taco, Yes bar... welke snack mis jij nog? Jeugdsentiment, en niemand legt uit waarom hij uit de schappen verdween. (HOOK-03; builds on TEN-01, THM-01, OPP-06, LEX-10)
 - Bamischijf: top of gatverdamme? Zeg het eerlijk, we oordelen niet 😂 (HOOK-04; builds on TEN-01, THM-04, LEX-03, PHR-01)
 - Wie als eerste de kaassoufflé van de bittergarnituur pakt, kun je niet vertrouwen. En wie laat de nasi en bamischijf liggen? 🙈 (HOOK-05; builds on TEN-01, CUL-02, LEX-02, LEX-08)
 - Lekker is niet genoeg: ook crunch. Te slap, te hard, te weinig smaak. Welke chip faalt bij jou? (HOOK-06; builds on TEN-01, THM-07, MOT-05)
-- Welke snack of smaak uit het buitenland mis je in de Nederlandse schappen? Wij zoeken wat hier nog niet ligt. (HOOK-07; builds on TEN-01, THM-09, WSP-04, PAIN-01)
+- Welke snack of smaak uit het buitenland mis je in de Nederlandse schappen? Wij zoeken wat hier nog niet ligt. (HOOK-07; builds on TEN-01, THM-09, OPP-09, PAIN-01)
 - De saus maakt de snack. Welke dip hoort bij jouw zoutje? 😄 (HOOK-08; builds on TEN-01, THM-10, LEX-13)
 - Wij proeven de nieuwe snacks, zodat jij dat niet hoeft te doen. Wat eerst: chips of zoet? (HOOK-09; builds on TEN-01, PHR-02, THM-06, MOT-04, PERF-02)
 - Groningse eierbal, Brabantse eierkoeken, gebak uit Dordrecht: welke streeksnack moet heel Nederland proeven? (HOOK-10; builds on TEN-01, THM-05, LEX-05, PERF-07)

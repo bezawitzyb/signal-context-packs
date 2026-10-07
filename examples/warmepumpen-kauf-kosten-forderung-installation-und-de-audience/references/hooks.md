@@ -4,7 +4,7 @@ Drafts written by AI from the research. Review before use; items marked CHECK WI
 - Wärmepumpe nach 1 Jahr: meine Rechnung neben der Gas-Abrechnung vom Vorjahr. Mit kWh und Euro, auch die unschönen Zeilen. (HOOK-01; builds on TEN-01, MOM-01, CUL-04, PERF-02, MOT-01, PHR-05)
   - CHECK WITH LEGAL (energy_environmental): A one-household cost comparison can imply general savings versus gas, and it depends on tariffs, house and year. Safer: Wärmepumpe nach 1 Jahr: meine Rechnung und die Gas-Abrechnung vom Vorjahr, mit kWh und Euro. Gilt nur für mein Haus und meine Tarife.
 - Altbau, nicht gedämmt, normale Heizkörper, keine FBH. Hier sind meine Vorlauftemperatur und meine JAZ. Ob das reicht, entscheidet ihr. (HOOK-02; builds on TEN-01, CUL-01, LEX-13, LEX-07, LEX-03, HYP-02)
-- PV im Dezember: Wie viel kWh liefert das Dach tatsächlich, wenn die WP am meisten braucht? Ich lege meine Zahlen offen. (HOOK-03; builds on TEN-02, THM-01, WSP-03, LEX-01)
+- PV im Dezember: Wie viel kWh liefert das Dach tatsächlich, wenn die WP am meisten braucht? Ich lege meine Zahlen offen. (HOOK-03; builds on TEN-02, THM-01, OPP-08, LEX-01)
 - Zeige mir einen Altbau mit Wärmepumpe? Bitte: Baujahr, Heizlast, Verbrauch, alles auf dem Tisch. (HOOK-04; builds on TEN-01, PHR-01, CUL-01, CUL-03, LEX-05)
 - Die Einstellung vom Fachbetrieb, naja. Heizkurve und VL Temperatur nach der Inbetriebnahme: So gehe ich Schritt für Schritt vor. (HOOK-05; builds on TEN-01, THM-07, MOT-02, PHR-04, LEX-07, OPP-02)
   - CHECK WITH LEGAL (other): It belittles installers as a group and implies their work is poor, which could count as denigration. Safer: Nach der Inbetriebnahme lohnt ein Check: Heizkurve und VL-Temperatur Schritt für Schritt prüfen.
@@ -16,11 +16,11 @@ Drafts written by AI from the research. Review before use; items marked CHECK WI
 - Ein Angebot, eine Summe, null Aufschlüsselung. So teile ich ein WP-Angebot in Gerät, Montage und Extras auf, damit ihr vergleichen könnt. (HOOK-09; builds on TEN-01, THM-08, MOT-04, OPP-03, PERF-10)
 - KfW Ablauf, Schritt für Schritt. Und die Stellen, an denen selbst Bank und Heizungsbauer ins Schwimmen kommen. (HOOK-10; builds on TEN-01, THM-04, PAIN-01, BRD-01, LEX-02)
   - CHECK WITH LEGAL (finance): It presents subsidy rules as authoritative while belittling banks and installers, and the rules change. Safer: KfW-Ablauf Schritt für Schritt, mit Stand und Link zu den offiziellen Förderbedingungen. Bei Unklarheiten: Förderstelle oder Energieberatung fragen.
-- Muss ich schon im Haus wohnen, um den Geschwindigkeitsbonus zu bekommen? Genau hier sehe ich bei vielen Unsicherheit. (HOOK-11; builds on TEN-01, WSP-02, LEX-15, OPP-05)
+- Muss ich schon im Haus wohnen, um den Geschwindigkeitsbonus zu bekommen? Genau hier sehe ich bei vielen Unsicherheit. (HOOK-11; builds on TEN-01, OPP-07, LEX-15, OPP-05)
   - CHECK WITH LEGAL (finance): Eligibility for the Geschwindigkeitsbonus is rule-bound and a wrong answer could mislead viewers about funding. Safer: Wer bekommt den Geschwindigkeitsbonus? Das sagen die offiziellen Förderbedingungen (Stand: …). Im Zweifel bei der KfW oder einer Energieberatung nachfragen.
 - Springt bei Kälte der Heizstab an? Ich zeige die kältesten Tage und was der Zähler dazu sagt. (HOOK-12; builds on TEN-01, OBJ-06, MOM-02, LEX-04, PAIN-02)
-- Erstes Heizjahr, erste Rechnung. Mein Verbrauch in kWh, aber ist das normal? Wer hat Vergleichswerte für ähnliche Fläche und Haustyp? (HOOK-13; builds on TEN-01, WSP-01, OPP-04, MOM-03, SEG-03)
-- Das Dach liefert im Sommer Überschuss, die WP braucht ihn im Winter. Wer hat das gelöst, oder war es nur eine hübsche Excel-Tabelle? (HOOK-14; builds on TEN-02, WSP-03, SEG-02, THM-01)
+- Erstes Heizjahr, erste Rechnung. Mein Verbrauch in kWh, aber ist das normal? Wer hat Vergleichswerte für ähnliche Fläche und Haustyp? (HOOK-13; builds on TEN-01, OPP-06, OPP-04, MOM-03, SEG-03)
+- Das Dach liefert im Sommer Überschuss, die WP braucht ihn im Winter. Wer hat das gelöst, oder war es nur eine hübsche Excel-Tabelle? (HOOK-14; builds on TEN-02, OPP-08, SEG-02, THM-01)
 
 ## This week
 - monday: reddit House-data thread - HOOK-02 - Post a data block for a non-insulated house with radiators: Baujahr, Heizlast estimate, Vorlauftemperatur and the question of whether a WP is enough. Reply to every answer with figures.. Why now: The house-data format is what Reddit answers best, and it starts the week with listening and conversation.

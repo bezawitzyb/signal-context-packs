@@ -64,8 +64,9 @@ def _claims(items: list[dict], title_key: str | None = None) -> list[str]:
 
 def to_markdown(pack: dict) -> str:
     _INDEX.clear()
-    for name in ("pain_points", "tensions", "motivations", "objections", "segments", "white_space", "moments"):
+    for name in ("pain_points", "tensions", "motivations", "objections", "segments", "moments"):
         _INDEX.update({it["id"]: inline(it["claim"])[:90] for it in pack.get(name, [])})
+    _INDEX.update({o["id"]: inline(o["opportunity"])[:90] for o in pack.get("opportunities", [])})
     _INDEX.update({it["id"]: inline(it["claim"])[:90] for it in pack["landscape"]["themes"]})
     b = pack["brief"]
     i = b["interpreted"]
@@ -211,15 +212,19 @@ def to_markdown(pack: dict) -> str:
     add("\n## Moments\n")
     L += _claims(pack["moments"], "name")
 
-    add("\n## White space and opportunities\n")
-    L += _meta(pack, "white_space")
-    L += _claims(pack["white_space"])
-    add("")
+    add("\n## Opportunities\n")
+    L += _meta(pack, "opportunities")
     for o in pack["opportunities"]:
-        c = o["components"]
-        add(f"- **{inline(o['title'])}** ({o['score']:.2f}) - {inline(o['description'])} *[{o['id']}; demand "
-            f"{c['demand']:.2f} x dissatisfaction {c['dissatisfaction']:.2f} x novelty {c['novelty']:.1f} x "
-            f"(1 - saturation {c['saturation']:.2f}); builds on {', '.join(o['builds_on'])}]*")
+        status = "Supported" if o["status"] == "supported" else "Early signal - check before acting"
+        add(f"- **{inline(o['opportunity'])}** *[{o['id']}; {o['kind'].replace('_', ' ')}; {status}; "
+            f"{o['confidence']['label']}; {o['distinct_authors']} people in {len(o['communities'])} "
+            f"communit{'y' if len(o['communities']) == 1 else 'ies'}]*")
+        if o["existing_solutions"]:
+            add("  - Already out there: " + "; ".join(f"[{inline(x['name'])}]({x['url']})" for x in o["existing_solutions"]))
+        elif o.get("search_note"):
+            add(f"  - {inline(o['search_note']).capitalize()}.")
+    if not pack["opportunities"] and not (pack.get("sections_meta") or {}).get("opportunities"):
+        add("- None found.")
 
     add("\n## Playbook\n")
     add("### Hooks")

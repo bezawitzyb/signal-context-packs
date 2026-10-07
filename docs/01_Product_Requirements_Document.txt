@@ -359,6 +359,27 @@ Definition:
   section never appears blank: sections_meta gives empty_reason in plain
   words and 1-2 next steps. Item counts stay the same or go down.
 
+6.1c Opportunities you can trust (change V5, schema 1.1)
+  "White space" is called Opportunities everywhere the user reads it.
+  One opportunities[] list replaces white_space[] and the scored
+  opportunities: {id OPP-xx, opportunity, kind (content_idea |
+  product_idea | positioning), evidence_ids, distinct_authors,
+  communities, existing_solutions[] {name, url}, search_note, status,
+  confidence, builds_on, related_ids, score (PRD 5.5, when computed)}.
+  - status "supported" only with at least N distinct authors across at
+    least 2 communities (scoring.yaml opportunities); otherwise "signal",
+    confidence at most emerging, shown as "early signal - check before
+    acting". A single post is never supported. Counts are code.
+  - Before anything is called unserved, one web search per opportunity
+    (modes.yaml opportunities.searches_max) for existing products,
+    services or content in the brief's markets. Found: existing_solutions
+    lists them (only URLs the search returned) and the opportunity is
+    reworded as a gap in HOW it is served (price, fit, language, format).
+    Not found: search_note "no existing solution found in our search".
+    Never "nobody serves this" (checked in code).
+  - Migration: old white space and scored opportunities become
+    opportunities with status "signal"; their ids are renamed everywhere.
+
 6.2 Top-level JSON sections
   schema_version, pack_id, generated_at, mode (quick | standard)
   brief              raw text + interpreted {topic, markets[] (1.1; market

@@ -152,7 +152,7 @@
    "action": "Publish a freeze-and-reheat cheat sheet for enchiladas and fajitas (can it be frozen, how to reheat, how long reheating takes), and post it in a Reddit meal-prep or college-cooking community as a reply-friendly guide.",
    "why": "Students are asking whether these dishes freeze and how to reheat them, and slow reheating is a stated reason prep feels pointless.",
    "why_ids": [
-    "WSP-01",
+    "OPP-04",
     "OPP-01",
     "SEG-01",
     "THM-06",
@@ -2840,62 +2840,29 @@
    "timing": "Mornings"
   }
  ],
- "white_space": [
-  {
-   "id": "WSP-01",
-   "claim": "Students ask whether cooked dishes like fajitas and enchiladas can be frozen and how best to reheat them.",
-   "summary_for_humans": "College students starting to meal prep ask if a favourite recipe freezes and how to reheat it. No answer appears in the cited posts, possibly because these are first-time questions put to forums.",
-   "cluster_id": "CL-48",
-   "counts": {
-    "matching": 2,
-    "of_total": 75
-   },
-   "confidence": {
-    "score": 0.29,
-    "label": "speculative"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 2,
-    "distinct_authors": 1,
-    "platforms": [
-     "reddit"
-    ],
-    "engagement_percentile_median": 55.0
-   },
-   "emotion": [],
-   "trend": "insufficient_data",
-   "recency": "2026-08",
-   "evidence_ids": [
-    "EV-0025",
-    "EV-0031"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0025",
-     "text": "Can I freeze cooked chicken enchiladas, and if so, what would be the best method of reheating them?"
-    }
-   ],
-   "segment_ids": [
-    "SEG-01"
-   ],
-   "related_ids": [],
-   "relations": [],
-   "type": "white_space",
-   "kind": "unanswered_question"
-  }
- ],
  "opportunities": [
   {
    "id": "OPP-01",
    "type": "opportunity",
-   "title": "Freeze-and-reheat cheat sheet",
-   "description": "Publish short freezing and reheating guidance for popular prep dishes such as enchiladas and fajitas, for college students who are new to meal prep.",
-   "builds_on": [
-    "WSP-01"
+   "opportunity": "Freeze-and-reheat cheat sheet: Publish short freezing and reheating guidance for popular prep dishes such as enchiladas and fajitas, for college students who are new to meal prep.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.0,
+    "label": "speculative"
+   },
+   "distinct_authors": 0,
+   "communities": [],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0025",
+    "EV-0031"
    ],
+   "builds_on": [
+    "OPP-04"
+   ],
+   "related_ids": [],
    "cluster_id": "CL-48",
    "score": 0.385,
    "components": {
@@ -2903,20 +2870,34 @@
     "dissatisfaction": 1.0,
     "novelty": 1.0,
     "saturation": 0.0
-   },
-   "evidence_ids": [
-    "EV-0025",
-    "EV-0031"
-   ]
+   }
   },
   {
    "id": "OPP-02",
    "type": "opportunity",
-   "title": "Own the cheap-week prep",
-   "description": "Share budget meal-prep weeks built on pantry staples (rice, pasta, eggs, beans, potatoes) with a total cost per week. Aim it at students and early-career cooks on a tight budget.",
+   "opportunity": "Own the cheap-week prep: Share budget meal-prep weeks built on pantry staples (rice, pasta, eggs, beans, potatoes) with a total cost per week. Aim it at students and early-career cooks on a tight budget.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.65,
+    "label": "emerging"
+   },
+   "distinct_authors": 5,
+   "communities": [
+    "reddit",
+    "web_forum"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0016",
+    "EV-0041",
+    "EV-0010"
+   ],
    "builds_on": [
     "MOT-01"
    ],
+   "related_ids": [],
    "cluster_id": "CL-12",
    "score": 0.333,
    "components": {
@@ -2924,21 +2905,32 @@
     "dissatisfaction": 0.833,
     "novelty": 0.4,
     "saturation": 0.0
-   },
-   "evidence_ids": [
-    "EV-0016",
-    "EV-0041",
-    "EV-0010"
-   ]
+   }
   },
   {
    "id": "OPP-03",
    "type": "opportunity",
-   "title": "Make-ahead filling breakfasts",
-   "description": "Show freezer breakfast sandwiches and overnight oats as a cheaper, make-ahead alternative to buying breakfast, for people with long active mornings.",
+   "opportunity": "Make-ahead filling breakfasts: Show freezer breakfast sandwiches and overnight oats as a cheaper, make-ahead alternative to buying breakfast, for people with long active mornings.",
+   "kind": "product_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.36,
+    "label": "emerging"
+   },
+   "distinct_authors": 2,
+   "communities": [
+    "reddit"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
+   "evidence_ids": [
+    "EV-0014",
+    "EV-0007"
+   ],
    "builds_on": [
     "MOT-07"
    ],
+   "related_ids": [],
    "cluster_id": "CL-15",
    "score": 0.193,
    "components": {
@@ -2946,11 +2938,33 @@
     "dissatisfaction": 0.5,
     "novelty": 1.0,
     "saturation": 0.0
+   }
+  },
+  {
+   "id": "OPP-04",
+   "type": "opportunity",
+   "opportunity": "Students ask whether cooked dishes like fajitas and enchiladas can be frozen and how best to reheat them.",
+   "kind": "content_idea",
+   "status": "signal",
+   "confidence": {
+    "score": 0.29,
+    "label": "speculative"
    },
+   "distinct_authors": 1,
+   "communities": [
+    "reddit"
+   ],
+   "existing_solutions": [],
+   "search_note": "not checked: made before the existing-solution search",
    "evidence_ids": [
-    "EV-0014",
-    "EV-0007"
-   ]
+    "EV-0025",
+    "EV-0031"
+   ],
+   "builds_on": [],
+   "related_ids": [],
+   "cluster_id": "CL-48",
+   "score": null,
+   "components": null
   }
  ],
  "channel_plan": [
@@ -3017,7 +3031,7 @@
     "CUL-01",
     "OPP-01",
     "THM-02",
-    "WSP-01"
+    "OPP-04"
    ],
    "formats": [
     "Freeze-and-reheat cheat sheet",
@@ -3094,7 +3108,7 @@
     "text": "Can you freeze enchiladas? And how do you reheat them without ruining them?",
     "why_ids": [
      "TEN-02",
-     "WSP-01",
+     "OPP-04",
      "OPP-01"
     ]
    },
@@ -3528,7 +3542,7 @@
    "item_ids": [
     "MOT-01",
     "TEN-03",
-    "WSP-01"
+    "OPP-04"
    ]
   },
   {
@@ -3545,7 +3559,7 @@
    "type": "risk",
    "text": "Food-storage and reheating advice touches on food safety. Any guidance given on freezing or storing prepped food should be accurate and sourced.",
    "item_ids": [
-    "WSP-01"
+    "OPP-04"
    ]
   }
  ],
@@ -3653,7 +3667,7 @@
   {
    "id": "BLS-21",
    "type": "blind_spot",
-   "text": "Minimum content bar not met: lexicon 8 of 15, tensions 2 of 3, white_space 1 of 2."
+   "text": "Minimum content bar not met: lexicon 8 of 15, tensions 2 of 3, unmet needs 1 of 2."
   },
   {
    "id": "BLS-22",

@@ -90,6 +90,11 @@ synthesis:
   opportunities_max: 6          # opportunity texts written (top by score)
   non_obvious_batch: 60         # items per non_obvious worker call
 
+# Opportunities (change V5, PRD 6.1c): one web search per opportunity for existing solutions.
+opportunities:
+  searches_max: 4               # opportunities checked by web search per pack (the rest: "not searched")
+  solutions_max: 3              # existing solutions listed per opportunity
+
 # Verification (guide Step 3.4, prompt F4-9 claim mode). Same for every mode.
 verification:
   claim_batch_items: 12         # claims per worker call (each with up to 5 evidence excerpts)

@@ -93,9 +93,10 @@ def test_prompt_block_fits_and_never_drops_the_guardrails(pack):
 
 def test_markdown_follows_the_pack_page_and_states_confidence_in_words(pack):
     md = to_markdown(pack)
-    order = ["## Summary", "## Channels and this week", "## Voice", "## Tensions and motivations", "## Segments",
-             "## Objections and competitors", "## Landscape and platform lens", "## What performs", "## Moments",
-             "## White space and opportunities", "## Playbook", "## Blind spots", "## Guardrails", "## Method"]
+    order = ["## Summary", "## Channels and this week", "## Voice", "## Pain points", "## Tensions and motivations",
+             "## Segments", "## Objections and competitors", "## Landscape and platform lens", "## What performs",
+             "## Moments", "## Opportunities", "## Playbook", "## Blind spots", "## Guardrails", "## Method"]
+    assert "White space" not in md                                       # V5: called Opportunities
     positions = [md.index(h) for h in order]
     assert positions == sorted(positions)
     t = pack["tensions"][0]

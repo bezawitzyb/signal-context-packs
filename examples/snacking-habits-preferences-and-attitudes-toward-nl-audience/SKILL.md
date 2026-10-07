@@ -17,7 +17,7 @@ Who: Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, includi
 - We still miss snacks that got discontinued, like the Winner taco and the Yes bar. (THM-01)
 - Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. (THM-09)
 - Posters question snacks sold as healthy by pointing to calories and sugar. (THM-02)
-- I want to know why a favourite snack disappeared from the shops. (WSP-01)
+- I want to know why a favourite snack disappeared from the shops. (OPP-06)
 
 ## Voice
 Tone: Casual, direct and often funny. Short verdicts such as 'Bamischijf is top.' and strong reactions such as 'gatverdamme'. Emoji (😂, 🙈, 😄) and smileys (:'), ‹3) appear. Health talk is sceptical and goes by numbers.

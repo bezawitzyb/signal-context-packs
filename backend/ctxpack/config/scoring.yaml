@@ -78,3 +78,8 @@ consolidation:
   relations_max: 3            # links per item
   # The section that keeps a repeated finding: the most specific job first.
   home_order: [tensions, objections, pain_points, white_space, motivations, themes]
+
+# Opportunities you can trust (change V5, PRD 6.1c). Counts are code; a signal is at most emerging.
+opportunities:
+  supported_min_authors: 3
+  supported_min_communities: 2

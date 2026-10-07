@@ -19,6 +19,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from ctxpack.schemas.enums import (
     EvidenceRole,
+    OpportunityKind,
+    OpportunityStatus,
     RelationKind,
     ClaimType,
     ComplianceCategory,
@@ -37,7 +39,6 @@ from ctxpack.schemas.enums import (
     Platform,
     TargetKind,
     Trend,
-    WhiteSpaceKind,
 )
 from ctxpack.schemas.plan import Intake, Interpretation
 
@@ -61,7 +62,6 @@ ID_PREFIXES: dict[str, str] = {
     "PERF": "performing post",
     "TKW": "what-performs takeaway",
     "MOM": "moment",
-    "WSP": "white space",
     "OPP": "opportunity",
     "DO": "do-first action",
     "CHN": "channel",
@@ -417,12 +417,6 @@ class Moment(InsightItem):
 # --------------------------------------------------------------------------
 
 
-class WhiteSpace(InsightItem):
-    id: str = id_field("WSP")
-    type: Literal["white_space"] = type_field("white_space")
-    kind: WhiteSpaceKind = Field(description="unmet_need, unanswered_question or unserved_segment.")
-
-
 class OpportunityComponents(Strict):
     """PRD 5.5; all 0-1, computed in code and shown next to the score."""
 
@@ -432,16 +426,32 @@ class OpportunityComponents(Strict):
     saturation: float = Field(ge=0, le=1, description="Share naming a brand as already solving it.")
 
 
+class ExistingSolution(Strict):
+    name: str = Field(description="Product, service or content that already addresses it.")
+    url: str = Field(description="Where the search found it.")
+
+
 class Opportunity(Strict):
+    """One opportunity you can trust (1.1, V5): replaces white space and the scored opportunities."""
+
     id: str = id_field("OPP")
     type: Literal["opportunity"] = type_field("opportunity")
-    title: str = Field(description="Short name for the opportunity.")
-    description: str = Field(description="What to do and for whom.")
-    builds_on: list[str] = Field(min_length=1, description="Need or white-space items it builds on.")
-    cluster_id: str | None = Field(default=None, pattern=CL_ID, description="Cluster the score is computed from.")
-    score: float = Field(ge=0, le=1, description="demand x dissatisfaction x novelty x (1 - saturation).")
-    components: OpportunityComponents = Field(description="The four score components (PRD 5.5).")
-    evidence_ids: list[str] = Field(default_factory=list, description="Example evidence.")
+    opportunity: str = Field(description="The opportunity, worded as the gap the posts show (and, when "
+                             "solutions exist, the gap in how it is served).")
+    kind: OpportunityKind = Field(description="content_idea, product_idea or positioning.")
+    status: OpportunityStatus = Field(description='supported, or signal ("early signal - check before acting").')
+    confidence: Confidence = Field(description="Score and label; a signal is at most emerging.")
+    distinct_authors: int = Field(ge=0, description="Distinct authors behind it (code).")
+    communities: list[str] = Field(default_factory=list, description="Communities or sources it was seen in (code).")
+    existing_solutions: list[ExistingSolution] = Field(default_factory=list,
+                                                       description="What already addresses it (from a web search).")
+    search_note: str = Field(default="", description='e.g. "no existing solution found in our search".')
+    evidence_ids: list[str] = Field(default_factory=list, max_length=5, description="Receipts.")
+    builds_on: list[str] = Field(default_factory=list, description="Items it builds on (pain points, motivations).")
+    related_ids: list[str] = Field(default_factory=list, description="Related items.")
+    cluster_id: str | None = Field(default=None, pattern=CL_ID, description="The cluster behind it.")
+    score: float | None = Field(default=None, ge=0, le=1, description="PRD 5.5 score, when computed.")
+    components: OpportunityComponents | None = Field(default=None, description="The score components (PRD 5.5).")
 
 
 class Channel(Strict):
@@ -702,8 +712,8 @@ class ContextPack(Strict):
     sections_meta: dict[str, SectionMeta] = Field(default_factory=dict, description="Per section: so_what, and "
                                                   "empty_reason + next_steps when empty (1.1).")
     moments: list[Moment] = Field(default_factory=list, description="Layer 6: when it matters.")
-    white_space: list[WhiteSpace] = Field(default_factory=list, description="Unmet needs nobody serves.")
-    opportunities: list[Opportunity] = Field(default_factory=list, description="Scored opportunities (PRD 5.5).")
+    opportunities: list[Opportunity] = Field(default_factory=list, description="Opportunities you can trust "
+                                             "(1.1; replaces white_space and the scored opportunities).")
     channel_plan: list[Channel] = Field(default_factory=list, description="Where to show up, in priority order.")
     playbook: Playbook = Field(default_factory=Playbook, description="Hooks, creative brief, keywords, this week.")
     hypotheses: list[Hypothesis] = Field(default_factory=list, description="The plan's hypotheses and their verdicts.")
@@ -738,7 +748,6 @@ class ContextPack(Strict):
         yield from self.what_performs
         yield from self.performance_takeaways
         yield from self.moments
-        yield from self.white_space
         yield from self.opportunities
         yield from self.channel_plan
         yield from self.playbook.hooks

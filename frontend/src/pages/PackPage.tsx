@@ -22,7 +22,7 @@ const NAV: [string, string][] = [
   ["summary", "Summary"], ["channels", "Channels & this week"], ["voice", "Voice"], ["pain-points", "Pain points"],
   ["tensions", "Tensions & motivations"],
   ["segments", "Segments"], ["objections", "Objections & competitors"], ["landscape", "Landscape & platforms"],
-  ["performs", "What performs"], ["moments", "Moments"], ["white-space", "White space & opportunities"],
+  ["performs", "What performs"], ["moments", "Moments"], ["opportunities", "Opportunities"],
   ["playbook", "Playbook"], ["blind-spots", "Blind spots"], ["method", "Method"],
 ];
 const GLYPH: Record<Label, string> = { strong: "●", moderate: "◐", emerging: "○", speculative: "◌" };
@@ -81,7 +81,7 @@ function Summary({ pack, items }: { pack: ContextPack; items: Map<string, Record
   const badgeOf = (id: string) => {
     const it = items.get(id) as InsightLike | undefined;
     return it?.confidence
-      ? <ConfidenceBadge label={it.confidence.label} matching={it.counts.matching} ofTotal={it.counts.of_total} />
+      ? <ConfidenceBadge label={it.confidence.label} matching={it.counts?.matching} ofTotal={it.counts?.of_total} />
       : null;
   };
   return (
@@ -571,27 +571,39 @@ export function PackBody({ pack }: { pack: ContextPack }) {
           {sec("moments", "Moments", "moments", pack.moments,
             <ItemSection level={3} title="When it matters" items={asItems(pack.moments)} filter={filter} titleKey={"name" as keyof InsightLike}
                          meta={meta("moments")} />)}
-          {sec("white-space", "White space & opportunities", "white_space", { white_space: pack.white_space, opportunities: pack.opportunities },
-            <>
-              <ItemSection level={3} title="What nobody serves" items={asItems(pack.white_space)} filter={filter} columns={1} />
-              <Sub title="Opportunities">
+          {sec("opportunities", "Opportunities", "opportunities", pack.opportunities,
+            pack.opportunities.length ? (
+              <>
+                <SectionLead meta={meta("opportunities")} />
                 <ul className="space-y-3">
                   {pack.opportunities.map((o) => (
                     <li key={o.id} className="rounded-lg border border-line p-4">
-                      <div className="flex items-baseline justify-between gap-3">
-                        <p className="font-medium text-ink">{o.title}</p>
-                        <span className="font-mono text-sm text-ink">{o.score.toFixed(2)}</span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs ${o.status === "supported" ? "border-ink text-ink" : "border-dashed border-ink-3 text-ink-2"}`}>
+                          <span aria-hidden="true">{o.status === "supported" ? "●" : "◌"}</span>
+                          {o.status === "supported" ? "Supported" : "Early signal - check before acting"}
+                        </span>
+                        <span className="rounded border border-line px-1.5 py-0.5 text-xs text-ink-2">{o.kind.replace(/_/g, " ")}</span>
+                        <span className="ml-auto"><IdButton id={o.id} /></span>
                       </div>
-                      <p className="mt-1 text-sm text-ink-2">{o.description}</p>
-                      <p className="mt-2 font-mono text-xs text-ink-3">
-                        demand {o.components.demand.toFixed(2)} × dissatisfaction {o.components.dissatisfaction.toFixed(2)} ×
-                        novelty {o.components.novelty.toFixed(1)} × (1 − saturation {o.components.saturation.toFixed(2)}) · builds on <Ids ids={o.builds_on} />
+                      <p className="mt-2 text-ink">{o.opportunity}</p>
+                      <p className="mt-1 text-xs text-ink-3">
+                        {o.distinct_authors} {o.distinct_authors === 1 ? "person" : "people"} in {o.communities.length}{" "}
+                        {o.communities.length === 1 ? "community" : "communities"} · confidence {o.confidence.label}
                       </p>
+                      {o.existing_solutions.length > 0 ? (
+                        <p className="mt-2 text-sm text-ink-2">Already out there:{" "}
+                          {o.existing_solutions.map((x, n) => {
+                            const url = safeUrl(x.url);
+                            return <span key={x.url}>{n > 0 && "; "}{url ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{x.name}</a> : x.name}</span>;
+                          })}
+                        </p>
+                      ) : o.search_note ? <p className="mt-2 text-sm text-ink-3">{o.search_note.charAt(0).toUpperCase() + o.search_note.slice(1)}.</p> : null}
                     </li>
                   ))}
                 </ul>
-              </Sub>
-            </>)}
+              </>
+            ) : <EmptyNote meta={meta("opportunities")} fallback="No opportunities stood out in this evidence." />)}
           {sec("playbook", "Playbook", "playbook", { playbook: pack.playbook, compliance_flags: pack.compliance_flags },
             <Playbook pack={pack} />)}
           {sec("blind-spots", "Blind spots", "blind_spots", pack.blind_spots,
