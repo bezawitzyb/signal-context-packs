@@ -9,7 +9,11 @@ from __future__ import annotations
 
 import secrets
 
+import logging
+
 from ctxpack.config import get_settings, load_yaml
+
+log = logging.getLogger(__name__)
 
 
 class BudgetExceeded(RuntimeError):
@@ -49,16 +53,34 @@ class GuardError(Exception):
         self.message = message
 
 
+GUEST_KEY_MIN_CHARS = 16  # a shorter guest key is ignored: too easy to guess
+
+
+def _matches(given: str, expected) -> bool:
+    value = expected.get_secret_value().strip() if expected is not None else ""
+    return bool(value) and secrets.compare_digest(given.encode(), value.encode())
+
+
 def check_run_key(given: str | None) -> None:
-    """The run key must match RUN_KEY (constant-time). If RUN_KEY is not set, nobody can start runs."""
+    """The run key must match RUN_KEY, or GUEST_RUN_KEY while that is set (constant-time).
+
+    GUEST_RUN_KEY is temporary access for a tester: deleting it in Render revokes it without touching
+    RUN_KEY. If RUN_KEY is not set, nobody can start runs (a guest key alone opens nothing).
+    """
     settings = get_settings()
-    expected = settings.run_key
-    if expected is None or not expected.get_secret_value().strip():
+    if not settings.is_set("RUN_KEY"):
         if settings.offline:  # keyless local demo: recorded data and the fake model, nothing is paid
             return
         raise GuardError(503, "starting runs is switched off on this server")
-    if not given or not secrets.compare_digest(given.strip().encode(), expected.get_secret_value().strip().encode()):
-        raise GuardError(401, "a valid run key is needed to start runs (header X-API-Key)")
+    key = (given or "").strip()
+    if key and _matches(key, settings.run_key):
+        return
+    guest = settings.guest_run_key
+    if key and guest is not None and len(guest.get_secret_value().strip()) >= GUEST_KEY_MIN_CHARS \
+            and _matches(key, guest):
+        log.info("run started with the guest key")
+        return
+    raise GuardError(401, "a valid run key is needed to start runs (header X-API-Key)")
 
 
 def check_can_queue() -> None:

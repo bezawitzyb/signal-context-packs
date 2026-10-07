@@ -5,13 +5,13 @@ title = "signal-context-packs gitleaks config"
 [extend]
 useDefault = true
 
-# RUN_KEY is our own password for starting runs; gitleaks does not know it,
+# RUN_KEY (and the temporary GUEST_RUN_KEY) are our own passwords for starting runs; gitleaks does not know them,
 # so flag ANY value assigned to it (8+ characters, quoted or not).
 # Blank templates (RUN_KEY=) and placeholders (<YOUR_KEY>, $RUN_KEY) pass.
 [[rules]]
 id = "signal-run-key"
 description = "SIGNAL RUN_KEY value"
-regex = '''(?i)\bRUN_KEY[ \t]*=[ \t]*["']?([^\s"'#]{8,})'''
+regex = '''(?i)\b(?:GUEST_)?RUN_KEY[ \t]*=[ \t]*["']?([^\s"'#]{8,})'''
 secretGroup = 1
 keywords = ["run_key"]
 

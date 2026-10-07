@@ -155,7 +155,18 @@ def check_key_absent(http: httpx.Client, url: str) -> tuple[bool, str]:
     s = get_settings()
     if not s.is_set("RUN_KEY"):
         return False, "RUN_KEY not set locally: nothing to compare (run the doctor command)"
-    key = s.run_key.get_secret_value().strip()
+    keys = [s.run_key.get_secret_value().strip()]
+    if s.is_set("GUEST_RUN_KEY"):
+        keys.append(s.guest_run_key.get_secret_value().strip())
+    places: list[str] = []
+    for key in keys:
+        places += _key_places(http, url, key)
+    del keys
+    return not places, "not found in files, history, README, builds or the live app" if not places else \
+        "FOUND in: " + ", ".join(sorted(set(places))) + " - rotate the key in Render and remove it"
+
+
+def _key_places(http: httpx.Client, url: str, key: str) -> list[str]:
     needle = key.encode()
     places: list[str] = []
     tracked = subprocess.run(["git", "ls-files", "-z"], cwd=REPO_DIR, capture_output=True, check=True).stdout
@@ -172,9 +183,7 @@ def check_key_absent(http: httpx.Client, url: str) -> tuple[bool, str]:
     pages = [home.text] + [http.get(url + src).text for src in re.findall(r'src="(/assets/[^"]+\.js)"', home.text)]
     if any(key in t for t in pages):
         places.append("live web app")
-    del key, needle
-    return not places, "not found in files, history, README, builds or the live app" if not places else \
-        "FOUND in: " + ", ".join(places) + " - rotate the key in Render and remove it"
+    return places
 
 
 def check_gitleaks() -> tuple[bool, str]:

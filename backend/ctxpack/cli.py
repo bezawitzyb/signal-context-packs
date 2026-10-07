@@ -66,6 +66,8 @@ def doctor() -> None:
         is_set = settings.is_set(name)
         all_ok &= is_set
         console.print(f"  {OK if is_set else BAD} {name}: {'set' if is_set else 'not set'}")
+    guest = settings.is_set("GUEST_RUN_KEY")  # optional: temporary tester access
+    console.print(f"  {OK} GUEST_RUN_KEY: {'set (guest access ON - delete it to revoke)' if guest else 'not set (no guest access)'}")
 
     console.print("[bold]Services[/bold]")
     checks = [

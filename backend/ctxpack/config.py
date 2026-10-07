@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     apify_api_token: SecretStr | None = None
     author_hash_salt: SecretStr | None = None
     run_key: SecretStr | None = None
+    guest_run_key: SecretStr | None = None  # optional: temporary access for a tester; delete it to revoke
     database_url: SecretStr | None = None
 
     # --- Behaviour ---
@@ -53,7 +54,7 @@ class Settings(BaseSettings):
 
     def is_set(self, name: str) -> bool:
         """True if the secret has a non-empty value. Never returns the value."""
-        value = getattr(self, name.lower())
+        value = getattr(self, name.lower())  # SECRET_NAMES or GUEST_RUN_KEY
         return value is not None and value.get_secret_value().strip() != ""
 
     @property

@@ -11,8 +11,12 @@
   so a redeploy or restart loses nothing.
 - Health check path: `/ping` (never touches the database or a paid API).
   `/health` reports the version and whether the database answers.
-- `.github/workflows/keepalive.yml` calls `/ping` every 10 minutes so the
-  free service does not sleep. It reads the repository **variable**
+- `.github/workflows/keepalive.yml` is scheduled to call `/ping` every 10
+  minutes so the free service does not sleep. GitHub treats schedules as
+  best effort: in practice it ran every 4-8 hours (checked 2026-10-06), so
+  the first visit after a quiet spell can take about a minute. Before a
+  demo, open the site (or Actions -> keepalive -> Run workflow) 5 minutes
+  early; the static mirror below is the backup. It reads the repository **variable**
   `RENDER_URL` (GitHub -> Settings -> Secrets and variables -> Actions ->
   Variables).
 
@@ -26,6 +30,7 @@ Set by the owner only, never in this repo, GitHub Actions or `render.yaml`:
 | `APIFY_API_TOKEN` | Apify API token |
 | `AUTHOR_HASH_SALT` | long random sentence (same as local) |
 | `RUN_KEY` | run password (never shown anywhere) |
+| `GUEST_RUN_KEY` | optional: temporary run password for a tester (delete to revoke) |
 | `DATABASE_URL` | Neon **main** branch, pooled connection string |
 
 ## Deploy discipline
@@ -88,6 +93,20 @@ Memory test: both Standard runs peak below 400 MB, so Step 2.6 (Modal) is not ne
 |------|-------|-----|--------|
 | `pk_wrvZBhDFsLR9` | Launching a snack brand in the Netherlands | `run_wOcIwOgGDnDUITS2` (fresh, 1,042 s) | strong 3, moderate 8, emerging 22, speculative 27 |
 | `pk_CamfAsJ7Zbdr` | Gen Z and meal prep | `run_bz5PBTd-Pr6Xp3f2` (thin evidence) | emerging 23, speculative 24 |
+
+## Guest access for a tester
+
+1. In **your own** Terminal (never in a chat): `openssl rand -base64 18` -> copy the result.
+2. Render -> Environment -> add `GUEST_RUN_KEY` with that value (at least 16 characters) -> Save.
+   The service restarts (about a minute); this is not a deploy.
+3. Send the key to the tester privately. Your own `RUN_KEY` keeps working unchanged.
+4. Protect the budget during the test: ask for **Quick** runs only, and lower
+   `DAILY_SPEND_CAP_USD` (e.g. `8`, about 2-3 Quick runs) for the day.
+5. **Revoke:** Render -> Environment -> delete `GUEST_RUN_KEY` -> Save. New runs with that key are
+   refused at once; a run already going finishes normally. Set the cap back to `25`.
+
+`doctor` shows whether guest access is on locally; `demo-check` also checks that the guest key appears
+in no file, commit, build or page.
 
 ## Static mirror (GitHub Pages, guide B15)
 

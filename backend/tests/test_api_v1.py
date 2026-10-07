@@ -352,3 +352,33 @@ def test_offline_demo_needs_no_keys(monkeypatch, tmp_path):
         db.get_engine().dispose()
         db._engine = None
         get_settings.cache_clear()
+
+
+def test_guest_key_gives_temporary_access_and_deleting_it_revokes(api, monkeypatch):
+    body = {"brief": "Gen Z and meal prep"}
+    guest = {"X-API-Key": "guest-key-for-a-tester-only"}             # test value, not a secret
+    assert client.post("/api/v1/runs", json=body, headers=guest).status_code == 401   # not set yet
+    monkeypatch.setenv("GUEST_RUN_KEY", "guest-key-for-a-tester-only")
+    get_settings.cache_clear()
+    made = client.post("/api/v1/runs", json=body, headers=guest)
+    assert made.status_code == 201 and "guest-key-for-a-tester-only" not in made.text
+    assert client.post("/api/v1/runs", json=body, headers=KEY).status_code == 201       # main key unaffected
+    monkeypatch.setenv("GUEST_RUN_KEY", "")                          # revoke: delete it in Render
+    get_settings.cache_clear()
+    assert client.post("/api/v1/runs", json=body, headers=guest).status_code == 401
+    assert client.post("/api/v1/runs", json=body, headers=KEY).status_code == 201
+    get_settings.cache_clear()
+
+
+def test_short_guest_key_is_ignored_and_guest_alone_opens_nothing(api, monkeypatch):
+    body = {"brief": "Gen Z and meal prep"}
+    monkeypatch.setenv("GUEST_RUN_KEY", "short")
+    get_settings.cache_clear()
+    assert client.post("/api/v1/runs", json=body, headers={"X-API-Key": "short"}).status_code == 401
+    monkeypatch.setenv("GUEST_RUN_KEY", "guest-key-for-a-tester-only")
+    monkeypatch.setenv("RUN_KEY", "")
+    monkeypatch.setenv("LLM_FAKE", "false")                         # a real server, not the offline demo
+    get_settings.cache_clear()
+    r = client.post("/api/v1/runs", json=body, headers={"X-API-Key": "guest-key-for-a-tester-only"})
+    assert r.status_code == 503                                      # no main key: runs are off for everyone
+    get_settings.cache_clear()
