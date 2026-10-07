@@ -42,7 +42,17 @@
     "time_window_days"
    ]
   },
-  "brand_voice": null
+  "brand_voice": null,
+  "intake": {
+   "audience_roles": [],
+   "goal": null,
+   "offer": null,
+   "channels_in_use": [],
+   "competitors_user": [],
+   "timeframe": null,
+   "other_answers": [],
+   "questions_asked": []
+  }
  },
  "digest": "Context Pack: meal prep habits, motivations and barriers among Gen Z (global, Gen Z adults aged 18-27, students and early-career, cooking for themselves on a budget). Coverage grade c; 76 relevant posts. Thin evidence.\nFive truths: [MOT-06] I find cooking for one challenging and need simple meals that suit just me. [SEG-01] I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating. [SEG-03] I prep components, not whole meals, so I keep room to change things. [THM-09] I prep ingredients and components, not whole meals, so I can still switch things around. [MOM-03] I start work early and need breakfast I don't have to buy each day.\nDo first: [DO-01] Publish a freeze-and-reheat cheat sheet for enchiladas and fajitas (can it be frozen, how to reheat, how long reheating takes), and post it in a Reddit meal-prep or college-cooking community as a reply-friendly guide. [DO-02] Post a 'College student mealprep for the week' on Reddit that lists every dish, the recipes and the total spent, built on pantry staples such as rice, pasta, eggs, beans and potatoes. [DO-03] Post a short make-ahead breakfast reply or post (freezer breakfast sandwiches and overnight oats) in a thread where someone wants to stop buying breakfast, with a simple how-to.\nTensions: [TEN-01] I want to save money by cooking at home, but prepping takes hours of my time. [TEN-02] I want meals prepped for the week, but some of us get tired of eating the same leftovers. [TEN-03] I want easy meal kits, but one reviewer finds them too expensive for what they get.\nTheir words: Sunday (ingredient) prep day (a weekly session to prep ingredients and components rather than whole meals), macro-friendly (a meal that fits protein, carb and fat targets), Meal Prep for Weight Loss (a post label for fat-loss-oriented meal prep), decision fatigue (tiredness from having to choose what to eat), Food is fuel (eating to power performance), Pb and J (peanut butter and jelly…",
  "snapshot": {
@@ -146,7 +156,7 @@
     "OPP-01",
     "SEG-01",
     "THM-06",
-    "MOT-03"
+    "PAIN-02"
    ],
    "effort": "low",
    "impact": "high",
@@ -240,6 +250,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Meal kits are tasty but small, pricey or error-prone",
     "emotion_mix": [
@@ -300,6 +311,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Freeze it now, reheat it later",
     "emotion_mix": [
@@ -358,6 +370,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Cheap pantry staples and simple recipes",
     "emotion_mix": [
@@ -420,6 +433,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Quick make-ahead breakfasts and lunches for busy days",
     "emotion_mix": [
@@ -484,6 +498,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Cheap college dinners for the whole week",
     "emotion_mix": [
@@ -546,6 +561,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Reheating has to be fast or prep feels pointless",
     "emotion_mix": [
@@ -601,6 +617,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Meal prep eats my weekend and stresses me out",
     "emotion_mix": [
@@ -653,6 +670,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Macro-friendly prep for fitness goals",
     "emotion_mix": [
@@ -717,6 +735,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Prep ingredients, not whole meals, so I can mix it up",
     "emotion_mix": [
@@ -902,6 +921,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Sunday (ingredient) prep day",
     "meaning": "a weekly session to prep ingredients and components rather than whole meals",
@@ -947,6 +967,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "macro-friendly",
     "meaning": "a meal that fits protein, carb and fat targets",
@@ -992,6 +1013,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Meal Prep for Weight Loss",
     "meaning": "a post label for fat-loss-oriented meal prep",
@@ -1035,6 +1057,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "decision fatigue",
     "meaning": "tiredness from having to choose what to eat",
@@ -1081,6 +1104,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Food is fuel",
     "meaning": "eating to power performance",
@@ -1124,6 +1148,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Pb and J",
     "meaning": "peanut butter and jelly sandwich",
@@ -1167,6 +1192,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Shefs order",
     "meaning": "ordering from Shef, a home-cook meal delivery service",
@@ -1208,6 +1234,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Frozen anything",
     "meaning": "freeze-friendly foods as staples",
@@ -1264,6 +1291,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "phrase",
     "text": "all the time",
     "language": "en"
@@ -1319,6 +1347,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "phrase",
     "text": "College student mealprep for",
     "language": "en"
@@ -1388,6 +1417,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "segment",
    "name": "Budget college meal preppers",
    "description": "College students who prep lunches or dinners for the week on a small budget and ask about freezing, storage and reheating."
@@ -1441,6 +1471,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "segment",
    "name": "Meal kit users",
    "description": "Subscribers who review meal kits on convenience, taste, portions, price and freshness."
@@ -1492,6 +1523,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "segment",
    "name": "Flexible planners who avoid full prep",
    "description": "Posters who prep only components, or plan meals rather than prepping them in full."
@@ -1554,6 +1586,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "tension",
    "want": {
     "text": "$60 worth of food for the next week.",
@@ -1627,6 +1660,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "tension",
    "want": {
     "text": "6x dinners and lunches for the week",
@@ -1694,6 +1728,7 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "tension",
    "want": {
     "text": "I love the ease and variety of meals we get from hello fresh.",
@@ -1709,6 +1744,106 @@
      "EV-0004"
     ]
    }
+  }
+ ],
+ "pain_points": [
+  {
+   "id": "PAIN-01",
+   "claim": "Stocking random things is a good way for food to go bad before you use it, so I plan a week ahead and only buy what I need.",
+   "summary_for_humans": "Food going off before it gets used is a worry in these posts. One poster plans meals a week ahead to avoid it, and a student-athlete felt they were wasting food when they started cooking for themselves.",
+   "cluster_id": "CL-11",
+   "counts": {
+    "matching": 5,
+    "of_total": 75
+   },
+   "confidence": {
+    "score": 0.6,
+    "label": "emerging"
+   },
+   "claim_type": "observed",
+   "safe_to_assert": false,
+   "non_obvious": false,
+   "strength": {
+    "evidence_count": 5,
+    "distinct_authors": 5,
+    "platforms": [
+     "reddit",
+     "web_forum"
+    ],
+    "engagement_percentile_median": 71.5
+   },
+   "emotion": [
+    "frustration",
+    "excitement"
+   ],
+   "trend": "insufficient_data",
+   "recency": "2026-09",
+   "evidence_ids": [
+    "EV-0042",
+    "EV-0027"
+   ],
+   "quotes": [
+    {
+     "evidence_id": "EV-0042",
+     "text": "Stocking random things is a good way for those things to go bad before you use them."
+    },
+    {
+     "evidence_id": "EV-0027",
+     "text": "I felt like I was wasting a lot of food."
+    }
+   ],
+   "segment_ids": [],
+   "related_ids": [],
+   "relations": [],
+   "type": "pain_point"
+  },
+  {
+   "id": "PAIN-02",
+   "claim": "The reheating was taking so much time that meal prep felt like a waste of time.",
+   "summary_for_humans": "One poster says slow reheating made their prepped meals feel pointless, and a reply treats reheating time as the thing to solve.",
+   "cluster_id": "CL-13",
+   "counts": {
+    "matching": 3,
+    "of_total": 75
+   },
+   "confidence": {
+    "score": 0.38,
+    "label": "emerging"
+   },
+   "claim_type": "observed",
+   "safe_to_assert": false,
+   "non_obvious": true,
+   "strength": {
+    "evidence_count": 3,
+    "distinct_authors": 3,
+    "platforms": [
+     "reddit"
+    ],
+    "engagement_percentile_median": 60.0
+   },
+   "emotion": [
+    "frustration"
+   ],
+   "trend": "insufficient_data",
+   "recency": "2026-07",
+   "evidence_ids": [
+    "EV-0017",
+    "EV-0018"
+   ],
+   "quotes": [
+    {
+     "evidence_id": "EV-0017",
+     "text": "the reheating was taking so much time, that meal prep felt waste of time"
+    },
+    {
+     "evidence_id": "EV-0018",
+     "text": "is how long it takes to reheat food"
+    }
+   ],
+   "segment_ids": [],
+   "related_ids": [],
+   "relations": [],
+   "type": "pain_point"
   }
  ],
  "motivations": [
@@ -1761,106 +1896,9 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
-  },
-  {
-   "id": "MOT-02",
-   "claim": "Stocking random things is a good way for food to go bad before you use it, so I plan a week ahead and only buy what I need.",
-   "summary_for_humans": "Food going off before it gets used is a worry in these posts. One poster plans meals a week ahead to avoid it, and a student-athlete felt they were wasting food when they started cooking for themselves.",
-   "cluster_id": "CL-11",
-   "counts": {
-    "matching": 5,
-    "of_total": 75
-   },
-   "confidence": {
-    "score": 0.6,
-    "label": "emerging"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": false,
-   "strength": {
-    "evidence_count": 5,
-    "distinct_authors": 5,
-    "platforms": [
-     "reddit",
-     "web_forum"
-    ],
-    "engagement_percentile_median": 71.5
-   },
-   "emotion": [
-    "frustration",
-    "excitement"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-09",
-   "evidence_ids": [
-    "EV-0042",
-    "EV-0027"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0042",
-     "text": "Stocking random things is a good way for those things to go bad before you use them."
-    },
-    {
-     "evidence_id": "EV-0027",
-     "text": "I felt like I was wasting a lot of food."
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "type": "motivation",
-   "kind": "pain"
-  },
-  {
-   "id": "MOT-03",
-   "claim": "The reheating was taking so much time that meal prep felt like a waste of time.",
-   "summary_for_humans": "One poster says slow reheating made their prepped meals feel pointless, and a reply treats reheating time as the thing to solve.",
-   "cluster_id": "CL-13",
-   "counts": {
-    "matching": 3,
-    "of_total": 75
-   },
-   "confidence": {
-    "score": 0.38,
-    "label": "emerging"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 3,
-    "distinct_authors": 3,
-    "platforms": [
-     "reddit"
-    ],
-    "engagement_percentile_median": 60.0
-   },
-   "emotion": [
-    "frustration"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-07",
-   "evidence_ids": [
-    "EV-0017",
-    "EV-0018"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0017",
-     "text": "the reheating was taking so much time, that meal prep felt waste of time"
-    },
-    {
-     "evidence_id": "EV-0018",
-     "text": "is how long it takes to reheat food"
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "type": "motivation",
-   "kind": "pain"
   },
   {
    "id": "MOT-04",
@@ -1906,6 +1944,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
   },
@@ -1957,6 +1996,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "job"
   },
@@ -2008,6 +2048,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
   },
@@ -2057,6 +2098,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
   }
@@ -2114,6 +2156,7 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2170,6 +2213,7 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2220,6 +2264,7 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2270,6 +2315,7 @@
     "SEG-03"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2320,6 +2366,7 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   }
@@ -2405,6 +2452,7 @@
      "SEG-01"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "format",
     "name": "College student prep posts with budget",
@@ -2455,6 +2503,7 @@
      "SEG-03"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "format",
     "name": "Weekly numbered prep log posts",
@@ -2504,6 +2553,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "creator",
     "name": "Budget Bytes",
@@ -2625,6 +2675,8 @@
    "claim_type": "inferred"
   }
  ],
+ "performance_takeaways": [],
+ "sections_meta": {},
  "moments": [
   {
    "id": "MOM-01",
@@ -2677,6 +2729,7 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "moment",
    "name": "Weekday lunches and dinners",
    "timing": "Weekdays"
@@ -2729,6 +2782,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "moment",
    "name": "Sunday or weekend prep session",
    "timing": "Sunday or weekend"
@@ -2780,6 +2834,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "moment",
    "name": "Early morning work breakfast",
    "timing": "Mornings"
@@ -2827,6 +2882,7 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "white_space",
    "kind": "unanswered_question"
   }
@@ -3015,7 +3071,7 @@
     "text": "Reheating took so long that meal prep felt pointless. Microwave or air fryer, and I'm on a budget?",
     "why_ids": [
      "TEN-01",
-     "MOT-03",
+     "PAIN-02",
      "THM-06",
      "PERF-08"
     ]
@@ -3155,7 +3211,7 @@
     "THM-03",
     "THM-09",
     "MOT-01",
-    "MOT-03",
+    "PAIN-02",
     "SEG-01",
     "OPP-01",
     "OPP-02",
@@ -5149,6 +5205,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5169,6 +5226,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5189,6 +5247,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5209,6 +5268,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5229,6 +5289,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5247,6 +5308,7 @@
    "engagement_percentile": 33.3,
    "author_hash": "3b2131a60089664730f4e34bf4ca714766c8148b5bf75698c9509107b0fcddcb",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5265,6 +5327,7 @@
    "engagement_percentile": 98.6,
    "author_hash": "1f49e76d60c87202c7647e4a34520f50abd5c546bf4277e0e0b8bf5092aa3176",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5283,6 +5346,7 @@
    "engagement_percentile": 10.0,
    "author_hash": "e3b7f5fd42db6adf7f60432140bc3ef92e823c6df70ba1ffb8cd8b21d61ab07a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5301,6 +5365,7 @@
    "engagement_percentile": 64.3,
    "author_hash": "6c5b033b742ef2c705e15d4d2b7ea85b1c0954cb89007edf5d58a682e6e3c10a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5319,6 +5384,7 @@
    "engagement_percentile": 47.1,
    "author_hash": "b0faf4ba63d9ad52cab2aa870f85afd0bd1e7a6d6b0de7eb989c70e133e18aca",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5339,6 +5405,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5357,6 +5424,7 @@
    "engagement_percentile": 50.0,
    "author_hash": "237c4ceebdd3955bf454f9a678c4bb25760230ea398bf0c7d29f32c638668267",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5375,6 +5443,7 @@
    "engagement_percentile": 61.4,
    "author_hash": "52b58f7863cdc8b14f0c14844660865b34914af34501ec148ec5eecfe01e6e62",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5396,6 +5465,7 @@
     "guilt",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5416,6 +5486,7 @@
    "emotion": [
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5437,6 +5508,7 @@
     "nostalgia",
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5457,6 +5529,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5475,6 +5548,7 @@
    "engagement_percentile": 43.3,
    "author_hash": "5b9467ab26c593009098c5a5bd15edca550256cbe290b95fedf1ce966d91561e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5495,6 +5569,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5515,6 +5590,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5535,6 +5611,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5553,6 +5630,7 @@
    "engagement_percentile": 6.0,
    "author_hash": "e3dc68c63a7cece9195379c45d0f5ec8b8f98cf7fcb2ecd1ff5cbfdf99617ff3",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5573,6 +5651,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5594,6 +5673,7 @@
     "excitement",
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5612,6 +5692,7 @@
    "engagement_percentile": 50.0,
    "author_hash": "0af5d28e3d0ac474cebce64c73e6c98db3cd29ff6f9c2fd23cce88767854463a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5630,6 +5711,7 @@
    "engagement_percentile": 81.4,
    "author_hash": "66899726a75816e487f9589bf78974341a21cb48629a39eb9fc6c94bfd041529",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5651,6 +5733,7 @@
     "excitement",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5669,6 +5752,7 @@
    "engagement_percentile": 21.4,
    "author_hash": "b33257f0530efeeac5330484e47dbf359ca9e3cebc266e1702562000220ce7ea",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5687,6 +5771,7 @@
    "engagement_percentile": null,
    "author_hash": null,
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5705,6 +5790,7 @@
    "engagement_percentile": 78.6,
    "author_hash": "939a3ba6f6acc936c78b6baa266c4f8974482f6079b443dcc92427e04721d077",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5723,6 +5809,7 @@
    "engagement_percentile": 60.0,
    "author_hash": "0af5d28e3d0ac474cebce64c73e6c98db3cd29ff6f9c2fd23cce88767854463a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5743,6 +5830,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5763,6 +5851,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5781,6 +5870,7 @@
    "engagement_percentile": null,
    "author_hash": "4e7fa707d2eb32b11ac9d58792e3677d1c15b6d08f2125ee65d6c13aad56bac3",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5802,6 +5892,7 @@
     "pride",
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5823,6 +5914,7 @@
     "pride",
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5845,6 +5937,7 @@
     "pride",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5865,6 +5958,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5883,6 +5977,7 @@
    "engagement_percentile": 32.6,
    "author_hash": null,
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5901,6 +5996,7 @@
    "engagement_percentile": 88.0,
    "author_hash": null,
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5921,6 +6017,7 @@
    "emotion": [
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5939,6 +6036,7 @@
    "engagement_percentile": 70.0,
    "author_hash": "75205def05f38a04b3b0da4abfd2385288aa07c682bc1aa896fad14c892141e6",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5957,6 +6055,7 @@
    "engagement_percentile": 58.6,
    "author_hash": "f6c7f8fd6bf76742c516462b8edaa302883f741f26c2b6bf3db686c4524e22d4",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5977,6 +6076,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5995,6 +6095,7 @@
    "engagement_percentile": 62.0,
    "author_hash": null,
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6013,6 +6114,7 @@
    "engagement_percentile": 62.0,
    "author_hash": null,
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6033,6 +6135,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6053,6 +6156,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6073,6 +6177,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6093,6 +6198,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6113,6 +6219,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6131,6 +6238,7 @@
    "engagement_percentile": 62.0,
    "author_hash": null,
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6149,6 +6257,7 @@
    "engagement_percentile": 72.9,
    "author_hash": "0367014fe596d1230147f5b8d422ba3fe7ee2ccf58bf3d4bdbbf18ed6d70acba",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6169,6 +6278,7 @@
    "emotion": [
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   }
  ]

@@ -8,7 +8,7 @@ Drafts written by AI from the research. Review before use; items marked CHECK WI
 - Bamischijf: top of gatverdamme? Zeg het eerlijk, we oordelen niet 😂 (HOOK-04; builds on TEN-01, THM-04, LEX-03, PHR-01)
 - Wie als eerste de kaassoufflé van de bittergarnituur pakt, kun je niet vertrouwen. En wie laat de nasi en bamischijf liggen? 🙈 (HOOK-05; builds on TEN-01, CUL-02, LEX-02, LEX-08)
 - Lekker is niet genoeg: ook crunch. Te slap, te hard, te weinig smaak. Welke chip faalt bij jou? (HOOK-06; builds on TEN-01, THM-07, MOT-05)
-- Welke snack of smaak uit het buitenland mis je in de Nederlandse schappen? Wij zoeken wat hier nog niet ligt. (HOOK-07; builds on TEN-01, THM-09, WSP-04, MOT-01)
+- Welke snack of smaak uit het buitenland mis je in de Nederlandse schappen? Wij zoeken wat hier nog niet ligt. (HOOK-07; builds on TEN-01, THM-09, WSP-04, PAIN-01)
 - De saus maakt de snack. Welke dip hoort bij jouw zoutje? 😄 (HOOK-08; builds on TEN-01, THM-10, LEX-13)
 - Wij proeven de nieuwe snacks, zodat jij dat niet hoeft te doen. Wat eerst: chips of zoet? (HOOK-09; builds on TEN-01, PHR-02, THM-06, MOT-04, PERF-02)
 - Groningse eierbal, Brabantse eierkoeken, gebak uit Dordrecht: welke streeksnack moet heel Nederland proeven? (HOOK-10; builds on TEN-01, THM-05, LEX-05, PERF-07)

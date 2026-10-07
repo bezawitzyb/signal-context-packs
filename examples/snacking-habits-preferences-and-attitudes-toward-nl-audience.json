@@ -48,15 +48,25 @@
     "topic"
    ]
   },
-  "brand_voice": null
+  "brand_voice": null,
+  "intake": {
+   "audience_roles": [],
+   "goal": null,
+   "offer": null,
+   "channels_in_use": [],
+   "competitors_user": [],
+   "timeframe": null,
+   "other_answers": [],
+   "questions_asked": []
+  }
  },
- "digest": "Context Pack: snacking habits, preferences and attitudes toward new snack brands (NL, Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers). Coverage grade a; 233 relevant posts. Thin evidence.\nFive truths: [MOT-01] I can't find the product I want in my local shops. [THM-01] We still miss snacks that got discontinued, like the Winner taco and the Yes bar. [THM-09] Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. [THM-02] Posters question snacks sold as healthy by pointing to calories and sugar. [WSP-01] I want to know why a favourite snack disappeared from the shops.\nDo first: [DO-01] Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name. [DO-02] Pitch a product sample and a timestamped slot to supermarket-test YouTubers (like the PROEFWERK series), and prepare your own 'zodat jij dat niet hoeft te doen' test video with a dated title and a product list, putting your snack next to familiar chips and snack-bar snacks. [DO-03] Film a TikTok label-reading short in Dutch (and an English cut) that shows the real kcal, sugar and protein per 100 g of your snack on screen, including the unflattering numbers, with the ingredient list readable in frame.\nTensions: [TEN-01] I want healthier snacks, but a snack called healthy can still be judged unhealthy or taste bad.\nTheir words: frikandelbroodje (sausage roll with frikandel), kaassoufflé (fried cheese pastry snack), bamischijf (fried bami noodle slice), ribbelchips (ridged chips), eierbal (fried egg-and-meat ball snack), snackbar (Dutch fast-food snack shop), borrelnootjes (party nuts served with drinks), bittergarnituur (assorted fried bar snacks served on a platter)\nSay: Name the exact flavour or item (paprika,…",
+ "digest": "Context Pack: snacking habits, preferences and attitudes toward new snack brands (NL, Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers). Coverage grade a; 233 relevant posts. Thin evidence.\nFive truths: [PAIN-01] I can't find the product I want in my local shops. [THM-01] We still miss snacks that got discontinued, like the Winner taco and the Yes bar. [THM-09] Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. [THM-02] Posters question snacks sold as healthy by pointing to calories and sugar. [WSP-01] I want to know why a favourite snack disappeared from the shops.\nDo first: [DO-01] Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name. [DO-02] Pitch a product sample and a timestamped slot to supermarket-test YouTubers (like the PROEFWERK series), and prepare your own 'zodat jij dat niet hoeft te doen' test video with a dated title and a product list, putting your snack next to familiar chips and snack-bar snacks. [DO-03] Film a TikTok label-reading short in Dutch (and an English cut) that shows the real kcal, sugar and protein per 100 g of your snack on screen, including the unflattering numbers, with the ingredient list readable in frame.\nTensions: [TEN-01] I want healthier snacks, but a snack called healthy can still be judged unhealthy or taste bad.\nTheir words: frikandelbroodje (sausage roll with frikandel), kaassoufflé (fried cheese pastry snack), bamischijf (fried bami noodle slice), ribbelchips (ridged chips), eierbal (fried egg-and-meat ball snack), snackbar (Dutch fast-food snack shop), borrelnootjes (party nuts served with drinks), bittergarnituur (assorted fried bar snacks served on a platter)\nSay: Name the exact flavour or item (paprika,…",
  "snapshot": {
   "five_truths": [
    {
     "text": "I can't find the product I want in my local shops.",
     "item_ids": [
-     "MOT-01"
+     "PAIN-01"
     ]
    },
    {
@@ -112,7 +122,7 @@
     {
      "text": "I can't find the product I want in my local shops.",
      "item_ids": [
-      "MOT-01"
+      "PAIN-01"
      ]
     },
     {
@@ -149,7 +159,7 @@
    "why": "Missing, vanished snacks is the strongest non-obvious theme, backed by a strong motivation (can't find what I want) and a 'why is it gone' post that invites memories.",
    "why_ids": [
     "THM-01",
-    "MOT-01",
+    "PAIN-01",
     "WSP-01",
     "PERF-09",
     "OPP-02"
@@ -241,6 +251,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "We miss the snacks that vanished from the shelves",
     "emotion_mix": [
@@ -312,6 +323,7 @@
      "SEG-01"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "We don't believe a snack is healthy just because it says so",
     "emotion_mix": [
@@ -385,6 +397,7 @@
      "SEG-02"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Our favourite chip flavours are paprika, bolognese and cheese",
     "emotion_mix": [
@@ -451,6 +464,7 @@
      "SEG-02"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Snack-bar classics split us: love it or gatverdamme",
     "emotion_mix": [
@@ -521,6 +535,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "We are proud to point to treats from our own region",
     "emotion_mix": [
@@ -592,6 +607,7 @@
      "SEG-03"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "We watch reviewers to see which new supermarket products are worth it",
     "emotion_mix": [
@@ -655,6 +671,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Chips should have proper flavour and crunch",
     "emotion_mix": [
@@ -716,6 +733,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Price decides what ends up in the basket",
     "emotion_mix": [
@@ -781,6 +799,7 @@
      "SEG-03"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "We look for snacks and flavours abroad that Dutch shops lack",
     "emotion_mix": [
@@ -847,6 +866,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Snacks taste better with a dip or sauce",
     "emotion_mix": [
@@ -904,6 +924,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Less salt is fine, as long as the taste stays",
     "emotion_mix": [
@@ -1176,6 +1197,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "frikandelbroodje",
     "meaning": "sausage roll with frikandel",
@@ -1224,6 +1246,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "kaassoufflé",
     "meaning": "fried cheese pastry snack",
@@ -1274,6 +1297,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "bamischijf",
     "meaning": "fried bami noodle slice",
@@ -1322,6 +1346,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "ribbelchips",
     "meaning": "ridged chips",
@@ -1373,6 +1398,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "eierbal",
     "meaning": "fried egg-and-meat ball snack",
@@ -1423,6 +1449,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "snackbar",
     "meaning": "Dutch fast-food snack shop",
@@ -1468,6 +1495,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "borrelnootjes",
     "meaning": "party nuts served with drinks",
@@ -1513,6 +1541,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "bittergarnituur",
     "meaning": "assorted fried bar snacks served on a platter",
@@ -1558,6 +1587,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "kroepoek",
     "meaning": "shrimp crackers",
@@ -1603,6 +1633,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "jeugdsentiment",
     "meaning": "childhood nostalgia",
@@ -1648,6 +1679,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "verslavend lekker",
     "meaning": "addictively tasty",
@@ -1693,6 +1725,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "schijtsnack",
     "meaning": "crap snack, very bad snack",
@@ -1736,6 +1769,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "zoutje",
     "meaning": "salty snack",
@@ -1781,6 +1815,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "megool",
     "meaning": "slang for awesome",
@@ -1832,6 +1867,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "phrase",
     "text": "gatverdamme",
     "language": "nl"
@@ -1886,6 +1922,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "phrase",
     "text": "zodat jij dat niet hoeft te doen",
     "language": "nl"
@@ -1958,6 +1995,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "segment",
    "name": "Ingredient-checking health snackers",
    "description": "They read labels, look at additives, sugar and kcal, and look for less processed snacks."
@@ -2014,6 +2052,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "segment",
    "name": "Classic Dutch chip and snack-bar fans",
    "description": "They name specific chip brands and flavours such as Croky paprika, Doritos Nacho Cheese and Thai Sweet Chili, plus hot snacks like frikandelbroodjes."
@@ -2067,6 +2106,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "segment",
    "name": "New-product explorers",
    "description": "They watch supermarket test videos and buy products abroad that they can't get in the Netherlands."
@@ -2129,6 +2169,7 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "tension",
    "want": {
     "text": "less added sugar, fewer artificial dyes, better oils + ingredients you actually feel good about feeding your family",
@@ -2146,9 +2187,9 @@
    }
   }
  ],
- "motivations": [
+ "pain_points": [
   {
-   "id": "MOT-01",
+   "id": "PAIN-01",
    "claim": "I can't find the product I want in my local shops.",
    "summary_for_humans": "Posts describe a wanted snack that is sold out, no longer on the shelf or not stocked by their shop.",
    "cluster_id": "CL-14",
@@ -2202,9 +2243,97 @@
    ],
    "segment_ids": [],
    "related_ids": [],
-   "type": "motivation",
-   "kind": "pain"
+   "relations": [],
+   "type": "pain_point"
   },
+  {
+   "id": "PAIN-02",
+   "claim": "It tastes good, but there is a bit little in a bag.",
+   "summary_for_humans": "One post likes the snack but finds the bag holds too little.",
+   "cluster_id": "CL-17",
+   "counts": {
+    "matching": 2,
+    "of_total": 216
+   },
+   "confidence": {
+    "score": 0.21,
+    "label": "speculative"
+   },
+   "claim_type": "observed",
+   "safe_to_assert": false,
+   "non_obvious": true,
+   "strength": {
+    "evidence_count": 2,
+    "distinct_authors": 2,
+    "platforms": [
+     "web_forum"
+    ],
+    "engagement_percentile_median": null
+   },
+   "emotion": [
+    "frustration"
+   ],
+   "trend": "insufficient_data",
+   "recency": null,
+   "evidence_ids": [
+    "EV-0068"
+   ],
+   "quotes": [
+    {
+     "evidence_id": "EV-0068",
+     "text": "alleen een beetje weinig in een zak"
+    }
+   ],
+   "segment_ids": [],
+   "related_ids": [],
+   "relations": [],
+   "type": "pain_point"
+  },
+  {
+   "id": "PAIN-03",
+   "claim": "I like them, but they are a bit too sweet.",
+   "summary_for_humans": "One post says the snacks taste good but are slightly too sweet.",
+   "cluster_id": "CL-15",
+   "counts": {
+    "matching": 1,
+    "of_total": 216
+   },
+   "confidence": {
+    "score": 0.16,
+    "label": "speculative"
+   },
+   "claim_type": "observed",
+   "safe_to_assert": false,
+   "non_obvious": true,
+   "strength": {
+    "evidence_count": 1,
+    "distinct_authors": 1,
+    "platforms": [
+     "web_forum"
+    ],
+    "engagement_percentile_median": null
+   },
+   "emotion": [
+    "frustration"
+   ],
+   "trend": "insufficient_data",
+   "recency": null,
+   "evidence_ids": [
+    "EV-0069"
+   ],
+   "quotes": [
+    {
+     "evidence_id": "EV-0069",
+     "text": "zijn wel lekker iets te zoet"
+    }
+   ],
+   "segment_ids": [],
+   "related_ids": [],
+   "relations": [],
+   "type": "pain_point"
+  }
+ ],
+ "motivations": [
   {
    "id": "MOT-02",
    "claim": "I want a snack that delivers protein, and I like it when a savoury one also has fibre.",
@@ -2256,6 +2385,7 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
   },
@@ -2309,6 +2439,7 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
   },
@@ -2364,6 +2495,7 @@
     "SEG-03"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "job"
   },
@@ -2416,94 +2548,9 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
-  },
-  {
-   "id": "MOT-06",
-   "claim": "It tastes good, but there is a bit little in a bag.",
-   "summary_for_humans": "One post likes the snack but finds the bag holds too little.",
-   "cluster_id": "CL-17",
-   "counts": {
-    "matching": 2,
-    "of_total": 216
-   },
-   "confidence": {
-    "score": 0.21,
-    "label": "speculative"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 2,
-    "distinct_authors": 2,
-    "platforms": [
-     "web_forum"
-    ],
-    "engagement_percentile_median": null
-   },
-   "emotion": [
-    "frustration"
-   ],
-   "trend": "insufficient_data",
-   "recency": null,
-   "evidence_ids": [
-    "EV-0068"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0068",
-     "text": "alleen een beetje weinig in een zak"
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "type": "motivation",
-   "kind": "pain"
-  },
-  {
-   "id": "MOT-07",
-   "claim": "I like them, but they are a bit too sweet.",
-   "summary_for_humans": "One post says the snacks taste good but are slightly too sweet.",
-   "cluster_id": "CL-15",
-   "counts": {
-    "matching": 1,
-    "of_total": 216
-   },
-   "confidence": {
-    "score": 0.16,
-    "label": "speculative"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 1,
-    "distinct_authors": 1,
-    "platforms": [
-     "web_forum"
-    ],
-    "engagement_percentile_median": null
-   },
-   "emotion": [
-    "frustration"
-   ],
-   "trend": "insufficient_data",
-   "recency": null,
-   "evidence_ids": [
-    "EV-0069"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0069",
-     "text": "zijn wel lekker iets te zoet"
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "type": "motivation",
-   "kind": "pain"
   }
  ],
  "objections": [
@@ -2550,6 +2597,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2600,6 +2648,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2651,6 +2700,7 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2696,6 +2746,7 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2741,6 +2792,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   }
@@ -3071,6 +3123,7 @@
      "SEG-03"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "format",
     "name": "PROEFWERK supermarket test videos",
@@ -3130,6 +3183,7 @@
      "SEG-01"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "code",
     "name": "Checking kcal and sugar numbers",
@@ -3183,6 +3237,7 @@
      "SEG-02"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "code",
     "name": "Leaving nasi and bamischijf on the platter",
@@ -3303,6 +3358,8 @@
    "claim_type": "inferred"
   }
  ],
+ "performance_takeaways": [],
+ "sections_meta": {},
  "moments": [],
  "white_space": [
   {
@@ -3353,6 +3410,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "white_space",
    "kind": "unanswered_question"
   },
@@ -3402,6 +3460,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "white_space",
    "kind": "unmet_need"
   },
@@ -3447,6 +3506,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "white_space",
    "kind": "unmet_need"
   },
@@ -3490,6 +3550,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "white_space",
    "kind": "unmet_need"
   }
@@ -3775,7 +3836,7 @@
      "TEN-01",
      "THM-09",
      "WSP-04",
-     "MOT-01"
+     "PAIN-01"
     ]
    },
    {
@@ -4220,7 +4281,7 @@
    "text": "Nostalgia is emotional. Removing or replacing a loved product can draw angry posts, and a stand-in is judged against the original.",
    "item_ids": [
     "WSP-01",
-    "MOT-01"
+    "PAIN-01"
    ]
   },
   {
@@ -4228,8 +4289,8 @@
    "type": "risk",
    "text": "The evidence on many topics is thin, often one or two posts, and mostly comes from forums and video comments. Do not treat it as a full picture of Dutch snackers.",
    "item_ids": [
-    "MOT-07",
-    "MOT-06",
+    "PAIN-03",
+    "PAIN-02",
     "OBJ-06",
     "WSP-04"
    ]
@@ -5169,6 +5230,7 @@
     "frustration",
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5189,6 +5251,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5210,6 +5273,7 @@
     "nostalgia",
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5230,6 +5294,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5250,6 +5315,7 @@
    "emotion": [
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5270,6 +5336,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5291,6 +5358,7 @@
     "skepticism",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5312,6 +5380,7 @@
     "excitement",
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5330,6 +5399,7 @@
    "engagement_percentile": null,
    "author_hash": "275e65f23806d7f502a29f3c4d0719beaa5a5859588c2223f7dd06947bb243a3",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5348,6 +5418,7 @@
    "engagement_percentile": null,
    "author_hash": "3e3d72ccf3238ce2bbfee598de2d2e7b1155b674339e221e4e0f6067b6f18480",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5368,6 +5439,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5386,6 +5458,7 @@
    "engagement_percentile": null,
    "author_hash": "8cfa9404e237b728170662a95db8e79c6e5fa7be7f7ebe1b5bfea89827d8dd37",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5406,6 +5479,7 @@
    "emotion": [
     "indifference"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5426,6 +5500,7 @@
    "emotion": [
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5446,6 +5521,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5467,6 +5543,7 @@
     "pride",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5488,6 +5565,7 @@
     "pride",
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5509,6 +5587,7 @@
     "nostalgia",
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5529,6 +5608,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5550,6 +5630,7 @@
     "excitement",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5570,6 +5651,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5590,6 +5672,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5610,6 +5693,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5630,6 +5714,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5650,6 +5735,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5668,6 +5754,7 @@
    "engagement_percentile": null,
    "author_hash": "274d0c7cc0b1d73e7b11bcf7f6a698157d4ef78df964cc8563beb5efe9a16354",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5686,6 +5773,7 @@
    "engagement_percentile": null,
    "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5704,6 +5792,7 @@
    "engagement_percentile": 22.9,
    "author_hash": "b0cd50accc467f4017b11dc6260b2e547935e5bb0075a863289036abb771cfd5",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5724,6 +5813,7 @@
    "emotion": [
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5742,6 +5832,7 @@
    "engagement_percentile": null,
    "author_hash": "96a854d2b11291524fe894c9b4ee24b93910de20c7150883eb6869cbff64c47a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5763,6 +5854,7 @@
     "frustration",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5781,6 +5873,7 @@
    "engagement_percentile": null,
    "author_hash": "21ac618ae8f74d6bf65bb2bbcbad470810d5b4b382d09e3292959dc74ff85201",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5801,6 +5894,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5822,6 +5916,7 @@
     "humour",
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5842,6 +5937,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5862,6 +5958,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5880,6 +5977,7 @@
    "engagement_percentile": null,
    "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5898,6 +5996,7 @@
    "engagement_percentile": null,
    "author_hash": "b724abf612b85e0bbc3ca6ebfcb40f4e5eb4aa5dcfa2d791d7bbdb91c289d0ab",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5916,6 +6015,7 @@
    "engagement_percentile": null,
    "author_hash": "189126f1a303c82e1eec1c6f0099cd06d0e9bec8e94ee0bf98a1dfe64c5ab2f6",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5936,6 +6036,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5954,6 +6055,7 @@
    "engagement_percentile": null,
    "author_hash": "2bbe1ee376986b58718f2347b2fb6e95a1bcb62c9c85228307bb8ac2d408d59c",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5972,6 +6074,7 @@
    "engagement_percentile": null,
    "author_hash": "5803637c1e8bfce3168393173b32ef2ef9f7e446739c7b0eb0614eed928914ea",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -5990,6 +6093,7 @@
    "engagement_percentile": null,
    "author_hash": "a7c174613c4079317f815f8e15e689714731c47e6b08a36a124513c3ed9ccefa",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6010,6 +6114,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6028,6 +6133,7 @@
    "engagement_percentile": null,
    "author_hash": "62d1ae90634e7ff4922722ae43e2314746313f476c43fb239b66d1eb99993552",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6048,6 +6154,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6068,6 +6175,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6088,6 +6196,7 @@
    "emotion": [
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6108,6 +6217,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6126,6 +6236,7 @@
    "engagement_percentile": null,
    "author_hash": "16e207db1c730904a21791f9e2b0e9cf3bacea3d727c4425acb1cfe8822ed52b",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6146,6 +6257,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6166,6 +6278,7 @@
    "emotion": [
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6186,6 +6299,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6206,6 +6320,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6226,6 +6341,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6247,6 +6363,7 @@
     "aspiration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6267,6 +6384,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6285,6 +6403,7 @@
    "engagement_percentile": 35.7,
    "author_hash": "2b3925bc9a7033853df064de3b3b53c021000b4e29da1877be4e7d096a41af0e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6305,6 +6424,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6325,6 +6445,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6346,6 +6467,7 @@
     "frustration",
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6366,6 +6488,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6386,6 +6509,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6404,6 +6528,7 @@
    "engagement_percentile": 40.2,
    "author_hash": "3b52bf3b894bf16f4fd3e6d8336a70ff419586f11e1ca3d82d1f9a44c11201b4",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6422,6 +6547,7 @@
    "engagement_percentile": 35.7,
    "author_hash": "07dc9bbd3b69337d0a089edc4fea1d8f75d37684bc26fcc5d1c154c51405c163",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6442,6 +6568,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6462,6 +6589,7 @@
    "emotion": [
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6480,6 +6608,7 @@
    "engagement_percentile": null,
    "author_hash": "066723a61dab00d828ad177986e73e964b53d6d0143496df91fb0eb6b9b86445",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6500,6 +6629,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6520,6 +6650,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6541,6 +6672,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6562,6 +6694,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6582,6 +6715,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6602,6 +6736,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6620,6 +6755,7 @@
    "engagement_percentile": null,
    "author_hash": "591d394643956d171a1ce164b58b339304d5b565e3bb5ca75e3e83b62f6dcb91",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6640,6 +6776,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6660,6 +6797,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6680,6 +6818,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6700,6 +6839,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6720,6 +6860,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6738,6 +6879,7 @@
    "engagement_percentile": null,
    "author_hash": "2f6f664d57374b8ababc3d95541abb36669ddc2abb15120ae8fcc495f3cc885e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6759,6 +6901,7 @@
     "excitement",
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6777,6 +6920,7 @@
    "engagement_percentile": 39.5,
    "author_hash": "192fa13cddc22b6d0d6e304cb8aa510b92c2a60e44a1347f219c1efe9431640f",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6797,6 +6941,7 @@
    "emotion": [
     "indifference"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6817,6 +6962,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6835,6 +6981,7 @@
    "engagement_percentile": null,
    "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6856,6 +7003,7 @@
     "excitement",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6874,6 +7022,7 @@
    "engagement_percentile": null,
    "author_hash": "816744c5a128220de4bd516964af56bc317a3e1f804d944e190f94510779e69a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6892,6 +7041,7 @@
    "engagement_percentile": 93.8,
    "author_hash": "5e418ad657e1855b0a41424f0e0848c49dd0f8fb40f0da4f2e9361f957442e6b",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6912,6 +7062,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6933,6 +7084,7 @@
     "pride",
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6953,6 +7105,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6973,6 +7126,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6993,6 +7147,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7013,6 +7168,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   }
  ]

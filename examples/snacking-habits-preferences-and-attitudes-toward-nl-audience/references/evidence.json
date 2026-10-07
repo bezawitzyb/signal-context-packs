@@ -21,6 +21,7 @@
     "frustration",
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -41,6 +42,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -62,6 +64,7 @@
     "nostalgia",
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -82,6 +85,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -102,6 +106,7 @@
    "emotion": [
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -122,6 +127,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -143,6 +149,7 @@
     "skepticism",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -164,6 +171,7 @@
     "excitement",
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -182,6 +190,7 @@
    "engagement_percentile": null,
    "author_hash": "275e65f23806d7f502a29f3c4d0719beaa5a5859588c2223f7dd06947bb243a3",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -200,6 +209,7 @@
    "engagement_percentile": null,
    "author_hash": "3e3d72ccf3238ce2bbfee598de2d2e7b1155b674339e221e4e0f6067b6f18480",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -220,6 +230,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -238,6 +249,7 @@
    "engagement_percentile": null,
    "author_hash": "8cfa9404e237b728170662a95db8e79c6e5fa7be7f7ebe1b5bfea89827d8dd37",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -258,6 +270,7 @@
    "emotion": [
     "indifference"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -278,6 +291,7 @@
    "emotion": [
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -298,6 +312,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -319,6 +334,7 @@
     "pride",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -340,6 +356,7 @@
     "pride",
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -361,6 +378,7 @@
     "nostalgia",
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -381,6 +399,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -402,6 +421,7 @@
     "excitement",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -422,6 +442,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -442,6 +463,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -462,6 +484,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -482,6 +505,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -502,6 +526,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -520,6 +545,7 @@
    "engagement_percentile": null,
    "author_hash": "274d0c7cc0b1d73e7b11bcf7f6a698157d4ef78df964cc8563beb5efe9a16354",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -538,6 +564,7 @@
    "engagement_percentile": null,
    "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -556,6 +583,7 @@
    "engagement_percentile": 22.9,
    "author_hash": "b0cd50accc467f4017b11dc6260b2e547935e5bb0075a863289036abb771cfd5",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -576,6 +604,7 @@
    "emotion": [
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -594,6 +623,7 @@
    "engagement_percentile": null,
    "author_hash": "96a854d2b11291524fe894c9b4ee24b93910de20c7150883eb6869cbff64c47a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -615,6 +645,7 @@
     "frustration",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -633,6 +664,7 @@
    "engagement_percentile": null,
    "author_hash": "21ac618ae8f74d6bf65bb2bbcbad470810d5b4b382d09e3292959dc74ff85201",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -653,6 +685,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -674,6 +707,7 @@
     "humour",
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -694,6 +728,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -714,6 +749,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -732,6 +768,7 @@
    "engagement_percentile": null,
    "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -750,6 +787,7 @@
    "engagement_percentile": null,
    "author_hash": "b724abf612b85e0bbc3ca6ebfcb40f4e5eb4aa5dcfa2d791d7bbdb91c289d0ab",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -768,6 +806,7 @@
    "engagement_percentile": null,
    "author_hash": "189126f1a303c82e1eec1c6f0099cd06d0e9bec8e94ee0bf98a1dfe64c5ab2f6",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -788,6 +827,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -806,6 +846,7 @@
    "engagement_percentile": null,
    "author_hash": "2bbe1ee376986b58718f2347b2fb6e95a1bcb62c9c85228307bb8ac2d408d59c",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -824,6 +865,7 @@
    "engagement_percentile": null,
    "author_hash": "5803637c1e8bfce3168393173b32ef2ef9f7e446739c7b0eb0614eed928914ea",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -842,6 +884,7 @@
    "engagement_percentile": null,
    "author_hash": "a7c174613c4079317f815f8e15e689714731c47e6b08a36a124513c3ed9ccefa",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -862,6 +905,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -880,6 +924,7 @@
    "engagement_percentile": null,
    "author_hash": "62d1ae90634e7ff4922722ae43e2314746313f476c43fb239b66d1eb99993552",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -900,6 +945,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -920,6 +966,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -940,6 +987,7 @@
    "emotion": [
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -960,6 +1008,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -978,6 +1027,7 @@
    "engagement_percentile": null,
    "author_hash": "16e207db1c730904a21791f9e2b0e9cf3bacea3d727c4425acb1cfe8822ed52b",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -998,6 +1048,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1018,6 +1069,7 @@
    "emotion": [
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1038,6 +1090,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1058,6 +1111,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1078,6 +1132,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1099,6 +1154,7 @@
     "aspiration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1119,6 +1175,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1137,6 +1194,7 @@
    "engagement_percentile": 35.7,
    "author_hash": "2b3925bc9a7033853df064de3b3b53c021000b4e29da1877be4e7d096a41af0e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1157,6 +1215,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1177,6 +1236,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1198,6 +1258,7 @@
     "frustration",
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1218,6 +1279,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1238,6 +1300,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1256,6 +1319,7 @@
    "engagement_percentile": 40.2,
    "author_hash": "3b52bf3b894bf16f4fd3e6d8336a70ff419586f11e1ca3d82d1f9a44c11201b4",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1274,6 +1338,7 @@
    "engagement_percentile": 35.7,
    "author_hash": "07dc9bbd3b69337d0a089edc4fea1d8f75d37684bc26fcc5d1c154c51405c163",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1294,6 +1359,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1314,6 +1380,7 @@
    "emotion": [
     "humour"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1332,6 +1399,7 @@
    "engagement_percentile": null,
    "author_hash": "066723a61dab00d828ad177986e73e964b53d6d0143496df91fb0eb6b9b86445",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1352,6 +1420,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1372,6 +1441,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1393,6 +1463,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1414,6 +1485,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1434,6 +1506,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1454,6 +1527,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1472,6 +1546,7 @@
    "engagement_percentile": null,
    "author_hash": "591d394643956d171a1ce164b58b339304d5b565e3bb5ca75e3e83b62f6dcb91",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1492,6 +1567,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1512,6 +1588,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1532,6 +1609,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1552,6 +1630,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1572,6 +1651,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1590,6 +1670,7 @@
    "engagement_percentile": null,
    "author_hash": "2f6f664d57374b8ababc3d95541abb36669ddc2abb15120ae8fcc495f3cc885e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1611,6 +1692,7 @@
     "excitement",
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1629,6 +1711,7 @@
    "engagement_percentile": 39.5,
    "author_hash": "192fa13cddc22b6d0d6e304cb8aa510b92c2a60e44a1347f219c1efe9431640f",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1649,6 +1732,7 @@
    "emotion": [
     "indifference"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1669,6 +1753,7 @@
    "emotion": [
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1687,6 +1772,7 @@
    "engagement_percentile": null,
    "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1708,6 +1794,7 @@
     "excitement",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1726,6 +1813,7 @@
    "engagement_percentile": null,
    "author_hash": "816744c5a128220de4bd516964af56bc317a3e1f804d944e190f94510779e69a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1744,6 +1832,7 @@
    "engagement_percentile": 93.8,
    "author_hash": "5e418ad657e1855b0a41424f0e0848c49dd0f8fb40f0da4f2e9361f957442e6b",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1764,6 +1853,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1785,6 +1875,7 @@
     "pride",
     "nostalgia"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1805,6 +1896,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1825,6 +1917,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1845,6 +1938,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1865,6 +1959,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   }
  ]

@@ -1,7 +1,7 @@
 // Generic, schema-driven blocks so most pack sections need no bespoke code (guide Step 4.1).
 import type { ReactNode } from "react";
 import type { Evidence, InsightLike } from "../lib/api";
-import { ClaimCard, usePack } from "./cards";
+import { ClaimCard, usePack, LinkChips } from "./cards";
 import { Quote } from "./Quote";
 
 export type Filter = "all" | "observed" | "strong";
@@ -24,18 +24,42 @@ export function SectionTitle({ id, title, note, level = 2 }: { id?: string; titl
 }
 
 /** Any list of claim-like items, filtered (All / Observed only / Strong only). */
-export function ItemSection<T extends InsightLike>({ id, title, items, filter = "all", titleKey, empty, columns = 2, level = 2 }: {
+export interface SectionNotes { so_what?: string; empty_reason?: string; next_steps?: string[]; see_also?: string[] }
+
+/** V4: the section's so-what line and its "also relevant" links. */
+export function SectionLead({ meta }: { meta?: SectionNotes }) {
+  if (!meta?.so_what && !meta?.see_also?.length) return null;
+  return (
+    <div className="mb-3 space-y-1">
+      {meta.so_what && <p className="text-sm text-ink-2"><span className="font-medium text-ink">So what:</span> {meta.so_what}</p>}
+      {meta.see_also?.length ? <LinkChips links={meta.see_also.map((id) => ({ id, kind: "related" }))} /> : null}
+    </div>
+  );
+}
+
+/** V4: an empty section says why, in plain words, and what to try next. */
+export function EmptyNote({ meta, fallback }: { meta?: SectionNotes; fallback: string }) {
+  return (
+    <div className="rounded-lg border border-dashed border-line-strong p-4 text-sm text-ink-2">
+      <p>{meta?.empty_reason || fallback}</p>
+      {meta?.next_steps?.length ? <p className="mt-1 text-ink-3">Try: {meta.next_steps.join(" · ")}</p> : null}
+    </div>
+  );
+}
+
+export function ItemSection<T extends InsightLike>({ id, title, items, filter = "all", titleKey, empty, columns = 2, level = 2, meta }: {
   id?: string; title: string; items: T[]; filter?: Filter; titleKey?: keyof T; empty?: string; columns?: 1 | 2; level?: 2 | 3;
+  meta?: SectionNotes;
 }) {
   const shown = applyFilter(items, filter);
   return (
     <section aria-labelledby={id} className="mb-10">
       <SectionTitle id={id} title={title} level={level}
                     note={filter !== "all" && items.length ? `${shown.length} of ${items.length} shown` : undefined} />
+      <SectionLead meta={meta} />
       {shown.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-line-strong p-4 text-sm text-ink-3">
-          {items.length ? "Nothing matches this filter." : empty ?? "None found in this evidence."}
-        </p>
+        items.length ? <p className="rounded-lg border border-dashed border-line-strong p-4 text-sm text-ink-3">Nothing matches this filter.</p>
+          : <EmptyNote meta={meta} fallback={empty ?? "None found in this evidence."} />
       ) : (
         <div className={`grid gap-3 ${columns === 2 ? "md:grid-cols-2" : ""}`}>
           {shown.map((it) => (

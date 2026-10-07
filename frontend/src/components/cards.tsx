@@ -10,7 +10,29 @@ import { Quote } from "./Quote";
 export const PackContext = createContext<{
   evidence: Record<string, Evidence>;
   onOpen?: (itemId: string) => void;
+  claims?: Record<string, string>;   // item id -> claim, for linked chips (V4)
 }>({ evidence: {} });
+
+const LINK: Record<string, string> = { comes_from: "comes from", blocks: "blocks", related: "see also" };
+
+/** V4: connected items in other sections as small chips - never a restated paragraph. */
+export function LinkChips({ links }: { links: { id: string; kind?: string }[] }) {
+  const { claims = {}, onOpen } = usePack();
+  const shown = links.filter((l) => claims[l.id]);
+  if (!shown.length) return null;
+  return (
+    <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Connected findings">
+      {shown.map((l) => (
+        <li key={l.id}>
+          <button type="button" onClick={() => onOpen?.(l.id)} title={claims[l.id]}
+                  className="max-w-full truncate rounded-full border border-line px-2.5 py-0.5 text-left text-xs text-ink-2 hover:border-ink hover:text-ink">
+            <span className="text-ink-3">{LINK[l.kind ?? "related"] ?? "see also"}:</span> {claims[l.id].length > 60 ? claims[l.id].slice(0, 58) + "…" : claims[l.id]}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function usePack() {
   return useContext(PackContext);
@@ -71,6 +93,7 @@ export function ClaimCard({ item, title, maxQuotes = 1 }: { item: InsightLike; t
           <Quote text={q.text} evidence={evidence[q.evidence_id]} size="sm" />
         </div>
       ))}
+      <LinkChips links={item.relations ?? []} />
     </article>
   );
 }
@@ -102,6 +125,7 @@ export function TensionCard({ item }: { item: InsightLike & { want: Side; but: S
         </div>
       </div>
       <div className="mt-3"><Meta item={item} /></div>
+      <LinkChips links={item.relations ?? []} />
     </article>
   );
 }

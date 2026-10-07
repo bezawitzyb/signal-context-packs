@@ -4,7 +4,7 @@ Drafts written by AI from the research. Review before use; items marked CHECK WI
 - College student mealprep for the week: every dish, every recipe, and exactly what I spent. (HOOK-01; builds on TEN-01, PHR-02, CUL-02, PERF-04)
 - I made a double batch, froze half, and now future me doesn't have to cook. Frozen anything is my whole personality. (HOOK-02; builds on TEN-01, THM-02, LEX-08, CUL-01)
 - Tired of eating the same leftovers? Prep ingredients, not whole meals, and switch it up all week. (HOOK-03; builds on TEN-02, THM-09, SEG-03, PHR-01)
-- Reheating took so long that meal prep felt pointless. Microwave or air fryer, and I'm on a budget? (HOOK-04; builds on TEN-01, MOT-03, THM-06, PERF-08)
+- Reheating took so long that meal prep felt pointless. Microwave or air fryer, and I'm on a budget? (HOOK-04; builds on TEN-01, PAIN-02, THM-06, PERF-08)
 - I don't want to spend my whole weekend in the kitchen, so Sunday prep day is just ingredients and components. (HOOK-05; builds on TEN-01, LEX-01, THM-09, OBJ-04, THM-07)
 - Can you freeze enchiladas? And how do you reheat them without ruining them? (HOOK-06; builds on TEN-02, WSP-01, OPP-01)
 - Decision fatigue at dinner is real. Here's what I prepped so I don't have to choose. (HOOK-07; builds on TEN-02, LEX-04, MOT-04)

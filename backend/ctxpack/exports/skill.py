@@ -133,6 +133,7 @@ def references(pack: dict) -> dict[str, str]:
     tensions = ["# Tensions and motivations", note, ""]
     tensions += _items(pack["tensions"], lambda t: [f"- Want: {inline(t['want']['text'])}",
                                                     f"- But: {inline(t['but']['text'])}"])
+    tensions += ["# Pain points (what gets in their way)", ""] + _items(pack.get("pain_points", []))
     tensions += ["# Motivations", ""] + _items(pack["motivations"], lambda m: [f"- Kind: {m['kind']}"])
 
     handling = {h["objection_id"]: h["response"] for h in pb["objection_handling"]}

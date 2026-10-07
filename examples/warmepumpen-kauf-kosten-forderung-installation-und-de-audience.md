@@ -93,6 +93,12 @@
 - Treating all Altbau as the same: posters say each building is individual
 - Hype without numbers
 
+## Pain points
+
+- I want less paperwork; pre-filled forms would even be a reason to buy. *[PAIN-01; emerging, 3 of 101 posts, observed]*
+  > Es wäre gut wenn die Anbieter die Formulare für ihre Anlage gleich vor ausgefüllt mit beilegen. (EV-0057)
+- *Also seen (weaker evidence, speculative):* I'm afraid a heat pump won't keep my rooms properly warm. [PAIN-02]
+
 ## Tensions and motivations
 
 - **Owners of old houses want to replace the old heating with a heat pump, but poor insulation and radiators leave efficiency and cost uncertain.** *[TEN-01; emerging, 5 of 101 posts, inferred]*
@@ -111,10 +117,6 @@
   > Einer der wichtigsten Parameter, die den Stromverbrauch beeinflussen, dürfte tatsächlich die Heizkurve sein. (EV-0026)
 - I want offers that are itemised and comparable, not one big lump sum. *[MOT-04; emerging, 3 of 101 posts, observed]*
   > In zwei Angeboten gibt es nur einen großen Pauschalposten (EV-0020)
-**Pains**
-- I want less paperwork; pre-filled forms would even be a reason to buy. *[MOT-05; emerging, 3 of 101 posts, observed]*
-  > Es wäre gut wenn die Anbieter die Formulare für ihre Anlage gleich vor ausgefüllt mit beilegen. (EV-0057)
-- *Also seen (weaker evidence, speculative):* I'm afraid a heat pump won't keep my rooms properly warm. [MOT-06]
 **Jobs**
 - I want to get away from oil and gas because their prices keep jumping. *[MOT-03; emerging, 5 of 101 posts, observed]*
   > Ob er jemals wieder auf 1.20 oder drunter sinkt wissen die Götter (EV-0054)
@@ -235,9 +237,9 @@
 - Dauert es ja ewig, bis sich die Anlage amortisiert hat? Ich rechne es mit meinem alten Gasverbrauch vor, auch den Fall, in dem es sich nicht lohnt. *[HOOK-07; TEN-01, THM-03, PHR-02, OBJ-01, OPP-01]* **[check with legal: finance, CMP-03]**
 - Stromtarif 50 ct/kWh, unverschämt teuer, ja. Was kostet dann bei meiner JAZ eine kWh Wärme? Rechnung im Video. *[HOOK-08; TEN-02, THM-06, PHR-03, LEX-03, OBJ-05]* **[check with legal: energy_environmental, CMP-04]**
 - Ein Angebot, eine Summe, null Aufschlüsselung. So teile ich ein WP-Angebot in Gerät, Montage und Extras auf, damit ihr vergleichen könnt. *[HOOK-09; TEN-01, THM-08, MOT-04, OPP-03, PERF-10]*
-- KfW Ablauf, Schritt für Schritt. Und die Stellen, an denen selbst Bank und Heizungsbauer ins Schwimmen kommen. *[HOOK-10; TEN-01, THM-04, MOT-05, BRD-01, LEX-02]* **[check with legal: finance, CMP-05]**
+- KfW Ablauf, Schritt für Schritt. Und die Stellen, an denen selbst Bank und Heizungsbauer ins Schwimmen kommen. *[HOOK-10; TEN-01, THM-04, PAIN-01, BRD-01, LEX-02]* **[check with legal: finance, CMP-05]**
 - Muss ich schon im Haus wohnen, um den Geschwindigkeitsbonus zu bekommen? Genau hier sehe ich bei vielen Unsicherheit. *[HOOK-11; TEN-01, WSP-02, LEX-15, OPP-05]* **[check with legal: finance, CMP-06]**
-- Springt bei Kälte der Heizstab an? Ich zeige die kältesten Tage und was der Zähler dazu sagt. *[HOOK-12; TEN-01, OBJ-06, MOM-02, LEX-04, MOT-06]*
+- Springt bei Kälte der Heizstab an? Ich zeige die kältesten Tage und was der Zähler dazu sagt. *[HOOK-12; TEN-01, OBJ-06, MOM-02, LEX-04, PAIN-02]*
 - Erstes Heizjahr, erste Rechnung. Mein Verbrauch in kWh, aber ist das normal? Wer hat Vergleichswerte für ähnliche Fläche und Haustyp? *[HOOK-13; TEN-01, WSP-01, OPP-04, MOM-03, SEG-03]*
 - Das Dach liefert im Sommer Überschuss, die WP braucht ihn im Winter. Wer hat das gelöst, oder war es nur eine hübsche Excel-Tabelle? *[HOOK-14; TEN-02, WSP-03, SEG-02, THM-01]*
 
@@ -301,6 +303,16 @@
 ## Method
 
 Collected 372, duplicates 1, spam 5, out of window 58, kept 308 (undated 13), relevant 101. Research moves: 11, finished by finish; more evidence was collected from sources already working.
+
+**Hypotheses from the plan**
+
+| Hypothesis | Result | Why |
+|---|---|---|
+| Die größte Hürde für Hausbesitzer sind Unsicherheit über Gesamtkosten und Förderung (BEG, KfW), nicht die Technik selbst. [HYP-01] | inconclusive | Cost and funding uncertainty appear clearly (lump-sum quotes, KfW process, occupancy rules, upfront payment), but technical doubts about old buildings, cold weather and tuning are just as present, so cost is not shown to be the biggest hurdle. |
+| Besitzer von Altbauten zweifeln, ob eine Wärmepumpe ohne Dämmung oder Fußbodenheizung effizient genug läuft (Vorlauftemperatur, JAZ). [HYP-02] | supported | Old-house owners explicitly doubt efficiency and comfort without insulation or underfloor heating, though some operators report good results at flow temperatures around 55 °C. |
+| Politische Debatte um das Gebäudeenergiegesetz („Heizungsgesetz“) hat Misstrauen erzeugt; viele sehen den Umstieg als aufgezwungen. [HYP-03] | supported | Several comments frame the heat pump as driven by politics, subsidies and CO² pricing rather than economics. |
+| Erfahrungsberichte von Nachbarn und Betreibern (Stromverbrauch, Lautstärke) überzeugen mehr als Herstellerwerbung. [HYP-04] | inconclusive | Operators share their own consumption figures and these are discussed seriously, but no post compares them with manufacturer advertising or mentions noise, so the claim isn't tested. |
+| Die Handwerker- und Installateursuche (lange Wartezeiten, unseriöse Angebote) ist ein zentraler Frust-Punkt im Entscheidungsprozess. [HYP-05] | inconclusive | Distrust of providers and of quotes appears, and one poster can't find a good consultant, but no post mentions waiting times for installers. |
 
 **Sources used:**
 - youtube:search:wärmepumpe erfahrungsbericht 1 jahr kosten (youtube): 33 kept, 61% relevant - Hohe Relevanz (61 %): Betreiberzahlen, Hersteller und Kosten.

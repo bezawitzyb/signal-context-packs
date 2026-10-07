@@ -328,6 +328,37 @@ Definition:
   Digest             <= 500-token view for agents
   MCP + REST         Programmatic access
 
+6.1b Condensed content (change V4, schema 1.1)
+  Every section has one job, and every insight appears ONCE, in the
+  section whose job fits it best; elsewhere it is a link, never a
+  restated paragraph.
+    Themes          what people talk about and how they frame it
+    Pain points     what gets in their way (pain_points[], PAIN-xx; the
+                    pains that used to sit among motivations)
+    Tensions        where people feel torn (two sides, both shown)
+    Objections      why they would say no to a product like this, with a
+                    counter-angle (inferred; tailored to intake.offer, or
+                    "adapt to your offer")
+    Motivations     what they want to achieve (needs and jobs)
+    Landscape       how the conversation differs by place and over time
+                    (platform lens; "what's new" folded in) - never a
+                    re-statement of themes
+    What performs   leads with 1-3 takeaways (a concrete recommendation
+                    and why); the example posts sit underneath
+  After writing, a consolidation step (code similarity of the claims and
+  their evidence first, then one small model call only for borderline
+  pairs) finds items in different sections that state the same finding:
+  the one in the best-fitting section stays, absorbs the other's
+  evidence, and the other section links to it (sections_meta.see_also).
+  Items link to connected items in other sections from shared evidence
+  (relations[]: comes_from, blocks, related - e.g. an objection shows the
+  pain behind it and the motivation it blocks as small chips). Every
+  section opens with a one-line so_what tied to brief.intake.goal (or the
+  intent). Hypotheses move to Method (a table: supported / refuted /
+  inconclusive); moments become timing on channel cards (V7). An empty
+  section never appears blank: sections_meta gives empty_reason in plain
+  words and 1-2 next steps. Item counts stay the same or go down.
+
 6.2 Top-level JSON sections
   schema_version, pack_id, generated_at, mode (quick | standard)
   brief              raw text + interpreted {topic, markets[] (1.1; market

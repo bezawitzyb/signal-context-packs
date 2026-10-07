@@ -65,3 +65,16 @@ metrics:
     a: {min_platforms: 4, min_kept: 300, all_languages: true}
     b: {min_platforms: 3, min_kept: 200, all_languages: false}   # b and c: not in the guide (owner to confirm)
     c: {min_platforms: 2, min_kept: 100, all_languages: false}
+
+# Consolidation (change V4, PRD 6.1b): every finding once, in the section whose job fits it best.
+# Score = 0.6 x claim-word overlap + 0.4 x shared evidence (calibrated on the NL and Gen Z drafts:
+# true repeats scored 0.88-1.0; related-but-different findings 0.2-0.5).
+consolidation:
+  text_weight: 0.6
+  merge_at: 0.75              # at or above: the same finding, merged in code
+  borderline_from: 0.35       # from here up to merge_at: one small model call decides
+  borderline_max_pairs: 30    # at most this many pairs go to the model (highest scores first)
+  relation_min_shared_docs: 1 # items in other sections sharing at least this many posts are linked
+  relations_max: 3            # links per item
+  # The section that keeps a repeated finding: the most specific job first.
+  home_order: [tensions, objections, pain_points, white_space, motivations, themes]

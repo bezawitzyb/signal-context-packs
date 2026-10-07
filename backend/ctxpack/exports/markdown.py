@@ -15,6 +15,34 @@ def _quotes(item: dict, limit: int = 1) -> list[str]:
     return [f"  > {inline(q['text'])} ({q['evidence_id']})" for q in item.get("quotes", [])[:limit]]
 
 
+_LINK = {"comes_from": "comes from", "blocks": "blocks", "related": "related"}
+_INDEX: dict[str, str] = {}   # item id -> short claim, set per export (links show text, not bare ids)
+
+
+def _links(it: dict) -> list[str]:
+    """V4: connected items in other sections as one short line - never a restated paragraph."""
+    rel = [r for r in it.get("relations", []) if r["id"] in _INDEX]
+    if not rel:
+        return []
+    return ["  - *" + "; ".join(f"{_LINK.get(r['kind'], 'related')}: {_INDEX[r['id']]} [{r['id']}]" for r in rel)
+            + "*"]
+
+
+def _meta(pack: dict, name: str) -> list[str]:
+    """V4: the section's so-what line, its "also relevant" links, and why it is empty when it is."""
+    m = (pack.get("sections_meta") or {}).get(name) or {}
+    out = []
+    if m.get("so_what"):
+        out.append(f"*So what: {inline(m['so_what'])}*")
+    if m.get("see_also"):
+        out.append("*Also relevant (in another section): " + "; ".join(
+            f"{_INDEX.get(i, i)} [{i}]" for i in m["see_also"]) + "*")
+    if m.get("empty_reason"):
+        out.append(f"- {inline(m['empty_reason'])}" + (" Next: " + "; ".join(m["next_steps"]) + "."
+                                                        if m.get("next_steps") else ""))
+    return out
+
+
 def _claims(items: list[dict], title_key: str | None = None) -> list[str]:
     """Items with emerging or better in full (one quote each); speculative ones on one line.
     Every item, quote and number stays in context_pack.json."""
@@ -26,6 +54,7 @@ def _claims(items: list[dict], title_key: str | None = None) -> list[str]:
         title = f"**{inline(it[title_key])}** - " if title_key and it.get(title_key) else ""
         out.append(f"- {title}{inline(it['claim'])} *[{it['id']}; {badge(it)}]*")
         out += _quotes(it)
+        out += _links(it)
     if weak:
         out.append("- *Also seen (weaker evidence, speculative):* "
                    + "; ".join(f"{inline(it.get(title_key) or it['claim']) if title_key else inline(it['claim'])} "
@@ -34,6 +63,10 @@ def _claims(items: list[dict], title_key: str | None = None) -> list[str]:
 
 
 def to_markdown(pack: dict) -> str:
+    _INDEX.clear()
+    for name in ("pain_points", "tensions", "motivations", "objections", "segments", "white_space", "moments"):
+        _INDEX.update({it["id"]: inline(it["claim"])[:90] for it in pack.get(name, [])})
+    _INDEX.update({it["id"]: inline(it["claim"])[:90] for it in pack["landscape"]["themes"]})
     b = pack["brief"]
     i = b["interpreted"]
     snap = pack["snapshot"]
@@ -109,7 +142,13 @@ def to_markdown(pack: dict) -> str:
     add("\n**Not this:**")
     L += [f"- {inline(s)}" for s in g["not_this"]] or ["- -"]
 
+    add("\n## Pain points\n")
+    L += _meta(pack, "pain_points")
+    if pack.get("pain_points"):
+        L += _claims(pack["pain_points"])
+
     add("\n## Tensions and motivations\n")
+    L += _meta(pack, "tensions")
     for t in pack["tensions"]:
         add(f"- **{inline(t['claim'])}** *[{t['id']}; {badge(t)}]*")
         add(f"  - Want: {inline(t['want']['text'])} ({', '.join(t['want']['evidence_ids'])})")
@@ -118,16 +157,20 @@ def to_markdown(pack: dict) -> str:
     if not pack["tensions"]:
         add("- None found.")
     add("")
-    for kind in ("need", "pain", "job"):
+    L += _meta(pack, "motivations")
+    for kind in ("need", "pain", "job"):  # pains: pain_points since 1.1 (kept here for older packs)
         items = [m for m in pack["motivations"] if m["kind"] == kind]
         if items:
             add(f"**{kind.capitalize()}s**")
             L += _claims(items)
 
     add("\n## Segments\n")
-    L += _claims(pack["segments"], "name")
+    L += _meta(pack, "segments")
+    if pack["segments"] or not (pack.get("sections_meta") or {}).get("segments", {}).get("empty_reason"):
+        L += _claims(pack["segments"], "name")
 
     add("\n## Objections and competitors\n")
+    L += _meta(pack, "objections")
     L += _claims(pack["objections"])
     handling = {h["objection_id"]: h["response"] for h in pb["objection_handling"]}
     if handling:
@@ -141,7 +184,11 @@ def to_markdown(pack: dict) -> str:
                 f"{cell(', '.join(c['praised']))} | {cell(', '.join(c['mocked']))} |")
 
     add("\n## Landscape and platform lens\n")
+    L += _meta(pack, "themes")
     L += _claims(pack["landscape"]["themes"], "label")
+    if pack["landscape"].get("whats_new"):
+        add("\n**New in the last 30 days**")
+        L += _claims(pack["landscape"]["whats_new"])
     for lens in pack["landscape"]["platform_lens"]:
         add(f"\n**{lens['platform']}** ({lens['kept_posts']} posts) [{lens['id']}]: {inline(lens['tone'])} "
             f"What is unique: {inline(lens['what_is_unique'])}")
@@ -151,6 +198,12 @@ def to_markdown(pack: dict) -> str:
         L += _claims(culture, "name")
 
     add("\n## What performs\n")
+    L += _meta(pack, "what_performs")
+    for t in pack.get("performance_takeaways", []):
+        add(f"- **{inline(t['takeaway'])}** {inline(t['why'])} *(inferred)* [{t['id']}"
+            + (f"; {', '.join(t['post_ids'])}" if t["post_ids"] else "") + "]")
+    if pack.get("performance_takeaways"):
+        add("\n*Example posts:*")
     L += [f"- {p['platform']} {inline(p['format'])} (engagement percentile {p['engagement_percentile']:.0f}): "
           f"{inline(p['why_it_worked'])} *(inferred)* [{p['id']}, {p['evidence_id']}]" for p in pack["what_performs"]] \
         or ["- No engagement data in this pack."]
@@ -159,6 +212,7 @@ def to_markdown(pack: dict) -> str:
     L += _claims(pack["moments"], "name")
 
     add("\n## White space and opportunities\n")
+    L += _meta(pack, "white_space")
     L += _claims(pack["white_space"])
     add("")
     for o in pack["opportunities"]:
@@ -213,6 +267,12 @@ def to_markdown(pack: dict) -> str:
     for spot in pack["blind_spots"]:
         if spot["text"].startswith("Partial pack:"):
             add(f"\n**{inline(spot['text'])}**")
+    if pack.get("hypotheses"):
+        add("\n**Hypotheses from the plan**\n")
+        add("| Hypothesis | Result | Why |")
+        add("|---|---|---|")
+        for h in pack["hypotheses"]:
+            add(f"| {cell(h['statement'])} [{h['id']}] | {h['status']} | {cell(h['why'])} |")
     add("\n**Sources used:**")
     L += [f"- {s['source_unit']} ({s['platform']}): {s['kept']} kept, {s['relevant_share']:.0%} relevant - "
           f"{inline(s['reason'])}" for s in cov["sources_used"][:6]] or ["- -"]

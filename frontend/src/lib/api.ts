@@ -36,6 +36,7 @@ export interface InsightLike {
   quotes?: { evidence_id: string; text: string }[];
   segment_ids?: string[];
   related_ids?: string[];
+  relations?: { id: string; kind: "comes_from" | "blocks" | "related" }[];
 }
 
 export interface FeaturedPack {

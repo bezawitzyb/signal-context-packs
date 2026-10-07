@@ -49,7 +49,17 @@
     "time_window_days"
    ]
   },
-  "brand_voice": null
+  "brand_voice": null,
+  "intake": {
+   "audience_roles": [],
+   "goal": null,
+   "offer": null,
+   "channels_in_use": [],
+   "competitors_user": [],
+   "timeframe": null,
+   "other_answers": [],
+   "questions_asked": []
+  }
  },
  "digest": "Context Pack: Wärmepumpen: Kauf, Kosten, Förderung, Installation und Erfahrungen bei Hausbesitzern (DE, Hausbesitzer in Deutschland (ca. 35-65 Jahre), Eigentümer von Ein- und Zweifamilienhäusern, die Heizungstausch oder Neubau erwägen oder bereits eine Wärmepumpe betreiben). Coverage grade a; 101 relevant posts. Thin evidence.\nFive truths: [THM-01] I wonder whether PV and storage really help a heat pump, since solar is weakest in winter when heat is needed. [MOT-02] I want help setting the heating curve and flow temperature correctly. [MOT-01] I want honest numbers on what the heat pump really uses and costs compared to my old heating. [TEN-02] People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most. [MOM-01] After a year we look at the first annual electricity bill and compare it with gas.\nDo first: [DO-01] Publish a YouTube video titled along the lines of 'Wärmepumpe nach 1 Jahr: meine echte Rechnung gegen die Gas-Abrechnung'. Show annual kWh and euro for the heat pump next to the baseline gas year, including the unflattering lines, and state house type and Vorlauftemperatur. [DO-02] Post a Reddit thread in a German heat pump or home-owner community that follows the house-data format: year built, current heating, windows, insulation, radiators vs FBH, Heizlast estimate, real consumption. Ask 'Reicht eine WP hier, und bei welcher VL Temperatur?' and answer every reply with numbers. [DO-03] Film a short TikTok that shows how to check and adjust Heizkurve and Vorlauftemperatur after commissioning, using a handover checklist for the Heizungsbauer as the on-screen prop. Name one common fault and its cause in a few lines.\nTensions: [TEN-01] Owners of old houses want to replace the old heating with a heat pump, but poor insulation and radiators leave efficiency and cost uncertain. [TEN-02] People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most.\nTheir…",
  "snapshot": {
@@ -247,6 +257,7 @@
      "SEG-02"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Does solar plus storage make a heat pump pay off?",
     "emotion_mix": [
@@ -312,6 +323,7 @@
      "SEG-01"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Does a heat pump even work in my old, poorly insulated house?",
     "emotion_mix": [
@@ -377,6 +389,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Will it ever pay back against my gas or oil heating?",
     "emotion_mix": [
@@ -448,6 +461,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Subsidy rules are confusing and funding comes late",
     "emotion_mix": [
@@ -515,6 +529,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Finding a trustworthy installer or consultant is hard",
     "emotion_mix": [
@@ -581,6 +596,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "High electricity prices eat the savings",
     "emotion_mix": [
@@ -649,6 +665,7 @@
      "SEG-03"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "My installer just put it in and left me to tune it",
     "emotion_mix": [
@@ -710,6 +727,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "The price tag feels far too high and opaque",
     "emotion_mix": [
@@ -776,6 +794,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Getting the heat pump size right",
     "emotion_mix": [
@@ -844,6 +863,7 @@
      "SEG-03"
     ],
     "related_ids": [],
+    "relations": [],
     "type": "theme",
     "label": "Real-world proof from happy owners",
     "emotion_mix": [
@@ -1093,6 +1113,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "WP",
     "meaning": "Wärmepumpe (heat pump)",
@@ -1141,6 +1162,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Heizungsbauer",
     "meaning": "heating installer",
@@ -1194,6 +1216,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "JAZ",
     "meaning": "Jahresarbeitszahl, the annual efficiency of the heat pump",
@@ -1242,6 +1265,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Heizstab",
     "meaning": "electric heating rod used as backup",
@@ -1289,6 +1313,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Heizlast",
     "meaning": "heating load used for sizing",
@@ -1335,6 +1360,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Mikroblasenabscheider",
     "meaning": "microbubble separator",
@@ -1378,6 +1404,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "VL Temperatur",
     "meaning": "Vorlauftemperatur, flow temperature",
@@ -1423,6 +1450,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Vorlauftemperatur",
     "meaning": "flow temperature of the heating water",
@@ -1468,6 +1496,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Schorni",
     "meaning": "colloquial for chimney sweep (Schornsteinfeger)",
@@ -1513,6 +1542,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Stromfresser",
     "meaning": "power guzzler, a myth label for heat pumps",
@@ -1559,6 +1589,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Stromheizungen",
     "meaning": "electric heaters, a critical label for heat pumps",
@@ -1604,6 +1635,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "LWWP",
     "meaning": "Luft-Wasser-Wärmepumpe (air-to-water heat pump)",
@@ -1649,6 +1681,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "FBH",
     "meaning": "Fußbodenheizung (underfloor heating)",
@@ -1694,6 +1727,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Eigenleistung",
     "meaning": "owner's own labour",
@@ -1739,6 +1773,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Geschwindigkeitsbonus",
     "meaning": "speed bonus in the subsidy",
@@ -1786,6 +1821,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "lexicon",
     "term": "Kernsanierung",
     "meaning": "complete core renovation",
@@ -1840,6 +1876,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "phrase",
     "text": "Zeige mir einen Altbau mit Wärmepumpe",
     "language": "de"
@@ -1890,6 +1927,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "phrase",
     "text": "dauert es ja ewig bis sich die Anlage amortisiert hat",
     "language": "de"
@@ -1940,6 +1978,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "phrase",
     "text": "unverschämt teure Stromtarif von 50 ct/kWh",
     "language": "de"
@@ -1990,6 +2029,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "phrase",
     "text": "die Einstellung vom Fachbetrieb, naja",
     "language": "de"
@@ -2041,6 +2081,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "phrase",
     "text": "Wärmepumpe nach 1 Jahr",
     "language": "de"
@@ -2116,6 +2157,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "segment",
    "name": "Old-house owners weighing a switch",
    "description": "Owners of older single-family houses (for example built 1965, 1978 or earlier) with oil or gas heating who share house data and ask whether a heat pump or another option fits."
@@ -2168,6 +2210,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "segment",
    "name": "PV-first energy-independence builders",
    "description": "Owners who plan or run PV, battery, heat pump and other loads together and talk about inverters, module layout and independence from the grid."
@@ -2216,6 +2259,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "segment",
    "name": "Operators tuning and checking results",
    "description": "Existing heat pump owners who report JAZ and energy use against their former gas consumption."
@@ -2277,6 +2321,7 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "tension",
    "want": {
     "text": "Wir wollen aktuell in die Planung für den Umstieg von Gasheizung auf Wärmepumpe zu machen.",
@@ -2347,6 +2392,7 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "tension",
    "want": {
     "text": "PV + WP kosten einen Bruchteil und sind damit wirtschaftlicher.",
@@ -2361,6 +2407,111 @@
      "EV-0002"
     ]
    }
+  }
+ ],
+ "pain_points": [
+  {
+   "id": "PAIN-01",
+   "claim": "I want less paperwork; pre-filled forms would even be a reason to buy.",
+   "summary_for_humans": "Funding forms and who handles which task burden buyers; help with them is seen as a purchase argument.",
+   "cluster_id": "CL-17",
+   "counts": {
+    "matching": 3,
+    "of_total": 101
+   },
+   "confidence": {
+    "score": 0.45,
+    "label": "emerging"
+   },
+   "claim_type": "observed",
+   "safe_to_assert": false,
+   "non_obvious": true,
+   "strength": {
+    "evidence_count": 3,
+    "distinct_authors": 3,
+    "platforms": [
+     "reddit",
+     "youtube"
+    ],
+    "engagement_percentile_median": 30.3
+   },
+   "emotion": [
+    "anxiety",
+    "frustration"
+   ],
+   "trend": "insufficient_data",
+   "recency": "2026-09",
+   "evidence_ids": [
+    "EV-0057",
+    "EV-0016",
+    "EV-0058"
+   ],
+   "quotes": [
+    {
+     "evidence_id": "EV-0057",
+     "text": "Es wäre gut wenn die Anbieter die Formulare für ihre Anlage gleich vor ausgefüllt mit beilegen."
+    },
+    {
+     "evidence_id": "EV-0016",
+     "text": "Muss die Tankentsorgung Teil des Angebots des Heizungsbauers sein?"
+    }
+   ],
+   "segment_ids": [],
+   "related_ids": [],
+   "relations": [],
+   "type": "pain_point"
+  },
+  {
+   "id": "PAIN-02",
+   "claim": "I'm afraid a heat pump won't keep my rooms properly warm.",
+   "summary_for_humans": "Comfort worries show up as fear of cold living rooms, especially in older houses.",
+   "cluster_id": "CL-12",
+   "counts": {
+    "matching": 2,
+    "of_total": 101
+   },
+   "confidence": {
+    "score": 0.17,
+    "label": "speculative"
+   },
+   "claim_type": "inferred",
+   "safe_to_assert": false,
+   "non_obvious": false,
+   "strength": {
+    "evidence_count": 2,
+    "distinct_authors": 2,
+    "platforms": [
+     "youtube"
+    ],
+    "engagement_percentile_median": 29.6
+   },
+   "emotion": [
+    "anxiety",
+    "frustration",
+    "skepticism"
+   ],
+   "trend": "insufficient_data",
+   "recency": "2026-06",
+   "evidence_ids": [
+    "EV-0006",
+    "EV-0059"
+   ],
+   "quotes": [
+    {
+     "evidence_id": "EV-0059",
+     "text": "Hilfe, das wäre selbst mir deutlich zu kalt."
+    },
+    {
+     "evidence_id": "EV-0006",
+     "text": "eiskalte teure Bude"
+    }
+   ],
+   "segment_ids": [
+    "SEG-01"
+   ],
+   "related_ids": [],
+   "relations": [],
+   "type": "pain_point"
   }
  ],
  "motivations": [
@@ -2420,6 +2571,7 @@
     "SEG-03"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
   },
@@ -2479,6 +2631,7 @@
     "SEG-03"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
   },
@@ -2537,6 +2690,7 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "job"
   },
@@ -2592,111 +2746,9 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "motivation",
    "kind": "need"
-  },
-  {
-   "id": "MOT-05",
-   "claim": "I want less paperwork; pre-filled forms would even be a reason to buy.",
-   "summary_for_humans": "Funding forms and who handles which task burden buyers; help with them is seen as a purchase argument.",
-   "cluster_id": "CL-17",
-   "counts": {
-    "matching": 3,
-    "of_total": 101
-   },
-   "confidence": {
-    "score": 0.45,
-    "label": "emerging"
-   },
-   "claim_type": "observed",
-   "safe_to_assert": false,
-   "non_obvious": true,
-   "strength": {
-    "evidence_count": 3,
-    "distinct_authors": 3,
-    "platforms": [
-     "reddit",
-     "youtube"
-    ],
-    "engagement_percentile_median": 30.3
-   },
-   "emotion": [
-    "anxiety",
-    "frustration"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-09",
-   "evidence_ids": [
-    "EV-0057",
-    "EV-0016",
-    "EV-0058"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0057",
-     "text": "Es wäre gut wenn die Anbieter die Formulare für ihre Anlage gleich vor ausgefüllt mit beilegen."
-    },
-    {
-     "evidence_id": "EV-0016",
-     "text": "Muss die Tankentsorgung Teil des Angebots des Heizungsbauers sein?"
-    }
-   ],
-   "segment_ids": [],
-   "related_ids": [],
-   "type": "motivation",
-   "kind": "pain"
-  },
-  {
-   "id": "MOT-06",
-   "claim": "I'm afraid a heat pump won't keep my rooms properly warm.",
-   "summary_for_humans": "Comfort worries show up as fear of cold living rooms, especially in older houses.",
-   "cluster_id": "CL-12",
-   "counts": {
-    "matching": 2,
-    "of_total": 101
-   },
-   "confidence": {
-    "score": 0.17,
-    "label": "speculative"
-   },
-   "claim_type": "inferred",
-   "safe_to_assert": false,
-   "non_obvious": false,
-   "strength": {
-    "evidence_count": 2,
-    "distinct_authors": 2,
-    "platforms": [
-     "youtube"
-    ],
-    "engagement_percentile_median": 29.6
-   },
-   "emotion": [
-    "anxiety",
-    "frustration",
-    "skepticism"
-   ],
-   "trend": "insufficient_data",
-   "recency": "2026-06",
-   "evidence_ids": [
-    "EV-0006",
-    "EV-0059"
-   ],
-   "quotes": [
-    {
-     "evidence_id": "EV-0059",
-     "text": "Hilfe, das wäre selbst mir deutlich zu kalt."
-    },
-    {
-     "evidence_id": "EV-0006",
-     "text": "eiskalte teure Bude"
-    }
-   ],
-   "segment_ids": [
-    "SEG-01"
-   ],
-   "related_ids": [],
-   "type": "motivation",
-   "kind": "pain"
   }
  ],
  "objections": [
@@ -2755,6 +2807,7 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2806,6 +2859,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2860,6 +2914,7 @@
     "SEG-01"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -2912,6 +2967,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "myth"
   },
@@ -2962,6 +3018,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   },
@@ -3010,6 +3067,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "myth"
   },
@@ -3058,6 +3116,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "trust_marker"
   },
@@ -3099,6 +3158,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "objection",
    "kind": "objection"
   }
@@ -3195,6 +3255,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "format",
     "name": "House data post asking for advice",
@@ -3244,6 +3305,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "format",
     "name": "One-year bill review videos",
@@ -3294,6 +3356,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "community",
     "name": "Heat pump forum threads",
@@ -3347,6 +3410,7 @@
     ],
     "segment_ids": [],
     "related_ids": [],
+    "relations": [],
     "type": "culture",
     "kind": "code",
     "name": "Online Heizlast calculation versus real consumption",
@@ -3467,6 +3531,8 @@
    "claim_type": "inferred"
   }
  ],
+ "performance_takeaways": [],
+ "sections_meta": {},
  "moments": [
   {
    "id": "MOM-01",
@@ -3517,6 +3583,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "moment",
    "name": "One-year bill review",
    "timing": "After 1 year"
@@ -3569,6 +3636,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "moment",
    "name": "Cold-season peak",
    "timing": "Winter"
@@ -3621,6 +3689,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "moment",
    "name": "First winter after installation",
    "timing": "First winter / Heizperiode"
@@ -3671,6 +3740,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "moment",
    "name": "Year-end subsidy rush",
    "timing": "Year-end"
@@ -3722,6 +3792,7 @@
     "SEG-03"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "white_space",
    "kind": "unmet_need"
   },
@@ -3772,6 +3843,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "white_space",
    "kind": "unanswered_question"
   },
@@ -3819,6 +3891,7 @@
     "SEG-02"
    ],
    "related_ids": [],
+   "relations": [],
    "type": "white_space",
    "kind": "unanswered_question"
   },
@@ -3862,6 +3935,7 @@
    ],
    "segment_ids": [],
    "related_ids": [],
+   "relations": [],
    "type": "white_space",
    "kind": "unmet_need"
   }
@@ -4198,7 +4272,7 @@
     "why_ids": [
      "TEN-01",
      "THM-04",
-     "MOT-05",
+     "PAIN-01",
      "BRD-01",
      "LEX-02"
     ]
@@ -4223,7 +4297,7 @@
      "OBJ-06",
      "MOM-02",
      "LEX-04",
-     "MOT-06"
+     "PAIN-02"
     ]
    },
    {
@@ -4689,7 +4763,7 @@
    "item_ids": [
     "OBJ-03",
     "TEN-01",
-    "MOT-06"
+    "PAIN-02"
    ]
   },
   {
@@ -6162,6 +6236,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6182,6 +6257,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6200,6 +6276,7 @@
    "engagement_percentile": 27.0,
    "author_hash": "4a23508bab90ac256d43c56c33fb1fe6a910481ed0071cc37b7b03847971f778",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6218,6 +6295,7 @@
    "engagement_percentile": 13.1,
    "author_hash": "be3725f93bec5b95be88b814de2bb67d44919c75d44a297987185a1b5746f73a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6236,6 +6314,7 @@
    "engagement_percentile": 62.7,
    "author_hash": "f4370efc43e0f4fd7b8be67c9d2b5808123def24bbc72405507c990c79a65e8b",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6256,6 +6335,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6276,6 +6356,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6296,6 +6377,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6317,6 +6399,7 @@
     "anxiety",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6337,6 +6420,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6357,6 +6441,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6375,6 +6460,7 @@
    "engagement_percentile": 80.9,
    "author_hash": "e65e2aff047abe31655e614fda7eb3cfe7cb26dda00852767c08954521ed81a3",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6396,6 +6482,7 @@
     "skepticism",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6416,6 +6503,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6437,6 +6525,7 @@
     "frustration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6457,6 +6546,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6477,6 +6567,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6497,6 +6588,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6517,6 +6609,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6538,6 +6631,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6559,6 +6653,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6579,6 +6674,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6600,6 +6696,7 @@
     "frustration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6621,6 +6718,7 @@
     "skepticism",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6642,6 +6740,7 @@
     "anxiety",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6662,6 +6761,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6682,6 +6782,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6700,6 +6801,7 @@
    "engagement_percentile": null,
    "author_hash": "b9541ae286e91398a2a38abdd8dca6e8cbd301213f334c3b94e9a0b9e13bd803",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6718,6 +6820,7 @@
    "engagement_percentile": null,
    "author_hash": "b9541ae286e91398a2a38abdd8dca6e8cbd301213f334c3b94e9a0b9e13bd803",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6739,6 +6842,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6759,6 +6863,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6777,6 +6882,7 @@
    "engagement_percentile": 30.3,
    "author_hash": "0c396d88d0c37e1ac61a28eed0b5d5185142ff943bc1ccec9e719b62849a2495",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6798,6 +6904,7 @@
     "anxiety",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6819,6 +6926,7 @@
     "pride",
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6840,6 +6948,7 @@
     "aspiration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6861,6 +6970,7 @@
     "excitement",
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6881,6 +6991,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6899,6 +7010,7 @@
    "engagement_percentile": 4.3,
    "author_hash": "071fb22a69d1493385196ad756bbdcc1432aff6a68aaabf6a68dfb5ce8a5d3e8",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6919,6 +7031,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6940,6 +7053,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6961,6 +7075,7 @@
     "skepticism",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6979,6 +7094,7 @@
    "engagement_percentile": 52.3,
    "author_hash": "683b42788fd5899a5e5d95ee43fa902e355ac63c963276666c963a01dc0ec93e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -6997,6 +7113,7 @@
    "engagement_percentile": 72.7,
    "author_hash": "615303d9516f7a41178e0194793fc0241bbc42075be58d565dd194603b33464e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7017,6 +7134,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7037,6 +7155,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7057,6 +7176,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7079,6 +7199,7 @@
     "skepticism",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7099,6 +7220,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7119,6 +7241,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7140,6 +7263,7 @@
     "skepticism",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7160,6 +7284,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7178,6 +7303,7 @@
    "engagement_percentile": 28.8,
    "author_hash": "517aa3ac9a778ec1f98181166997f96d6902017d0ad1df06bceb341b9fd16002",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7199,6 +7325,7 @@
     "frustration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7219,6 +7346,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7237,6 +7365,7 @@
    "engagement_percentile": 57.0,
    "author_hash": "f6968881cb097be23cc2a59b9f8ddb0caee9d65068bced135064737ba354feb2",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7258,6 +7387,7 @@
     "skepticism",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7276,6 +7406,7 @@
    "engagement_percentile": 30.3,
    "author_hash": "af20b1e5949dc565f48508160405774ebbf97fd895edc32ec8e3dc3fcec0e47d",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7296,6 +7427,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7317,6 +7449,7 @@
     "anxiety",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7338,6 +7471,7 @@
     "frustration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7359,6 +7493,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7377,6 +7512,7 @@
    "engagement_percentile": 30.3,
    "author_hash": "961ed2216d80ee21c64a442353a92e25ef0d260c84668cab62428c2079f24dae",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7397,6 +7533,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7415,6 +7552,7 @@
    "engagement_percentile": 67.7,
    "author_hash": "653daccd4749a8aecd58c24269a6850a00d43b1ee9bdbf7d085fd244a12f12ab",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7433,6 +7571,7 @@
    "engagement_percentile": 70.4,
    "author_hash": "65cef3264e446385cf729b6c8dd099ee28eb407b1c41483bd1bd090a19367ee2",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7453,6 +7592,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7471,6 +7611,7 @@
    "engagement_percentile": 98.9,
    "author_hash": "634b68ad5ca429963f90ce2c2251ec5d2317235c3bef720d8e0e6e90f56c6626",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7492,6 +7633,7 @@
     "anxiety",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7510,6 +7652,7 @@
    "engagement_percentile": 84.0,
    "author_hash": "656daeff45effe710313c623a94fa0166046c32a09787a42995cb79dedb2613e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -7528,6 +7671,7 @@
    "engagement_percentile": null,
    "author_hash": "4f86f132c8a21b14d7a563bafc7064a79a859a33256490e14ce93467b21b4b63",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   }
  ]

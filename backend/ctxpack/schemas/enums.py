@@ -264,6 +264,14 @@ class EvidenceRole(StrEnum):
     unknown = "unknown"
 
 
+class RelationKind(StrEnum):
+    """How one item connects to an item in another section (change V4)."""
+
+    comes_from = "comes_from"   # e.g. an objection comes from a pain point
+    blocks = "blocks"           # e.g. an objection blocks a motivation
+    related = "related"
+
+
 class InterpretationField(StrEnum):
     """Interpretation fields that can be marked as assumed (inferred, not stated)."""
 

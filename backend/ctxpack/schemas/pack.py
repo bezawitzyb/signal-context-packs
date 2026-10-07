@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from ctxpack.schemas.enums import (
     EvidenceRole,
+    RelationKind,
     ClaimType,
     ComplianceCategory,
     ConfidenceLabel,
@@ -53,10 +54,12 @@ ID_PREFIXES: dict[str, str] = {
     "SEG": "segment",
     "TEN": "tension",
     "MOT": "motivation",
+    "PAIN": "pain point",
     "OBJ": "objection",
     "BRD": "competitor",
     "CUL": "culture item",
     "PERF": "performing post",
+    "TKW": "what-performs takeaway",
     "MOM": "moment",
     "WSP": "white space",
     "OPP": "opportunity",
@@ -136,6 +139,13 @@ class Quote(Strict):
                       examples=["meal prep sunday is my therapy"])
 
 
+class Relation(Strict):
+    """A link to a connected item in another section (1.1, V4): shown as a small chip, never restated."""
+
+    id: str = Field(pattern=r"^[A-Z]{2,4}-\d{2,}$", description="The connected item.", examples=["PAIN-02"])
+    kind: RelationKind = Field(description="comes_from, blocks or related.")
+
+
 class InsightItem(Strict):
     """Common item shape (PRD 6.3) for every claim built on a verified cluster."""
 
@@ -163,6 +173,8 @@ class InsightItem(Strict):
                                    examples=[["SEG-01"]])
     related_ids: list[str] = Field(default_factory=list, description="Related item ids.",
                                    examples=[["HOOK-04", "LEX-09"]])
+    relations: list[Relation] = Field(default_factory=list, description="Typed links to items in other sections "
+                                      "(1.1, V4), from shared evidence.")
 
     @model_validator(mode="after")
     def _safe_to_assert_rule(self) -> Self:
@@ -319,6 +331,13 @@ class Motivation(InsightItem):
     kind: MotivationKind = Field(description="need, pain or job.")
 
 
+class PainPoint(InsightItem):
+    """What gets in their way (1.1, V4; the pains that used to sit among motivations)."""
+
+    id: str = id_field("PAIN")
+    type: Literal["pain_point"] = type_field("pain_point")
+
+
 class Objection(InsightItem):
     id: str = id_field("OBJ")
     type: Literal["objection"] = type_field("objection")
@@ -364,6 +383,26 @@ class PerformingPost(Strict):
     why_it_worked: str = Field(description="Our inference (claim_type inferred).")
     claim_type: Literal[ClaimType.inferred] = Field(default=ClaimType.inferred,
                                                     description='Always "inferred": why_it_worked is our reading.')
+
+
+class Takeaway(Strict):
+    """What performs, as a recommendation first (1.1, V4); the example posts sit underneath."""
+
+    id: str = id_field("TKW")
+    takeaway: str = Field(description="A concrete recommendation.", examples=["Ask a specific shop-floor question "
+                          "rather than a vendor question."])
+    why: str = Field(description="Why, from the performing posts (our inference).")
+    post_ids: list[str] = Field(default_factory=list, description="The performing posts (PERF ids) behind it.")
+
+
+class SectionMeta(Strict):
+    """Per-section notes (1.1, V4): what it means for the user, and why it is empty if it is."""
+
+    so_what: str = Field(default="", description="One line: what this section means for the user's goal.")
+    empty_reason: str = Field(default="", description="Plain words, only when the section is empty.")
+    next_steps: list[str] = Field(default_factory=list, max_length=2, description="1-2 next steps when empty.")
+    see_also: list[str] = Field(default_factory=list, description="Items stated in another section that also "
+                                "belong here (consolidated, V4).")
 
 
 class Moment(InsightItem):
@@ -651,11 +690,17 @@ class ContextPack(Strict):
     voice: Voice = Field(description="Layer 2: how they talk.")
     segments: list[Segment] = Field(default_factory=list, max_length=4, description="2-4 named segments.")
     tensions: list[Tension] = Field(default_factory=list, description='Layer 3: "want X but Y".')
-    motivations: list[Motivation] = Field(default_factory=list, description="Layer 3: needs, pains, jobs.")
+    pain_points: list[PainPoint] = Field(default_factory=list, description="Layer 3: what gets in their way (1.1).")
+    motivations: list[Motivation] = Field(default_factory=list, description="Layer 3: what they want to achieve "
+                                          "(needs and jobs; pains are in pain_points since 1.1).")
     objections: list[Objection] = Field(default_factory=list, description="Layer 4: objections, myths, trust markers.")
     competitors: list[Competitor] = Field(default_factory=list, description="Layer 4: competitors.")
     culture: Culture = Field(default_factory=Culture, description="Layer 5: culture and codes.")
     what_performs: list[PerformingPost] = Field(default_factory=list, description="Top posts by engagement.")
+    performance_takeaways: list[Takeaway] = Field(default_factory=list, max_length=3,
+                                                  description="What performs, as 1-3 recommendations (1.1).")
+    sections_meta: dict[str, SectionMeta] = Field(default_factory=dict, description="Per section: so_what, and "
+                                                  "empty_reason + next_steps when empty (1.1).")
     moments: list[Moment] = Field(default_factory=list, description="Layer 6: when it matters.")
     white_space: list[WhiteSpace] = Field(default_factory=list, description="Unmet needs nobody serves.")
     opportunities: list[Opportunity] = Field(default_factory=list, description="Scored opportunities (PRD 5.5).")
@@ -684,12 +729,14 @@ class ContextPack(Strict):
         yield from self.voice.phrases
         yield from self.segments
         yield from self.tensions
+        yield from self.pain_points
         yield from self.motivations
         yield from self.objections
         yield from self.competitors
         for part in (self.culture.formats, self.culture.communities, self.culture.creators, self.culture.codes):
             yield from part
         yield from self.what_performs
+        yield from self.performance_takeaways
         yield from self.moments
         yield from self.white_space
         yield from self.opportunities
@@ -725,11 +772,12 @@ class ContextPack(Strict):
                 need_ev(q.evidence_id for q in item.quotes)
                 need_items(item.segment_ids)
                 need_items(item.related_ids)
+                need_items(r.id for r in item.relations)
             if isinstance(item, Tension):
                 need_ev(item.want.evidence_ids + item.but.evidence_ids)
             if isinstance(item, PerformingPost):
                 need_ev([item.evidence_id])
-            for ref_field in ("why_ids", "builds_on", "item_ids"):
+            for ref_field in ("why_ids", "builds_on", "item_ids", "post_ids"):
                 need_items(getattr(item, ref_field, []))
             if isinstance(item, PlanPost):
                 need_items([item.hook_id] + ([item.moment_id] if item.moment_id else []))
@@ -737,6 +785,8 @@ class ContextPack(Strict):
                 need_items([item.item_id])
         for truth in self.snapshot.five_truths:
             need_items(truth.item_ids)
+        for meta in self.sections_meta.values():
+            need_items(meta.see_also)
         for pick in (self.snapshot.top_opportunity, self.snapshot.top_risk):
             if pick:
                 need_items([pick.item_id])

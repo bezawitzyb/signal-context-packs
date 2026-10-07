@@ -335,7 +335,7 @@
         },
         "item_id": {
           "description": "The hook or claim flagged.",
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|OBJ|BRD|CUL|PERF|MOM|WSP|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|WSP|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -826,6 +826,14 @@
             "type": "string"
           },
           "title": "Related Ids",
+          "type": "array"
+        },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
           "type": "array"
         },
         "type": {
@@ -2027,6 +2035,14 @@
           "title": "Related Ids",
           "type": "array"
         },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
+          "type": "array"
+        },
         "type": {
           "const": "lexicon",
           "default": "lexicon",
@@ -2313,6 +2329,14 @@
           "title": "Related Ids",
           "type": "array"
         },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
+          "type": "array"
+        },
         "type": {
           "const": "moment",
           "default": "moment",
@@ -2504,6 +2528,14 @@
           "title": "Related Ids",
           "type": "array"
         },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
+          "type": "array"
+        },
         "type": {
           "const": "motivation",
           "default": "motivation",
@@ -2689,6 +2721,14 @@
             "type": "string"
           },
           "title": "Related Ids",
+          "type": "array"
+        },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
           "type": "array"
         },
         "type": {
@@ -2909,6 +2949,188 @@
         "created_at"
       ],
       "title": "PackEvent",
+      "type": "object"
+    },
+    "PainPoint": {
+      "additionalProperties": false,
+      "description": "What gets in their way (1.1, V4; the pains that used to sit among motivations).",
+      "properties": {
+        "id": {
+          "description": "Stable pain point id (PAIN-NN).",
+          "examples": [
+            "PAIN-01"
+          ],
+          "pattern": "^PAIN-\\d{2,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "claim": {
+          "description": "One sentence a person could say out loud.",
+          "examples": [
+            "Students want to eat healthy but refuse to give up Sunday."
+          ],
+          "minLength": 1,
+          "title": "Claim",
+          "type": "string"
+        },
+        "summary_for_humans": {
+          "default": "",
+          "description": "A short plain-English explanation.",
+          "title": "Summary For Humans",
+          "type": "string"
+        },
+        "cluster_id": {
+          "anyOf": [
+            {
+              "pattern": "^CL-\\d{2,}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The verified cluster this claim summarises.",
+          "examples": [
+            "CL-07"
+          ],
+          "title": "Cluster Id"
+        },
+        "counts": {
+          "$ref": "#/$defs/Counts",
+          "description": "Verified members of total relevant posts."
+        },
+        "confidence": {
+          "$ref": "#/$defs/Confidence",
+          "description": "Score and label (PRD 5.4)."
+        },
+        "claim_type": {
+          "$ref": "#/$defs/ClaimType",
+          "description": "observed, inferred or external."
+        },
+        "safe_to_assert": {
+          "description": "True ONLY if strong AND observed AND verified.",
+          "title": "Safe To Assert",
+          "type": "boolean"
+        },
+        "non_obvious": {
+          "description": "True if not covered by the generic AI answer.",
+          "title": "Non Obvious",
+          "type": "boolean"
+        },
+        "strength": {
+          "$ref": "#/$defs/Strength",
+          "description": "Evidence strength, computed in code."
+        },
+        "emotion": {
+          "description": "Emotions expressed, where relevant.",
+          "items": {
+            "$ref": "#/$defs/Emotion"
+          },
+          "title": "Emotion",
+          "type": "array"
+        },
+        "trend": {
+          "$ref": "#/$defs/Trend",
+          "default": "insufficient_data",
+          "description": "Momentum over the time window."
+        },
+        "recency": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Median date of dated evidence (YYYY-MM).",
+          "examples": [
+            "2026-08"
+          ],
+          "title": "Recency"
+        },
+        "evidence_ids": {
+          "description": "Receipts: up to 5 evidence ids from the cluster.",
+          "examples": [
+            [
+              "EV-0112",
+              "EV-0187"
+            ]
+          ],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "quotes": {
+          "description": "Verbatim quotes from the cited evidence.",
+          "items": {
+            "$ref": "#/$defs/Quote"
+          },
+          "title": "Quotes",
+          "type": "array"
+        },
+        "segment_ids": {
+          "description": "Segments this applies to.",
+          "examples": [
+            [
+              "SEG-01"
+            ]
+          ],
+          "items": {
+            "type": "string"
+          },
+          "title": "Segment Ids",
+          "type": "array"
+        },
+        "related_ids": {
+          "description": "Related item ids.",
+          "examples": [
+            [
+              "HOOK-04",
+              "LEX-09"
+            ]
+          ],
+          "items": {
+            "type": "string"
+          },
+          "title": "Related Ids",
+          "type": "array"
+        },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
+          "type": "array"
+        },
+        "type": {
+          "const": "pain_point",
+          "default": "pain_point",
+          "description": "Item type, always \"pain_point\".",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "claim",
+        "counts",
+        "confidence",
+        "claim_type",
+        "safe_to_assert",
+        "non_obvious",
+        "strength",
+        "evidence_ids"
+      ],
+      "title": "PainPoint",
       "type": "object"
     },
     "PerformingPost": {
@@ -3133,6 +3355,14 @@
           "title": "Related Ids",
           "type": "array"
         },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
+          "type": "array"
+        },
         "type": {
           "const": "phrase",
           "default": "phrase",
@@ -3178,7 +3408,7 @@
           "examples": [
             "OPP-01"
           ],
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|OBJ|BRD|CUL|PERF|MOM|WSP|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|WSP|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -3476,6 +3706,41 @@
       "title": "Quote",
       "type": "object"
     },
+    "Relation": {
+      "additionalProperties": false,
+      "description": "A link to a connected item in another section (1.1, V4): shown as a small chip, never restated.",
+      "properties": {
+        "id": {
+          "description": "The connected item.",
+          "examples": [
+            "PAIN-02"
+          ],
+          "pattern": "^[A-Z]{2,4}-\\d{2,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/RelationKind",
+          "description": "comes_from, blocks or related."
+        }
+      },
+      "required": [
+        "id",
+        "kind"
+      ],
+      "title": "Relation",
+      "type": "object"
+    },
+    "RelationKind": {
+      "description": "How one item connects to an item in another section (change V4).",
+      "enum": [
+        "comes_from",
+        "blocks",
+        "related"
+      ],
+      "title": "RelationKind",
+      "type": "string"
+    },
     "Risk": {
       "additionalProperties": false,
       "properties": {
@@ -3514,6 +3779,43 @@
         "text"
       ],
       "title": "Risk",
+      "type": "object"
+    },
+    "SectionMeta": {
+      "additionalProperties": false,
+      "description": "Per-section notes (1.1, V4): what it means for the user, and why it is empty if it is.",
+      "properties": {
+        "so_what": {
+          "default": "",
+          "description": "One line: what this section means for the user's goal.",
+          "title": "So What",
+          "type": "string"
+        },
+        "empty_reason": {
+          "default": "",
+          "description": "Plain words, only when the section is empty.",
+          "title": "Empty Reason",
+          "type": "string"
+        },
+        "next_steps": {
+          "description": "1-2 next steps when empty.",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 2,
+          "title": "Next Steps",
+          "type": "array"
+        },
+        "see_also": {
+          "description": "Items stated in another section that also belong here (consolidated, V4).",
+          "items": {
+            "type": "string"
+          },
+          "title": "See Also",
+          "type": "array"
+        }
+      },
+      "title": "SectionMeta",
       "type": "object"
     },
     "Segment": {
@@ -3665,6 +3967,14 @@
             "type": "string"
           },
           "title": "Related Ids",
+          "type": "array"
+        },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
           "type": "array"
         },
         "type": {
@@ -3886,6 +4196,49 @@
       "title": "Strength",
       "type": "object"
     },
+    "Takeaway": {
+      "additionalProperties": false,
+      "description": "What performs, as a recommendation first (1.1, V4); the example posts sit underneath.",
+      "properties": {
+        "id": {
+          "description": "Stable what-performs takeaway id (TKW-NN).",
+          "examples": [
+            "TKW-01"
+          ],
+          "pattern": "^TKW-\\d{2,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "takeaway": {
+          "description": "A concrete recommendation.",
+          "examples": [
+            "Ask a specific shop-floor question rather than a vendor question."
+          ],
+          "title": "Takeaway",
+          "type": "string"
+        },
+        "why": {
+          "description": "Why, from the performing posts (our inference).",
+          "title": "Why",
+          "type": "string"
+        },
+        "post_ids": {
+          "description": "The performing posts (PERF ids) behind it.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Post Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "takeaway",
+        "why"
+      ],
+      "title": "Takeaway",
+      "type": "object"
+    },
     "Target": {
       "additionalProperties": false,
       "properties": {
@@ -4089,6 +4442,14 @@
             "type": "string"
           },
           "title": "Related Ids",
+          "type": "array"
+        },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
           "type": "array"
         },
         "type": {
@@ -4300,6 +4661,14 @@
             "type": "string"
           },
           "title": "Related Ids",
+          "type": "array"
+        },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
           "type": "array"
         },
         "type": {
@@ -4609,6 +4978,14 @@
           "title": "Related Ids",
           "type": "array"
         },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
+          "type": "array"
+        },
         "type": {
           "const": "whats_new",
           "default": "whats_new",
@@ -4782,6 +5159,14 @@
           "title": "Related Ids",
           "type": "array"
         },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
+          "type": "array"
+        },
         "type": {
           "const": "white_space",
           "default": "white_space",
@@ -4899,8 +5284,16 @@
       "title": "Tensions",
       "type": "array"
     },
+    "pain_points": {
+      "description": "Layer 3: what gets in their way (1.1).",
+      "items": {
+        "$ref": "#/$defs/PainPoint"
+      },
+      "title": "Pain Points",
+      "type": "array"
+    },
     "motivations": {
-      "description": "Layer 3: needs, pains, jobs.",
+      "description": "Layer 3: what they want to achieve (needs and jobs; pains are in pain_points since 1.1).",
       "items": {
         "$ref": "#/$defs/Motivation"
       },
@@ -4934,6 +5327,23 @@
       },
       "title": "What Performs",
       "type": "array"
+    },
+    "performance_takeaways": {
+      "description": "What performs, as 1-3 recommendations (1.1).",
+      "items": {
+        "$ref": "#/$defs/Takeaway"
+      },
+      "maxItems": 3,
+      "title": "Performance Takeaways",
+      "type": "array"
+    },
+    "sections_meta": {
+      "additionalProperties": {
+        "$ref": "#/$defs/SectionMeta"
+      },
+      "description": "Per section: so_what, and empty_reason + next_steps when empty (1.1).",
+      "title": "Sections Meta",
+      "type": "object"
     },
     "moments": {
       "description": "Layer 6: when it matters.",

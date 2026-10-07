@@ -29,10 +29,12 @@ One JSON object (`context_pack.json`) is behind every view of a pack: the web pa
 | `SEG` | segment | `SEG-01` |
 | `TEN` | tension | `TEN-01` |
 | `MOT` | motivation | `MOT-01` |
+| `PAIN` | pain point | `PAIN-01` |
 | `OBJ` | objection | `OBJ-01` |
 | `BRD` | competitor | `BRD-01` |
 | `CUL` | culture item | `CUL-01` |
 | `PERF` | performing post | `PERF-01` |
+| `TKW` | what-performs takeaway | `TKW-01` |
 | `MOM` | moment | `MOM-01` |
 | `WSP` | white space | `WSP-01` |
 | `OPP` | opportunity | `OPP-01` |
@@ -72,6 +74,7 @@ The common item shape (PRD 6.3). Every claim built on a verified cluster has the
 | `quotes` | list of [Quote](#quote) | no | Verbatim quotes from the cited evidence. |  |
 | `segment_ids` | list of text | no | Segments this applies to. | `["SEG-01"]` |
 | `related_ids` | list of text | no | Related item ids. | `["HOOK-04", "LEX-09"]` |
+| `relations` | list of [Relation](#relation) | no | Typed links to items in other sections (1.1, V4), from shared evidence. |  |
 
 ### ContextPack
 
@@ -91,11 +94,14 @@ Used at: `(top level)`
 | `voice` | [Voice](#voice) | yes | Layer 2: how they talk. |  |
 | `segments` | list of [Segment](#segment) | no | 2-4 named segments. |  |
 | `tensions` | list of [Tension](#tension) | no | Layer 3: "want X but Y". |  |
-| `motivations` | list of [Motivation](#motivation) | no | Layer 3: needs, pains, jobs. |  |
+| `pain_points` | list of [PainPoint](#painpoint) | no | Layer 3: what gets in their way (1.1). |  |
+| `motivations` | list of [Motivation](#motivation) | no | Layer 3: what they want to achieve (needs and jobs; pains are in pain_points since 1.1). |  |
 | `objections` | list of [Objection](#objection) | no | Layer 4: objections, myths, trust markers. |  |
 | `competitors` | list of [Competitor](#competitor) | no | Layer 4: competitors. |  |
 | `culture` | [Culture](#culture) | no | Layer 5: culture and codes. |  |
 | `what_performs` | list of [PerformingPost](#performingpost) | no | Top posts by engagement. |  |
+| `performance_takeaways` | list of [Takeaway](#takeaway) | no | What performs, as 1-3 recommendations (1.1). |  |
+| `sections_meta` | object | no | Per section: so_what, and empty_reason + next_steps when empty (1.1). |  |
 | `moments` | list of [Moment](#moment) | no | Layer 6: when it matters. |  |
 | `white_space` | list of [WhiteSpace](#whitespace) | no | Unmet needs nobody serves. |  |
 | `opportunities` | list of [Opportunity](#opportunity) | no | Scored opportunities (PRD 5.5). |  |
@@ -196,6 +202,17 @@ Plus every field of [InsightItem](#insightitem).
 | `want` | [TensionSide](#tensionside) | yes | The "want X" side. |  |
 | `but` | [TensionSide](#tensionside) | yes | The "but Y" side. |  |
 
+### PainPoint
+
+Used at: `pain_points[]` - What gets in their way (1.1, V4; the pains that used to sit among motivations).
+
+Plus every field of [InsightItem](#insightitem).
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `id` | text | yes | Stable pain point id (PAIN-NN). | `"PAIN-01"` |
+| `type` | "pain_point" | no | Item type, always "pain_point". |  |
+
 ### Motivation
 
 Used at: `motivations[]`
@@ -262,6 +279,28 @@ Used at: `what_performs[]`
 | `engagement_percentile` | number | yes | Engagement percentile within its platform. |  |
 | `why_it_worked` | text | yes | Our inference (claim_type inferred). |  |
 | `claim_type` | "inferred" | no | Always "inferred": why_it_worked is our reading. |  |
+
+### Takeaway
+
+Used at: `performance_takeaways[]` - What performs, as a recommendation first (1.1, V4); the example posts sit underneath.
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `id` | text | yes | Stable what-performs takeaway id (TKW-NN). | `"TKW-01"` |
+| `takeaway` | text | yes | A concrete recommendation. | `"Ask a specific shop-floor question rather than a vendor question."` |
+| `why` | text | yes | Why, from the performing posts (our inference). |  |
+| `post_ids` | list of text | no | The performing posts (PERF ids) behind it. |  |
+
+### SectionMeta
+
+Used at: `sections_meta` - Per-section notes (1.1, V4): what it means for the user, and why it is empty if it is.
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `so_what` | text | no | One line: what this section means for the user's goal. |  |
+| `empty_reason` | text | no | Plain words, only when the section is empty. |  |
+| `next_steps` | list of text | no | 1-2 next steps when empty. |  |
+| `see_also` | list of text | no | Items stated in another section that also belong here (consolidated, V4). |  |
 
 ### Moment
 
@@ -610,6 +649,15 @@ Used at: `segments[].quotes[]` - A verbatim quote. Must be an exact substring of
 | `evidence_id` | text | yes | Evidence the quote comes from. | `"EV-0112"` |
 | `text` | text | yes | Exact substring of that evidence text. | `"meal prep sunday is my therapy"` |
 
+### Relation
+
+Used at: `segments[].relations[]` - A link to a connected item in another section (1.1, V4): shown as a small chip, never restated.
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `id` | text | yes | The connected item. | `"PAIN-02"` |
+| `kind` | enum [RelationKind](#enum-relationkind) | yes | comes_from, blocks or related. |  |
+
 ### TensionSide
 
 Used at: `tensions[].want`
@@ -950,6 +998,12 @@ Effort or impact.
 Source family. All forum domains together are ONE platform (web_forum).
 
 `reddit`, `tiktok`, `youtube`, `instagram`, `web_forum`, `web_review`, `web_editorial`
+
+### Enum RelationKind
+
+How one item connects to an item in another section (change V4).
+
+`comes_from`, `blocks`, `related`
 
 ### Enum TargetKind
 

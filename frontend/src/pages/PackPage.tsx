@@ -9,7 +9,7 @@ import { safeUrl } from "../lib/safe";
 import { ConfidenceBadge, IdTag, ModeBadge } from "../components/badges";
 import { CoverageStrip, LimitationCallout } from "../components/callouts";
 import { HookCard, PackContext, SourceCard, TensionCard, usePack } from "../components/cards";
-import { applyFilter, type Filter, ItemSection, TableSection } from "../components/blocks";
+import { applyFilter, EmptyNote, type Filter, ItemSection, SectionLead, type SectionNotes, TableSection } from "../components/blocks";
 import { CopyButton } from "../components/CopyButton";
 import { EvidenceDrawer } from "../components/EvidenceDrawer";
 import { AgentJson } from "../components/AgentJson";
@@ -19,7 +19,8 @@ import { ErrorNote } from "../components/ErrorNote";
 import { rerunUrl } from "../lib/rerun";
 
 const NAV: [string, string][] = [
-  ["summary", "Summary"], ["channels", "Channels & this week"], ["voice", "Voice"], ["tensions", "Tensions & motivations"],
+  ["summary", "Summary"], ["channels", "Channels & this week"], ["voice", "Voice"], ["pain-points", "Pain points"],
+  ["tensions", "Tensions & motivations"],
   ["segments", "Segments"], ["objections", "Objections & competitors"], ["landscape", "Landscape & platforms"],
   ["performs", "What performs"], ["moments", "Moments"], ["white-space", "White space & opportunities"],
   ["playbook", "Playbook"], ["blind-spots", "Blind spots"], ["method", "Method"],
@@ -357,6 +358,15 @@ function Method({ pack }: { pack: ContextPack }) {
           {c.loop.fallback_used ? "; the remaining planned sources were collected automatically" : ""}{c.loop.top_up_used ? "; more evidence was collected from sources already working" : ""}.
         </p>
       </Sub>
+      {pack.hypotheses.length > 0 && (
+        <Sub title="Hypotheses from the plan">
+          <TableSection caption="Hypotheses and what the evidence showed" rowKey={(r) => r.id} rows={pack.hypotheses} columns={[
+            { header: "Hypothesis", cell: (r) => r.statement },
+            { header: "Result", cell: (r) => r.status.replace(/_/g, " "), kind: "data" },
+            { header: "Why", cell: (r) => r.why },
+          ]} />
+        </Sub>
+      )}
       <Sub title="Sources kept and dropped">
         <div className="grid gap-2 md:grid-cols-2">
           {c.sources_used.map((s) => <SourceCard key={s.source_unit} source={s} />)}
@@ -396,6 +406,11 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   const [agent, setAgent] = useState(false);
   const [handoff, setHandoff] = useState(false);
   const navigate = useNavigate();
+  const claims = useMemo(() => Object.fromEntries([...index.items.entries()]
+    .map(([id, it]) => [id, (it as unknown as { claim?: unknown }).claim])
+    .filter(([, claim]) => typeof claim === "string")) as Record<string, string>, [index]);
+  const meta = (name: string): SectionNotes | undefined =>
+    (pack.sections_meta as Record<string, SectionNotes> | undefined)?.[name];
   const [drawer, setDrawer] = useState<string | null>(null);
   const counts = labelCounts(pack);
   const v = pack.schema_version;
@@ -403,7 +418,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
     <Section id={id} title={title} agent={agent} agentData={data} name={name} version={v} note={note}>{children}</Section>;
 
   return (
-    <PackContext.Provider value={{ evidence: index.evidence, onOpen: setDrawer }}>
+    <PackContext.Provider value={{ evidence: index.evidence, onOpen: setDrawer, claims }}>
       <div className="pack-layout lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
         <nav aria-label="Sections" className="hidden print:hidden lg:block">
           <ul className="sticky top-20 space-y-1 text-sm">
@@ -480,19 +495,26 @@ export function PackBody({ pack }: { pack: ContextPack }) {
           {sec("channels", "Channels & this week", "channel_plan", { channel_plan: pack.channel_plan, this_week: pack.playbook.this_week },
             <Channels pack={pack} />)}
           {sec("voice", "Voice", "voice", pack.voice, <Voice pack={pack} filter={filter} />)}
+          {sec("pain-points", "Pain points", "pain_points", pack.pain_points,
+            <ItemSection level={3} title="What gets in their way" items={asItems(pack.pain_points ?? [])} filter={filter}
+                         meta={meta("pain_points")} />)}
           {sec("tensions", "Tensions & motivations", "tensions", { tensions: pack.tensions, motivations: pack.motivations },
             <>
+              <SectionLead meta={meta("tensions")} />
               <div className="mb-8 space-y-3">
                 {applyFilter(asItems(pack.tensions), filter).map((t) => <TensionCard key={t.id} item={t as Tension} />)}
                 {applyFilter(asItems(pack.tensions), filter).length === 0 && <p className="text-sm text-ink-3">No tensions match this filter.</p>}
               </div>
-              <ItemSection level={3} title="Needs, pains and jobs" items={asItems(pack.motivations)} filter={filter} />
+              <ItemSection level={3} title="What they want to achieve" items={asItems(pack.motivations)} filter={filter}
+                           meta={meta("motivations")} />
             </>)}
           {sec("segments", "Segments", "segments", pack.segments,
-            <ItemSection level={3} title="Who they are" items={asItems(pack.segments)} filter={filter} titleKey={"name" as keyof InsightLike} />)}
+            <ItemSection level={3} title="Who they are" items={asItems(pack.segments)} filter={filter} titleKey={"name" as keyof InsightLike}
+                         meta={meta("segments")} />)}
           {sec("objections", "Objections & competitors", "objections", { objections: pack.objections, competitors: pack.competitors },
             <>
-              <ItemSection level={3} title="Objections" items={asItems(pack.objections)} filter={filter} />
+              <ItemSection level={3} title="Why they would say no" items={asItems(pack.objections)} filter={filter}
+                           meta={meta("objections")} />
               {pack.playbook.objection_handling.length > 0 && (
                 <Sub title="How to answer them">
                   <ul className="space-y-2 text-sm">
@@ -515,7 +537,21 @@ export function PackBody({ pack }: { pack: ContextPack }) {
             <Landscape pack={pack} filter={filter} />)}
           {sec("performs", "What performs", "what_performs", pack.what_performs,
             pack.what_performs.length ? (
-              <ul className="space-y-3">
+              <>
+              <SectionLead meta={meta("what_performs")} />
+              {(pack.performance_takeaways ?? []).length > 0 && (
+                <ul className="mb-4 space-y-2">
+                  {pack.performance_takeaways.map((t) => (
+                    <li key={t.id} className="rounded-lg border border-ink p-4">
+                      <p className="font-medium text-ink">{t.takeaway}</p>
+                      <p className="mt-1 text-sm text-ink-2">{t.why} <span className="text-ink-3">(our reading)</span></p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <details className="group" open={!(pack.performance_takeaways ?? []).length}>
+                <summary className="cursor-pointer text-sm text-ink-2 hover:text-ink">Example posts ({pack.what_performs.length})</summary>
+              <ul className="mt-3 space-y-3">
                 {pack.what_performs.map((p) => {
                   const url = safeUrl(p.url);
                   return (
@@ -529,9 +565,12 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                   );
                 })}
               </ul>
-            ) : <p className="text-sm text-ink-3">No engagement data in this pack, so nothing can be ranked by what performs.</p>)}
+              </details>
+              </>
+            ) : <EmptyNote meta={meta("what_performs")} fallback="No engagement data in this pack, so nothing can be ranked by what performs." />)}
           {sec("moments", "Moments", "moments", pack.moments,
-            <ItemSection level={3} title="When it matters" items={asItems(pack.moments)} filter={filter} titleKey={"name" as keyof InsightLike} />)}
+            <ItemSection level={3} title="When it matters" items={asItems(pack.moments)} filter={filter} titleKey={"name" as keyof InsightLike}
+                         meta={meta("moments")} />)}
           {sec("white-space", "White space & opportunities", "white_space", { white_space: pack.white_space, opportunities: pack.opportunities },
             <>
               <ItemSection level={3} title="What nobody serves" items={asItems(pack.white_space)} filter={filter} columns={1} />

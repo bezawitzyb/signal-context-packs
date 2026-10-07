@@ -27,6 +27,8 @@ from typing import Any
 from pydantic import BaseModel, Field, field_validator
 
 from ctxpack.analysis import metrics as met
+from ctxpack.synthesis.consolidate import consolidate
+from ctxpack.synthesis.notes import section_notes
 from ctxpack.collect.relevance import BriefContext, brief_block
 from ctxpack.config import load_yaml
 from ctxpack.llm.client import batched, load_prompt, structured, untrusted
@@ -558,8 +560,12 @@ def build_sections(a: AnswerA, a_pool: Pool, b: AnswerB, b_pool: Pool, bld: Buil
         c = bld.clusters.get(o.cluster_id.strip().upper())
         return (c.details or {}).get("kind", default) if c else default
 
-    s["motivations"] = _rank([i for o in b.motivations if (i := bld.item(
-        "motivations", o, {k.motivation}, b_pool, kind=kind_of(o, "need")))], "MOT")
+    mots = [i for o in b.motivations if (i := bld.item("motivations", o, {k.motivation}, b_pool,
+                                                         kind=kind_of(o, "need")))]
+    # V4: pains are their own section ("what gets in their way"); motivations keep needs and jobs
+    s["pain_points"] = _rank([{**{k2: v for k2, v in i.items() if k2 != "kind"}} for i in mots if i["kind"] == "pain"],
+                             "PAIN")
+    s["motivations"] = _rank([i for i in mots if i["kind"] != "pain"], "MOT")
     s["objections"] = _rank([i for o in b.objections if (i := bld.item(
         "objections", o, {k.objection}, b_pool, kind=kind_of(o, "objection")))], "OBJ")
     s["white_space"] = _rank([i for o in b.white_space if (i := bld.item(
@@ -618,8 +624,8 @@ def build_sections(a: AnswerA, a_pool: Pool, b: AnswerB, b_pool: Pool, bld: Buil
     return s
 
 
-INSIGHT_SECTIONS = ["themes", "lexicon", "phrases", "segments", "tensions", "motivations", "objections",
-                    "culture", "moments", "white_space"]
+INSIGHT_SECTIONS = ["themes", "lexicon", "phrases", "segments", "pain_points", "tensions", "motivations",
+                    "objections", "culture", "moments", "white_space"]
 
 
 async def mark_non_obvious(sections: dict, generic: list[str], outcome: WriteOutcome) -> None:
@@ -653,7 +659,7 @@ def finish_sections(s: dict, analysis: dict) -> None:
             it.setdefault("related_ids", [])
 
     by_cluster: dict[str, list[dict]] = {}
-    for name in ("motivations", "white_space"):
+    for name in ("motivations", "pain_points", "white_space"):
         for it in s[name]:
             by_cluster.setdefault(it["cluster_id"], []).append(it)
     texts = s.pop("_opportunities_text")
@@ -686,8 +692,8 @@ def finish_sections(s: dict, analysis: dict) -> None:
     s["guardrails_draft"] = {"say_this": voice.pop("say_this", []), "not_this": voice.pop("not_this", [])}
 
 
-SECTION_ORDER = ["themes", "platform_lens", "lexicon", "phrases", "segments", "tensions", "motivations",
-                 "objections", "competitors", "culture", "what_performs", "moments", "white_space", "opportunities",
+SECTION_ORDER = ["themes", "platform_lens", "lexicon", "phrases", "segments", "pain_points", "tensions",
+                 "motivations", "objections", "competitors", "culture", "what_performs", "moments", "white_space", "opportunities",
                  "hypotheses"]
 
 
@@ -764,6 +770,18 @@ async def write_run(run_id: str, ctx: BriefContext, *, redo: bool = False) -> Wr
     sections = build_sections(a, a_pool, b, b_pool, bld, analysis, plan)
     await mark_non_obvious(sections, draft["generic_points"], outcome)
     finish_sections(sections, analysis)
+    # V4: every finding once, in its best place; links between sections; so-what lines and takeaways
+    meta: dict[str, dict] = {}
+    rep = await consolidate(sections, meta)
+    outcome.calls += rep.calls
+    outcome.usd += rep.usd
+    goal = (run.intake or {}).get("goal") or interp.intent
+    so_what, takeaways, usd = await section_notes(sections, goal)
+    outcome.calls += 1
+    outcome.usd += usd
+    for name, line in so_what.items():
+        meta.setdefault(name, {})["so_what"] = line
+    draft["notes"] = {"meta": meta, "takeaways": takeaways, "merged": rep.merged}
     evidence = number_evidence(sections, docs_by_id, _cfg()["evidence_chars"])
     outcome.written = {name: len(sections[name]) for name in SECTION_ORDER + ["risks"]}
     outcome.evidence = len(evidence)

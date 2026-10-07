@@ -20,6 +20,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -40,6 +41,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -58,6 +60,7 @@
    "engagement_percentile": 27.0,
    "author_hash": "4a23508bab90ac256d43c56c33fb1fe6a910481ed0071cc37b7b03847971f778",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -76,6 +79,7 @@
    "engagement_percentile": 13.1,
    "author_hash": "be3725f93bec5b95be88b814de2bb67d44919c75d44a297987185a1b5746f73a",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -94,6 +98,7 @@
    "engagement_percentile": 62.7,
    "author_hash": "f4370efc43e0f4fd7b8be67c9d2b5808123def24bbc72405507c990c79a65e8b",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -114,6 +119,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -134,6 +140,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -154,6 +161,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -175,6 +183,7 @@
     "anxiety",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -195,6 +204,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -215,6 +225,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -233,6 +244,7 @@
    "engagement_percentile": 80.9,
    "author_hash": "e65e2aff047abe31655e614fda7eb3cfe7cb26dda00852767c08954521ed81a3",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -254,6 +266,7 @@
     "skepticism",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -274,6 +287,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -295,6 +309,7 @@
     "frustration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -315,6 +330,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -335,6 +351,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -355,6 +372,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -375,6 +393,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -396,6 +415,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -417,6 +437,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -437,6 +458,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -458,6 +480,7 @@
     "frustration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -479,6 +502,7 @@
     "skepticism",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -500,6 +524,7 @@
     "anxiety",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -520,6 +545,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -540,6 +566,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -558,6 +585,7 @@
    "engagement_percentile": null,
    "author_hash": "b9541ae286e91398a2a38abdd8dca6e8cbd301213f334c3b94e9a0b9e13bd803",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -576,6 +604,7 @@
    "engagement_percentile": null,
    "author_hash": "b9541ae286e91398a2a38abdd8dca6e8cbd301213f334c3b94e9a0b9e13bd803",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -597,6 +626,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -617,6 +647,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -635,6 +666,7 @@
    "engagement_percentile": 30.3,
    "author_hash": "0c396d88d0c37e1ac61a28eed0b5d5185142ff943bc1ccec9e719b62849a2495",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -656,6 +688,7 @@
     "anxiety",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -677,6 +710,7 @@
     "pride",
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -698,6 +732,7 @@
     "aspiration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -719,6 +754,7 @@
     "excitement",
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -739,6 +775,7 @@
    "emotion": [
     "excitement"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -757,6 +794,7 @@
    "engagement_percentile": 4.3,
    "author_hash": "071fb22a69d1493385196ad756bbdcc1432aff6a68aaabf6a68dfb5ce8a5d3e8",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -777,6 +815,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -798,6 +837,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -819,6 +859,7 @@
     "skepticism",
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -837,6 +878,7 @@
    "engagement_percentile": 52.3,
    "author_hash": "683b42788fd5899a5e5d95ee43fa902e355ac63c963276666c963a01dc0ec93e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -855,6 +897,7 @@
    "engagement_percentile": 72.7,
    "author_hash": "615303d9516f7a41178e0194793fc0241bbc42075be58d565dd194603b33464e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -875,6 +918,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -895,6 +939,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -915,6 +960,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -937,6 +983,7 @@
     "skepticism",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -957,6 +1004,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -977,6 +1025,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -998,6 +1047,7 @@
     "skepticism",
     "aspiration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1018,6 +1068,7 @@
    "emotion": [
     "pride"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1036,6 +1087,7 @@
    "engagement_percentile": 28.8,
    "author_hash": "517aa3ac9a778ec1f98181166997f96d6902017d0ad1df06bceb341b9fd16002",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1057,6 +1109,7 @@
     "frustration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1077,6 +1130,7 @@
    "emotion": [
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1095,6 +1149,7 @@
    "engagement_percentile": 57.0,
    "author_hash": "f6968881cb097be23cc2a59b9f8ddb0caee9d65068bced135064737ba354feb2",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1116,6 +1171,7 @@
     "skepticism",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1134,6 +1190,7 @@
    "engagement_percentile": 30.3,
    "author_hash": "af20b1e5949dc565f48508160405774ebbf97fd895edc32ec8e3dc3fcec0e47d",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1154,6 +1211,7 @@
    "emotion": [
     "frustration"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1175,6 +1233,7 @@
     "anxiety",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1196,6 +1255,7 @@
     "frustration",
     "anxiety"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1217,6 +1277,7 @@
     "frustration",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1235,6 +1296,7 @@
    "engagement_percentile": 30.3,
    "author_hash": "961ed2216d80ee21c64a442353a92e25ef0d260c84668cab62428c2079f24dae",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1255,6 +1317,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1273,6 +1336,7 @@
    "engagement_percentile": 67.7,
    "author_hash": "653daccd4749a8aecd58c24269a6850a00d43b1ee9bdbf7d085fd244a12f12ab",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1291,6 +1355,7 @@
    "engagement_percentile": 70.4,
    "author_hash": "65cef3264e446385cf729b6c8dd099ee28eb407b1c41483bd1bd090a19367ee2",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1311,6 +1376,7 @@
    "emotion": [
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1329,6 +1395,7 @@
    "engagement_percentile": 98.9,
    "author_hash": "634b68ad5ca429963f90ce2c2251ec5d2317235c3bef720d8e0e6e90f56c6626",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1350,6 +1417,7 @@
     "anxiety",
     "skepticism"
    ],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1368,6 +1436,7 @@
    "engagement_percentile": 84.0,
    "author_hash": "656daeff45effe710313c623a94fa0166046c32a09787a42995cb79dedb2613e",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   },
   {
@@ -1386,6 +1455,7 @@
    "engagement_percentile": null,
    "author_hash": "4f86f132c8a21b14d7a563bafc7064a79a859a33256490e14ce93467b21b4b63",
    "emotion": [],
+   "role": "unknown",
    "trust": "untrusted_user_content"
   }
  ]

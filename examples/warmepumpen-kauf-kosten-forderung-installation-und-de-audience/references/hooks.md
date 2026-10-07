@@ -14,11 +14,11 @@ Drafts written by AI from the research. Review before use; items marked CHECK WI
 - Stromtarif 50 ct/kWh, unverschämt teuer, ja. Was kostet dann bei meiner JAZ eine kWh Wärme? Rechnung im Video. (HOOK-08; builds on TEN-02, THM-06, PHR-03, LEX-03, OBJ-05)
   - CHECK WITH LEGAL (energy_environmental): A cost-per-kWh figure based on one JAZ and tariff may be taken as typical for all heat pumps. Safer: Beispielrechnung: Bei 50 ct/kWh Strom und meiner JAZ von X kostet eine kWh Wärme bei mir Y ct. Ihr Ergebnis kann abweichen.
 - Ein Angebot, eine Summe, null Aufschlüsselung. So teile ich ein WP-Angebot in Gerät, Montage und Extras auf, damit ihr vergleichen könnt. (HOOK-09; builds on TEN-01, THM-08, MOT-04, OPP-03, PERF-10)
-- KfW Ablauf, Schritt für Schritt. Und die Stellen, an denen selbst Bank und Heizungsbauer ins Schwimmen kommen. (HOOK-10; builds on TEN-01, THM-04, MOT-05, BRD-01, LEX-02)
+- KfW Ablauf, Schritt für Schritt. Und die Stellen, an denen selbst Bank und Heizungsbauer ins Schwimmen kommen. (HOOK-10; builds on TEN-01, THM-04, PAIN-01, BRD-01, LEX-02)
   - CHECK WITH LEGAL (finance): It presents subsidy rules as authoritative while belittling banks and installers, and the rules change. Safer: KfW-Ablauf Schritt für Schritt, mit Stand und Link zu den offiziellen Förderbedingungen. Bei Unklarheiten: Förderstelle oder Energieberatung fragen.
 - Muss ich schon im Haus wohnen, um den Geschwindigkeitsbonus zu bekommen? Genau hier sehe ich bei vielen Unsicherheit. (HOOK-11; builds on TEN-01, WSP-02, LEX-15, OPP-05)
   - CHECK WITH LEGAL (finance): Eligibility for the Geschwindigkeitsbonus is rule-bound and a wrong answer could mislead viewers about funding. Safer: Wer bekommt den Geschwindigkeitsbonus? Das sagen die offiziellen Förderbedingungen (Stand: …). Im Zweifel bei der KfW oder einer Energieberatung nachfragen.
-- Springt bei Kälte der Heizstab an? Ich zeige die kältesten Tage und was der Zähler dazu sagt. (HOOK-12; builds on TEN-01, OBJ-06, MOM-02, LEX-04, MOT-06)
+- Springt bei Kälte der Heizstab an? Ich zeige die kältesten Tage und was der Zähler dazu sagt. (HOOK-12; builds on TEN-01, OBJ-06, MOM-02, LEX-04, PAIN-02)
 - Erstes Heizjahr, erste Rechnung. Mein Verbrauch in kWh, aber ist das normal? Wer hat Vergleichswerte für ähnliche Fläche und Haustyp? (HOOK-13; builds on TEN-01, WSP-01, OPP-04, MOM-03, SEG-03)
 - Das Dach liefert im Sommer Überschuss, die WP braucht ihn im Winter. Wer hat das gelöst, oder war es nur eine hübsche Excel-Tabelle? (HOOK-14; builds on TEN-02, WSP-03, SEG-02, THM-01)
 

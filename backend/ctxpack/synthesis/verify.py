@@ -210,6 +210,7 @@ def prune_references(s: dict, evidence: list[dict]) -> list[dict]:
         for it in s[name]:
             it["segment_ids"] = [x for x in it.get("segment_ids", []) if x in alive]
             it["related_ids"] = [x for x in it.get("related_ids", []) if x in alive]
+            it["relations"] = [r for r in it.get("relations", []) if r["id"] in alive]
     for o in s["opportunities"]:
         o["builds_on"] = [b for b in o["builds_on"] if b in alive]
     s["opportunities"] = [o for o in s["opportunities"] if o["builds_on"]]

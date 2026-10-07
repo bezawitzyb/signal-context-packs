@@ -9,12 +9,12 @@
 ## Summary
 
 ### Do first
-1. **Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name.** - Missing, vanished snacks is the strongest non-obvious theme, backed by a strong motivation (can't find what I want) and a 'why is it gone' post that invites memories. *[DO-01; effort low, impact high; Community manager; based on THM-01, MOT-01, WSP-01, PERF-09, OPP-02]*
+1. **Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name.** - Missing, vanished snacks is the strongest non-obvious theme, backed by a strong motivation (can't find what I want) and a 'why is it gone' post that invites memories. *[DO-01; effort low, impact high; Community manager; based on THM-01, PAIN-01, WSP-01, PERF-09, OPP-02]*
 1. **Pitch a product sample and a timestamped slot to supermarket-test YouTubers (like the PROEFWERK series), and prepare your own 'zodat jij dat niet hoeft te doen' test video with a dated title and a product list, putting your snack next to familiar chips and snack-bar snacks.** - Viewers watch testers to learn which new supermarket products are worth it, and dated, timestamped test videos are the format that performs. *[DO-02; effort medium, impact high; Partnerships / influencer lead; based on THM-06, MOT-04, CUL-03, PERF-02, PERF-05, PHR-02]*
 1. **Film a TikTok label-reading short in Dutch (and an English cut) that shows the real kcal, sugar and protein per 100 g of your snack on screen, including the unflattering numbers, with the ingredient list readable in frame.** - Commenters answer 'healthy' snack content with kcal and sugar figures, so numbers up front pre-empt the scepticism; the figures must come from your actual product. *[DO-03; effort medium, impact high; Social video producer + product/QA team; based on CUL-01, THM-02, TEN-01, MOT-03, OPP-05, PLT-03]*
 
 ### Five truths
-- I can't find the product I want in my local shops. *[MOT-01]*
+- I can't find the product I want in my local shops. *[PAIN-01]*
 - We still miss snacks that got discontinued, like the Winner taco and the Yes bar. *[THM-01]*
 - Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. *[THM-09]*
 - Posters question snacks sold as healthy by pointing to calories and sugar. *[THM-02]*
@@ -26,7 +26,7 @@
 ### A generic AI answer vs. what people actually say
 | Generic answer | What we found |
 |---|---|
-| Dutch consumers aged 18-40 increasingly want healthier snacks with less sugar, less salt, and natural, recognisable ingredients. | I can't find the product I want in my local shops. [MOT-01] |
+| Dutch consumers aged 18-40 increasingly want healthier snacks with less sugar, less salt, and natural, recognisable ingredients. | I can't find the product I want in my local shops. [PAIN-01] |
 | Taste and indulgence still come first, so a new brand must deliver great flavour and not just health claims. | We still miss snacks that got discontinued, like the Winner taco and the Yes bar. [THM-01] |
 | Price sensitivity is high in the Netherlands, and shoppers often buy promotions and private label from Albert Heijn, Jumbo, and Lidl. | Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. [THM-09] |
 | Supermarkets are the main purchase channel, with online grocery, convenience stores, and petrol stations as secondary channels for on-the-go snacking. | Posters question snacks sold as healthy by pointing to calories and sugar. [THM-02] |
@@ -91,6 +91,12 @@
 - Treating all snack-bar items as universally loved; opinions on bamischijf, eierbal and kaassoufflé are divided
 - Corporate or stiff language that doesn't match the casual forum tone
 
+## Pain points
+
+- I can't find the product I want in my local shops. *[PAIN-01; strong, 8 of 216 posts, observed, safe to state]*
+  > moeilijk te krijgen meestal uitverkocht (EV-0024)
+- *Also seen (weaker evidence, speculative):* It tastes good, but there is a bit little in a bag. [PAIN-02]; I like them, but they are a bit too sweet. [PAIN-03]
+
 ## Tensions and motivations
 
 - **I want healthier snacks, but a snack called healthy can still be judged unhealthy or taste bad.** *[TEN-01; emerging, 8 of 216 posts, inferred]*
@@ -105,10 +111,6 @@
   > less added sugar, fewer artificial dyes, better oils + ingredients you actually feel good about feeding your family (EV-0056)
 - I like having a few different snacks, like several chip flavours or a mixed selection. *[MOT-05; moderate, 5 of 216 posts, inferred]*
   > Thai Sweet Chili, Dorito's Nacho Cheese en Cool America en cassavechips (EV-0053)
-**Pains**
-- I can't find the product I want in my local shops. *[MOT-01; strong, 8 of 216 posts, observed, safe to state]*
-  > moeilijk te krijgen meestal uitverkocht (EV-0024)
-- *Also seen (weaker evidence, speculative):* It tastes good, but there is a bit little in a bag. [MOT-06]; I like them, but they are a bit too sweet. [MOT-07]
 **Jobs**
 - I want to know which snacks are worth buying, so I watch someone test them first. *[MOT-04; emerging, 5 of 216 posts, inferred]*
   > zodat jij dat niet hoeft te doen (EV-0019)
@@ -227,7 +229,7 @@
 - Bamischijf: top of gatverdamme? Zeg het eerlijk, we oordelen niet 😂 *[HOOK-04; TEN-01, THM-04, LEX-03, PHR-01]*
 - Wie als eerste de kaassoufflé van de bittergarnituur pakt, kun je niet vertrouwen. En wie laat de nasi en bamischijf liggen? 🙈 *[HOOK-05; TEN-01, CUL-02, LEX-02, LEX-08]*
 - Lekker is niet genoeg: ook crunch. Te slap, te hard, te weinig smaak. Welke chip faalt bij jou? *[HOOK-06; TEN-01, THM-07, MOT-05]*
-- Welke snack of smaak uit het buitenland mis je in de Nederlandse schappen? Wij zoeken wat hier nog niet ligt. *[HOOK-07; TEN-01, THM-09, WSP-04, MOT-01]*
+- Welke snack of smaak uit het buitenland mis je in de Nederlandse schappen? Wij zoeken wat hier nog niet ligt. *[HOOK-07; TEN-01, THM-09, WSP-04, PAIN-01]*
 - De saus maakt de snack. Welke dip hoort bij jouw zoutje? 😄 *[HOOK-08; TEN-01, THM-10, LEX-13]*
 - Wij proeven de nieuwe snacks, zodat jij dat niet hoeft te doen. Wat eerst: chips of zoet? *[HOOK-09; TEN-01, PHR-02, THM-06, MOT-04, PERF-02]*
 - Groningse eierbal, Brabantse eierkoeken, gebak uit Dordrecht: welke streeksnack moet heel Nederland proeven? *[HOOK-10; TEN-01, THM-05, LEX-05, PERF-07]*
@@ -281,6 +283,16 @@
 ## Method
 
 Collected 467, duplicates 2, spam 9, out of window 16, kept 440 (undated 243), relevant 233. Research moves: 10, finished by finish.
+
+**Hypotheses from the plan**
+
+| Hypothesis | Result | Why |
+|---|---|---|
+| Dutch snackers increasingly want 'gezonder snacken' (less sugar, high protein, fewer additives) but reject products that taste worse than familiar brands. [HYP-01] | inconclusive | One post wants less sugar and better ingredients, and other posts say some health bars taste gross. No post shows the wish growing, and none compares health snacks with familiar brands directly. |
+| Price and supermarket availability (Albert Heijn, Jumbo, Lidl action offers) drive trial of new snack brands more than brand story or social media buzz. [HYP-02] | inconclusive | One post mentions price (cheaper at Aldi) and several note stock gaps. No post links price or retailer offers to trying a new brand, and none compares them with brand story or social media. |
+| Dutch snacking is strongly tied to social occasions such as borrel, verjaardag and Netflix evenings, so shareable formats resonate more than single-serve for savoury snacks. [HYP-03] | inconclusive | The posts have no clear evidence on borrel, birthday or Netflix occasions or on shareable versus single-serve formats. |
+| Dutch consumers are skeptical of overt health or sustainability claims and call them 'greenwashing' or 'marketing' unless backed by a clear ingredient list or Nutri-Score. [HYP-04] | inconclusive | Posts question 'healthy' labels by pointing at calories and sugar, which fits scepticism toward health claims. None mention greenwashing or Nutri-Score, so the condition in the hypothesis is not tested. |
+| Younger Dutch consumers discover new snacks through TikTok and YouTube taste tests and viral trends, then compare them in supermarket reviews. [HYP-05] | inconclusive | Several YouTube supermarket tests exist, but no post shows younger viewers discovering snacks through them or then checking supermarket reviews. |
 
 **Sources used:**
 - web:forum.fok.nl (web_forum): 243 kept, 63% relevant - High-relevance Dutch first-person talk on chips and snacks, with brands, flavours and slang.

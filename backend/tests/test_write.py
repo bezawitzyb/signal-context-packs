@@ -122,7 +122,8 @@ async def test_write_run_builds_a_draft_whose_evidence_all_checks_out(fake, temp
     assert ev_ids == [f"EV-{i:04d}" for i in range(1, len(ev_ids) + 1)]
     assert all(e["text"] in next(d.text for d in db.get_documents(run_id) if d.id == e["doc_id"])
                for e in draft["evidence"])
-    assert out.calls == 4                                                # baseline, A, B, non_obvious
+    assert out.calls == 6           # baseline, A, B, non_obvious, consolidation (borderline pairs), notes (V4)
+    assert "notes" in draft and isinstance(draft["notes"]["meta"], dict)
 
     calls = []
     real = wr.structured

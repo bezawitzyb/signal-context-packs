@@ -119,9 +119,50 @@ def _rank_key(it: dict) -> tuple:
     return (not it.get("non_obvious"), -LEVELS.index(it["confidence"]["label"]), -it["confidence"]["score"], it["id"])
 
 
+# Empty sections never appear blank (V4): why, in plain words, and 1-2 next steps.
+EMPTY = {
+    "pain_points": ("Too few posts described what gets in their way.",
+                    ["Add the problem you solve to the brief", "Run Standard for more sources"]),
+    "tensions": ("No two-sided wish-but-problem showed up in enough posts.",
+                 ["Run Standard for more sources", "Widen the time window"]),
+    "motivations": ("Too few posts said what people want to achieve.",
+                    ["Name the goal or the audience in the brief", "Run Standard for more sources"]),
+    "objections": ("Too few posts said why people would say no.",
+                   ["Name your offer or competitors in the brief", "Run Standard for more sources"]),
+    "segments": ("Too few people described themselves to form segments.",
+                 ["Add a role or audience to the brief", "Run Standard for more sources"]),
+    "white_space": ("Nothing missing was mentioned often enough to call it a gap.",
+                    ["Run Standard for more sources", "Widen the time window"]),
+    "what_performs": ("These sources show no engagement numbers, so nothing can be ranked by what performs.",
+                      ["Include TikTok, YouTube or Reddit in the plan"]),
+    "moments": ("No recurring times or occasions showed up in the posts.", ["Widen the time window"]),
+    "culture": ("No shared formats, communities or codes showed up clearly.", ["Run Standard for more sources"]),
+}
+
+
+def sections_meta(pack: dict, written: dict[str, dict], alive: set[str], interp: Any) -> dict[str, dict]:
+    """so_what (from the notes call), see_also (consolidation, live ids only), and for empty sections the
+    reason and next steps."""
+    present = {"themes": pack["landscape"]["themes"], "pain_points": pack["pain_points"], "tensions": pack["tensions"],
+               "motivations": pack["motivations"], "objections": pack["objections"], "segments": pack["segments"],
+               "white_space": pack["white_space"], "what_performs": pack["what_performs"],
+               "moments": pack["moments"], "platform_lens": pack["landscape"]["platform_lens"],
+               "culture": [x for part in pack["culture"].values() for x in part]}
+    out: dict[str, dict] = {}
+    for name, items in present.items():
+        w = written.get(name, {})
+        meta = {"so_what": w.get("so_what", "") if items else "",
+                "see_also": [i for i in dict.fromkeys(w.get("see_also", [])) if i in alive]}
+        if not items and name in EMPTY:
+            meta["empty_reason"], meta["next_steps"] = EMPTY[name][0], EMPTY[name][1][:2]
+        if any(meta.values()):
+            out[name] = meta
+    return out
+
+
 def snapshot(sections: dict, generic: list[str], grade: str) -> dict:
-    claims = sorted((it for n in ("themes", "tensions", "motivations", "objections", "white_space", "segments",
-                                  "moments") for it in sections[n]), key=_rank_key)
+    claims = sorted((it for n in ("themes", "pain_points", "tensions", "motivations", "objections", "white_space",
+                                  "segments", "moments") for it in sections.get(n, [])), key=_rank_key)
     truths = [{"text": it["claim"], "item_ids": [it["id"]]} for it in claims[:5]]
     found = [{"text": it["claim"], "item_ids": [it["id"]]} for it in claims if it.get("non_obvious")][:5]
     opp = sections["opportunities"][0] if sections["opportunities"] else None
@@ -220,6 +261,7 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
                   "tone": s["voice"].get("tone", ""), "code_switching": s["voice"].get("code_switching"),
                   "category_words_they_use": s["voice"].get("category_words_they_use", [])},
         "segments": [insight(P.Segment, it) for it in s["segments"]][:4],
+        "pain_points": [insight(P.PainPoint, it) for it in s.get("pain_points", [])],
         "tensions": [insight(P.Tension, it) for it in s["tensions"]],
         "motivations": [insight(P.Motivation, it) for it in s["motivations"]],
         "objections": [insight(P.Objection, it) for it in s["objections"]],
@@ -247,6 +289,14 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
                    for e in db.get_events(run.id, limit=100000)],
         "evidence": [_fields(P.Evidence, e) for e in evidence],
     }
+    alive = {i["id"] for n in ("pain_points", "tensions", "motivations", "objections", "white_space", "segments",
+                               "moments", "culture", "lexicon", "phrases") for i in s.get(n, [])}
+    alive |= {i["id"] for i in s["themes"]}
+    notes = draft.get("notes") or {}
+    perf = {p["id"] for p in s["what_performs"]}
+    data["performance_takeaways"] = [{**t, "post_ids": [x for x in t["post_ids"] if x in perf]}
+                                     for t in notes.get("takeaways", []) if s["what_performs"]]
+    data["sections_meta"] = sections_meta(data, notes.get("meta", {}), alive, interp)
     data["snapshot"] = snapshot(s, draft.get("generic_points", []),
                                 analysis.get("coverage", {}).get("grade", "d"))
     data["digest"] = digest(_jsonable(data), load_yaml("modes")["content_bar"]["digest_max_chars"])
@@ -297,8 +347,13 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
         parts = saved["parts"]
         out.reused_playbook = True
     else:
+        intake = run.intake or {}
         brief = (f"Brief: {run.brief_text}\nTopic: {interp.topic}\nMarket: {interp.market}\nAudience: "
-                 f"{interp.audience}\nLanguages: {', '.join(interp.languages)}\nIntent: {interp.intent}")
+                 f"{interp.audience}\nLanguages: {', '.join(interp.languages)}\nIntent: {interp.intent}"
+                 + (f"\nGoal (the user's words): {intake['goal']}" if intake.get("goal") else "")
+                 + (f"\nWhat the user offers: {intake['offer']} - tailor the objection answers to it"
+                    if intake.get("offer") else "\nWhat the user offers: not given - end each objection answer "
+                                                  "with how to adapt it to your offer"))
         parts, stats, usd = await playbook.write_playbook(s, brief, voice)
         out.calls += 1
         out.usd += usd

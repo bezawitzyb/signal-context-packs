@@ -13,7 +13,7 @@ Who: Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, includi
 - Film a TikTok label-reading short in Dutch (and an English cut) that shows the real kcal, sugar and protein per 100 g of your snack on screen, including the unflattering numbers, with the ingredient list readable in frame. (DO-03)
 
 ## Five truths
-- I can't find the product I want in my local shops. (MOT-01)
+- I can't find the product I want in my local shops. (PAIN-01)
 - We still miss snacks that got discontinued, like the Winner taco and the Yes bar. (THM-01)
 - Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. (THM-09)
 - Posters question snacks sold as healthy by pointing to calories and sugar. (THM-02)

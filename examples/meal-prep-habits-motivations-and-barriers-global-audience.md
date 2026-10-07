@@ -9,7 +9,7 @@
 ## Summary
 
 ### Do first
-1. **Publish a freeze-and-reheat cheat sheet for enchiladas and fajitas (can it be frozen, how to reheat, how long reheating takes), and post it in a Reddit meal-prep or college-cooking community as a reply-friendly guide.** - Students are asking whether these dishes freeze and how to reheat them, and slow reheating is a stated reason prep feels pointless. *[DO-01; effort low, impact high; Content lead with a home cook for testing; based on WSP-01, OPP-01, SEG-01, THM-06, MOT-03]*
+1. **Publish a freeze-and-reheat cheat sheet for enchiladas and fajitas (can it be frozen, how to reheat, how long reheating takes), and post it in a Reddit meal-prep or college-cooking community as a reply-friendly guide.** - Students are asking whether these dishes freeze and how to reheat them, and slow reheating is a stated reason prep feels pointless. *[DO-01; effort low, impact high; Content lead with a home cook for testing; based on WSP-01, OPP-01, SEG-01, THM-06, PAIN-02]*
 1. **Post a 'College student mealprep for the week' on Reddit that lists every dish, the recipes and the total spent, built on pantry staples such as rice, pasta, eggs, beans and potatoes.** - Posts that show a full week with a cost figure and a student framing are the ones that read as practical and copyable. *[DO-02; effort medium, impact high; Community manager or a student creator; based on OPP-02, PERF-02, PERF-04, CUL-02, MOT-01]*
 1. **Post a short make-ahead breakfast reply or post (freezer breakfast sandwiches and overnight oats) in a thread where someone wants to stop buying breakfast, with a simple how-to.** - People who start work early want a filling breakfast they don't have to buy each day, and a concrete cheap swap is what worked in replies. *[DO-03; effort low, impact medium; Community manager; based on MOT-07, MOM-03, OPP-03, PERF-01, THM-04]*
 
@@ -81,6 +81,13 @@
 - Recipes needing long ingredient lists the reader doesn't own
 - Hype or pressure about perfect prep
 
+## Pain points
+
+- Stocking random things is a good way for food to go bad before you use it, so I plan a week ahead and only buy what I need. *[PAIN-01; emerging, 5 of 75 posts, observed]*
+  > Stocking random things is a good way for those things to go bad before you use them. (EV-0042)
+- The reheating was taking so much time that meal prep felt like a waste of time. *[PAIN-02; emerging, 3 of 75 posts, observed]*
+  > the reheating was taking so much time, that meal prep felt waste of time (EV-0017)
+
 ## Tensions and motivations
 
 - **I want to save money by cooking at home, but prepping takes hours of my time.** *[TEN-01; emerging, 5 of 75 posts, inferred]*
@@ -105,11 +112,6 @@
   > I find cooking for 1 challenging (EV-0045)
 - I want a breakfast I can make ahead that keeps me full, so I stop buying McMuffins. *[MOT-07; emerging, 2 of 75 posts, inferred]*
   > I don’t want to keep buying them. (EV-0014)
-**Pains**
-- Stocking random things is a good way for food to go bad before you use it, so I plan a week ahead and only buy what I need. *[MOT-02; emerging, 5 of 75 posts, observed]*
-  > Stocking random things is a good way for those things to go bad before you use them. (EV-0042)
-- The reheating was taking so much time that meal prep felt like a waste of time. *[MOT-03; emerging, 3 of 75 posts, observed]*
-  > the reheating was taking so much time, that meal prep felt waste of time (EV-0017)
 **Jobs**
 - You are going to eat healthier if you do your own shopping and cooking. *[MOT-05; emerging, 3 of 75 posts, observed]*
   > You are going to eat healthier if you do your own shopping and cooking. (EV-0044)
@@ -203,7 +205,7 @@
 - College student mealprep for the week: every dish, every recipe, and exactly what I spent. *[HOOK-01; TEN-01, PHR-02, CUL-02, PERF-04]*
 - I made a double batch, froze half, and now future me doesn't have to cook. Frozen anything is my whole personality. *[HOOK-02; TEN-01, THM-02, LEX-08, CUL-01]*
 - Tired of eating the same leftovers? Prep ingredients, not whole meals, and switch it up all week. *[HOOK-03; TEN-02, THM-09, SEG-03, PHR-01]*
-- Reheating took so long that meal prep felt pointless. Microwave or air fryer, and I'm on a budget? *[HOOK-04; TEN-01, MOT-03, THM-06, PERF-08]*
+- Reheating took so long that meal prep felt pointless. Microwave or air fryer, and I'm on a budget? *[HOOK-04; TEN-01, PAIN-02, THM-06, PERF-08]*
 - I don't want to spend my whole weekend in the kitchen, so Sunday prep day is just ingredients and components. *[HOOK-05; TEN-01, LEX-01, THM-09, OBJ-04, THM-07]*
 - Can you freeze enchiladas? And how do you reheat them without ruining them? *[HOOK-06; TEN-02, WSP-01, OPP-01]*
 - Decision fatigue at dinner is real. Here's what I prepped so I don't have to choose. *[HOOK-07; TEN-02, LEX-04, MOT-04]*
@@ -278,6 +280,16 @@
 ## Method
 
 Collected 256, duplicates 0, spam 1, out of window 114, kept 141 (undated 73), relevant 76. Research moves: 23, finished by finish; more evidence was collected from sources already working.
+
+**Hypotheses from the plan**
+
+| Hypothesis | Result | Why |
+|---|---|---|
+| Gen Z frames meal prep primarily as a way to save money amid food-cost inflation, ahead of health or fitness goals. [HYP-01] | inconclusive | Budget is a clear driver in the posts (cheap weekly meal prep, tight-budget methods), but health reasons also appear. No post ranks money against health, and there is no direct inflation talk. |
+| Meal prep content on TikTok is driven by aesthetic and trend formats (e.g. 'Sunday reset', high-protein bowls), while Reddit users focus on practical problems like food boredom and spoilage. [HYP-02] | inconclusive | The evidence has no TikTok posts, so the comparison cannot be tested. The Reddit posts do show practical problems like reheating time and food going bad. |
+| The main barrier to sticking with meal prep is flavour fatigue and food going soggy or off by day 3-4, not lack of time. [HYP-03] | inconclusive | Boredom with leftovers and the time cost both appear as reasons to avoid prepping. No post mentions food going soggy by day 3-4, so neither is shown to be the main barrier. |
+| Gen Z sees paid meal kits and prepared-meal services as convenient but overpriced, and prefers cheap DIY batch cooking. [HYP-04] | inconclusive | Kit reviewers praise the ease and the food, and some complain about small portions and price. One reviewer calls the cost very reasonable, and there is no direct comparison against DIY batch cooking. |
+| High-protein and 'gym' framing is a strong entry point for young men, while young women emphasise balance, routine and low-effort eating. [HYP-05] | inconclusive | The posts do not show the poster's gender, so the male and female framings cannot be tested. |
 
 **Sources used:**
 - reddit:r/MealPrepSunday (reddit): 30 kept, 73% relevant - Relevant share 0.73. Student budget preps, boredom, reheating problems and ingredient-prep habits.
