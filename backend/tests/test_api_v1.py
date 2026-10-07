@@ -402,3 +402,24 @@ def test_owner_cost_view_needs_the_main_key_not_the_guest_key(api, monkeypatch):
     assert client.get("/api/v1/owner/runs/run_missing", headers=KEY).status_code == 404
     assert "/api/v1/owner/runs" not in client.get("/openapi.json").text                 # not advertised
     get_settings.cache_clear()
+
+
+def test_run_again_inputs_keep_the_clarifying_answer(api):
+    """V1: every run and pack can be started again with all its inputs, the clarifying answer included."""
+    made = client.post("/api/v1/runs", json={"brief": "snacks", "mode": "quick", "time_window_days": 90,
+                                             "brand_voice": "dry Dutch humour"}, headers=KEY).json()
+    assert made["status"] == "needs_clarification"
+    q = made["clarifying_question"]["question"]
+    answered = client.post(f"/api/v1/runs/{made['run_id']}/answer", json={"answer": "Netherlands, young adults"},
+                           headers=KEY).json()
+    inputs = answered["inputs"]
+    assert inputs == {"brief": "snacks", "mode": "quick", "time_window_days": 90, "brand_voice": "dry Dutch humour",
+                      "clarification": {"question": q, "answer": "Netherlands, young adults"}}
+    db.update_run(made["run_id"], pack_id=api.pack_id)
+    with db.session() as s:                                    # link the fixture pack to this run
+        row = s.get(db.PackRow, api.pack_id)
+        row.run_id = made["run_id"]
+        s.add(row)
+        s.commit()
+    assert client.get(f"/api/v1/packs/{api.pack_id}/inputs").json() == inputs
+    assert client.get("/api/v1/packs/pk_missing/inputs").status_code == 404

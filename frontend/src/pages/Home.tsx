@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { friendlyError, listPacks, LIVE_URL, MIRROR, type FeaturedPack } from "../lib/api";
 import { ErrorNote } from "../components/ErrorNote";
+import { myPacks } from "../lib/rerun";
 import { ModeBadge } from "../components/badges";
 import { AskFlow } from "./Ask";
 import { Skeleton } from "../components/Skeleton";
@@ -56,6 +57,21 @@ export function Home() {
           behind it. Ready for your team and for AI agents.
         </p>
       </section>
+      {myPacks().length > 0 && (
+        <section aria-labelledby="mine">
+          <h2 id="mine" className="mb-3 text-lg font-semibold text-ink">My packs</h2>
+          <ul className="grid gap-2 md:grid-cols-2">
+            {myPacks().map((p) => (
+              <li key={p.pack_id}>
+                <Link to={`/packs/${p.pack_id}`} className="block rounded-lg border border-line p-3 hover:border-line-strong">
+                  <span className="font-medium text-ink">{p.brief}</span>
+                  <span className="block font-mono text-xs text-ink-3">{p.at.slice(0, 10)} · made in this browser</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <section aria-labelledby="featured">
         <h2 id="featured" className="mb-3 text-lg font-semibold text-ink">See an example pack</h2>
         {error && <ErrorNote message={error} />}

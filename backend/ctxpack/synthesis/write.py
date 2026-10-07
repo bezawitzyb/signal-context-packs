@@ -693,7 +693,6 @@ SECTION_ORDER = ["themes", "platform_lens", "lexicon", "phrases", "segments", "t
 
 def number_evidence(s: dict, docs_by_id: dict, chars: int) -> list[dict]:
     """EV-0001.. by first use in pack order; doc ids in items become evidence ids."""
-    from ctxpack.collect.web import text_fragment_url
 
     ev_of: dict[str, str] = {}
 
@@ -712,20 +711,22 @@ def number_evidence(s: dict, docs_by_id: dict, chars: int) -> list[dict]:
                 it["quotes"] = [{"evidence_id": ev(q["doc_id"]), "text": q["text"]} for q in it["quotes"]]
             if name == "what_performs":
                 it["evidence_id"] = it["evidence_ids"][0]
-    evidence = []
-    for doc_id, ev_id in ev_of.items():
-        d = docs_by_id[doc_id]
-        frag = text_fragment_url(d.url, d.fragment_anchor_start, d.fragment_anchor_end) \
-            if d.fragment_anchor_start else None
-        evidence.append({
-            "id": ev_id, "doc_id": doc_id, "platform": str(d.platform), "source_unit": d.source_unit,
+    return [evidence_entry(docs_by_id[doc_id], ev_id, chars) for doc_id, ev_id in ev_of.items()]
+
+
+def evidence_entry(d: Any, ev_id: str, chars: int) -> dict:
+    """One pack evidence item from a stored document (excerpt, links, no raw author)."""
+    from ctxpack.collect.web import text_fragment_url
+
+    frag = text_fragment_url(d.url, d.fragment_anchor_start, d.fragment_anchor_end) \
+        if d.fragment_anchor_start else None
+    return {"id": ev_id, "doc_id": d.id, "platform": str(d.platform), "source_unit": d.source_unit,
             "url": d.permalink or d.url, "text_fragment_url": frag,
             "posted_at": d.posted_at.isoformat() if d.posted_at else None,
             "date_precision": str(d.date_precision), "language": d.language or "und",
             "text": excerpt(d, chars), "text_en": d.text_en, "redacted": d.redacted, "short_form": d.short_form,
             "engagement_percentile": d.engagement_percentile, "author_hash": d.author_hash,
-            "emotion": list(dict.fromkeys((d.extraction or {}).get("emotion", [])))})
-    return evidence
+            "emotion": list(dict.fromkeys((d.extraction or {}).get("emotion", [])))}
 
 
 async def write_run(run_id: str, ctx: BriefContext, *, redo: bool = False) -> WriteOutcome:

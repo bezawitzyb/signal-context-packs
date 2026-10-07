@@ -112,6 +112,12 @@ async def get_evidence(pack_id: str, q: str = "", platform: str | None = None, l
     return await _call(asyncio.to_thread, service.search_evidence, pack_id, q, platform, language, limit)
 
 
+@router.get("/packs/{pack_id}/inputs")
+async def get_pack_inputs(pack_id: str) -> Any:
+    """The brief, mode, time window, brand voice and clarifying answer behind a pack ("Run again")."""
+    return await _call(asyncio.to_thread, service.pack_inputs, pack_id)
+
+
 @router.get("/packs/{pack_id}/export/{kind}")
 async def get_export(pack_id: str, kind: Literal["json", "md", "prompt", "skill"]) -> Response:
     """Download: json (context_pack.json), md (brief.md), prompt (prompt_block.txt) or skill (zip)."""

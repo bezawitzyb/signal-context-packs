@@ -216,4 +216,7 @@ async def interpret(brief: str, *, mode: Mode | str = Mode.quick, window_days: i
                            _user_message(brief, window, ask, clarification), schema, TOOL,
                            description="Record the interpretation and either one clarifying question or the plan.",
                            max_tokens=6000, fake=lambda user: _fake_answer(brief, ask))
-    return Interpreted(result=res.data.to_result(), estimate=estimate(mode), usd=res.usd)
+    result = res.data.to_result()
+    if window_days:  # a window the user chose wins over the model's reading (V1: inputs are never lost)
+        result.interpretation.time_window_days = window_days
+    return Interpreted(result=result, estimate=estimate(mode), usd=res.usd)

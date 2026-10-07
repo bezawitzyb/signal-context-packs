@@ -278,7 +278,10 @@ B5. Run lifecycle
   fallback if needed) -> extracting
   -> clustering -> writing -> verifying -> packaging
   -> complete | partial | failed | stopped
-  Stop, budget or time limit -> packaging with what exists -> "partial".
+  Stop, budget or time limit in collection -> the analysis still runs on what
+  was collected -> "partial" pack. Stop, budget or a step that fails twice
+  in analysis -> evidence-only "partial" pack naming the step. Below the
+  thin-evidence floor -> "failed" with plain reasons (thin screen, V1).
   Restart or crash mid-run -> "interrupted" -> resumed once (B13).
 
 B6. Live events (SSE)
@@ -492,9 +495,9 @@ B13. Job model and worker (worker.py)
   - Interrupted runs: at startup and every minute, a run whose heartbeat
     is older than 2 minutes is marked "interrupted". If collection had
     finished, it resumes once from its saved corpus (the same code path as
-    --from-run). If not, it is packaged from what was stored (a partial
-    pack) or, below the thin-evidence floor, marked failed with a plain
-    message. resume_count caps resumes at 1.
+    --from-run). If not, the analysis runs on what was stored (a partial
+    pack) or, below the thin-evidence floor, it is marked failed with a
+    plain message. resume_count caps resumes at 1.
   - Memory budget (512 MB instance): one uvicorn worker; documents
     streamed to Neon instead of held in a list; each stage loads only what
     it needs; heavy libraries imported inside the functions that use them;

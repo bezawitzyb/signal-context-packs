@@ -26,7 +26,7 @@ import sys
 from typing import Any, Awaitable, Callable
 
 from ctxpack import db
-from ctxpack.config import mode_limits
+from ctxpack.config import load_yaml, mode_limits
 from ctxpack.guards import BudgetExceeded, StopRequested
 from ctxpack.llm.client import tracking
 from ctxpack.schemas.enums import EventType, FinishReason, RunStage, RunStatus
@@ -247,13 +247,75 @@ ANALYSIS_STAGES: list[tuple[RunStage, StageFn]] = [
 # --------------------------------------------------------------------------
 
 
+def thin_floor() -> int:
+    """Relevant posts needed for a pack. Offline mode (recorded samples, fake model) has its own, lower floor."""
+    from ctxpack.config import get_settings
+
+    cfg = load_yaml("modes")["worker"]
+    return cfg["thin_evidence_floor_offline"] if get_settings().offline else cfg["thin_evidence_floor"]
+
+
+async def _attempt(run_id: str, label: str, fn: Callable[[], Awaitable[Any]]) -> Any:
+    """Run one step, trying again once (worker.step_attempts) on an unexpected error.
+    Stop and budget limits are never retried: they end the step at once."""
+    tries = load_yaml("modes")["worker"]["step_attempts"]
+    for n in range(1, tries + 1):
+        try:
+            return await fn()
+        except (StopRequested, BudgetExceeded):
+            raise
+        except Exception as exc:
+            if n == tries:
+                raise
+            log.warning("run %s: %s failed (%s), trying again", run_id, label, type(exc).__name__)
+            db.append_event(run_id, EventType.error, {
+                "message": f"A step hit a problem while {label}; trying it again.", "recoverable": True})
+
+
+def thin_reasons(run: db.Run, relevant: int, floor: int) -> dict[str, Any]:
+    """Why a run has too few relevant posts, in plain words, plus the re-plans worth offering (V1)."""
+    cfg = load_yaml("modes")["worker"]
+    counters = next((e.payload for e in reversed(db.get_events(run.id, limit=100000))
+                     if e.type == EventType.counters), {})
+    collected, kept = int(counters.get("collected", 0)), int(counters.get("kept", 0))
+    interp = Interpretation.model_validate(run.interpretation) if run.interpretation else None
+    langs = set(interp.languages) if interp else set()
+    docs = db.get_documents(run.id)
+    in_lang = sum(1 for d in docs if (d.language or "") in langs)
+    reasons = []
+    if collected < cfg["thin_few_collected"]:
+        reasons.append({"code": "few_posts", "text": "Very few public posts were found: this audience seems to "
+                                                     "read more than it posts, or talks about this elsewhere."})
+    if collected and int(counters.get("out_of_window", 0)) / collected > cfg["thin_old_share"]:
+        reasons.append({"code": "too_old", "text": "Most posts found were older than the chosen time window."})
+    if docs and langs and in_lang / len(docs) < cfg["thin_language_share"]:
+        reasons.append({"code": "language", "text": "Very few posts were in the chosen languages."})
+    if kept and relevant / kept < cfg["thin_offtopic_share"]:
+        reasons.append({"code": "off_topic", "text": "Most posts found were about something else."})
+    if not reasons:
+        reasons.append({"code": "few_relevant", "text": "Too few posts were about this topic for a reliable pack."})
+    replans = ["broaden_audience"]
+    if interp and "en" not in langs:
+        replans.append("include_english")
+    if interp and interp.time_window_days < max(load_yaml("modes")["time_window_days_options"]):
+        replans.append("widen_window")
+    if str(run.mode) == "quick":
+        replans.append("run_standard")
+    return {"relevant": relevant, "needed": floor, "reasons": reasons, "replans": replans}
+
+
 async def run_pipeline(run_id: str, *, collect: StageFn | None = None,
                        stages: list[tuple[RunStage, StageFn]] | None = None,
                        build_pack: PackFn | None = None) -> RunStatus:
-    """Run one claimed run to the end. Returns the final status.
+    """Run one claimed run to the end. Returns the final status (V1: never lose a run).
 
+    Above the thin-evidence floor a run ALWAYS ends with a pack: the analysis runs however collection
+    ended; a step that fails twice, a stop or a budget limit during analysis gives an evidence-only pack.
+    Below the floor it ends "failed" with plain reasons (runs.collection["thin"]).
     collect / stages / build_pack can be swapped (tests, --from-run).
     """
+    from ctxpack.synthesis.finalize import package_evidence_only
+
     collect = collect or collect_agent
     stages = ANALYSIS_STAGES if stages is None else stages
     build_pack = build_pack or package_stage
@@ -270,33 +332,65 @@ async def run_pipeline(run_id: str, *, collect: StageFn | None = None,
                     db.update_run(run_id, finish_reason=FinishReason.stopped)
                 except BudgetExceeded as exc:
                     db.update_run(run_id, finish_reason=FinishReason.budget_limit, error=str(exc))
+                except Exception as exc:  # V1: an error mid-collection keeps what was stored
+                    log.exception("run %s: collection failed", run_id)
+                    db.update_run(run_id, finish_reason=FinishReason.error)
+                    db.append_event(run_id, EventType.error, {
+                        "message": f"Collection stopped with an error ({type(exc).__name__}); "
+                                   "continuing with what was collected.", "recoverable": True})
                 record_memory(run_id, stage)
         else:
             log.info("run %s: collection already finished, resuming from the saved corpus", run_id)
 
+        floor = thin_floor()
+        relevant = db.count_documents(run_id, relevant_only=True)
+        if relevant < floor:
+            thin = thin_reasons(db.get_run(run_id), relevant, floor)
+            message = f"Too few relevant posts for a pack ({relevant} of the {floor} needed)."
+            db.update_run(run_id, collection={**(db.get_run(run_id).collection or {}), "thin": thin})
+            db.append_event(run_id, EventType.error, {"message": message, "recoverable": False, "thin": True})
+            db.set_status(run_id, RunStatus.failed, error=message)
+            return RunStatus.failed
+
         # Analysis has its own budget, so an expensive collection never starves the pack.
         with tracking(run_id, llm_limit_usd=limits["analysis_llm_usd"], analysis=True):
             partial = db.get_run(run_id).finish_reason in PARTIAL_REASONS
-            if not partial:
-                try:
-                    for stage, fn in stages:
-                        check_stop(run_id)
-                        db.set_stage(run_id, stage)
-                        await fn(run_id)
-                        record_memory(run_id, stage)
-                except StopRequested:
-                    partial = True
-                except BudgetExceeded as exc:
-                    partial = True
-                    db.update_run(run_id, error=str(exc))
+            failure: str | None = None
+            try:
+                for stage, fn in stages:
+                    check_stop(run_id)
+                    db.set_stage(run_id, stage)
+                    await _attempt(run_id, stage.value, lambda fn=fn: fn(run_id))
+                    record_memory(run_id, stage)
+            except StopRequested:
+                failure = f"Partial pack: the run was stopped by hand while {stage.value}; it shows the collected posts."
+            except BudgetExceeded as exc:
+                db.update_run(run_id, error=str(exc))
+                failure = (f"Partial pack: the analysis budget ran out while {stage.value}; it shows the collected "
+                           "posts.")
+            except Exception as exc:
+                log.exception("run %s: %s failed twice", run_id, stage.value)
+                failure = (f"Partial pack: the analysis could not finish ({stage.value} failed: "
+                           f"{type(exc).__name__}); it shows the collected posts.")
 
             stage = RunStage.packaging
             db.set_stage(run_id, stage)
-            pack_id = await build_pack(run_id, partial)
+            pack_id = None
+            if failure is None:
+                try:
+                    pack_id = await _attempt(run_id, "packaging", lambda: build_pack(run_id, partial))
+                except (StopRequested, BudgetExceeded, Exception) as exc:
+                    log.warning("run %s: packaging failed (%s)", run_id, type(exc).__name__)
+                    failure = f"Partial pack: packaging failed ({type(exc).__name__}); it shows the collected posts."
+                if pack_id is None and failure is None:
+                    failure = "Partial pack: the analysis produced nothing to package; it shows the collected posts."
+            if pack_id is None:
+                pack_id = package_evidence_only(run_id, failure)
+                db.append_event(run_id, EventType.fallback, {"kind": "evidence_only", "reason": failure})
             record_memory(run_id, stage)
             if pack_id:
                 db.append_event(run_id, EventType.pack_ready, {"pack_id": pack_id})
-            status = RunStatus.partial if partial else RunStatus.complete
+            status = RunStatus.partial if (partial or failure) else RunStatus.complete
             db.set_status(run_id, status, pack_id=pack_id or db.get_run(run_id).pack_id)
             return status
     except Exception as exc:

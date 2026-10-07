@@ -63,7 +63,7 @@ def handle_interrupted() -> dict[str, list[str]]:
         elif run.finish_reason is not None:
             _requeue(run, "The service restarted. Resuming from the collected posts.")
             out["resumed"].append(run.id)
-        elif db.count_documents(run.id, relevant_only=True) >= cfg["thin_evidence_floor"]:
+        elif db.count_documents(run.id, relevant_only=True) >= orchestrator.thin_floor():
             _requeue(run, "The service restarted during collection. Building the pack from what was collected.",
                      finish_reason=FinishReason.error)
             out["resumed"].append(run.id)

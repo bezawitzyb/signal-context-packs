@@ -148,14 +148,40 @@ def run_status(run_id: str) -> dict[str, Any]:
     col = run.collection or {}
     collection = {"sources_used": col.get("sources_used", []), "sources_dropped": col.get("sources_dropped", []),
                   "gaps": col.get("gaps", []), "finish_reason": run.finish_reason,
-                  "fallback_used": run.fallback_used, "top_up_used": run.top_up_used} if col else None
+                  "fallback_used": run.fallback_used, "top_up_used": run.top_up_used,
+                  "thin": col.get("thin")} if col else None
     return {"run_id": run.id, "brief": run.brief_text, "mode": str(run.mode), "status": run.status.value,
             "collection": collection,
             "stage": run.stage.value if run.stage else None, "queue_position": queue_position(run.id),
             "pack_id": run.pack_id, "error": run.error, "created_at": run.created_at,
             "interpretation": run.interpretation, "plan": run.plan,
             "clarifying_question": run.clarifying_question,
+            "inputs": run_inputs(run),
             "estimate": estimate(run.mode).model_dump(mode="json")}
+
+
+def run_inputs(run: db.Run) -> dict[str, Any]:
+    """Everything needed to start the same research again ("Run again with these inputs", V1)."""
+    return {"brief": run.brief_text, "mode": str(run.mode),
+            "time_window_days": (run.interpretation or {}).get("time_window_days"),
+            "brand_voice": run.brand_voice, "clarification": run.clarification}
+
+
+def pack_inputs(pack_id: str) -> dict[str, Any]:
+    """The inputs behind a pack: from its run when the run still exists, else from the pack itself."""
+    row_run = None
+    with db.session() as s:
+        row = s.get(db.PackRow, pack_id)
+        if row is None:
+            raise NotFound(f"pack {pack_id} not found")
+        p, run_id = row.pack, row.run_id
+    if run_id:
+        row_run = db.get_run(run_id)
+    if row_run is not None:
+        return run_inputs(row_run)
+    return {"brief": p["brief"]["text"], "mode": p["mode"],
+            "time_window_days": p["brief"]["interpreted"].get("time_window_days"),
+            "brand_voice": p["brief"].get("brand_voice"), "clarification": None}
 
 
 async def _plan(run_id: str, clarification: tuple[str, str] | None, allow_question: bool) -> dict[str, Any]:
@@ -175,7 +201,9 @@ async def _plan(run_id: str, clarification: tuple[str, str] | None, allow_questi
         db.set_status(run.id, RunStatus.needs_clarification)
     else:
         db.update_run(run.id, interpretation=res.interpretation.model_dump(mode="json"),
-                      plan=res.plan.model_dump(mode="json"), clarifying_question=None)
+                      plan=res.plan.model_dump(mode="json"), clarifying_question=None,
+                      **({"clarification": {"question": clarification[0], "answer": clarification[1]}}
+                         if clarification else {}))
         db.set_status(run.id, RunStatus.awaiting_approval)
     return run_status(run.id)
 

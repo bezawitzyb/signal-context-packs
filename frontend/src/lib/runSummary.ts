@@ -75,7 +75,8 @@ export function summarize(events: RunEvent[]): Summary {
       case "cost": s.cost = { apify_usd: p.apify_usd ?? 0, llm_usd: p.llm_usd ?? 0 }; break;
       case "fallback":
         s.fallbacks.push({ kind: p.kind, reason: p.reason });
-        s.milestones.push(p.kind === "top_up" ? "Collecting more from sources that work" : "Collecting the remaining planned sources");
+        s.milestones.push(p.kind === "top_up" ? "Collecting more from sources that work"
+          : p.kind === "evidence_only" ? "Building a pack from the collected posts" : "Collecting the remaining planned sources");
         break;
       case "error": s.errors.push({ message: p.message, recoverable: Boolean(p.recoverable) }); break;
       case "pack_ready": s.packId = p.pack_id; s.step = STEPS.length; s.milestones.push("The pack is ready"); break;

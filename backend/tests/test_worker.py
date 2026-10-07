@@ -100,11 +100,15 @@ async def test_stop_during_collection_packages_a_partial_pack(offline, monkeypat
     monkeypatch.setattr(loop, "_modes", lambda: {**db.load_yaml("modes"), "parallel_tool_calls_max": 1})
     await worker.run_next()
     run = db.get_run(run_id)
-    assert run.status == RunStatus.partial
     assert run.finish_reason == FinishReason.stopped
     assert len(events(run_id, EventType.agent_call)) == 1
-    assert stages(run_id) == ["collecting", "packaging"]  # straight to packaging with what exists
     assert db.count_documents(run_id) > 0
+    if db.count_documents(run_id, relevant_only=True) >= orchestrator.thin_floor():
+        assert run.status == RunStatus.partial and run.pack_id                      # V1: analysis still ran
+        assert stages(run_id) == ALL_STAGES
+        assert db.get_pack(run.pack_id)["blind_spots"][0]["text"].startswith("Partial pack: collection was stopped")
+    else:
+        assert run.status == RunStatus.failed and run.collection["thin"]["reasons"]  # V1: thin state
 
 
 async def test_stop_during_analysis_packages_a_partial_pack(offline):
@@ -131,7 +135,7 @@ async def test_stop_before_start_never_runs(offline):
     assert stages(run_id) == []
 
 
-async def test_budget_exceeded_gives_partial(offline):
+async def test_budget_hit_before_collecting_gives_the_thin_state(offline):
     run_id = await approved_run()
 
     async def over_budget(rid):
@@ -139,11 +143,14 @@ async def test_budget_exceeded_gives_partial(offline):
 
     await worker.run_next(collect=over_budget)
     run = db.get_run(run_id)
-    assert run.status == RunStatus.partial
     assert run.finish_reason == FinishReason.budget_limit
+    assert run.status == RunStatus.failed                       # nothing collected: V1 thin state, never a hang
+    thin = run.collection["thin"]
+    assert thin["relevant"] == 0 and thin["reasons"] and "broaden_audience" in thin["replans"]
+    assert run.error.startswith("Too few relevant posts")
 
 
-async def test_crash_fails_with_a_plain_message(offline):
+async def test_crash_in_analysis_gives_an_evidence_only_pack(offline):
     run_id = await approved_run()
 
     async def crash(rid):
@@ -151,9 +158,15 @@ async def test_crash_fails_with_a_plain_message(offline):
 
     await worker.run_next(stages=[(RunStage.clustering, crash)])
     run = db.get_run(run_id)
-    assert run.status == RunStatus.failed
-    assert run.error == "The run failed while clustering (RuntimeError)."
-    assert events(run_id, EventType.error)[-1].payload == {"message": run.error, "recoverable": False}
+    assert run.status == RunStatus.partial and run.pack_id      # V1: an evidence-only pack, never lost
+    pack = db.get_pack(run.pack_id)
+    assert pack["blind_spots"][0]["text"] == ("Partial pack: the analysis could not finish (clustering failed: "
+                                             "RuntimeError); it shows the collected posts.")
+    assert pack["evidence"] and pack["coverage"]["thin_evidence"]
+    retry = events(run_id, EventType.error)[0].payload
+    assert retry["recoverable"] is True and "trying it again" in retry["message"]       # tried twice
+    assert events(run_id, EventType.fallback)[-1].payload["kind"] == "evidence_only"
+    assert "boom" not in str(pack)                                                      # no raw error text
 
 
 # --- the queue --------------------------------------------------------------
@@ -167,7 +180,7 @@ async def test_two_queued_runs_are_processed_one_after_the_other(offline):
     async def slow_collect(rid):
         log.append((rid, "start"))
         other = second if rid == first else first
-        assert db.get_run(other).status in (RunStatus.queued, RunStatus.complete)  # never two at once
+        assert db.get_run(other).status in (RunStatus.queued, RunStatus.complete, RunStatus.failed)  # never two at once
         await asyncio.sleep(0.05)
         db.update_run(rid, finish_reason=FinishReason.finish)
         log.append((rid, "end"))
@@ -175,7 +188,7 @@ async def test_two_queued_runs_are_processed_one_after_the_other(offline):
     stop = asyncio.Event()
     loop = asyncio.create_task(worker.worker_loop(stop, collect=slow_collect))
     for _ in range(200):
-        if all(db.get_run(r).status == RunStatus.complete for r in (first, second)):
+        if all(db.get_run(r).status in (RunStatus.complete, RunStatus.failed) for r in (first, second)):
             break
         await asyncio.sleep(0.02)
     stop.set()

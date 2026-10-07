@@ -67,9 +67,22 @@ def content_bar(sections: dict, parts: dict, mode: str) -> list[str]:
     return short
 
 
-def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short: list[str]) -> list[str]:
-    """What we could not see, and why (always at least one)."""
-    spots = []
+# How collection ended, when it ended early (V1): stated first in blind spots and in Method.
+EARLY_END = {
+    "stopped": "Partial pack: collection was stopped by hand; the analysis used what was collected.",
+    "budget_limit": "Partial pack: collection reached its budget; the analysis used what was collected.",
+    "time_limit": "Partial pack: collection reached its time limit; the analysis used what was collected.",
+    "error": "Partial pack: the research agent stopped with an error (or the service restarted); the analysis "
+             "used what was collected.",
+}
+
+
+def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short: list[str],
+                extra: list[str] = ()) -> list[str]:
+    """What we could not see, and why (always at least one). `extra` (a failed step) comes first."""
+    spots = list(extra)
+    if run.finish_reason in EARLY_END:
+        spots.append(EARLY_END[str(run.finish_reason)])
     col = run.collection or {}
     for s in col.get("sources_dropped", []):
         spots.append(f"Source dropped: {s['source_unit']} - {s['reason']}")
@@ -87,9 +100,9 @@ def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short
     if not sections["what_performs"]:
         spots.append("No engagement data: what performs is empty.")
     if run.fallback_used:
-        spots.append("The agent loop failed; the fallback plan collected the evidence.")
+        spots.append("The research agent stopped early; the remaining planned sources were collected automatically.")
     if run.top_up_used:
-        spots.append("Evidence was short; collection was topped up from kept sources.")
+        spots.append("Evidence was short; more was collected from sources that were already working.")
     small = [s["name"] for s in sections["segments"] if s["counts"]["matching"] < 5]
     if small:
         spots.append(f"Small segments (under 5 posts): {', '.join(small)}.")
@@ -168,7 +181,7 @@ def coverage(run: Any, docs: list[Any], evidence: list[dict], thin: bool) -> dic
 
 
 def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict], clusters: dict[str, Any],
-             docs: list[Any], brand_voice: str | None) -> tuple[P.ContextPack, list[str]]:
+             docs: list[Any], brand_voice: str | None, extra_spots: list[str] = ()) -> tuple[P.ContextPack, list[str]]:
     """(validated ContextPack, content-bar shortfalls). Raises if the pack is invalid."""
     from ctxpack import db
 
@@ -222,7 +235,7 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
         "compliance_flags": [_fields(P.ComplianceFlag, f) for f in flags],
         "risks": [_fields(P.Risk, it) for it in s["risks"]],
         "blind_spots": [{"id": f"BLS-{n:02d}", "text": t}
-                        for n, t in enumerate(blind_spots(run, s, analysis, interp, bar_short), 1)],
+                        for n, t in enumerate(blind_spots(run, s, analysis, interp, bar_short, extra_spots), 1)],
         "guardrails": {"say_this": s.get("guardrails_draft", {}).get("say_this", []),
                        "not_this": s.get("guardrails_draft", {}).get("not_this", []),
                        "never_claim": never_claim,
@@ -307,3 +320,38 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
     out.pack_id = db.save_pack(pack, run_id=run_id)
     log.info("run %s packaged %s (thin: %s)", run_id, out.pack_id, out.bar_short)
     return out
+
+
+# --------------------------------------------------------------------------
+# Evidence-only pack (V1): when analysis or packaging fails twice
+# --------------------------------------------------------------------------
+
+
+def package_evidence_only(run_id: str, failure: str) -> str | None:
+    """A partial pack from the collected posts alone: sources, method, the most engaging relevant posts and
+    a blind spot naming the step that failed. Code only: no paid call, so it cannot fail the same way."""
+    from ctxpack import db
+    from ctxpack.schemas.plan import Interpretation
+    from ctxpack.synthesis.write import SECTION_ORDER, evidence_entry
+
+    run = db.get_run(run_id)
+    cfg = load_yaml("modes")
+    docs = db.get_documents(run_id)
+    relevant = [d for d in docs if d.is_relevant and not d.short_form]
+    if not relevant:
+        return None
+    relevant.sort(key=lambda d: (-(d.engagement_percentile if d.engagement_percentile is not None else -1),
+                                 -(d.posted_at.toordinal() if d.posted_at else 0), d.id))
+    chars = cfg["synthesis"]["evidence_chars"]
+    evidence = [evidence_entry(d, f"EV-{n:04d}", chars)
+                for n, d in enumerate(relevant[:cfg["worker"]["evidence_only_max"]], 1)]
+    sections = {name: [] for name in SECTION_ORDER} | {"risks": [], "voice": {}, "guardrails_draft": {}}
+    draft = {"verified": {"sections": sections, "evidence": evidence}, "generic_points": []}
+    parts = {"do_first": [], "channel_plan": [],
+             "playbook": {"hooks": [], "creative_brief": None, "objection_handling": [], "keywords": {},
+                          "targets": [], "this_week": []}}
+    pack, _ = assemble(run, Interpretation.model_validate(run.interpretation), draft, parts, [], {}, docs,
+                       run.brand_voice, extra_spots=[failure])
+    pack_id = db.save_pack(pack, run_id=run_id)
+    log.info("run %s: evidence-only pack %s (%s)", run_id, pack_id, failure)
+    return pack_id

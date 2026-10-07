@@ -156,8 +156,10 @@ export function Notices({ summary }: { summary: Summary }) {
       {summary.fallbacks.map((f, n) => (
         <p key={n} className="flex gap-2 rounded-lg border border-line-strong bg-wash p-3 text-sm text-ink">
           <TriangleAlert aria-hidden="true" size={16} className="mt-0.5 shrink-0" />
-          {f.kind === "top_up" ? "Evidence was short, so more was collected from sources that were already working. " : "The research agent stopped early, so the remaining planned sources were collected automatically. "}
-          <span className="text-ink-2">{f.reason}</span>
+          {f.kind === "top_up" ? "Evidence was short, so more was collected from sources that were already working. "
+            : f.kind === "evidence_only" ? "The analysis could not finish, so the pack shows the collected posts. "
+            : "The research agent stopped early, so the remaining planned sources were collected automatically. "}
+          {f.kind !== "evidence_only" && <span className="text-ink-2">{f.reason}</span>}
         </p>
       ))}
       {summary.errors.map((e, n) => (

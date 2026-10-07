@@ -10,8 +10,37 @@ import { AgentLog, Announcer, CoverageBars, Counters, Notices, SourcesVerdict, S
 import { ReplayPage } from "./ReplayPage";
 import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
+import { addMyPack, rerunUrl, type RunInputs } from "../lib/rerun";
 
 const FINISHED = ["complete", "partial", "failed", "stopped"];
+
+const REPLANS: Record<string, { label: string; change: (i: RunInputs) => Parameters<typeof rerunUrl>[1] }> = {
+  broaden_audience: { label: "Broaden the audience", change: (i) => ({ brief: `${i.brief} (any audience, broadly)` }) },
+  include_english: { label: "Include English posts", change: (i) => ({ brief: `${i.brief} (include English-language posts)` }) },
+  widen_window: { label: "Look back a full year", change: () => ({ window: 365 }) },
+  run_standard: { label: "Run Standard (more sources)", change: () => ({ mode: "standard" }) },
+};
+
+/** Below the floor (V1): why, in plain words, and one-click re-plans - never a silent hang. */
+function ThinScreen({ thin, inputs }: { thin: NonNullable<NonNullable<RunStatus["collection"]>["thin"]>; inputs: RunInputs }) {
+  return (
+    <section aria-labelledby="thin" className="space-y-3 rounded-lg border border-line-strong bg-wash p-4">
+      <h2 id="thin" className="text-lg font-semibold text-ink">Not enough to build a pack this time</h2>
+      <p className="text-sm text-ink-2">The research found {thin.relevant} posts about this topic; a pack needs at least {thin.needed}.</p>
+      <ul className="list-disc space-y-1 pl-5 text-sm text-ink">
+        {thin.reasons.map((r) => <li key={r.code}>{r.text}</li>)}
+      </ul>
+      <p className="text-sm font-medium text-ink">Try again with one change:</p>
+      <div className="flex flex-wrap gap-2">
+        {thin.replans.filter((k) => REPLANS[k]).map((k) => (
+          <Link key={k} to={rerunUrl(inputs, REPLANS[k].change(inputs))}
+                className="rounded-lg border border-ink px-3 py-1.5 text-sm text-ink hover:bg-paper">{REPLANS[k].label}</Link>
+        ))}
+        <Link to={rerunUrl(inputs)} className="rounded-lg px-3 py-1.5 text-sm text-ink underline">Edit the brief yourself</Link>
+      </div>
+    </section>
+  );
+}
 
 function minutes(secs: number) {
   return secs < 60 ? "under a minute" : `about ${Math.round(secs / 60)} min`;
@@ -84,6 +113,8 @@ function LiveRun({ runId }: { runId: string }) {
   if (!run) return <Skeleton lines={3} label="Loading the run" />;
   const finished = FINISHED.includes(run.status);
   const packId = summary.packId ?? run.pack_id;
+  const thin = run.collection?.thin;
+  if (packId && finished) addMyPack({ pack_id: packId, brief: run.brief, at: run.created_at });
 
   const stop = async () => {
     const key = readRunKey();
@@ -97,17 +128,17 @@ function LiveRun({ runId }: { runId: string }) {
   const status = run.status === "queued" && summary.queue
     ? <p className="flex items-center gap-2"><Hourglass aria-hidden="true" size={15} />
         Waiting in line: position {run.queue_position ?? summary.queue.position}, starts in {minutes(summary.queue.estimated_start_secs)}. It starts by itself.</p>
+    : run.status === "failed" && thin ? <p className="text-ink">Finished without a pack: too few posts about this topic.</p>
     : run.status === "failed" ? (
-        <p role="alert" className="text-ink">
-          {run.error ?? "The run failed."}{" "}
-          {packId ? "A partial pack was saved from what was collected." : "The posts collected so far were saved; no pack could be built from them."}
-        </p>)
-    : finished ? <p>Finished: {run.status}{run.status === "partial" ? " (stopped early - the pack uses what was collected)" : ""}.</p>
+        <p role="alert" className="text-ink">{run.error ?? "The run could not finish."} Your inputs are kept: run it again below.</p>)
+    : run.status === "partial" && packId ? <p>Finished with a partial pack: open it to see what is missing and why (first blind spot).</p>
+    : finished ? <p>Finished: the pack is ready.</p>
     : <p>{live ? "Live" : "Reconnecting…"} · {run.mode === "standard" ? "Standard" : "Quick"} · started {new Date(run.created_at).toLocaleTimeString()}</p>;
 
   return (
     <TheatreLayout title={run.brief} status={status} summary={summary} collection={run.collection}
                    ownerCost={ownerCost && (summary.cost ?? ownerCost)}>
+      {finished && thin && run.inputs && <ThinScreen thin={thin} inputs={run.inputs} />}
       <div className="flex flex-wrap gap-2">
         {packId && (
           <Link to={`/packs/${packId}`} className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-ink">
@@ -119,6 +150,11 @@ function LiveRun({ runId }: { runId: string }) {
                   className="inline-flex items-center gap-2 rounded-lg border border-ink px-3 py-2 text-sm text-ink disabled:opacity-60">
             <Square aria-hidden="true" size={13} /> Stop and build the pack now
           </button>
+        )}
+        {finished && run.inputs && (!packId || run.status === "partial") && (
+          <Link to={rerunUrl(run.inputs)} className="inline-flex items-center gap-2 rounded-lg border border-ink px-3 py-2 text-sm text-ink">
+            Run again with these inputs
+          </Link>
         )}
       </div>
     </TheatreLayout>

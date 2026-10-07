@@ -6,6 +6,7 @@ import type {
   Evidence1,
   Interpretation,
 } from "./types";
+import type { RunInputs } from "./rerun";
 
 /** The API always sends every field (the backend dumps defaults too), so responses are fully present. */
 type DeepRequired<T> = T extends (infer U)[] ? DeepRequired<U>[]
@@ -53,7 +54,9 @@ export interface RunStatus {
     sources_used: { source_unit: string; platform: string; reason: string; kept: number; relevant_share: number }[];
     sources_dropped: { source_unit: string; reason: string }[];
     gaps: string[]; finish_reason: string | null; fallback_used: boolean; top_up_used: boolean;
+    thin?: { relevant: number; needed: number; reasons: { code: string; text: string }[]; replans: string[] } | null;
   } | null;
+  inputs?: RunInputs;
   estimate: Estimate;
 }
 
@@ -150,6 +153,7 @@ export const startRun = (runKey: string, runId: string,
 export const stopRun = (runKey: string, runId: string) =>
   request<RunStatus>(`/runs/${runId}/stop`, { method: "POST" }, runKey);
 export const getRun = (runId: string) => request<RunStatus>(`/runs/${runId}`);
+export const getPackInputs = (packId: string) => request<RunInputs>(`/packs/${encodeURIComponent(packId)}/inputs`);
 
 // --- owner views (the main run key only; the guest key is refused) ----------------
 export interface OwnerRun { run_id: string; brief: string; mode: string; status: string; requester: string;

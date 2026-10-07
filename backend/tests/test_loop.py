@@ -285,6 +285,7 @@ async def test_stop_during_the_loop_gives_a_partial_run(offline, monkeypatch):
         return [TIKTOK]
 
     monkeypatch.setattr(loop, "fake_model", lambda state: scripted([[REDDIT], press_stop]))
+    monkeypatch.setattr(orchestrator, "thin_floor", lambda: 1)   # one Reddit call: enough for this check (V1)
     from ctxpack import worker
     await worker.run_next()
     run_ = db.get_run(run_id)

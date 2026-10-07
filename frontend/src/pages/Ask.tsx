@@ -8,6 +8,7 @@ import {
   type Options, type PlanUnit, type RunStatus,
 } from "../lib/api";
 import { explain, readRunKey, saveRunKey } from "../lib/runKey";
+import { loadDraft, rememberAnswer, rememberedAnswer, saveDraft } from "../lib/rerun";
 
 const EXAMPLES = [
   "Launching a snack brand in the Netherlands",
@@ -36,19 +37,26 @@ function useRotatingExample(paused: boolean) {
 // --- the form -------------------------------------------------------------------------------
 
 export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
-  const [params] = useSearchParams(); // prefill from a thin-evidence option: ?brief=&mode=&window=
+  // Prefill: "Run again" or a re-plan (?brief=&mode=&window=&voice=&answer=), else this tab's last draft.
+  const [params] = useSearchParams();
+  const draft = params.get("brief") ? null : loadDraft();
   const [options, setOptions] = useState<Options | null>(null);
-  const [brief, setBrief] = useState(params.get("brief") ?? "");
-  const [mode, setMode] = useState<"quick" | "standard">(params.get("mode") === "standard" ? "standard" : "quick");
-  const [windowDays, setWindowDays] = useState<number | null>(params.get("window") ? Number(params.get("window")) : null);
-  const [voice, setVoice] = useState("");
+  const [brief, setBrief] = useState(params.get("brief") ?? draft?.brief ?? "");
+  const [mode, setMode] = useState<"quick" | "standard">(
+    (params.get("mode") ?? draft?.mode) === "standard" ? "standard" : "quick");
+  const [windowDays, setWindowDays] = useState<number | null>(
+    params.get("window") ? Number(params.get("window")) : draft?.window ?? null);
+  const [voice, setVoice] = useState(params.get("voice") ?? draft?.voice ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const keyRef = useRef<HTMLInputElement>(null);
   const example = useRotatingExample(brief.length > 0);
 
+  useEffect(() => saveDraft({ brief, mode, window: windowDays, voice }), [brief, mode, windowDays, voice]);
   useEffect(() => {
-    getOptions().then((o) => { setOptions(o); if (!params.get("mode")) setMode(o.default_mode); }).catch(() => setOptions(null));
+    if (params.get("answer")) rememberAnswer(params.get("answer")!);
+    getOptions().then((o) => { setOptions(o); if (!params.get("mode") && !draft) setMode(o.default_mode); })
+      .catch(() => setOptions(null));
     if (keyRef.current) keyRef.current.value = readRunKey(); // the DOM property only - never an attribute
   }, []);
 
@@ -144,7 +152,7 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
 // --- the clarifying question ------------------------------------------------------------------
 
 export function QuestionCard({ run, onPlanned }: { run: RunStatus; onPlanned: (run: RunStatus) => void }) {
-  const [other, setOther] = useState("");
+  const [other, setOther] = useState(rememberedAnswer());  // "Run again": your earlier answer, ready to send
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const q = run.clarifying_question!;

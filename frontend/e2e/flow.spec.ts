@@ -17,7 +17,7 @@ test("brief to pack, with the evidence drawer and accessibility checks", async (
   await expect(page.getByText("See the pack").first()).toBeVisible();
   await noSeriousA11yIssues(page, "Ask page");
 
-  await page.getByLabel("Your brief").fill("Launching a snack brand in the Netherlands");
+  await page.getByLabel("Your brief").fill("Gen Z and meal prep");   // enough recorded posts for a pack
   await page.getByLabel("Run key").fill(KEY);
   await page.getByRole("button", { name: "Plan the research" }).click();
   await expect(page.getByRole("heading", { name: "Here's what I understood" })).toBeVisible();
@@ -75,4 +75,19 @@ test("a featured pack: summary, drawer with real posts, agent view, handoff, rep
   await page.getByRole("button", { name: /Skip to the end/ }).click();
   await expect(page.getByText(/of \d+ events · done/)).toBeVisible();   // the public copy has no cost events
   await noSeriousA11yIssues(page, "Replay");
+});
+
+
+test("too few posts ends on the thin screen with one-click re-plans (V1)", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Your brief").fill("Launching a snack brand in the Netherlands");  // 0 recorded posts
+  await page.getByLabel("Run key").fill(KEY);
+  await page.getByRole("button", { name: "Plan the research" }).click();
+  await page.getByRole("button", { name: "Start research" }).click();
+  await expect(page.getByRole("heading", { name: "Not enough to build a pack this time" })).toBeVisible({ timeout: 90_000 });
+  await expect(page.getByRole("link", { name: "Run Standard (more sources)" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Run again with these inputs" })).toBeVisible();
+  await noSeriousA11yIssues(page, "Thin screen");
+  await page.getByRole("link", { name: "Run Standard (more sources)" }).click();
+  await expect(page.getByLabel("Your brief")).toHaveValue("Launching a snack brand in the Netherlands");
 });

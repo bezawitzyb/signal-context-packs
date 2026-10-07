@@ -1,0 +1,445 @@
+================================================================================
+ SIGNAL - TOP 10 USER-VALUE CHANGES, v2 (prompt for Claude Code)
+ The ten changes that bring the end user (a marketer or content creator)
+ the most value, based on the first user test. Self-contained: use this
+ INSTEAD of files 05, 06 and 07.
+ Steps V1-V10 are in BUILD order (dependencies first). Value ranking:
+   1 V1 reliability            2 V3 smart clarifying questions
+   3 V8 post briefs + calendar 4 V4 condensed content
+   5 V9 revised pack page + handoff   6 V2 markets/languages
+   7 V6 LinkedIn               8 V7 news hooks + timing
+   9 V10 ask this pack         10 V5 opportunity rigor
+================================================================================
+
+Read CLAUDE.md, docs/01_Product_Requirements_Document.txt,
+docs/02_Development_Phases.txt, docs/03_Technical_Implementation_Guide.txt,
+config/modes.yaml, config/scoring.yaml and config/catalog.yaml.
+
+We are making ten changes to SIGNAL, Steps V1-V10 below. First produce a
+plan (V0), flag any risks, then work through them IN ORDER, one at a time. After each
+step: run the tests (USE_FIXTURES=true, LLM_FAKE=true - no money spent),
+tell me in 5 plain-English bullets what changed and how I can see it
+working, list the CHECK items for me to run, then STOP and wait for my
+approval. When I approve, commit as "Change V<n> <short name>". Do not
+push to GitHub until I say so.
+
+Rules for every step:
+- All security rules in CLAUDE.md and guide A3b still apply: never read,
+  print or "check" .env; scraped data is untrusted; if a new secret is
+  needed, tell me its variable NAME and I will add it myself. gitleaks
+  must pass before every commit.
+- Docs first, then code: update the PRD and guide so they match.
+  Numbers go in config/*.yaml, never hard-coded.
+- No per-brief or per-market source lists anywhere (PRD D10).
+- New LLM calls use the existing client: structured output, schema
+  validation with retry, scraped text inside <untrusted_user_content>
+  tags, cost tracked against the run budget.
+- Keep author hashing, PII redaction and quote verification on every
+  data path, including new sources.
+- All schema changes go into ONE version, 1.1: the first step that
+  changes the schema bumps schema_version, writes the CHANGELOG entry in
+  docs/SCHEMA.md and a 1.0 -> 1.1 migration; later steps extend both.
+  Every pack in featured/ and examples/ must validate after each step.
+- Anything the end user reads (UI labels, buttons, empty states, toasts,
+  exports) is written in plain marketing language: no "tokens", "JSON
+  schema", "evidence ids", "claim_type" or other internal terms on
+  screen. Internal names stay in code, API and docs.
+
+
+--------------------------------------------------------------------------
+V0. PLAN ONLY (no code)
+--------------------------------------------------------------------------
+For each step V1-V10: files you will touch, schema fields added/changed,
+new config keys with defaults, new tests, build-time estimate, and any
+conflict with the existing docs or code. For V9, include a wireframe
+(ASCII is fine) of the revised pack page. Wait for my approval.
+
+--------------------------------------------------------------------------
+V1. NEVER LOSE A RUN: RELIABILITY AND PERSISTENCE        (value rank 1)
+--------------------------------------------------------------------------
+1. Investigate first: find why a run whose agent loop failed showed
+   "stopped early, the pack uses what was collected" but never produced
+   a pack. Explain the root cause to me in plain English before fixing.
+2. Guarantee: any run with >= the minimum relevant docs (scoring.yaml)
+   ALWAYS ends with a pack, whatever fails after collection (agent loop
+   error, timeout, a failed synthesis call). The pack is marked partial
+   and the failure is stated in blind_spots and Method.
+3. Below the minimum, the run ends on a clear thin-evidence screen that
+   says why in plain words (e.g. "this audience seems to read more than
+   it posts", "very few posts in the chosen languages") and offers
+   one-click re-plans: broaden audience, include English, widen the time
+   window, run Standard. Never a silent hang.
+4. Persistence: runs and packs are saved in Neon (PRD FR-H7). If packs
+   only live in browser memory today, fix that. Every pack has a
+   permanent link /packs/{id}; every run has /runs/{id}. Refreshing or
+   reopening the progress page reconnects to the same run from its last
+   event - it never restarts or pays twice.
+5. Inputs are never lost: the form keeps its values after a failure or
+   refresh; every pack and failed run has "Run again with these inputs",
+   which opens the form fully pre-filled (brief, clarifying answers,
+   brand voice, mode).
+6. Home page "My packs": packs created in this browser (ids in
+   localStorage, wrapped in try/catch) plus featured packs.
+7. Remove the "not persistent" warning once this works.
+CHECK: raise an exception mid-loop, mid-synthesis and on timeout (tests)
+-> a partial pack or the thin screen each time; refresh the progress
+page mid-run -> it continues; reopen a pack link -> it loads; "Run
+again" pre-fills every field.
+
+--------------------------------------------------------------------------
+V2. CORRECT MARKETS AND LANGUAGES                         (value rank 6)
+--------------------------------------------------------------------------
+1. brief.interpreted.markets[] replaces the single market:
+   [{code (ISO country or region: "eu", "dach", "benelux", "nordics",
+   "cee"), countries[], weight, assumed}]. Named regions and countries
+   are always recognised; "global" only when the brief names no
+   geography. Google Trends and locale choices use these countries.
+2. Supported languages move to config (en, de, nl, fr, it, es, pl, sv,
+   da, nb, fi, pt). Chosen from the markets' official languages
+   (weighted) plus English, capped per mode (quick 4, standard 6). The
+   plan screen shows chosen AND excluded languages with the reason
+   ("Polish left out to keep the run fast - swap it for another").
+3. Dates: extend relative-date parsing where cheap; otherwise use
+   absolute/platform dates and mark undated docs as before. Extraction
+   keeps the text_en translation for all languages.
+4. Add a 5th eval brief: "digital manufacturing / frontline operations
+   software for plant managers in Europe incl. Germany, Poland and the
+   Nordics". Expect markets eu with those countries and de + pl among
+   the languages.
+CHECK: "...in Europe" never gives "global"; a Poland brief includes
+Polish; left-out languages show a reason; eval brief 5 passes.
+
+--------------------------------------------------------------------------
+V3. SMART CLARIFYING QUESTIONS                            (value rank 2)
+--------------------------------------------------------------------------
+Replaces PRD FR-A2's "at most one clarifying question" and decision D2.
+The goal: before planning, the agent asks the few questions that will
+most improve THIS research, based on what the user already typed - not a
+fixed form.
+
+1. After the user types a brief (and optional brand voice) and clicks
+   Plan, one interpretation call reads the brief and produces:
+   - the interpretation (topic, markets, languages, audience,
+     competitors - as today, with "assumed" flags), and
+   - clarifying_questions[] (0 to max in modes.yaml, default 3):
+     {id, question, why_it_helps (one short line shown to the user),
+      fills (audience_roles | goal | offer | channels_in_use | market |
+      competitors | timeframe | other), options[] (3-5 answer chips
+      written for THIS brief), multi_select, allow_free_text}.
+2. How the agent chooses questions (put this in the interpreter prompt
+   and the PRD):
+   - Find the gaps that would most change sources, research questions
+     or the usefulness of the output, and ask about those first. Typical
+     high-impact gaps: who exactly the user wants to reach (e.g. B2B
+     buyer vs. influencer vs. end user; consumer vs. retailer), what the
+     research is for (content calendar, campaign, positioning, product
+     research, sales), what they offer, which market, which channels
+     they already use.
+   - Never ask about something the brief already answers; never ask
+     generic questions that would fit any brief.
+   - Phrase questions in the user's terms and the brief's language, with
+     answer chips specific to the brief. Example for "digital
+     manufacturing software, Europe": "Who should this speak to?" ->
+     "Plant managers who sign off budgets" / "Operations and CI leads
+     who champion tools" / "Operators on the shop floor" / "All of
+     them".
+   - If the brief is specific enough, ask nothing and go straight to the
+     plan.
+3. UI: questions appear as cards with tappable chips, a free-text
+   option, and "Skip - let the agent decide" per question plus "Skip all
+   and plan". Answers are shown back as editable chips on the
+   interpretation screen (markets, languages, audience, roles,
+   competitors - competitors labelled "Starter list - edit or add
+   yours"); any edit re-plans in place without retyping. User-added
+   competitors are always searched.
+4. Answers are stored in brief.intake: {audience_roles[], goal, offer,
+   channels_in_use[], competitors_user[], timeframe, other_answers[]}
+   plus the questions asked. Research questions and hypotheses are
+   generated per selected role; evidence carries role (buyer |
+   influencer | user | consumer | other | unknown) when a post shows it.
+5. Brand voice keeps its field with helper text
+6. Agents (API/MCP) are never asked: they may pass the intake fields,
+   otherwise defaults apply ("agent decides").
+7. Eval: add to the harness - a specific brief gets 0-1 questions; the
+   vague "snacks" brief gets questions about market and audience; the
+   manufacturing brief gets a buyer/influencer/user question; no brief
+   gets a question its text already answers.
+CHECK: questions differ per brief and fit it; answering changes the
+research questions and plan; "Skip all" still works; an over-specific
+brief goes straight to the plan; "Run again" (V1) restores answers.
+
+--------------------------------------------------------------------------
+V4. CONDENSED CONTENT: EVERY INSIGHT ONCE, IN ITS BEST PLACE
+                                                          (value rank 4)
+--------------------------------------------------------------------------
+Keep the sections that answer different questions (tensions,
+motivations, objections, pain points, themes and so on) - do NOT replace
+them. Fix the repetition: today the same finding shows up in several
+sections in slightly different words. Each insight must appear once, in
+the place where it is most useful, and be linked from anywhere else it
+is relevant.
+
+1. Give every section one clear job (write these in the PRD and in the
+   section-writer prompt), e.g.:
+   - Themes: what people talk about and how they frame it
+   - Pain points / needs: what gets in their way
+   - Tensions: where people disagree or feel torn (two sides, both shown) 
+& Objections: why they would say no to a product like this, with a
+     counter-angle (inferred; tailored to brief.intake.offer if given,
+     else "adapt to your offer")
+   - Motivations: what they want to achieve
+   - Landscape / platform lens: how the conversation differs by place
+     and over time - not a re-statement of themes
+   - What performs: what kind of content works and why
+2. Canonical home + links: after synthesis, a consolidation step (code
+   similarity check first, then one small model call only for the
+   borderline pairs) finds items across sections that express the same
+   finding. It keeps the item in the section whose job fits best,
+   merges the evidence into it, and replaces the duplicates with a link.
+   Schema: every item gains related_ids[] (links to connected items in
+   other sections, e.g. an objection linked to the pain point behind it
+   and the motivation it blocks) and items keep one primary location.
+3. Show connections instead of repeating: on an objection card, the
+   pain point behind it and the motivation it blocks appear as small
+   linked chips ("comes from: legacy machines are hard to connect"),
+   not restated paragraphs. Same pattern everywhere.
+4. Every section opens with a one-line so_what tied to the user's goal
+   (brief.intake.goal): what this section means for them.
+5. What performs leads with a takeaway (a concrete recommendation, e.g.
+   "Ask a specific shop-floor question rather than a vendor question")
+   and why; example posts are collapsed underneath.
+6. Merge the old small sections: moments -> timing inside channel cards
+   (V7 fills it); hypotheses -> a table in Method with status supported
+   / refuted / inconclusive; whats_new -> folded into Landscape.
+7. Empty sections never appear blank: show empty_reason in plain words
+   and 1-2 next steps (e.g. "Too few people described themselves to form
+   segments - try adding a role or running Standard").
+8. Keep or lower item counts; use the freed budget for sharper writing.
+CHECK: on a fixture pack, the similarity check finds no two sections
+stating the same finding; tensions, motivations and objections all still
+exist and each has a distinct job; objection cards show linked chips to
+related items; what performs leads with takeaways; empty sections show a
+reason and next steps.
+
+--------------------------------------------------------------------------
+V5. OPPORTUNITIES YOU CAN TRUST                          (value rank 10)
+--------------------------------------------------------------------------
+1. Rename White space to Opportunities in UI, exports and docs.
+2. "supported" only with >= N distinct authors across >= 2 communities
+   (scoring.yaml); otherwise "signal" with confidence at most emerging
+   and the label "early signal - check before acting". A single post is
+   never "supported".
+3. Before claiming anything is unserved, one web_search per opportunity
+   for existing products/services/content in the brief's markets. Found
+   -> list them in existing_solutions[] {name, url} and reword the
+   opportunity as a gap in HOW it is served (price, fit, language,
+   format). Not found -> "no existing solution found in our search".
+   Never write "nobody serves this".
+4. kind tags each opportunity: content_idea, product_idea, positioning.
+   Schema: opportunities[] {id, opportunity, kind, evidence_ids,
+   distinct_authors, communities, existing_solutions[], status,
+   confidence, related_ids[]} replaces white_space[] (migration: old
+   items -> "signal").
+CHECK: a fixture opportunity from one post shows as early signal; an
+opportunity whose search finds a known product lists it and never says
+"nobody serves".
+
+--------------------------------------------------------------------------
+V6. LINKEDIN AS A SOURCE                                  (value rank 7)
+--------------------------------------------------------------------------
+1. On Apify, find and verify live (one small paid call - tell me the
+   cost first) a maintained actor for LinkedIn keyword post search plus
+   comments, and a fallback actor. Prefer actors that do NOT need our own
+   cookies; if one needs a session, tell me the variable NAME and use a
+   dedicated research account only. Record in config/catalog.yaml: actor
+   id, fallback, price per 1,000 items, measured latency, needs_session,
+   output fields.
+2. Update PRD DH1 to allow content visible to any logged-in user, never
+   private groups, DMs, closed profiles or membership-approved content;
+   update DH8, DH12, the risks table (account banned mid-run -> blind
+   spot) and default blind_spots text accordingly.
+3. Tool search_linkedin(query, limit, reason): same cleaning chain as the
+   other tools (normalise, hash authors immediately, redact, dates +
+   window, dedupe, spam, relevance), sets evidence.requires_login,
+   refuses private/closed targets, respects budgets and the per-source
+   ceiling; its description states measured latency.
+4. Failure: actor error, ban or empty result -> clear status, fallback
+   once, then a blind_spots entry with impact.
+5. Collector prompt: GENERAL guidance only - professional and B2B
+   discourse often lives on LinkedIn, YouTube, trade media and niche
+   forums; some audiences read more than they post. Use the V3 roles,
+   goal and channels. Source balance: no platform above the share in
+   modes.yaml (default 50%) of planned source units unless the plan says
+   why.
+6. Quotes in the summary and key findings prefer posts anyone can open
+   (requires_login = false) when an equally strong quote exists; the
+   evidence drawer shows "you may need to log in to LinkedIn to view
+   this" otherwise.
+CHECK: the tool works on its fixture and on one real call; no raw names
+or handles anywhere; eval brief 5 plans LinkedIn and keeps Reddit
+<= 50%; the Gen Z brief does not lean on LinkedIn.
+
+--------------------------------------------------------------------------
+V7. NEWS HOOKS AND TIMING                                 (value rank 8)
+--------------------------------------------------------------------------
+1. News hooks: after collection, web_search in the brief's languages for
+   news, regulation, trade fairs and industry events from the last 30
+   days and the next 90 days related to top themes and pain points. Keep
+   up to 5 as news_hooks[] {id "NWS-xx", headline (own words), date,
+   source_url, why_it_matters, related_ids[], claim_type external}.
+   No URL -> dropped. Never invented.
+2. Timing in channel cards: channel_plan[].timing[] {label, when, why,
+   evidence_ids, claim_type observed | external, source_url}, from time
+   mentions in the evidence (rituals, seasons, weekdays), news hooks,
+   and calendar facts such as budget cycles or fiscal year ends ONLY
+   when a cited source or evidence supports them - never from model
+   knowledge alone. playbook.this_week[] items may link a news hook or
+   timing item.
+3. News hooks appear as "Ride this now" in the summary and in the
+   this-week plan; timing appears as chips on channel cards.
+CHECK: every news hook and external timing item has a working URL; none
+appear without one; a fixture pack shows timing chips with receipts.
+
+--------------------------------------------------------------------------
+V8. POST BRIEFS, DRAFTS AND A NOTION CONTENT CALENDAR     (value rank 3)
+--------------------------------------------------------------------------
+1. post_briefs[] (5-8, built from pain points, objections, top hooks,
+   opportunities and news hooks): {id "PST-xx", channel (preferring
+   brief.intake.channels_in_use), role, goal, hook, angle, key_points
+   [3-5, each with evidence_ids], structure (e.g. "story -> lesson ->
+   question"), format (text post, carousel, short video, blog article,
+   newsletter), their_words_to_use[] (lexicon ids), cta, avoid[]
+   (guardrail ids), news_hook_id|null, confidence}.
+2. Full drafts for the top 3 briefs, in brand voice if given, else
+   neutral-professional, sized for the channel. Drafts pass the
+   guardrail and do/don't-say checks; any factual claim must trace to
+   evidence or is removed; labelled "Draft - review before posting".
+3. content_calendar[] for 4 weeks: {id "CAL-xx", week, suggested_day,
+   channel, post_brief_id, timing_reason (channel timing / news hook),
+   status "idea"}; never more posts per week than the channel plan
+   recommends.
+4. Exports: calendar as a Notion-importable CSV (Title, Week, Day,
+   Channel, Audience, Hook, Angle, Key points, Call to action, Status,
+   Pack link, Source links; UTF-8 with BOM; formula-safe cells per PRD
+   DH11) and as a table inside the Notion export; briefs in the Markdown
+   report, the AI-writer brief and the skill (references/posts.md).
+   API + MCP: get_post_briefs(pack_id), get_calendar(pack_id).
+   (The page section itself is laid out in V9.)
+CHECK: every key point cites evidence; drafts contain no unsupported
+claim and no forbidden phrase; the CSV imports into a Notion database
+with the right columns and Dutch/Polish characters intact; channels
+follow the user's channels when given.
+
+--------------------------------------------------------------------------
+V9. REVISED PACK PAGE AND HANDOFF                         (value rank 5)
+--------------------------------------------------------------------------
+Redesign the pack page around the condensed content (V4) and the new
+sections (V5, V7, V8). Show me the V0 wireframe again with any changes
+before building.
+
+1. Structure: three clearly labelled parts, in this order:
+   SUMMARY (first screen, readable in under a minute)
+     - The brief as understood (audience, goal, market) in one line
+     - What we found: 3 plain-language lines
+     - Do this first: 1-3 actions
+     - Five key truths, each with one quote and its strength badge
+     - Ride this now: up to 2 news hooks (V7)
+   UNDERSTAND YOUR AUDIENCE
+     - Their words (vocabulary, phrases, do/don't say)
+     - Pain points, Tensions, Motivations, Objections - as four short,
+       distinct blocks with linked chips between related items (V4)
+     - Segments (with empty-state reason if none)
+     - Landscape: how the conversation differs by platform and over time
+   ACT ON IT
+     - Post briefs & content calendar (V8): brief cards with expandable
+       drafts and copy buttons, a 4-week calendar grid
+     - Channels (with timing chips) and what performs (takeaways first)
+     - Opportunities (supported vs early signal, V5)
+     - Guardrails
+   THE RESEARCH (collapsed by default)
+     - Sources kept and dropped, method, hypotheses table, blind spots,
+       all evidence
+2. Progressive disclosure: every card shows a headline, the so_what
+   line and one quote; details, extra quotes and source links open on
+   tap. No section shows more than its top items before "Show more".
+3. Sticky navigation shows the three parts and their sections; a "How
+   to read this" link explains strength badges in plain words, generated
+   from scoring.yaml (e.g. "Strong - many different people in several
+   communities say this"; "Early signal - only a few people, worth
+   checking"), plus "seen in posts" vs "our interpretation" vs "from
+   outside sources". Every badge has the same text as a tooltip.
+4. Handoff panel, written for marketers - describe each option by what
+   it is for and roughly how long it is, never in tokens or tech terms:
+     - "Quick brief - half a page. Paste into ChatGPT or Claude to
+       start writing."   (new short tier: audience, goal, top 3 truths,
+       their words, 3 do / 3 don't)
+     - "Brief for your AI writer - about 2 pages. Everything an AI
+       copywriter needs: audience, language, rules, post ideas."
+     - "Full report - for Notion, Google Docs or sharing with your team"
+       (Markdown)
+     - "Content calendar - import into Notion or a spreadsheet" (CSV)
+     - "Send to Notion"
+     - "Teach Claude this research - install once, Claude remembers it"
+       (SKILL)
+     - "For developers - data file and API" (JSON, link to API docs),
+       visually de-emphasised
+   Each option has a one-line preview of what's inside. Length labels
+   are computed in code (words -> pages). After copying, a toast says
+   what was copied ("Quick brief copied - paste it into your AI tool").
+5. Rename "Replay research" to "Watch how this pack was made" with the
+   note "a recording of the research - it won't run again or cost
+   anything".
+6. Mobile: one column, sticky part nav collapses to a menu, cards stack.
+7. Markdown, Notion and PDF/print exports follow the same structure and
+   order as the page.
+CHECK: the first screen of a fixture pack shows the full Summary without
+scrolling on a laptop; no on-screen label mentions tokens, JSON schema
+or evidence ids (grep the UI strings); every badge has a plain-language
+tooltip; each handoff option shows purpose, length and preview; exports
+follow the page order; the page works at phone width.
+
+--------------------------------------------------------------------------
+V10. "ASK THIS PACK" CHAT                                 (value rank 9)
+--------------------------------------------------------------------------
+1. POST /api/v1/packs/{id}/ask {question, history[]}: a Sonnet tool loop,
+   READ-ONLY, over get_pack_view, get_insight and search_evidence for
+   that one pack. Max tool calls and max answer cost in modes.yaml.
+2. Answers cite items and posts; code checks every cited id exists in
+   the pack and strips any that do not. If the pack has no evidence for
+   the question, the answer says so plainly - no outside facts.
+   Evidence stays inside untrusted tags. On screen, citations show as
+   small numbered links that open the source post, not raw ids.
+3. Cost control: run key OR a per-pack daily question limit (config);
+   counts against DAILY_SPEND_CAP_USD; friendly message at the limit.
+4. Pack page side panel "Ask this pack" with 4 suggested questions built
+   from the pack without an extra call, e.g. "Turn the first post brief
+   into a LinkedIn carousel outline", "How do plant managers describe
+   their biggest pain point?".
+5. MCP tool ask_pack(pack_id, question), same rules (key required).
+   Record LLM_FAKE answers for tests.
+CHECK: a question about a pain point returns an answer whose citations
+open real posts; an unanswerable question says so; an invented id in a
+fake answer is stripped; the limit message appears.
+
+--------------------------------------------------------------------------
+CUT ORDER (if time runs short, first item first)
+--------------------------------------------------------------------------
+  1. V10 chat
+  2. V5 existing-solution web search (keep the evidence thresholds)
+  3. V7 news hooks (keep evidence-based timing)
+  4. V8 full drafts (keep post briefs and the calendar)
+  5. V9 mobile polish and PDF export order (keep the new structure and
+     handoff wording)
+Never cut: V1, V2, V3, V4, V6, V8 briefs and calendar, V9 structure and
+handoff.
+
+--------------------------------------------------------------------------
+FINISH
+--------------------------------------------------------------------------
+Update the README (reliability and re-runs, clarifying questions,
+markets and languages, condensed content, opportunities, LinkedIn, news
+hooks, post briefs and calendar, the new pack page and handoff, chat),
+re-run the eval harness on all 5 briefs, regenerate the 2 featured packs
+when I approve the spend, run demo-check, and list what to show the test
+user in a second session (her manufacturing brief, answering the
+clarifying questions).

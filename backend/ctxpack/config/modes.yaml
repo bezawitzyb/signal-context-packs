@@ -130,7 +130,14 @@ worker:
   interrupted_check_secs: 60    # how often the worker looks for interrupted runs
   poll_secs: 2                  # idle worker checks the queue this often
   max_resumes: 1                # an interrupted run is resumed at most once
-  thin_evidence_floor: 20       # relevant docs needed to package a run cut off mid-collection
+  thin_evidence_floor: 20       # relevant docs needed for a pack; below it the run ends on the thin screen (V1)
+  thin_evidence_floor_offline: 10  # offline mode only (recorded sample data, fake model; never on Render)
+  step_attempts: 2              # an analysis or packaging step is tried this often before the evidence-only pack
+  evidence_only_max: 40         # posts shown in an evidence-only pack (most engaging, then newest)
+  thin_offtopic_share: 0.2      # thin reasons (V1): relevant share of kept posts below this = mostly off topic
+  thin_old_share: 0.4           #   out-of-window share of collected posts above this = mostly too old
+  thin_language_share: 0.3      #   share of kept posts in the brief's languages below this
+  thin_few_collected: 30        #   fewer posts collected than this = very little public talk
 events:
   poll_secs: 1                  # SSE reads new rows from the events table this often
   ping_secs: 15                 # SSE heartbeat

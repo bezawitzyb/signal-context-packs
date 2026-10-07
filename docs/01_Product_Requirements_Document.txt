@@ -596,6 +596,20 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
        it; every stage saves its output and events to Neon; the live view
        streams from the events table; an interrupted run resumes once
        (13.1).
+ FR-H7b [P0] Never lose a run (change V1). A run with at least the
+       thin-evidence floor of relevant posts (modes.yaml
+       worker.thin_evidence_floor) ALWAYS ends with a pack: however
+       collection ended (finish, stop, time or budget limit, agent error,
+       restart), the analysis runs on what was collected. An analysis or
+       packaging step that fails twice gives an evidence-only partial pack
+       that names the failed step in blind spots and Method. Below the
+       floor the run ends on a thin-evidence screen with plain reasons and
+       one-click re-plans (broaden audience, include English, widen the
+       time window, run Standard) - never a silent hang. Every pack and
+       failed run offers "Run again with these inputs" (brief, clarifying
+       answer, brand voice, mode, time window, all pre-filled); the Ask
+       form keeps its values after a failure or refresh; the home page
+       lists "My packs" made in this browser.
  FR-H8 [P0] Keep-alive: a GitHub Actions job calls /ping every 10 minutes
        so the free instance never sleeps; it never wakes the database.
  FR-H9 [P0] Static mirror of the featured packs (pack page, evidence
@@ -873,7 +887,7 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
                     Standard typically USD 5-7, hard cap USD 10.00
                     (sums of the three caps in modes.yaml: Apify,
                     collection LLM, analysis LLM).
- NFR3 Reliability   Partial packs on timeout or stop; fallback plan;
+ NFR3 Reliability   A pack for every run above the floor (FR-H7b); fallback plan;
                     retries with backoff; featured packs always available;
                     runs survive a service restart (resume once from the
                     saved corpus); static mirror if the service is down.

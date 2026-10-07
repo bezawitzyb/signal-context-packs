@@ -210,6 +210,9 @@ def to_markdown(pack: dict) -> str:
         f"Research moves: {cov['loop']['tool_calls']}, finished by {cov['loop']['finish_reason'].replace('_', ' ')}"
         f"{'; remaining planned sources were collected automatically' if cov['loop']['fallback_used'] else ''}"
         f"{'; more evidence was collected from sources already working' if cov['loop']['top_up_used'] else ''}.")
+    for spot in pack["blind_spots"]:
+        if spot["text"].startswith("Partial pack:"):
+            add(f"\n**{inline(spot['text'])}**")
     add("\n**Sources used:**")
     L += [f"- {s['source_unit']} ({s['platform']}): {s['kept']} kept, {s['relevant_share']:.0%} relevant - "
           f"{inline(s['reason'])}" for s in cov["sources_used"][:6]] or ["- -"]

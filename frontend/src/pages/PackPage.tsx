@@ -1,9 +1,9 @@
 // S3 PACK PAGE (PRD 10.2, guide Step 4.4): one scrollable page, ~760 px content column, sticky section nav,
 // filters, banners, evidence drawer, View as agent, Handoff. Sections in PRD S3 order.
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router";
-import { Braces, History, Share2 } from "lucide-react";
-import { friendlyError, getPack, type ContextPack, type InsightLike, type Label } from "../lib/api";
+import { Link, useNavigate, useParams } from "react-router";
+import { Braces, History, RotateCcw, Share2 } from "lucide-react";
+import { friendlyError, getPack, getPackInputs, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
 import { ConfidenceBadge, IdTag, ModeBadge } from "../components/badges";
@@ -16,6 +16,7 @@ import { AgentJson } from "../components/AgentJson";
 import { Handoff } from "../components/Handoff";
 import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
+import { rerunUrl } from "../lib/rerun";
 
 const NAV: [string, string][] = [
   ["summary", "Summary"], ["channels", "Channels & this week"], ["voice", "Voice"], ["tensions", "Tensions & motivations"],
@@ -394,6 +395,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [agent, setAgent] = useState(false);
   const [handoff, setHandoff] = useState(false);
+  const navigate = useNavigate();
   const [drawer, setDrawer] = useState<string | null>(null);
   const counts = labelCounts(pack);
   const v = pack.schema_version;
@@ -428,6 +430,13 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                       className="inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-sm text-paper">
                 <Share2 aria-hidden="true" size={14} /> Handoff
               </button>
+              <button type="button" onClick={() => getPackInputs(pack.pack_id)
+                        .then((i) => navigate(rerunUrl(i))).catch(() => navigate(rerunUrl({
+                          brief: pack.brief.text, mode: pack.mode, time_window_days: pack.brief.interpreted.time_window_days,
+                          brand_voice: pack.brief.brand_voice ?? null, clarification: null })))}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-sm text-ink-2">
+                <RotateCcw aria-hidden="true" size={14} /> Run again with these inputs
+              </button>
               <button type="button" onClick={() => setAgent(!agent)} aria-pressed={agent}
                       className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm ${agent ? "border-ink bg-wash text-ink" : "border-line text-ink-2"}`}>
                 <Braces aria-hidden="true" size={14} /> View as agent
@@ -457,6 +466,9 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                   })}
                 </span>
               </LimitationCallout>
+            )}
+            {pack.blind_spots[0]?.text.startsWith("Partial pack:") && (
+              <LimitationCallout title="Partial pack">{pack.blind_spots[0].text.replace("Partial pack: ", "")}</LimitationCallout>
             )}
             {pack.coverage.loop.fallback_used && (
               <LimitationCallout title="Collected automatically">The research agent stopped early, so the remaining planned sources were collected automatically.</LimitationCallout>
