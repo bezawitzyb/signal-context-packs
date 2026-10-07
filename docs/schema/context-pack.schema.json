@@ -1226,6 +1226,12 @@
           "title": "Redacted",
           "type": "boolean"
         },
+        "requires_login": {
+          "default": false,
+          "description": "True when the post is visible only to logged-in users (LinkedIn, V6): the reader may need to log in to open it.",
+          "title": "Requires Login",
+          "type": "boolean"
+        },
         "short_form": {
           "default": false,
           "description": "Under 4 words: lexicon only, never counted.",
@@ -3617,6 +3623,7 @@
         "tiktok",
         "youtube",
         "instagram",
+        "linkedin",
         "web_forum",
         "web_review",
         "web_editorial"

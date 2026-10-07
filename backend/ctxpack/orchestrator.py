@@ -177,6 +177,8 @@ def loop_state(run_id: str, record: bool = False, no_apify: bool = False,
     ctx.llm_usd = run.cost_llm_usd
     ctx.apify_unavailable, ctx.apify_usd_cap = no_apify, apify_usd_cap
     ctx.must_search = list((run.intake or {}).get("competitors_user") or [])  # V3: always searched
+    ctx.intake = {k: v for k, v in (run.intake or {}).items()          # V6: roles, goal, channels guide where
+                  if k in ("audience_roles", "goal", "channels_in_use") and v}
     return LoopState(ctx=ctx, interp=interp, plan=plan, check_stop=lambda: check_stop(run_id))
 
 

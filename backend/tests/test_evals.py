@@ -158,3 +158,15 @@ def test_featured_loader_skips_eval_files(temp_db, tmp_path):
     (tmp_path / "evals.json").write_text("{}")
     (tmp_path / "evals_human.json").write_text("{}")
     assert temp_db.load_featured(tmp_path) == 1
+
+
+def test_plan_mix_expectations():
+    """V6: brief 5 plans LinkedIn and keeps Reddit at most half; Gen Z does not lean on LinkedIn."""
+    p = {"brief": {"text": "x", "interpreted": {"market": "eu"}}, "coverage": {}}
+    plan = {"starting_units": [{"platform": "linkedin"}, {"platform": "reddit"}, {"platform": "web"},
+                               {"platform": "reddit", "enabled": False}]}
+    assert ev.plan_mix(plan) == {"linkedin": 0.33, "reddit": 0.33, "web": 0.33}
+    res = {c["check"]: c["pass"] for c in ev.expectations(
+        p, {"plans_platforms": ["linkedin"], "platform_share_max": {"reddit": 0.5}}, 0.05, None, plan)}
+    assert res == {"plans linkedin": True, "reddit at most 50% of the plan": True}
+    assert ev.expectations(p, {"plans_platforms": ["linkedin"]}, 0.05, None, None)[0]["pass"] is None

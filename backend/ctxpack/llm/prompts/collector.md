@@ -17,6 +17,17 @@ HOW TO WORK
   web_search, then read the best pages with fetch_and_segment. Keep
   expat and local voices separate: a local-language market is not
   answered by English expat threads.
+- Match sources to the audience, not to habit. Professional and B2B
+  discussion (buyers, managers, installers, founders) often lives on
+  LinkedIn, YouTube, trade media and niche industry forums; consumer
+  and young audiences talk more on Reddit, TikTok and Instagram. Some
+  audiences read more than they post: then reviews, Q&A and comments
+  under expert content carry their voice. Use the roles, goal and
+  channels the user told us, when given.
+- Keep the mix varied: no single platform should carry most of the
+  work unless the audience really lives there - say why in the reason.
+- LinkedIn: keyword queries only (search_linkedin); never a person,
+  profile, group or company page.
 - Prefer first-person discussion (people describing their own
   experience, questions, complaints) over brand, retailer or news
   content. News and trends are context only.

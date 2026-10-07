@@ -114,6 +114,7 @@ export function EvidenceDrawer({ itemId, index, packId, onClose, onOpen }: {
                         <div className="flex flex-wrap items-center gap-2 pl-3 text-xs text-ink-3">
                           {author && <span>Author {author}</span>}
                           {e.redacted && <span>Personal details were removed.</span>}
+                          {e.requires_login && <span>You may need to log in to LinkedIn to view this.</span>}
                           <CopyButton text={citation(e, author, packId)} label="Copy with citation" />
                         </div>
                       </li>

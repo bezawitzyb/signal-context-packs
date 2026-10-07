@@ -63,6 +63,7 @@ class RunContext:
     record: bool = False                      # save sanitised fixtures (CLI --record)
     brief_text: str = ""                      # the brief as typed (fake mode finds its transcript by it)
     must_search: list[str] = field(default_factory=list)  # competitors the user named (V3): searched by name
+    intake: dict = field(default_factory=dict)            # the user's roles, goal and channels (V3, used in V6)
     started: float = field(default_factory=time.monotonic)
     calls: int = 0
     items: int = 0
@@ -91,6 +92,7 @@ class RunContext:
     apify_recorded_usd: float = 0.0                      # Apify spend already written to the spend table
     blocked_domains: set = field(default_factory=set)    # sites that refused fetching (this run + remembered)
     apify_by_actor: dict[str, dict[str, float]] = field(default_factory=dict)   # actor -> {runs, usd, items}
+    source_failures: list[dict] = field(default_factory=list)  # actor + fallback gave nothing (V6 -> blind spot)
     # Reserved by calls still running, so concurrent calls cannot jointly overshoot a limit.
     pending_items: int = 0
     pending_unit_items: Counter = field(default_factory=Counter)
@@ -320,6 +322,8 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
             "streamers/youtube-comments-scraper": {"startUrls": [{"url": u} for u in urls], "maxComments": per_post},
             "apidojo/youtube-comments-scraper": {"startUrls": urls, "maxItems": limit},
             "apify/instagram-comment-scraper": {"directUrls": urls, "resultsLimit": per_post},
+            "harvestapi/linkedin-post-comments": {"posts": urls, "maxItems": per_post, "scrapeReplies": False,
+                                                  "profileScraperMode": "short"},
         }[spec["id"]]
 
     attempts = [(spec, inputs(spec, total)) for spec in (src["actor"], src.get("fallback")) if spec]
@@ -390,6 +394,10 @@ async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Plat
         notes.update(actor=res.actor_id, fallback_used=res.used_fallback)
         if not res.items:
             notes["actor_status"] = res.status
+            if res.status not in (apify.NO_CREDIT, apify.NO_TIME):
+                ctx.source_failures.append({"source_unit": unit, "platform": str(platform), "status": res.status})
+                notes["source_problem"] = (f"{platform} gave nothing ({res.status}) after its fallback; "
+                                           "recorded as a blind spot - try another source")
         if with_comments:
             com = await _run_comments(ctx, source, [p for p in raw if p.get("kind") == "post"], limit - len(raw))
             if com is not None:
@@ -430,6 +438,10 @@ def instagram_unit(hashtag: str) -> str:
     return f"instagram:#{hashtag.strip().lstrip('#').casefold()}"
 
 
+def linkedin_unit(query: str) -> str:
+    return f"linkedin:search:{query.strip().casefold()}"
+
+
 def web_unit(url: str) -> str:
     return "web:" + (web.urlparse(url).netloc.removeprefix("www.") or "?")
 
@@ -440,6 +452,7 @@ def unit_for(tool: str, args: dict[str, Any]) -> str | None:
             "search_tiktok": lambda: tiktok_unit(args.get("target", "")),
             "search_youtube": lambda: youtube_unit(args.get("query", "")),
             "search_instagram": lambda: instagram_unit(args.get("hashtag", "")),
+            "search_linkedin": lambda: linkedin_unit(args.get("query", "")),
             }.get(tool, lambda: None)()
 
 
@@ -523,6 +536,43 @@ async def search_instagram(ctx: RunContext, hashtag: str, limit: int = 0, reason
 
     return await _apify_tool(ctx, "search_instagram", "instagram", Platform.instagram, unit, f"#{tag}", limit,
                              reason, inputs, with_comments=True)
+
+
+# Keyword search only (PRD DH1, DH8): never a person, profile, company page, group, event or message.
+_LINKEDIN_PRIVATE = re.compile(r"linkedin\.com/|^\s*(?:https?://|www\.)|/(?:in|groups?|messaging|events)/", re.I)
+
+
+def linkedin_period(window_days: int, actor_id: str) -> str:
+    """The narrowest date filter that still covers the window (cleaning drops anything older)."""
+    if actor_id == "datadoping/linkedin-posts-search-scraper":
+        return "past-week" if window_days <= 7 else "past-month"   # no longer option: cleaning keeps the window
+    for days, name in ((1, "24h"), (7, "week"), (31, "month"), (92, "3months"), (183, "6months")):
+        if window_days <= days:
+            return name
+    return "year"
+
+
+async def search_linkedin(ctx: RunContext, query: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
+    """LinkedIn posts for a keyword query, plus comments on posts that have some (V6).
+
+    Content visible to any logged-in user; no session of ours. Evidence gets requires_login.
+    """
+    if _LINKEDIN_PRIVATE.search(query) or not query.strip():
+        return {"status": "refused", "error": "search_linkedin takes keywords only - never a profile, person, "
+                "company page, group, event or message link (private or personal content is never collected)",
+                **ctx.left()}
+    unit = linkedin_unit(query)
+
+    def inputs(spec: dict, n: int) -> dict:
+        period = linkedin_period(ctx.window_days, spec["id"])
+        if spec["id"] == "harvestapi/linkedin-post-search":
+            return {"searchQueries": [query], "maxPosts": n, "postedLimit": period, "sortBy": "relevance",
+                    "scrapeComments": False, "scrapeReactions": False, "profileScraperMode": "short"}
+        return {"keywords": [query], "max_posts": max(n, spec.get("min_items", 0)), "sort_by": "relevance",
+                "date_filter": period}
+
+    return await _apify_tool(ctx, "search_linkedin", "linkedin", Platform.linkedin, unit, query, limit, reason,
+                             inputs, with_comments=True)
 
 
 # --------------------------------------------------------------------------
@@ -814,6 +864,12 @@ def tool_definitions() -> list[dict[str, Any]]:
               "query": {"type": "string"}}, "required": ["source_unit", "query"]}}},
          ["summary", "source_verdicts", "gaps"]),
     ]
+    if "linkedin" in _catalog()["sources"]:
+        defs.insert(3, ("search_linkedin", f"LinkedIn posts for a keyword query (professional and B2B "
+                                           f"discussion), plus comments on posts that have some. Keywords only - "
+                                           f"never a person, profile, group or company page. Readers may need "
+                                           f"to log in to open these posts. Latency {_latency('search_linkedin')}.",
+                        {"query": {"type": "string"}, "limit": limit, "reason": _reason()}, ["query", "reason"]))
     if "instagram" in _catalog()["sources"]:
         defs.insert(3, ("search_instagram", f"Instagram posts for a hashtag, plus comments on posts that have "
                                             f"some. Latency {_latency('search_instagram')}.",
@@ -825,7 +881,7 @@ def tool_definitions() -> list[dict[str, Any]]:
 
 TOOLS: dict[str, Callable[..., Awaitable[dict[str, Any]]]] = {
     "search_reddit": search_reddit, "search_tiktok": search_tiktok, "search_youtube": search_youtube,
-    "search_instagram": search_instagram, "web_search": web_search, "fetch_and_segment": fetch_and_segment,
+    "search_instagram": search_instagram, "search_linkedin": search_linkedin, "web_search": web_search, "fetch_and_segment": fetch_and_segment,
     "get_trends": get_trends, "coverage_report": coverage_report, "finish": finish,
 }
 

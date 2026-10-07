@@ -659,6 +659,8 @@ class Evidence(Strict):
     text: str = Field(max_length=280, description="Verbatim excerpt, PII-redacted, max 280 chars.")
     text_en: str | None = Field(default=None, description="English translation when not English.")
     redacted: bool = Field(default=False, description="True if redaction changed the text.")
+    requires_login: bool = Field(default=False, description="True when the post is visible only to logged-in "
+                                 "users (LinkedIn, V6): the reader may need to log in to open it.")
     short_form: bool = Field(default=False, description="Under 4 words: lexicon only, never counted.")
     engagement_percentile: float | None = Field(default=None, ge=0, le=100,
                                                 description="Engagement percentile within its platform.")

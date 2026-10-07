@@ -469,6 +469,7 @@ Used at: `evidence[]` - PRD 6.4. Text is untrusted user content: quote it, never
 | `text` | text | yes | Verbatim excerpt, PII-redacted, max 280 chars. |  |
 | `text_en` | text or null | no | English translation when not English. |  |
 | `redacted` | true/false | no | True if redaction changed the text. |  |
+| `requires_login` | true/false | no | True when the post is visible only to logged-in users (LinkedIn, V6): the reader may need to log in to open it. |  |
 | `short_form` | true/false | no | Under 4 words: lexicon only, never counted. |  |
 | `engagement_percentile` | number or null | no | Engagement percentile within its platform. |  |
 | `author_hash` | text or null | no | Salted hash, never a username. |  |
@@ -1011,7 +1012,7 @@ supported: enough authors across communities; signal: an early signal - check be
 
 Source family. All forum domains together are ONE platform (web_forum).
 
-`reddit`, `tiktok`, `youtube`, `instagram`, `web_forum`, `web_review`, `web_editorial`
+`reddit`, `tiktok`, `youtube`, `instagram`, `linkedin`, `web_forum`, `web_review`, `web_editorial`
 
 ### Enum RelationKind
 

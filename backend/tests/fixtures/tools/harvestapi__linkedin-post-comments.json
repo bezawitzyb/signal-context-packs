@@ -1,0 +1,44 @@
+[
+ {
+  "id": "7513554019559092225",
+  "postId": "urn:li:activity:7511404999227174912",
+  "commentary": "Interesting model. Bundling installation, finance and electricity into one payment removes the upfront barrier, but as you say it does little to push installed prices down when average support is close to €9,800. It would be good to see installed cost per kW published so it can be compared with the open market. I am also curious whether small, well-insulated dwellings with very low heat demand are in scope, since the economics there look quite different.",
+  "createdAt": "2026-10-07T11:01:13.347Z",
+  "linkedinUrl": "https://www.linkedin.com/feed/update/urn:li:activity:7511404999227174912?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7511404999227174912%2C7513554019559092225%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287513554019559092225%2Curn%3Ali%3Aactivity%3A7511404999227174912%29",
+  "engagement": {
+   "likes": 0,
+   "comments": 0
+  },
+  "actor": {
+   "name": "user_1"
+  }
+ },
+ {
+  "id": "7511410253951934465",
+  "postId": "urn:li:activity:7511404999227174912",
+  "commentary": "I still need to go through the dossier in detail but there are some fascinating elements of this to follow and for other countries to learn from.. Léa Malfrait Sean Hegarty  ",
+  "createdAt": "2026-10-01T13:02:39.797Z",
+  "linkedinUrl": "https://www.linkedin.com/feed/update/urn:li:activity:7511404999227174912?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7511404999227174912%2C7511410253951934465%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287511410253951934465%2Curn%3Ali%3Aactivity%3A7511404999227174912%29",
+  "engagement": {
+   "likes": 1,
+   "comments": 2
+  },
+  "actor": {
+   "name": "user_2"
+  }
+ },
+ {
+  "id": "7511482312115625985",
+  "postId": "urn:li:activity:7511404999227174912",
+  "commentary": "Très intéressant ",
+  "createdAt": "2026-10-01T17:48:59.802Z",
+  "linkedinUrl": "https://www.linkedin.com/feed/update/urn:li:activity:7511404999227174912?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7511404999227174912%2C7511482312115625985%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287511482312115625985%2Curn%3Ali%3Aactivity%3A7511404999227174912%29",
+  "engagement": {
+   "likes": 0,
+   "comments": 0
+  },
+  "actor": {
+   "name": "user_3"
+  }
+ }
+]

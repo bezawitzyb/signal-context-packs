@@ -104,7 +104,7 @@ _PROFILE_URL = re.compile(
     r"|youtube\.com/(?:@[\w.-]+|channel/[\w-]+|c/[\w-]+|user/[\w-]+)"
     r"|(?:twitter|x)\.com/(?!i/|search|hashtag/|home\b)\w+"
     r"|facebook\.com/(?!groups/|events/|watch/)[\w.]+"
-    r"|linkedin\.com/in/[\w-]+"
+    r"|linkedin\.com/(?:in|posts)/[\w%-]+"
     r")\S*",
     re.I,
 )
@@ -198,7 +198,17 @@ def scrub_url(url: str | None) -> str | None:
     if not url:
         return url
     # TODO(step 1.6): confirm on a real item that tiktok.com/@/video/<id> still opens the video.
+    if (m := _LINKEDIN_POST.search(url)):  # /posts/<first-last>_..-<activity id>-xxxx names the author
+        return linkedin_url(m.group(1))
     return _TIKTOK_HANDLE_IN_URL.sub(r"\1@/", url)
+
+
+_LINKEDIN_POST = re.compile(r"linkedin\.com/posts/[^?#\s]*?(\d{16,22})")
+
+
+def linkedin_url(activity_id: str) -> str:
+    """A LinkedIn post link without the author's name in it (V6)."""
+    return f"https://www.linkedin.com/feed/update/urn:li:activity:{activity_id}/"
 
 
 @dataclass

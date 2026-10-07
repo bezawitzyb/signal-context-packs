@@ -225,6 +225,9 @@ def first_message(ctx: RunContext, interp: Interpretation, plan: Plan) -> str:
         "HYPOTHESES\n" + "\n".join(f"- {h.id}: {h.statement}" for h in plan.hypotheses),
         "RESEARCH QUESTIONS\n" + "\n".join(f"- {q.id}: {q.text}" for q in plan.research_questions),
         "STARTING SOURCE UNITS (from the plan; adapt as you learn)\n" + units,
+        *(["WHAT THE USER TOLD US (use it to decide where this audience talks)\n"
+           + "\n".join(f"- {k.replace('_', ' ')}: {', '.join(v) if isinstance(v, list) else v}"
+                       for k, v in ctx.intake.items())] if ctx.intake else []),
         *(["COMPETITORS THE USER NAMED (search each at least once by name; finish is refused until you do)\n"
            + "\n".join(f"- {c}" for c in ctx.must_search)] if ctx.must_search else []),
         "LIMITS (enforced by the tools)\n"
@@ -236,7 +239,8 @@ def first_message(ctx: RunContext, interp: Interpretation, plan: Plan) -> str:
         f"- budgets: Apify {tools.apify_cap(ctx):.2f} USD, LLM {lim['llm_usd']:.2f} USD\n"
         f"- target: at least {lim['min_relevant']} relevant documents\n"
         f"- time window: posts from the last {interp.time_window_days} days"
-        + ("\n- Apify tools (search_reddit, search_tiktok, search_youtube, search_instagram, get_trends) "
+        + ("\n- Apify tools (search_reddit, search_tiktok, search_youtube, search_instagram, search_linkedin, "
+           "get_trends) "
            "are UNAVAILABLE this run: use web_search and fetch_and_segment only" if ctx.apify_unavailable else ""),
         "Start now. Batch independent calls in one turn.",
     ])
@@ -340,7 +344,8 @@ def collection_record(state: LoopState) -> dict[str, Any]:
     return {"summary": fin.get("summary", ""), "gaps": fin.get("gaps", []),
             "follow_up_queries": fin.get("follow_up_queries", []),
             "decision_log": list(state.decision_log), "sources_used": used, "sources_dropped": dropped,
-            "relevant_total": ctx.relevant_total, "external_signals": list(ctx.external_signals)}
+            "relevant_total": ctx.relevant_total, "external_signals": list(ctx.external_signals),
+            "source_failures": list(ctx.source_failures)}
 
 
 def save_progress(state: LoopState) -> None:

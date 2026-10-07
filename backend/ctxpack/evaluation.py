@@ -291,7 +291,17 @@ def peak_memory(run: Any | None, mode: str, limit_mb: float) -> dict[str, Any]:
                    f"{mb} MB peak (NFR9 applies to Standard runs)" + ("" if applies else "; Quick run, shown only"))
 
 
-def expectations(pack: dict, expect: dict, min_share: float, clarifying: dict | None) -> list[dict[str, Any]]:
+def plan_mix(plan: dict | None) -> dict[str, float]:
+    """Share of the ENABLED starting units per platform (V6)."""
+    units = [u for u in (plan or {}).get("starting_units", []) if u.get("enabled", True)]
+    out: dict[str, float] = {}
+    for u in units:
+        out[u["platform"]] = out.get(u["platform"], 0) + 1 / len(units)
+    return {k: round(v, 2) for k, v in sorted(out.items())}
+
+
+def expectations(pack: dict, expect: dict, min_share: float, clarifying: dict | None,
+                 plan: dict | None = None) -> list[dict[str, Any]]:
     """Brief-specific checks from F5: market, languages, compliance area, the clarifying question."""
     interp = pack["brief"]["interpreted"]
     mix = {m["language"]: m["share"] for m in pack["coverage"].get("language_mix", [])}
@@ -326,6 +336,14 @@ def expectations(pack: dict, expect: dict, min_share: float, clarifying: dict | 
         out.append({"check": f"compliance area {expect['compliance_category']}",
                     "pass": got == expect["compliance_category"],
                     "detail": f"interpreted: {got}; {len(flags)} compliance flag(s) in the pack"})
+    if "plans_platforms" in expect or "platform_share_max" in expect:  # V6: where the plan starts
+        mix = plan_mix(plan)
+        shown = ", ".join(f"{k} {_pct(v)}" for k, v in mix.items()) or "no plan saved"
+        for p in expect.get("plans_platforms", []):
+            out.append({"check": f"plans {p}", "pass": p in mix if plan else None, "detail": shown})
+        for p, most in expect.get("platform_share_max", {}).items():
+            out.append({"check": f"{p} at most {_pct(most)} of the plan",
+                        "pass": mix.get(p, 0.0) <= most if plan else None, "detail": shown})
     asks = [k for k in ("questions_max", "questions_fill") if k in expect]
     if asks:  # V3: brief-specific clarifying questions
         qs = (clarifying or {}).get("questions")
@@ -439,7 +457,7 @@ def score_brief(spec: dict, pack: dict, run: Any | None, targets: dict, *, entai
                                f"{mode} ({lim['min_relevant']}); the pack says so instead of padding") if thin else "",
         "metrics": m,
         "expectations": expectations(pack, spec.get("expect", {}), targets.get("expected_language_min_share", 0.05),
-                                     clarifying),
+                                     clarifying, run.plan if run is not None else None),
         "clarifying_question": clarifying,
         "entailment": entailment,
         "units": sorted(source_units(pack, run)),

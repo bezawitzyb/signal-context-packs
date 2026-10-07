@@ -384,7 +384,7 @@ function Method({ pack }: { pack: ContextPack }) {
       </Sub>
       <Sub title="Privacy and limits">
         <div className="space-y-2 text-sm text-ink-2">
-          <p>Only public posts are used. Authors are stored as salted hashes, never names; emails, phone numbers, @handles and
+          <p>Only public posts are used, plus LinkedIn posts any logged-in user can see (never private groups, messages or closed profiles). Authors are stored as salted hashes, never names; emails, phone numbers, @handles and
             names written in posts are removed before analysis. Quoted excerpts are for internal research and briefs only,
             not for ads or other public material. {PRIVACY_LINE}</p>
           <p>Counts and confidence are computed in code from posts checked to belong to each finding; every quote is copied

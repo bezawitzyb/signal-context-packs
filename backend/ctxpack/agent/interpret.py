@@ -100,7 +100,8 @@ def _check(interp: Interpretation, plan: Plan | None, questions: list[Clarifying
 def _build_plan(answer: "PlanOnlyAnswer | PlanAnswer") -> Plan:
     try:
         return Plan(hypotheses=answer.hypotheses, research_questions=answer.research_questions,
-                    starting_units=answer.starting_units)
+                    starting_units=answer.starting_units,
+                    source_balance_reason=answer.source_balance_reason)
     except ValidationError as exc:
         raise ValueError("; ".join(f"{'.'.join(map(str, e['loc']))}: {e['msg']}"
                                    for e in exc.errors(include_input=False))) from None
@@ -116,6 +117,8 @@ class PlanOnlyAnswer(Strict):
     hypotheses: list[PlanHypothesis] = Field(description="3-5 testable hypotheses.")
     research_questions: list[ResearchQuestion] = Field(description="5-8 research questions.")
     starting_units: list[StartingSourceUnit] = Field(description="3-6 starting source units.")
+    source_balance_reason: str = Field(default="", description="Only if one platform takes more than half of "
+                                       "the starting units: why this audience really lives there.")
 
     @model_validator(mode="after")
     def _valid(self) -> Self:
@@ -136,6 +139,8 @@ class PlanAnswer(Strict):
     hypotheses: list[PlanHypothesis] = Field(default_factory=list, description="3-5 testable hypotheses.")
     research_questions: list[ResearchQuestion] = Field(default_factory=list, description="5-8 research questions.")
     starting_units: list[StartingSourceUnit] = Field(default_factory=list, description="3-6 starting source units.")
+    source_balance_reason: str = Field(default="", description="Only if one platform takes more than half of "
+                                       "the starting units: why this audience really lives there.")
 
     @model_validator(mode="after")
     def _valid(self) -> Self:
@@ -257,7 +262,27 @@ async def interpret(brief: str, *, mode: Mode | str = Mode.quick, window_days: i
         result.interpretation.time_window_days = window_days
     settle_markets(result, brief, str(mode), edits)
     _apply_edits(result, intake, edits)
+    if result.plan is not None:
+        balance_sources(result.plan)
     return Interpreted(result=result, estimate=estimate(mode), usd=usd)
+
+
+def balance_sources(plan: Plan) -> list[str]:
+    """V6: no platform above modes.yaml planning.source_share_max of the enabled starting units unless the
+    plan says why. Extra units (the last ones of that platform) are switched off, never deleted: the user
+    sees them on the plan screen and can switch them back on. Returns the units switched off."""
+    if plan.source_balance_reason.strip():
+        return []
+    share = load_yaml("modes")["planning"]["source_share_max"]
+    enabled = [u for u in plan.starting_units if u.enabled]
+    cap = max(1, int(share * len(enabled)))
+    off: list[str] = []
+    for platform in {u.platform for u in enabled}:
+        same = [u for u in enabled if u.platform == platform]
+        for u in same[cap:]:
+            u.enabled = False
+            off.append(u.source_unit)
+    return off
 
 
 def drop_answered(questions: list[ClarifyingQuestion], brief: str) -> list[ClarifyingQuestion]:

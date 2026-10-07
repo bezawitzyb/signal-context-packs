@@ -408,7 +408,8 @@ class Builder:
                 out.append({"doc_id": doc_id, "text": q.text.strip()})
             else:
                 self.outcome.drop("quote_not_in_cluster")
-        return out
+        # V6: the writer chose them all for this claim; posts anyone can open go first (stable order)
+        return sorted(out, key=lambda q: requires_login(getattr(self.docs_by_id.get(q["doc_id"]), "platform", "")))
 
     def numbers(self, cluster_ids: list[str]) -> dict[str, Any]:
         """Counts, strength, emotion, trend, recency - code only, from verified members."""
@@ -733,7 +734,12 @@ def evidence_entry(d: Any, ev_id: str, chars: int) -> dict:
             "text": excerpt(d, chars), "text_en": d.text_en, "redacted": d.redacted, "short_form": d.short_form,
             "engagement_percentile": d.engagement_percentile, "author_hash": d.author_hash,
             "emotion": list(dict.fromkeys((d.extraction or {}).get("emotion", []))),
-            "role": (d.extraction or {}).get("role") or "unknown"}
+            "role": (d.extraction or {}).get("role") or "unknown", "requires_login": requires_login(d.platform)}
+
+
+def requires_login(platform: Any) -> bool:
+    """V6: sources whose posts only logged-in users can open (catalog.yaml requires_login)."""
+    return bool(load_yaml("catalog")["sources"].get(str(platform), {}).get("requires_login"))
 
 
 async def write_run(run_id: str, ctx: BriefContext, *, redo: bool = False) -> WriteOutcome:

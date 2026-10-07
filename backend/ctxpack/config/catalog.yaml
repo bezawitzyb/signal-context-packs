@@ -23,6 +23,7 @@ tool_latency:
   search_youtube: "usually 60-90 s"
   search_tiktok: "usually 50-120 s"
   search_instagram: "usually 25-60 s"
+  search_linkedin: "usually 5-30 s"
   get_trends: "usually 20-60 s"
   coverage_report: "instant"
 
@@ -298,6 +299,71 @@ sources:
           author: ownerUsername
       fallback: null            # none verified; on failure keep posts, skip comments
 
+  linkedin:                     # change V6 (PRD DH1): visible to any logged-in user; never private
+    kind: apify
+    platform: linkedin
+    tool: search_linkedin
+    unit_types: [query]           # keyword search only - never a person, profile or group (DH8)
+    requires_login: true          # evidence.requires_login; the drawer says so
+    audience: >-
+      Professionals, B2B buyers, founders, installers and trade people;
+      posts are often self-promotional, so the comments and first-person
+      work stories carry the voice. Many read more than they post.
+    language_country_inputs: none (query in the target language; relevance step filters)
+    verified_on: "2026-10-07"     # live calls 2026-10-07: 5 posts in 4 s, 10 posts in 5 s, 3 comments in 4 s
+    actor:
+      id: harvestapi/linkedin-post-search
+      needs_session: false        # no cookies or account of ours
+      memory_mbytes: 256          # actor default
+      smoke: ok 2026-10-07 (5/5 text, date, url, likes; billed 0.010 for 5 posts)
+      price_usd: {result: 0.002, actor_start: 0.00005}   # "post" event; comments/reactions/profiles kept OFF
+      success_30d: 0.997
+      limit_inputs: [maxPosts]
+      date_inputs: [postedLimit]  # 24h | week | month | 3months | 6months | year
+      unit_inputs: {query: searchQueries}
+      notes: keep scrapeComments, scrapeReactions OFF and profileScraperMode short (each is billed)
+      fields:
+        text: [content]
+        date: postedAt.date
+        url: id -> https://www.linkedin.com/feed/update/urn:li:activity:<id>/ (linkedinUrl carries the author's name)
+        engagement: [engagement.likes, engagement.comments, engagement.shares]
+        author: author.name
+    fallback:
+      id: datadoping/linkedin-posts-search-scraper
+      needs_session: false
+      memory_mbytes: 128          # actor default
+      smoke: ok 2026-10-07 (10/10 text, date, url, reactions; billed 0.006)
+      min_items: 10               # 'max_posts must be >= 10'
+      price_usd: {result: 0.00155}
+      success_30d: 0.988
+      limit_inputs: [max_posts]
+      date_inputs: [date_filter]  # past-24h | past-week | past-month
+      unit_inputs: {query: keywords}
+      fields:
+        text: [text]
+        date: posted_at.date
+        url: activity_id -> feed/update URL (post_url carries the author's name)
+        engagement: [total_reactions, comments, stats.shares]
+        author: author.name
+    comments:
+      actor:
+        id: harvestapi/linkedin-post-comments
+        needs_session: false
+        memory_mbytes: 256
+        smoke: ok 2026-10-07 (3/3 text, date, comment permalink, likes)
+        price_usd: {result: 0.002}
+        success_30d: 1.00
+        limit_inputs: [maxItems]  # per post
+        input_from_parent: posts
+        fields:
+          text: [commentary]
+          date: createdAt
+          url: postId -> feed/update URL
+          permalink: linkedinUrl  # feed/update/...?commentUrn=... (no name)
+          engagement: [engagement.likes, engagement.comments]
+          author: actor.name
+      fallback: null              # none verified; on failure keep posts, skip comments
+
   web_forums:
     kind: web
     platform: web_forum
@@ -360,3 +426,4 @@ rejected:
   apidojo/instagram-hashtag-scraper: 0.016 per keyword query makes small runs expensive
   data_xplorer/google-trends-fast-scraper: smoke 2026-10-04 ignored keyword and geo; returns the US trending-now list
   agenscrape/google-trends-scraper: 0.025 per item
+  (LinkedIn, 2026-10-07) actors that need our cookies or a session: not used (needs_session; PRD DH1)

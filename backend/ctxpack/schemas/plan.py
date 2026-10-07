@@ -179,6 +179,8 @@ class Plan(Strict):
                                                        description="5-8 research questions.")
     starting_units: list[StartingSourceUnit] = Field(min_length=3, max_length=6,
                                                      description="3-6 starting source units.")
+    source_balance_reason: str = Field(default="", description="Why one platform takes more than the allowed "
+                                       "share of starting units (V6); empty when the mix is balanced.")
 
 
 class PlanResult(Strict):

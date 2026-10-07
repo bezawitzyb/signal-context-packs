@@ -80,7 +80,8 @@ Otherwise give the plan:
   competitors, channels). Ids RQ-01, RQ-02, ...
 - starting_units: 3-6 places to start. Each is a platform plus ONE unit:
   reddit (subreddit or query), tiktok (hashtag or query), youtube
-  (channel or query), instagram (hashtag or query), web (domain or
+  (channel or query), instagram (hashtag or query), linkedin (query
+  only - keywords, never a person, profile or group), web (domain or
   query: forums, Q&A, review sites; articles are context only).
   Targets: "r/name" for subreddits, "#tag" for hashtags, a bare domain
   for sites (forum.example.com), plain words for queries. Pick only
@@ -105,6 +106,14 @@ How to choose:
 - Considered or expensive purchases (home, energy, finance, B2B-like):
   owner forums, experience threads and review sites carry the detail;
   short-video platforms usually do not.
+- Professional and B2B audiences (buyers, managers, installers,
+  founders): LinkedIn keyword queries, YouTube, trade media and niche
+  industry forums often carry the discussion; some audiences read more
+  than they post, so reviews, Q&A and comments count too.
+- Balance: no platform may take more than half of the starting units
+  (web counts as one platform). If the audience really lives on one
+  platform, say why in source_balance_reason; otherwise code switches
+  the extra units off.
 - Young audiences and everyday categories: TikTok, YouTube and Reddit
   carry the voice; include at least one community where they talk
   candidly in long form.

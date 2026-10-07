@@ -86,6 +86,11 @@ def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short
     col = run.collection or {}
     for s in col.get("sources_dropped", []):
         spots.append(f"Source dropped: {s['source_unit']} - {s['reason']}")
+    for name in sorted({f["platform"] for f in col.get("source_failures", [])}):  # V6: blocked or empty
+        units = [f["source_unit"] for f in col["source_failures"] if f["platform"] == name]
+        spots.append(f"{_PLATFORM_NAME.get(name, name)} could not be searched ({', '.join(units)}: blocked, an "
+                     f"error or no results, also with the backup tool): "
+                     f"{_FAILED_IMPACT.get(name, 'the voices found there are missing')}.")
     cov = analysis.get("coverage", {})
     missing = [lang for lang in interp.languages if lang not in cov.get("languages", [])]
     if missing:
@@ -110,8 +115,16 @@ def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short
         spots.append("No claim reached strong confidence: strong needs evidence from at least two platforms.")
     if bar_short:
         spots.append("Minimum content bar not met: " + ", ".join(bar_short) + ".")
-    spots.append("Public posts only: private groups, messaging apps and offline talk are not covered.")
+    spots.append("Public posts only (plus LinkedIn posts any logged-in user can see): private groups, direct "
+                 "messages, closed profiles and offline talk are not covered.")
     return spots
+
+
+_PLATFORM_NAME = {"linkedin": "LinkedIn", "reddit": "Reddit", "tiktok": "TikTok", "youtube": "YouTube",
+                  "instagram": "Instagram"}
+_FAILED_IMPACT = {"linkedin": "professional and B2B voices (buyers, installers, managers) are under-represented",
+                  "tiktok": "younger, trend-driven voices are under-represented",
+                  "instagram": "lifestyle and visual-brand voices are under-represented"}
 
 
 def _rank_key(it: dict) -> tuple:

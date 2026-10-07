@@ -47,6 +47,11 @@ languages:
   model_language_bonus: 0.10    # a language the planner picked for this brief gets this extra share
   named_country_weight: 0.30    # a country the brief names gets this extra weight; its main language is always kept
   min_share_of_top: 0.25        # a market language scoring below this share of the top language is left out
+# Starting plan (change V6): no platform above this share of the planned starting units unless the plan
+# says why (source_balance_reason); otherwise code switches the extra units off (the user can switch them on).
+planning:
+  source_share_max: 0.5
+
 parallel_tool_calls_max: 3      # concurrent tool calls from one model turn
 queue_max: 3                    # runs waiting behind the live one (FIFO)
 time_window_days_options: [30, 90, 180, 365]

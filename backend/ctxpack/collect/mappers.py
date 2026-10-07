@@ -10,7 +10,7 @@ from __future__ import annotations
 import copy
 from typing import Any, Callable, TypedDict
 
-from ctxpack.collect.cleaning import redact, scrub_url
+from ctxpack.collect.cleaning import linkedin_url, redact, scrub_url
 
 
 class RawPost(TypedDict, total=False):
@@ -161,6 +161,45 @@ def instagram_comment(item: dict, ctx: dict) -> RawPost | None:
                    thread_id=item.get("postUrl"), engagement=_eng(item, "likesCount", "repliesCount"))
 
 
+# --- linkedin (V6) -------------------------------------------------------------
+# Post links are rebuilt from the activity id: the actors' own links name the author.
+
+def _activity(value: Any) -> str | None:
+    digits = "".join(ch for ch in str(value or "").rsplit(":", 1)[-1] if ch.isdigit())
+    return digits if len(digits) >= 16 else None
+
+
+def linkedin_harvest(item: dict, ctx: dict) -> RawPost | None:
+    act = _activity(item.get("id") or item.get("entityId"))
+    if not act or item.get("type", "post") != "post":
+        return None
+    return RawPost(kind="post", text=_join(item.get("content")), author=get(item, "author.name"),
+                   date=get(item, "postedAt.date"), url=linkedin_url(act), thread_id=act,
+                   engagement=_eng(item, "engagement.likes", "engagement.comments", "engagement.shares"),
+                   comments=get(item, "engagement.comments") or 0)
+
+
+def linkedin_datadoping(item: dict, ctx: dict) -> RawPost | None:
+    act = _activity(item.get("activity_id"))
+    if not act or item.get("is_reshare"):
+        return None
+    return RawPost(kind="post", text=_join(item.get("text")), author=get(item, "author.name"),
+                   date=get(item, "posted_at.date"), url=linkedin_url(act), thread_id=act,
+                   engagement=_eng(item, "total_reactions", "comments", "stats.shares"),
+                   comments=item.get("comments") or 0)
+
+
+def linkedin_comment(item: dict, ctx: dict) -> RawPost | None:
+    act = _activity(item.get("postId"))
+    if not item.get("commentary") or not act:
+        return None
+    link = item.get("linkedinUrl") or ""
+    return RawPost(kind="comment", text=_join(item.get("commentary")), author=get(item, "actor.name"),
+                   date=item.get("createdAt"), url=linkedin_url(act),
+                   permalink=link if "/feed/update/" in link else None, thread_id=act,
+                   engagement=_eng(item, "engagement.likes", "engagement.comments"))
+
+
 Mapper = Callable[[dict, dict], RawPost | None]
 
 # actor id -> (mapper, fields kept in fixtures, author fields, free-text fields)
@@ -204,6 +243,15 @@ MAPPERS: dict[str, tuple[Mapper, list[str], list[str], list[str]]] = {
     "apify/instagram-comment-scraper": (instagram_comment, [
         "text", "timestamp", "postUrl", "commentUrl", "id", "likesCount", "repliesCount", "ownerUsername", "error"],
         ["ownerUsername"], ["text"]),
+    "harvestapi/linkedin-post-search": (linkedin_harvest, [
+        "type", "id", "entityId", "content", "postedAt.date", "engagement.likes", "engagement.comments",
+        "engagement.shares", "author.name"], ["author.name"], ["content"]),
+    "datadoping/linkedin-posts-search-scraper": (linkedin_datadoping, [
+        "activity_id", "text", "posted_at.date", "total_reactions", "comments", "stats.shares", "is_reshare",
+        "author.name"], ["author.name"], ["text"]),
+    "harvestapi/linkedin-post-comments": (linkedin_comment, [
+        "id", "postId", "commentary", "createdAt", "linkedinUrl", "engagement.likes", "engagement.comments",
+        "actor.name"], ["actor.name"], ["commentary"]),
 }
 
 

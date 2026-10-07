@@ -335,7 +335,8 @@ export type DistinctAuthors = number;
 /**
  * Source family. All forum domains together are ONE platform (web_forum).
  */
-export type Platform = "reddit" | "tiktok" | "youtube" | "instagram" | "web_forum" | "web_review" | "web_editorial";
+export type Platform =
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "web_forum" | "web_review" | "web_editorial";
 /**
  * Source families the members come from.
  */
@@ -456,7 +457,8 @@ export type Type1 = "platform_lens";
 /**
  * Source family. All forum domains together are ONE platform (web_forum).
  */
-export type Platform1 = "reddit" | "tiktok" | "youtube" | "instagram" | "web_forum" | "web_review" | "web_editorial";
+export type Platform1 =
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "web_forum" | "web_review" | "web_editorial";
 /**
  * Kept posts from this platform (lens needs >= 15).
  */
@@ -1325,7 +1327,8 @@ export type Format = string;
 /**
  * Source family. All forum domains together are ONE platform (web_forum).
  */
-export type Platform2 = "reddit" | "tiktok" | "youtube" | "instagram" | "web_forum" | "web_review" | "web_editorial";
+export type Platform2 =
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "web_forum" | "web_review" | "web_editorial";
 /**
  * Engagement percentile within its platform.
  */
@@ -1573,7 +1576,8 @@ export type Priority = number;
 /**
  * The platform.
  */
-export type Platform3 = "reddit" | "tiktok" | "youtube" | "instagram" | "web_forum" | "web_review" | "web_editorial";
+export type Platform3 =
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "web_forum" | "web_review" | "web_editorial";
 /**
  * Why this channel, in one sentence.
  */
@@ -1693,7 +1697,8 @@ export type TargetKind = "community" | "creator";
 /**
  * Source family. All forum domains together are ONE platform (web_forum).
  */
-export type Platform4 = "reddit" | "tiktok" | "youtube" | "instagram" | "web_forum" | "web_review" | "web_editorial";
+export type Platform4 =
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "web_forum" | "web_review" | "web_editorial";
 /**
  * Public link.
  */
@@ -1733,7 +1738,8 @@ export type Day = string;
 /**
  * Source family. All forum domains together are ONE platform (web_forum).
  */
-export type Platform5 = "reddit" | "tiktok" | "youtube" | "instagram" | "web_forum" | "web_review" | "web_editorial";
+export type Platform5 =
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "web_forum" | "web_review" | "web_editorial";
 /**
  * Format to use.
  */
@@ -1914,7 +1920,8 @@ export type SourceUnit1 = string;
 /**
  * Its source family.
  */
-export type Platform6 = "reddit" | "tiktok" | "youtube" | "instagram" | "web_forum" | "web_review" | "web_editorial";
+export type Platform6 =
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "web_forum" | "web_review" | "web_editorial";
 /**
  * Verdict reason, e.g. "kept: 58% relevant".
  */
@@ -2045,7 +2052,8 @@ export type Id26 = string;
 /**
  * Source family. All forum domains together are ONE platform (web_forum).
  */
-export type Platform7 = "reddit" | "tiktok" | "youtube" | "instagram" | "web_forum" | "web_review" | "web_editorial";
+export type Platform7 =
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "web_forum" | "web_review" | "web_editorial";
 /**
  * Where it was found.
  */
@@ -2082,6 +2090,10 @@ export type TextEn = string | null;
  * True if redaction changed the text.
  */
 export type Redacted = boolean;
+/**
+ * True when the post is visible only to logged-in users (LinkedIn, V6): the reader may need to log in to open it.
+ */
+export type RequiresLogin = boolean;
 /**
  * Under 4 words: lexicon only, never counted.
  */
@@ -3135,6 +3147,7 @@ export interface Evidence1 {
   text: Text10;
   text_en?: TextEn;
   redacted?: Redacted;
+  requires_login?: RequiresLogin;
   short_form?: ShortForm;
   engagement_percentile?: EngagementPercentile1;
   author_hash?: AuthorHash;

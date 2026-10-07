@@ -30,6 +30,7 @@ export function Quote({ text, evidence, size = "md" }: {
           {evidence.posted_at && <span>{evidence.posted_at}</span>}
           {lang && <span>{lang}</span>}
           {evidence.redacted && <span title="Personal details were removed">redacted</span>}
+          {evidence.requires_login && <span title="You may need to log in to LinkedIn to view this">login needed</span>}
           {canTranslate && (
             <button
               type="button"

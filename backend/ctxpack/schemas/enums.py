@@ -18,6 +18,7 @@ class Platform(StrEnum):
     tiktok = "tiktok"
     youtube = "youtube"
     instagram = "instagram"
+    linkedin = "linkedin"
     web_forum = "web_forum"
     web_review = "web_review"
     web_editorial = "web_editorial"
@@ -30,6 +31,7 @@ class CollectionPlatform(StrEnum):
     tiktok = "tiktok"
     youtube = "youtube"
     instagram = "instagram"
+    linkedin = "linkedin"
     web = "web"
 
 

@@ -111,7 +111,8 @@ Documents:     01 PRD = WHAT to build (requirements, content model,
 
 2.2 Non-goals
   Always-on monitoring or alerts; archives beyond 12 months; profiling of
-  individuals; private or login-walled content; mobile apps, billing, team
+  individuals; private content (private groups, DMs, closed profiles,
+  membership-approved content); mobile apps, billing, team
   workspaces; Word/PowerPoint export.
 
 2.3 How the product meets the judging criteria
@@ -815,8 +816,11 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
  9. DATA HANDLING, PRIVACY, AND COMPLIANCE
 ================================================================================
 
- DH1  Public content only; maintained Apify actors; no login-walled
-      content; no circumvention.
+ DH1  Public content, plus content visible to ANY logged-in user (change
+      V6: LinkedIn posts and comments); never private groups, DMs, closed
+      profiles or membership-approved content. Maintained Apify actors
+      that need no session of ours (no cookies); no circumvention.
+      Evidence from such sources carries requires_login = true.
  DH2  Collection cache by (tool, target, language, date) for 24 h on the
       container disk (temporary; fine to lose). The cache stores items
       AFTER author hashing and redaction - never raw actor output.
@@ -834,6 +838,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
       outside the window dropped; undated posts kept as evidence but
       excluded from trends and recency.
  DH8  Creator targets: public accounts only, by topical relevance.
+      LinkedIn is searched by keyword only - never by person or profile,
+      never to build a profile of an individual.
  DH9  Prompt-injection defence: scraped text only inside
       <untrusted_user_content> tags; trust field on evidence; agents told
       never to follow instructions in evidence; collector has no
@@ -844,7 +850,11 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
       from the ORIGINAL text, chosen to contain no PII; quotes prefer
       spans without redactions; if a quote must include one, the drawer
       says "redacted - the live post shows the original wording". Links
-      are tested on real Dutch and German pages on Day 1.
+      are tested on real Dutch and German pages on Day 1. Quotes in the
+      summary and key findings prefer posts anyone can open
+      (requires_login = false) when an equally strong quote exists;
+      otherwise the drawer says "you may need to log in to LinkedIn to
+      view this".
 
 
 ================================================================================
@@ -1144,6 +1154,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
  Prompt injection via scraped text  Untrusted wrappers; collector has no
                                     dangerous tools; agent instructions
  Actor breaks / zero results        Fallback actor in the tool; blind spots
+ LinkedIn blocks the actor or        Fallback actor once, then a blind spot
+ its account mid-run                 with its impact; the run continues
  Cost overrun                       Budgets inside tools; daily cap; provider
                                     spend limits
  Generic insights                   Generic-vs-found, tensions, white space;
