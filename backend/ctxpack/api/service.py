@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from ctxpack import db, guards, orchestrator
+from ctxpack.config import load_yaml
 from ctxpack.schemas.enums import Mode, Requester, RunStatus
 
 
@@ -155,7 +156,8 @@ def run_status(run_id: str) -> dict[str, Any]:
             "stage": run.stage.value if run.stage else None, "queue_position": queue_position(run.id),
             "pack_id": run.pack_id, "error": run.error, "created_at": run.created_at,
             "interpretation": run.interpretation, "plan": run.plan,
-            "clarifying_question": run.clarifying_question,
+            "clarifying_questions": questions_of(run) if run.status == RunStatus.needs_clarification else [],
+            "intake": run.intake,
             "inputs": run_inputs(run),
             "estimate": estimate(run.mode).model_dump(mode="json")}
 
@@ -164,7 +166,7 @@ def run_inputs(run: db.Run) -> dict[str, Any]:
     """Everything needed to start the same research again ("Run again with these inputs", V1)."""
     return {"brief": run.brief_text, "mode": str(run.mode),
             "time_window_days": (run.interpretation or {}).get("time_window_days"),
-            "brand_voice": run.brand_voice, "clarification": run.clarification}
+            "brand_voice": run.brand_voice, "intake": run.intake or _legacy_intake(run)}
 
 
 def pack_inputs(pack_id: str) -> dict[str, Any]:
@@ -181,39 +183,58 @@ def pack_inputs(pack_id: str) -> dict[str, Any]:
         return run_inputs(row_run)
     return {"brief": p["brief"]["text"], "mode": p["mode"],
             "time_window_days": p["brief"]["interpreted"].get("time_window_days"),
-            "brand_voice": p["brief"].get("brand_voice"), "clarification": None}
+            "brand_voice": p["brief"].get("brand_voice"), "intake": p["brief"].get("intake")}
 
 
-async def _plan(run_id: str, clarification: tuple[str, str] | None, allow_question: bool) -> dict[str, Any]:
-    """One interpret + plan call for the run; saves the plan or the clarifying question."""
+def questions_of(run: db.Run) -> list[dict[str, Any]]:
+    """The questions waiting for answers; a run saved before V3 had one question in another column."""
+    if run.clarifying_questions:
+        return run.clarifying_questions
+    q = run.clarifying_question
+    return [{"id": "Q1", "question": q["question"], "why_it_helps": "", "fills": "other", "options": q["options"],
+             "multi_select": False, "allow_free_text": True}] if q else []
+
+
+def _legacy_intake(run: db.Run) -> dict[str, Any] | None:
+    """Before V3 one clarifying answer was kept: it reads as an "other" answer."""
+    c = run.clarification
+    return {"other_answers": [{"question": c["question"], "answer": c["answer"]}]} if c else None
+
+
+async def _plan(run_id: str, allow_question: bool, intake: dict | None = None,
+                edits: dict | None = None) -> dict[str, Any]:
+    """One interpret + plan call for the run; saves the plan or the clarifying questions (V3)."""
     from ctxpack.agent.interpret import interpret
     from ctxpack.llm.client import tracking
+    from ctxpack.schemas.plan import Intake
 
     run = db.get_run(run_id)
+    known = Intake.model_validate(intake) if intake else None
     with tracking(run.id):
-        out = await interpret(run.brief_text, mode=str(run.mode), allow_question=allow_question,
-                              clarification=clarification,
-                              window_days=(run.interpretation or {}).get("time_window_days"))
+        out = await interpret(run.brief_text, mode=str(run.mode), allow_question=allow_question, intake=known,
+                              edits=edits, window_days=(run.interpretation or {}).get("time_window_days"))
     res = out.result
-    if res.clarifying_question:
+    if res.clarifying_questions:
         db.update_run(run.id, interpretation=res.interpretation.model_dump(mode="json"),
-                      clarifying_question=res.clarifying_question.model_dump(mode="json"))
+                      clarifying_questions=[q.model_dump(mode="json") for q in res.clarifying_questions])
         db.set_status(run.id, RunStatus.needs_clarification)
     else:
         db.update_run(run.id, interpretation=res.interpretation.model_dump(mode="json"),
-                      plan=res.plan.model_dump(mode="json"), clarifying_question=None,
-                      **({"clarification": {"question": clarification[0], "answer": clarification[1]}}
-                         if clarification else {}))
+                      plan=res.plan.model_dump(mode="json"), clarifying_questions=None,
+                      intake=(known or Intake()).model_dump(mode="json"))
         db.set_status(run.id, RunStatus.awaiting_approval)
     return run_status(run.id)
 
 
 async def create_run(brief: str, mode: str = "quick", time_window_days: int | None = None,
                      brand_voice: str | None = None, auto_approve: bool = False,
-                     requester: Requester = Requester.api) -> dict[str, Any]:
+                     requester: Requester = Requester.api, intake: dict | None = None) -> dict[str, Any]:
     """Interpret + plan now (one paid call), then wait for approval - or queue at once with auto_approve
-    (agents: never a clarifying question)."""
+    (agents: never a clarifying question). Given intake (an agent's fields, or "Run again"), no questions."""
+    from ctxpack.schemas.plan import Intake
+
     guards.check_can_queue()
+    known = Intake.model_validate(intake).model_dump(mode="json") if intake else None
     run = db.create_run(brief.strip(), mode=Mode(mode), requester=requester)
     fields: dict[str, Any] = {}
     if brand_voice and brand_voice.strip():
@@ -222,20 +243,105 @@ async def create_run(brief: str, mode: str = "quick", time_window_days: int | No
         fields["interpretation"] = {"time_window_days": time_window_days}
     if fields:
         db.update_run(run.id, **fields)
-    status = await _plan(run.id, None, allow_question=not auto_approve)
+    status = await _plan(run.id, allow_question=not auto_approve, intake=known)
     if auto_approve:
         return start_run(run.id)
     return status
 
 
-async def answer_question(run_id: str, answer: str) -> dict[str, Any]:
+def intake_from_answers(questions: list[dict], answers: list[dict], skip_all: bool) -> tuple[dict, dict]:
+    """(intake, edits) from the answers. Chips and free text fill the question's intake field; a market
+    answer becomes edited markets when it names a place; skipped questions stay "agent decides"."""
+    from ctxpack.agent.markets import places_in
+
+    by_id = {a.get("id"): a for a in answers}
+    intake: dict[str, Any] = {"audience_roles": [], "channels_in_use": [], "competitors_user": [], "other_answers": [],
+                              "questions_asked": questions}
+    edits: dict[str, Any] = {}
+    for q in questions:
+        a = by_id.get(q["id"]) or {}
+        if skip_all or a.get("skipped"):
+            continue
+        values = [str(v).strip() for v in a.get("chosen", []) if str(v).strip()]
+        if str(a.get("text") or "").strip():
+            values.append(str(a["text"]).strip()[:300])
+        if not values:
+            continue
+        fills = q.get("fills", "other")
+        if fills in ("audience_roles", "channels_in_use"):
+            intake[fills] += values
+        elif fills == "competitors":
+            intake["competitors_user"] += [c.strip() for v in values for c in v.split(",") if c.strip()]
+        elif fills in ("goal", "offer", "timeframe"):
+            intake[fills] = "; ".join(values)
+        elif fills == "market":
+            places = places_in(" ".join(values))
+            codes = places["regions"] + [c for c in places["countries"]]
+            if codes:
+                edits["markets"] = codes
+            else:
+                intake["other_answers"].append({"question": q["question"], "answer": "; ".join(values)})
+        else:
+            intake["other_answers"].append({"question": q["question"], "answer": "; ".join(values)})
+    return intake, edits
+
+
+async def answer_questions(run_id: str, answers: list[dict] | None = None, skip_all: bool = False,
+                           answer: str | None = None) -> dict[str, Any]:
+    """Answers to the clarifying questions (or skip) -> the plan. `answer` (one text) is the pre-V3 form."""
     run = db.get_run(run_id)
     if run is None:
         raise NotFound(f"run {run_id} not found")
-    if run.status != RunStatus.needs_clarification or not run.clarifying_question:
-        raise ValueError("this run is not waiting for an answer")
+    questions = questions_of(run)
+    if run.status != RunStatus.needs_clarification or not questions:
+        raise ValueError("this run is not waiting for answers")
     guards.check_can_queue()
-    return await _plan(run_id, (run.clarifying_question["question"], answer.strip()), allow_question=False)
+    if answer and not answers:
+        answers = [{"id": questions[0]["id"], "text": answer}]
+    intake, edits = intake_from_answers(questions, answers or [], skip_all)
+    return await _plan(run_id, allow_question=False, intake=intake, edits=edits or None)
+
+
+async def answer_question(run_id: str, answer: str) -> dict[str, Any]:
+    """Pre-V3 entry point: one free-text answer to the first question."""
+    return await answer_questions(run_id, answer=answer)
+
+
+async def replan(run_id: str, edits: dict[str, Any]) -> dict[str, Any]:
+    """Edited chips on the interpretation screen (markets, languages, audience, roles, competitors) ->
+    a new plan in place (one call). Competitors the user adds are kept in intake and always searched."""
+    run = db.get_run(run_id)
+    if run is None:
+        raise NotFound(f"run {run_id} not found")
+    if run.status != RunStatus.awaiting_approval:
+        raise ValueError(f"run is {run.status.value}: only a planned run can be re-planned")
+    guards.check_can_queue()
+    from ctxpack.agent.markets import places_in
+
+    intake = dict(run.intake or {})
+    clean = {k: v for k, v in edits.items() if v not in (None, [], "")}
+    if "markets" in clean:  # codes ("DE", "nordics") or names typed by the user ("Germany")
+        regions = set(load_yaml("markets")["regions"])
+        codes: list[str] = []
+        for m in clean["markets"]:
+            m = str(m).strip()
+            if m.lower() in regions or m.lower() == "global" or (len(m) == 2 and m.isalpha()):
+                codes.append(m.lower() if m.lower() in regions | {"global"} else m.upper())
+            else:
+                found = places_in(m)
+                codes += found["regions"] + found["countries"]
+        clean["markets"] = list(dict.fromkeys(codes)) or None
+        if not clean["markets"]:
+            raise ValueError("no market recognised: use a country or region name, e.g. Germany or Nordics")
+    if "competitors" in clean:
+        before = {c.casefold() for c in (run.interpretation or {}).get("competitors", [])}
+        added = [c for c in clean["competitors"] if c.casefold() not in before]
+        intake["competitors_user"] = list(dict.fromkeys((intake.get("competitors_user") or []) + added))
+        keep_user = [c for c in intake["competitors_user"] if c.casefold() in {x.casefold() for x in clean["competitors"]}]
+        intake["competitors_user"] = keep_user
+    if "audience_roles" in clean:
+        intake["audience_roles"] = clean["audience_roles"]
+    return await _plan(run_id, allow_question=False, intake=intake, edits=clean)
 
 
 def start_run(run_id: str, disabled_units: list[int] | None = None,

@@ -62,6 +62,7 @@ class RunContext:
     store: Store
     record: bool = False                      # save sanitised fixtures (CLI --record)
     brief_text: str = ""                      # the brief as typed (fake mode finds its transcript by it)
+    must_search: list[str] = field(default_factory=list)  # competitors the user named (V3): searched by name
     started: float = field(default_factory=time.monotonic)
     calls: int = 0
     items: int = 0
@@ -737,6 +738,9 @@ async def finish(ctx: RunContext, summary: str, source_verdicts: list[dict], gap
     missing = sorted(set(ctx.unit_stats) - set(named))
     if missing:
         problems.append(f"give a verdict for every source unit used: {', '.join(missing)}")
+    unsearched = [c for c in ctx.must_search if not any(c.casefold() in q.casefold() for q in ctx.queries)]
+    if unsearched and ctx.calls_left() > 0 and ctx.seconds_left() > 0:
+        problems.append("search every competitor the user named, by name, before you finish: " + ", ".join(unsearched))
     if not (summary or "").strip():
         problems.append("summary must not be empty")
     if problems:
@@ -744,7 +748,8 @@ async def finish(ctx: RunContext, summary: str, source_verdicts: list[dict], gap
     ctx.dropped_units |= {u for u, v in named.items() if v == "dropped"}
     follow_ups = [{"source_unit": f.get("source_unit", ""), "query": (f.get("query") or "").strip()}
                   for f in follow_up_queries or [] if (f.get("query") or "").strip()]
-    ctx.finished = {"summary": summary.strip(), "source_verdicts": source_verdicts, "gaps": list(gaps or []),
+    gaps = list(gaps or []) + [f"Not searched (limits reached): {c}, named by the user" for c in unsearched]
+    ctx.finished = {"summary": summary.strip(), "source_verdicts": source_verdicts, "gaps": gaps,
                     "follow_up_queries": follow_ups}
     return {"status": "ok", "finished": True}
 

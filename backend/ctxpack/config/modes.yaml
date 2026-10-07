@@ -31,6 +31,12 @@ modes:
 
 default_mode: quick
 
+# Clarifying questions (change V3, PRD FR-A2c): asked before planning, never of agents.
+clarifying:
+  max_questions: 3
+  options_min: 3
+  options_max: 5
+
 # Languages (change V2, PRD FR-A2b): chosen in code from the markets' official languages (weighted)
 # plus English, only from this list, at most max_per_mode. The rest is shown as excluded with a reason.
 languages:

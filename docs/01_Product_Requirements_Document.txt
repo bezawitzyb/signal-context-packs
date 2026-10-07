@@ -489,8 +489,31 @@ EPIC A - BRIEF AND PLAN
        config/markets.yaml (geography only, never sources).
  FR-A2 [P0] Interpretation in one call: topic, market, languages,
        audience, category, compliance_category, intent, time window;
-       inferred fields tagged "assumed". At most ONE clarifying question,
-       only if market or audience cannot be inferred; never for agents.
+       inferred fields tagged "assumed". Clarifying questions per FR-A2c
+       (replaces "at most one"); never for agents.
+ FR-A2c [P0] Smart clarifying questions (change V3). The same call
+       returns 0 to max (modes.yaml clarifying.max_questions, default 3)
+       questions, the gaps that would most change sources, research
+       questions or the usefulness of the output first (who exactly to
+       reach - buyer, influencer, user, consumer -, what the research is
+       for, what they offer, which market, which channels they use). Never
+       a question the brief already answers, never a generic one; written
+       in the user's terms and the brief's language, with 3-5 answer chips
+       specific to the brief; a specific brief gets none. Each question:
+       {id, question, why_it_helps, fills, options[], multi_select,
+       allow_free_text}. UI: cards with chips, free text, "Skip - let the
+       agent decide" per question and "Skip all and plan". Answers become
+       brief.intake {audience_roles[], goal, offer, channels_in_use[],
+       competitors_user[], timeframe, other_answers[], questions_asked[]}
+       (schema 1.1). The interpretation screen shows markets, languages,
+       audience, roles and competitors ("Starter list - edit or add
+       yours") as editable chips; an edit re-plans in place (one call).
+       Competitors the user adds are always searched (finish is refused
+       until each was searched). Research questions and hypotheses follow
+       the selected roles; evidence carries role (buyer | influencer |
+       user | consumer | other | unknown) when a post shows it. Agents
+       (API, MCP) are never asked; they may pass the intake fields.
+       "Run again" restores the answers.
  FR-A3 [P0] Starting plan: 3-5 hypotheses, 5-8 research questions,
        starting source units (platform + subreddit / hashtag / channel /
        domain / query) each with a one-line reason.
@@ -1110,7 +1133,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
  #    Decision                                                       See
  ---  -------------------------------------------------------------  --------
  D1   Confidence: four lowercase labels + 0-1 score + counts         5.4
- D2   At most one clarifying question; agents never get one          FR-A2
+ D2   0-3 brief-specific clarifying questions (V3); agents never       FR-A2c
+      get one
  D3   Plan review with a Start button; agents auto-approve           FR-A4
  D4   Modes: Quick and Standard; both adaptive                       8.5
  D5   Time window default 180 days (30/90/180/365)                   FR-A1

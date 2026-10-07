@@ -116,8 +116,10 @@ def _field_rows(model: type[BaseModel], names: list[str]) -> list[str]:
 CHANGELOG = [
     "- **1.1** (changes V1-V10, in progress): `brief.interpreted.markets[]` {code, countries, weight, "
     "assumed} replaces the single market (V2); `market` is now a short label made in code; "
-    "`languages_excluded[]` lists left-out languages with the reason. 1.0 packs are migrated when read "
-    "(`schemas/migrate.py`).",
+    "`languages_excluded[]` lists left-out languages with the reason. V3: `brief.intake` (what the user "
+    "told us before planning: audience roles, goal, offer, channels, competitors, timeframe, other answers, "
+    "the questions asked) and `evidence[].role` (buyer, influencer, user, consumer, other, unknown). "
+    "1.0 packs are migrated when read (`schemas/migrate.py`).",
     "- **1.0**: first version.",
 ]
 

@@ -108,12 +108,15 @@ async def search_evidence(pack_id: str, query: str, limit: int = 10) -> dict[str
 
 
 @mcp.tool()
-async def create_context_pack(brief: str, ctx: Context, mode: Literal["quick", "standard"] = "quick") -> dict:
+async def create_context_pack(brief: str, ctx: Context, mode: Literal["quick", "standard"] = "quick",
+                              intake: dict[str, Any] | None = None) -> dict:
     """Start new research for a brief (e.g. "Launching a snack brand in the Netherlands"). The plan is
     approved automatically and the run joins the queue; poll get_pack_status(run_id) until status is
-    complete or partial, then read the pack. Quick takes ~7 minutes. Needs the run key (X-API-Key)."""
+    complete or partial, then read the pack. Quick takes ~7 minutes. Needs the run key (X-API-Key).
+    Agents are never asked questions; pass what you know in intake (optional): audience_roles, goal,
+    offer, channels_in_use, competitors_user, timeframe."""
     _key(ctx)
-    return await _run(service.create_run, brief, mode, None, None, True, Requester.mcp)
+    return await _run(service.create_run, brief, mode, None, None, True, Requester.mcp, intake)
 
 
 @mcp.tool()

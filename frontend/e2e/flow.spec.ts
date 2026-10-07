@@ -91,3 +91,19 @@ test("too few posts ends on the thin screen with one-click re-plans (V1)", async
   await page.getByRole("link", { name: "Run Standard (more sources)" }).click();
   await expect(page.getByLabel("Your brief")).toHaveValue("Launching a snack brand in the Netherlands");
 });
+
+test("a vague brief gets brief-specific questions with chips, then an editable plan (V3)", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Your brief").fill("snacks");
+  await page.getByLabel("Run key").fill(KEY);
+  await page.getByRole("button", { name: "Plan the research" }).click();
+  const cards = page.locator("section[aria-labelledby=clarify] fieldset");
+  await expect(cards).toHaveCount(2);
+  await noSeriousA11yIssues(page, "Clarifying questions");
+  await cards.nth(0).getByRole("button", { name: "Netherlands" }).click();
+  await cards.nth(1).getByRole("button", { name: "Skip - let the agent decide" }).click();
+  await page.getByRole("button", { name: "Plan with my answers" }).click();
+  await expect(page.getByRole("heading", { name: "Adjust before you start" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Remove NL" })).toBeVisible();
+  await noSeriousA11yIssues(page, "Plan with editable chips");
+});

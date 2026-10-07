@@ -326,12 +326,27 @@ def expectations(pack: dict, expect: dict, min_share: float, clarifying: dict | 
         out.append({"check": f"compliance area {expect['compliance_category']}",
                     "pass": got == expect["compliance_category"],
                     "detail": f"interpreted: {got}; {len(flags)} compliance flag(s) in the pack"})
-    if expect.get("clarifying_question"):
-        asked = bool(clarifying and clarifying.get("question"))
-        out.append({"check": "asks one clarifying question with options", "pass": asked if clarifying else None,
-                    "detail": (f"\"{clarifying['question']}\" ({len(clarifying.get('options', []))} options; "
-                               f"run answered: {clarifying.get('answer') or '-'})") if asked
-                    else ("no question asked" if clarifying else "not checked yet")})
+    asks = [k for k in ("questions_max", "questions_fill") if k in expect]
+    if asks:  # V3: brief-specific clarifying questions
+        qs = (clarifying or {}).get("questions")
+        shown = "; ".join(f"{q['id']} [{q['fills']}] {q['question']}" for q in qs or []) or "no questions"
+        if qs is None:
+            out.append({"check": "clarifying questions", "pass": None, "detail": "not checked yet"})
+        else:
+            if "questions_max" in expect:
+                out.append({"check": f"at most {expect['questions_max']} question(s)",
+                            "pass": len(qs) <= expect["questions_max"], "detail": shown})
+            if "questions_fill" in expect:
+                fills = {q["fills"] for q in qs}
+                out.append({"check": "asks about " + ", ".join(expect["questions_fill"]),
+                            "pass": set(expect["questions_fill"]) <= fills, "detail": shown})
+            from ctxpack.agent.markets import places_in
+
+            places = places_in(pack["brief"]["text"])
+            answered = [q["id"] for q in qs if q["fills"] == "market" and (places["regions"] or places["countries"])]
+            out.append({"check": "never asks what the brief already says", "pass": not answered,
+                        "detail": f"market asked although the brief names a place ({', '.join(answered)})"
+                        if answered else "ok"})
     return out
 
 

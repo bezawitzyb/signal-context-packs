@@ -1,14 +1,15 @@
 // S1 ASK + PLAN (PRD 10.2, guide Step 4.2): brief, mode, window, brand voice, masked run key ->
-// one clarifying question (answer chips) or the plan to review -> Start (the run joins the queue).
+// 0-3 clarifying questions (answer chips, own words, skip) or the plan to review, with editable chips
+// that re-plan in place (V3) -> Start (the run joins the queue).
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { ArrowRight, CircleHelp, KeyRound, Loader2, X } from "lucide-react";
+import { ArrowRight, CircleHelp, KeyRound, Loader2, Plus, RefreshCw, X } from "lucide-react";
 import {
-  ApiError, answerQuestion, createRun, getOptions, startRun,
-  type Options, type PlanUnit, type RunStatus,
+  ApiError, answerQuestions, createRun, getOptions, replanRun, startRun,
+  type IntakeData, type Options, type PlanEdits, type PlanUnit, type Question, type QuestionAnswer, type RunStatus,
 } from "../lib/api";
 import { explain, readRunKey, saveRunKey } from "../lib/runKey";
-import { loadDraft, rememberAnswer, rememberedAnswer, saveDraft } from "../lib/rerun";
+import { intakeFromParam, loadDraft, saveDraft } from "../lib/rerun";
 
 const EXAMPLES = [
   "Launching a snack brand in the Netherlands",
@@ -56,6 +57,7 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
   const [windowDays, setWindowDays] = useState<number | null>(
     params.get("window") ? Number(params.get("window")) : draft?.window ?? null);
   const [voice, setVoice] = useState(params.get("voice") ?? draft?.voice ?? "");
+  const [intake, setIntake] = useState<IntakeData | null>(intakeFromParam(params.get("intake")));  // "Run again"
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const keyRef = useRef<HTMLInputElement>(null);
@@ -63,7 +65,6 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
 
   useEffect(() => saveDraft({ brief, mode, window: windowDays, voice }), [brief, mode, windowDays, voice]);
   useEffect(() => {
-    if (params.get("answer")) rememberAnswer(params.get("answer")!);
     getOptions().then((o) => { setOptions(o); if (!params.get("mode") && !draft) setMode(o.default_mode); })
       .catch(() => setOptions(null));
     if (keyRef.current) keyRef.current.value = readRunKey(); // the DOM property only - never an attribute
@@ -80,7 +81,7 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
     try {
       const run = await createRun(key, {
         brief: brief.trim(), mode, time_window_days: windowDays ?? undefined,
-        brand_voice: voice.trim() || undefined,
+        brand_voice: voice.trim() || undefined, intake: intake ?? undefined,
       });
       onRun(run);
     } catch (err) {
@@ -126,7 +127,9 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
           </label>
           <input id="voice" value={voice} onChange={(e) => setVoice(e.target.value)}
                  maxLength={options?.brand_voice_max_chars ?? 200} placeholder="e.g. dry Dutch humour, no hype"
+                 aria-describedby="voice-help"
                  className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-3" />
+          <p id="voice-help" className="mt-1 text-xs text-ink-3">How your brand sounds. Used only for hooks and post ideas, never to change what the research finds.</p>
         </div>
       </div>
       <div className="grid items-end gap-4 md:grid-cols-[1fr_auto]">
@@ -153,24 +156,76 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
           collected until you press Start.
         </p>
       )}
+      {intake && (
+        <p className="flex flex-wrap items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm text-ink-2">
+          Your earlier answers will be used, so there are no questions this time.
+          <button type="button" onClick={() => setIntake(null)} className="text-ink underline">Ask me again</button>
+        </p>
+      )}
       {error && <p id="ask-error" role="alert" className="rounded-lg border border-line-strong bg-wash px-3 py-2 text-sm text-ink">{error}</p>}
     </form>
   );
 }
 
-// --- the clarifying question ------------------------------------------------------------------
+// --- the clarifying questions (V3) -------------------------------------------------------------
 
-export function QuestionCard({ run, onPlanned }: { run: RunStatus; onPlanned: (run: RunStatus) => void }) {
-  const [other, setOther] = useState(rememberedAnswer());  // "Run again": your earlier answer, ready to send
+type Draft = { chosen: string[]; text: string; skipped: boolean };
+
+function QuestionBox({ q, value, onChange, disabled }: {
+  q: Question; value: Draft; onChange: (d: Draft) => void; disabled: boolean;
+}) {
+  const pick = (o: string) => {
+    const has = value.chosen.includes(o);
+    const chosen = q.multi_select ? (has ? value.chosen.filter((x) => x !== o) : [...value.chosen, o]) : (has ? [] : [o]);
+    onChange({ ...value, chosen, skipped: false });
+  };
+  return (
+    <fieldset className={`rounded-lg border p-4 ${value.skipped ? "border-dashed border-line-strong opacity-70" : "border-line-strong"}`}
+              disabled={disabled}>
+      <legend className="px-1 font-medium text-ink">{q.question}</legend>
+      {q.why_it_helps && <p className="text-sm text-ink-3">{q.why_it_helps}</p>}
+      <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={q.multi_select ? "Pick one or more" : "Pick one"}>
+        {q.options.map((o) => (
+          <button key={o} type="button" aria-pressed={value.chosen.includes(o)} onClick={() => pick(o)}
+                  className={`rounded-full border px-3 py-1.5 text-sm ${value.chosen.includes(o) ? "border-ink bg-ink text-paper" : "border-line-strong text-ink hover:border-ink"}`}>
+            {o}
+          </button>
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        {q.allow_free_text !== false && (
+          <>
+            <label htmlFor={`own-${q.id}`} className="sr-only">Or in your own words</label>
+            <input id={`own-${q.id}`} value={value.text} placeholder="Or in your own words"
+                   onChange={(e) => onChange({ ...value, text: e.target.value, skipped: false })}
+                   className="w-full max-w-sm rounded-lg border border-line px-3 py-1.5 text-sm" />
+          </>
+        )}
+        <button type="button" onClick={() => onChange({ chosen: [], text: "", skipped: !value.skipped })}
+                aria-pressed={value.skipped} className="text-sm text-ink-2 underline">
+          {value.skipped ? "Answer this after all" : "Skip - let the agent decide"}
+        </button>
+      </div>
+    </fieldset>
+  );
+}
+
+export function QuestionCards({ run, onPlanned }: { run: RunStatus; onPlanned: (run: RunStatus) => void }) {
+  const qs = run.clarifying_questions;
+  const [drafts, setDrafts] = useState<Record<string, Draft>>(
+    Object.fromEntries(qs.map((q) => [q.id, { chosen: [], text: "", skipped: false }])));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const q = run.clarifying_question!;
-  const answer = async (text: string) => {
-    if (!text.trim()) return;
+  const send = async (skipAll: boolean) => {
     setBusy(true);
     setError(null);
+    const answers: QuestionAnswer[] = qs.map((q) => {
+      const d = drafts[q.id];
+      const empty = !d.chosen.length && !d.text.trim();
+      return { id: q.id, chosen: d.chosen, text: d.text.trim() || undefined, skipped: d.skipped || empty };
+    });
     try {
-      onPlanned(await answerQuestion(readRunKey(), run.run_id, text.trim()));
+      onPlanned(await answerQuestions(readRunKey(), run.run_id, { answers, skip_all: skipAll }));
     } catch (err) {
       setError(err instanceof ApiError ? explain(err.status, err.message) : "Could not reach the server.");
     } finally {
@@ -178,28 +233,135 @@ export function QuestionCard({ run, onPlanned }: { run: RunStatus; onPlanned: (r
     }
   };
   return (
-    <section aria-labelledby="question" className="rounded-lg border border-line-strong p-5">
-      <h2 id="question" className="flex items-center gap-2 text-lg font-semibold text-ink">
-        <CircleHelp aria-hidden="true" size={18} /> One question first
+    <section aria-labelledby="clarify" className="space-y-4">
+      <h2 id="clarify" className="flex items-center gap-2 text-lg font-semibold text-ink">
+        <CircleHelp aria-hidden="true" size={18} /> {qs.length === 1 ? "One question" : `${qs.length} quick questions`} to sharpen the research
       </h2>
-      <p className="mt-1 text-ink">{q.question}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {q.options.map((o) => (
-          <button key={o} type="button" disabled={busy} onClick={() => answer(o)}
-                  className="rounded-full border border-line-strong px-3 py-1.5 text-sm text-ink hover:border-ink disabled:opacity-60">
-            {o}
-          </button>
-        ))}
-      </div>
-      <form onSubmit={(e) => { e.preventDefault(); answer(other); }} className="mt-3 flex gap-2">
-        <label htmlFor="other" className="sr-only">Or answer in your own words</label>
-        <input id="other" value={other} onChange={(e) => setOther(e.target.value)} placeholder="Or in your own words"
-               className="w-full max-w-sm rounded-lg border border-line px-3 py-1.5 text-sm" />
-        <button type="submit" disabled={busy || !other.trim()} className="rounded-lg border border-ink px-3 py-1.5 text-sm disabled:opacity-50">
-          Answer
+      {qs.map((q) => (
+        <QuestionBox key={q.id} q={q} value={drafts[q.id]} disabled={busy}
+                     onChange={(d) => setDrafts((all) => ({ ...all, [q.id]: d }))} />
+      ))}
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" onClick={() => send(false)} disabled={busy}
+                className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-60">
+          {busy ? <Loader2 aria-hidden="true" size={15} className="animate-spin" /> : <ArrowRight aria-hidden="true" size={15} />}
+          Plan with my answers
         </button>
+        <button type="button" onClick={() => send(true)} disabled={busy} className="text-sm text-ink underline">
+          Skip all and plan
+        </button>
+      </div>
+      {error && <p role="alert" className="text-sm text-ink">{error}</p>}
+    </section>
+  );
+}
+
+// --- editable chips on the plan (V3): any edit re-plans in place ---------------------------------
+
+function ChipList({ label, hint, items, onRemove, onAdd, addLabel, options }: {
+  label: string; hint?: string; items: { key: string; text: string }[]; onRemove: (key: string) => void;
+  onAdd: (value: string) => void; addLabel: string; options?: { value: string; text: string }[];
+}) {
+  const [adding, setAdding] = useState("");
+  const id = `add-${label.replace(/\W+/g, "-").toLowerCase()}`;
+  return (
+    <div className="bg-paper px-4 py-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-ink-3">{label}</p>
+      {hint && <p className="text-xs text-ink-3">{hint}</p>}
+      <ul className="mt-1.5 flex flex-wrap gap-1.5">
+        {items.map((it) => (
+          <li key={it.key} className="inline-flex items-center gap-1 rounded-full border border-line-strong py-0.5 pl-2.5 pr-1 text-sm text-ink">
+            {it.text}
+            <button type="button" onClick={() => onRemove(it.key)} aria-label={`Remove ${it.text}`}
+                    className="rounded-full p-0.5 text-ink-3 hover:text-ink"><X aria-hidden="true" size={13} /></button>
+          </li>
+        ))}
+      </ul>
+      <form className="mt-2 flex gap-1.5" onSubmit={(e) => { e.preventDefault(); if (adding.trim()) { onAdd(adding.trim()); setAdding(""); } }}>
+        <label htmlFor={id} className="sr-only">{addLabel}</label>
+        {options ? (
+          <select id={id} value={adding} onChange={(e) => setAdding(e.target.value)}
+                  className="rounded-lg border border-line bg-paper px-2 py-1 text-sm">
+            <option value="">{addLabel}…</option>
+            {options.map((o) => <option key={o.value} value={o.value}>{o.text}</option>)}
+          </select>
+        ) : (
+          <input id={id} value={adding} onChange={(e) => setAdding(e.target.value)} placeholder={addLabel}
+                 className="w-48 rounded-lg border border-line px-2 py-1 text-sm" />
+        )}
+        <button type="submit" aria-label={addLabel} disabled={!adding.trim()}
+                className="rounded-lg border border-line px-2 text-ink-2 disabled:opacity-40"><Plus aria-hidden="true" size={14} /></button>
       </form>
-      {error && <p role="alert" className="mt-2 text-sm text-ink">{error}</p>}
+    </div>
+  );
+}
+
+function EditablePlan({ run, onReplanned }: { run: RunStatus; onReplanned: (run: RunStatus) => void }) {
+  const interp = run.interpretation!;
+  const original = {
+    markets: interp.markets.map((m) => m.code), languages: interp.languages, audience: interp.audience,
+    audience_roles: run.intake?.audience_roles ?? [], competitors: interp.competitors ?? [],
+  };
+  const [edits, setEdits] = useState(original);
+  const [options, setOptions] = useState<Options | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => { getOptions().then(setOptions).catch(() => setOptions(null)); }, []);
+  const changed = JSON.stringify(edits) !== JSON.stringify(original);
+  const set = (k: keyof typeof original, v: string[] | string) => setEdits((e) => ({ ...e, [k]: v }));
+  const marketText = (code: string) => {
+    const cs = interp.markets.find((x) => x.code === code)?.countries ?? [];
+    return cs.length > 1 ? `${code.toUpperCase()} (${cs.slice(0, 4).join(", ")}${cs.length > 4 ? ", …" : ""})` : code;
+  };
+  const replan = async () => {
+    setBusy(true);
+    setError(null);
+    const body: PlanEdits = {};
+    (Object.keys(original) as (keyof typeof original)[]).forEach((k) => {
+      if (JSON.stringify(edits[k]) !== JSON.stringify(original[k])) (body as Record<string, unknown>)[k] = edits[k];
+    });
+    try {
+      onReplanned(await replanRun(readRunKey(), run.run_id, body));
+    } catch (err) {
+      setError(err instanceof ApiError ? explain(err.status, err.message) : "Could not reach the server.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  const langOptions = Object.entries(options?.languages ?? {})
+    .filter(([code]) => !edits.languages.includes(code)).map(([value, text]) => ({ value, text }));
+  return (
+    <section aria-labelledby="adjust" className="space-y-2">
+      <h3 id="adjust" className="text-sm font-semibold text-ink">Adjust before you start</h3>
+      <div className="grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
+        <ChipList label="Markets" items={edits.markets.map((c) => ({ key: c, text: marketText(c) }))}
+                  onRemove={(k) => set("markets", edits.markets.filter((x) => x !== k))}
+                  onAdd={(v) => set("markets", [...edits.markets, v])} addLabel="Add a country or region" />
+        <ChipList label="Languages" items={edits.languages.map((c) => ({ key: c, text: languageName(c) }))}
+                  onRemove={(k) => set("languages", edits.languages.filter((x) => x !== k))}
+                  onAdd={(v) => set("languages", [...edits.languages, v])} addLabel="Add a language" options={langOptions} />
+        <ChipList label="Who to reach" hint="Roles or groups, e.g. plant managers who sign off budgets"
+                  items={edits.audience_roles.map((r) => ({ key: r, text: r }))}
+                  onRemove={(k) => set("audience_roles", edits.audience_roles.filter((x) => x !== k))}
+                  onAdd={(v) => set("audience_roles", [...edits.audience_roles, v])} addLabel="Add a role" />
+        <ChipList label="Competitors" hint="Starter list - edit or add yours (yours are always searched)"
+                  items={edits.competitors.map((c) => ({ key: c, text: c }))}
+                  onRemove={(k) => set("competitors", edits.competitors.filter((x) => x !== k))}
+                  onAdd={(v) => set("competitors", [...edits.competitors, v])} addLabel="Add a competitor" />
+        <div className="bg-paper px-4 py-3 sm:col-span-2">
+          <label htmlFor="edit-audience" className="text-xs font-medium uppercase tracking-wide text-ink-3">Audience</label>
+          <input id="edit-audience" value={edits.audience} onChange={(e) => set("audience", e.target.value)}
+                 className="mt-1 w-full rounded-lg border border-line px-3 py-1.5 text-sm text-ink" />
+        </div>
+      </div>
+      {changed && (
+        <button type="button" onClick={replan} disabled={busy}
+                className="inline-flex items-center gap-2 rounded-lg border border-ink px-3 py-1.5 text-sm text-ink disabled:opacity-60">
+          {busy ? <Loader2 aria-hidden="true" size={14} className="animate-spin" /> : <RefreshCw aria-hidden="true" size={14} />}
+          Update the plan with my changes
+        </button>
+      )}
+      {error && <p role="alert" className="text-sm text-ink">{error}</p>}
     </section>
   );
 }
@@ -235,7 +397,7 @@ function UnitCard({ unit, on, onToggle, last }: { unit: PlanUnit; on: boolean; o
   );
 }
 
-export function PlanReview({ run }: { run: RunStatus }) {
+export function PlanReview({ run, onReplanned }: { run: RunStatus; onReplanned: (run: RunStatus) => void }) {
   const navigate = useNavigate();
   const plan = run.plan!;
   const interp = run.interpretation!;
@@ -298,6 +460,8 @@ export function PlanReview({ run }: { run: RunStatus }) {
           </div>
         )}
       </section>
+
+      <EditablePlan run={run} onReplanned={onReplanned} />
 
       <section aria-labelledby="start-here">
         <h2 id="start-here" className="mb-1 text-lg font-semibold text-ink">Here's where I'll start</h2>
@@ -364,8 +528,8 @@ export function AskFlow() {
     <div className="space-y-8">
       <AskForm onRun={setRun} />
       <div ref={result} className="scroll-mt-20">
-        {run?.status === "needs_clarification" && run.clarifying_question && <QuestionCard run={run} onPlanned={setRun} />}
-        {run?.status === "awaiting_approval" && run.plan && <PlanReview run={run} />}
+        {run?.status === "needs_clarification" && run.clarifying_questions?.length > 0 && <QuestionCards run={run} onPlanned={setRun} />}
+        {run?.status === "awaiting_approval" && run.plan && <PlanReview key={JSON.stringify([run.plan, run.interpretation, run.intake])} run={run} onReplanned={setRun} />}
       </div>
     </div>
   );

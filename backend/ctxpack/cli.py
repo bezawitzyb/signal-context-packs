@@ -238,11 +238,18 @@ def _print_plan(out) -> None:
         value = ", ".join(value) if isinstance(value, list) else getattr(value, "value", value)
         tag = " [yellow](assumed)[/yellow]" if name in assumed else ""
         console.print(f"  {name:<20}{value or '-'}{tag}", highlight=False)
-    if res.clarifying_question:
-        q = res.clarifying_question
-        console.print(f"\n[bold]One question:[/bold] {q.question}")
-        for n, option in enumerate(q.options, 1):
-            console.print(f"  {n}. {option}")
+    if res.interpretation.languages_excluded:
+        console.print("  left out:           " + "; ".join(f"{e.language} ({e.reason})"
+                                                       for e in res.interpretation.languages_excluded), highlight=False)
+    if res.clarifying_questions:
+        console.print(f"\n[bold]{len(res.clarifying_questions)} question(s)[/bold]")
+        for q in res.clarifying_questions:
+            console.print(f"  [bold]{q.id}[/bold] {q.question} [dim]({q.fills.value}"
+                          f"{', pick several' if q.multi_select else ''})[/dim]", highlight=False)
+            if q.why_it_helps:
+                console.print(f"      [dim]why: {q.why_it_helps}[/dim]", highlight=False)
+            for n, option in enumerate(q.options, 1):
+                console.print(f"      {n}. {option}", highlight=False)
     else:
         p = res.plan
         console.print("\n[bold]Hypotheses[/bold]")
@@ -262,13 +269,22 @@ def _print_plan(out) -> None:
                   f"at most {est.max_tool_calls} tool calls in {est.collection_secs // 60} min of collection")
 
 
+def _intake_from(questions, answers):
+    """(Intake, edits) from CLI answers - the same rules as the web app (service.intake_from_answers)."""
+    from ctxpack.api.service import intake_from_answers
+    from ctxpack.schemas.plan import Intake
+
+    raw, edits = intake_from_answers([q.model_dump(mode="json") for q in questions], answers, skip_all=False)
+    return Intake.model_validate(raw), edits or None
+
+
 @app.command()
 def plan(
     brief: str = typer.Argument(..., help='The brief, e.g. "Gen Z and meal prep"'),
     mode: str = typer.Option("quick", help="quick or standard (for the estimate)"),
     window: int = typer.Option(0, help="Time window in days (default from modes.yaml)"),
     agent: bool = typer.Option(False, "--agent", help="Act like an agent: never a clarifying question"),
-    answer: str = typer.Option("", help="Answer to the clarifying question (asked once)"),
+    answer: str = typer.Option("", help="Your own words for the first question (others skipped)"),
     as_json: bool = typer.Option(False, "--json", help="Print the raw result as JSON"),
     fixtures: bool = typer.Option(False, "--fixtures", help="LLM_FAKE: no network, no cost"),
 ) -> None:
@@ -284,15 +300,16 @@ def plan(
         os.environ["LLM_FAKE"] = "true"
         get_settings.cache_clear()
 
-    async def go(clarification=None):
+    async def go(intake=None, edits=None):
         return await interpret(brief, mode=mode, window_days=window or None, allow_question=not agent,
-                               clarification=clarification)
+                               intake=intake, edits=edits)
 
     with tracking() as t:
         out = asyncio.run(go())
-        q = out.result.clarifying_question
-        if q and answer:
-            out = asyncio.run(go((q.question, answer)))
+        qs = out.result.clarifying_questions
+        if qs and answer:
+            intake, edits = _intake_from(qs, [{"id": qs[0].id, "text": answer}])
+            out = asyncio.run(go(intake, edits))
     if as_json:
         console.print_json(json.dumps({"result": out.result.model_dump(mode="json"),
                                        "estimate": out.estimate.model_dump(mode="json")}, ensure_ascii=False))
@@ -453,22 +470,32 @@ def research(
     if brand_voice:
         db.update_run(run.id, brand_voice=brand_voice[:200])
 
-    async def plan(clarification=None):
+    async def plan(intake=None, edits=None):
         with tracking(run.id):
             return await interpret(brief, mode=mode, window_days=window or None, allow_question=not auto_approve,
-                                   clarification=clarification)
+                                   intake=intake, edits=edits)
 
     out = asyncio.run(plan())
-    if out.result.clarifying_question:
+    intake = None
+    if out.result.clarifying_questions:
         _print_plan(out)
-        q = out.result.clarifying_question
-        answer = typer.prompt("Your answer (a number or your own words)")
-        if answer.strip().isdigit() and 1 <= int(answer) <= len(q.options):
-            answer = q.options[int(answer) - 1]
-        out = asyncio.run(plan((q.question, answer)))
+        answers = []
+        for q in out.result.clarifying_questions:
+            raw = typer.prompt(f"{q.id}: number(s) like 1,3, your own words, or Enter to skip", default="",
+                               show_default=False).strip()
+            picks = [int(x) for x in raw.replace(" ", "").split(",") if x.isdigit()]
+            if raw and picks and all(1 <= n <= len(q.options) for n in picks):
+                answers.append({"id": q.id, "chosen": [q.options[n - 1] for n in picks]})
+            elif raw:
+                answers.append({"id": q.id, "text": raw})
+            else:
+                answers.append({"id": q.id, "skipped": True})
+        intake, edits = _intake_from(out.result.clarifying_questions, answers)
+        out = asyncio.run(plan(intake, edits))
     _print_plan(out)
     db.update_run(run.id, interpretation=out.result.interpretation.model_dump(mode="json"),
-                  plan=out.result.plan.model_dump(mode="json"))
+                  plan=out.result.plan.model_dump(mode="json"),
+                  intake=intake.model_dump(mode="json") if intake else None)
     if not auto_approve:
         typer.prompt("\nPress Enter to start (Ctrl-C to cancel)", default="", show_default=False)
 
@@ -964,14 +991,17 @@ def _eval_pack(spec: dict, reuse: bool):
     return row.pack, (db.get_run(row.run_id) if row.run_id else None)
 
 
-async def _ask_question(brief: str, mode: str) -> dict:
-    """The brief's clarifying question, if the planner asks one (one reasoner call)."""
+def _questions_record(questions) -> dict:
+    return {"questions": [{"id": q.id, "question": q.question, "fills": q.fills.value, "options": q.options}
+                          for q in questions]}
+
+
+async def _ask_questions(brief: str, mode: str) -> dict:
+    """The brief's clarifying questions, if the planner asks any (one reasoner call; V3)."""
     from ctxpack.agent.interpret import interpret
 
     out = await interpret(brief, mode=mode, allow_question=True)
-    q = out.result.clarifying_question
-    return {"question": q.question, "options": q.options, "answer": None} if q else \
-        {"question": None, "options": [], "answer": None}
+    return _questions_record(out.result.clarifying_questions)
 
 
 @app.command("eval")
@@ -1022,8 +1052,9 @@ def eval_cmd(
     prev = {sid: ev.previous(sid, pack["pack_id"]) for sid, (pack, _) in found.items()}
     need_ent = [s["id"] for s in specs if s["id"] in found and (recheck or not (prev[s["id"]] or {}).get("entailment"))]
     need_ent += [s["id"] for s in to_run]
-    need_ask = [s["id"] for s in specs if s["id"] in found and s.get("expect", {}).get("clarifying_question")
-                and (recheck or not (prev[s["id"]] or {}).get("clarifying_question"))]
+    asks = lambda spec: any(k in spec.get("expect", {}) for k in ("questions_max", "questions_fill"))  # noqa: E731
+    need_ask = [s["id"] for s in specs if s["id"] in found and asks(s)
+                and (recheck or not ((prev[s["id"]] or {}).get("clarifying_question") or {}).get("questions"))]
     lines, typ_lo, typ_hi, worst = [], 0.0, 0.0, 0.0
     for spec in to_run:
         lim = mode_limits(spec["mode"])
@@ -1035,7 +1066,7 @@ def eval_cmd(
         lines.append(f"claim re-check ({model_for('evaluator')}, {n} claims each): {len(need_ent)} pack(s), "
                      f"at most ${ent_usd * len(need_ent):.2f}")
     if need_ask:
-        lines.append(f"clarifying-question check: at most ${ask_usd * len(need_ask):.2f}")
+        lines.append(f"clarifying-questions check ({len(need_ask)} brief(s)): at most ${ask_usd * len(need_ask):.2f}")
     extra = ent_usd * len(need_ent) + ask_usd * len(need_ask)
     console.print("[bold]EVAL[/bold] " + ", ".join(s["id"] for s in specs), highlight=False)
     for line in lines:
@@ -1052,20 +1083,23 @@ def eval_cmd(
     for spec in to_run:
         run = db.create_run(spec["brief"], mode=Mode(spec["mode"]), requester=Requester.cli)
 
-        async def plan(clarification=None, brief=spec["brief"], mode=spec["mode"], run_id=run.id):
+        async def plan(intake=None, edits=None, brief=spec["brief"], mode=spec["mode"], run_id=run.id):
             with tracking(run_id):
-                return await interpret(brief, mode=mode, allow_question=True, clarification=clarification)
+                return await interpret(brief, mode=mode, allow_question=True, intake=intake, edits=edits)
 
         out = asyncio.run(plan())
-        clar = {"question": None, "options": [], "answer": None}
-        if q := out.result.clarifying_question:
+        clar = _questions_record(out.result.clarifying_questions)
+        intake = None
+        if out.result.clarifying_questions:
             _print_plan(out)
-            clar = {"question": q.question, "options": q.options, "answer": q.options[0]}
-            console.print(f"eval answers with the first option: {q.options[0]}", highlight=False)
-            out = asyncio.run(plan((q.question, q.options[0])))
+            console.print("eval answers every question with its first chip", highlight=False)
+            intake, edits = _intake_from(out.result.clarifying_questions,
+                                         [{"id": q.id, "chosen": [q.options[0]]} for q in out.result.clarifying_questions])
+            out = asyncio.run(plan(intake, edits))
         _print_plan(out)
         db.update_run(run.id, interpretation=out.result.interpretation.model_dump(mode="json"),
-                      plan=out.result.plan.model_dump(mode="json"))
+                      plan=out.result.plan.model_dump(mode="json"),
+                      intake=intake.model_dump(mode="json") if intake else None)
         final = _execute(run.id, spec["brief"])
         if not final.pack_id:
             console.print(f"{BAD} {spec['id']}: run {run.id} ended {final.status.value} without a pack", highlight=False)
@@ -1082,7 +1116,7 @@ def eval_cmd(
                 continue
             pack = found[spec["id"]][0]
             if spec["id"] in need_ask:
-                clarifying[spec["id"]] = await _ask_question(spec["brief"], spec["mode"])
+                clarifying[spec["id"]] = await _ask_questions(spec["brief"], spec["mode"])
             ent = (prev.get(spec["id"]) or {}).get("entailment")
             if recheck or not ent:
                 console.print(f"re-checking {n} claims of {pack['pack_id']} ({spec['id']})...", highlight=False)

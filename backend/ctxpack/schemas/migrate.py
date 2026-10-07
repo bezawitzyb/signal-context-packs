@@ -3,6 +3,7 @@
 1.0 -> 1.1 (changes V1-V10, one version for all of them; each step adds its part here):
   V2  brief.interpreted.market (one ISO code or "global") -> markets[] (+ market label, languages_excluded);
       done by Interpretation's own validator, so runs saved before V2 read the same way.
+  V3  brief.intake (empty) and evidence[].role ("unknown"): model defaults, nothing to convert.
 Packs are never written back in an older version.
 """
 

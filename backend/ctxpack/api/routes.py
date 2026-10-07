@@ -133,6 +133,7 @@ async def get_options() -> dict[str, Any]:
     cfg = load_yaml("modes")
     return {"modes": {m: estimate(m).model_dump(mode="json") for m in ("quick", "standard")},
             "default_mode": cfg["default_mode"], "time_window_days_options": cfg["time_window_days_options"],
+            "languages": cfg["languages"]["supported"], "max_languages": cfg["languages"]["max_per_mode"],
             "default_time_window_days": cfg["default_time_window_days"], "brand_voice_max_chars": 200}
 
 
@@ -164,10 +165,30 @@ class RunRequest(BaseModel):
     time_window_days: Literal[30, 90, 180, 365] | None = None
     brand_voice: str | None = Field(default=None, max_length=200)
     auto_approve: bool = False
+    intake: dict[str, Any] | None = Field(default=None, description="What you already know (V3): audience_roles, "
+                                          "goal, offer, channels_in_use, competitors_user, timeframe. Given -> "
+                                          "no clarifying questions.")
+
+
+class OneAnswer(BaseModel):
+    id: str = Field(description="Question id (Q1, Q2, Q3).")
+    chosen: list[str] = Field(default_factory=list, max_length=10, description="Answer chips chosen.")
+    text: str | None = Field(default=None, max_length=300, description="Your own words.")
+    skipped: bool = Field(default=False, description="Skip - let the agent decide.")
 
 
 class AnswerRequest(BaseModel):
-    answer: str = Field(min_length=1, max_length=500)
+    answers: list[OneAnswer] = Field(default_factory=list, max_length=5)
+    skip_all: bool = Field(default=False, description="Skip all questions and plan.")
+    answer: str | None = Field(default=None, max_length=500, description="Before V3: one free-text answer.")
+
+
+class EditsRequest(BaseModel):
+    markets: list[str] | None = Field(default=None, max_length=10, description="Country codes or regions.")
+    languages: list[str] | None = Field(default=None, max_length=12, description="ISO 639-1 codes.")
+    audience: str | None = Field(default=None, max_length=300)
+    audience_roles: list[str] | None = Field(default=None, max_length=8)
+    competitors: list[str] | None = Field(default=None, max_length=20)
 
 
 class StartRequest(BaseModel):
@@ -181,14 +202,24 @@ async def create_run(body: RunRequest, request: Request, x_api_key: str | None =
     _key(x_api_key)
     requester = Requester.web if request.headers.get("x-requester") == "web" else Requester.api
     return await _call(service.create_run, body.brief, body.mode, body.time_window_days, body.brand_voice,
-                       body.auto_approve, requester)
+                       body.auto_approve, requester, body.intake)
 
 
 @router.post("/runs/{run_id}/answer")
 async def answer(run_id: str, body: AnswerRequest, x_api_key: str | None = Header(default=None)) -> Any:
-    """Answer the clarifying question; returns the plan."""
+    """Answer the clarifying questions (or skip some or all); returns the plan."""
     _key(x_api_key)
-    return await _call(service.answer_question, run_id, body.answer)
+    if not body.answers and not body.skip_all and not body.answer:
+        raise HTTPException(status_code=422, detail="give answers, skip_all or answer")
+    return await _call(service.answer_questions, run_id, [a.model_dump() for a in body.answers], body.skip_all,
+                       body.answer)
+
+
+@router.post("/runs/{run_id}/replan")
+async def replan(run_id: str, body: EditsRequest, x_api_key: str | None = Header(default=None)) -> Any:
+    """Edited markets, languages, audience, roles or competitors -> a new plan in place (one paid call)."""
+    _key(x_api_key)
+    return await _call(service.replan, run_id, body.model_dump(exclude_none=True))
 
 
 @router.post("/runs/{run_id}/start")

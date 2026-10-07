@@ -60,6 +60,10 @@
           "default": null,
           "description": "Optional brand voice (used only by the playbook).",
           "title": "Brand Voice"
+        },
+        "intake": {
+          "$ref": "#/$defs/Intake",
+          "description": "What the user told us before planning (1.1, V3)."
         }
       },
       "required": [
@@ -153,6 +157,72 @@
       ],
       "title": "ClaimType",
       "type": "string"
+    },
+    "ClarifyingQuestion": {
+      "additionalProperties": false,
+      "description": "One of 0-3 questions that would most improve THIS research (change V3). Never asked of agents.",
+      "properties": {
+        "id": {
+          "default": "Q1",
+          "description": "Q1, Q2, Q3.",
+          "examples": [
+            "Q1"
+          ],
+          "pattern": "^Q\\d{1,2}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "question": {
+          "description": "The question, in the user's terms and the brief's language.",
+          "examples": [
+            "Who should this speak to?"
+          ],
+          "title": "Question",
+          "type": "string"
+        },
+        "why_it_helps": {
+          "default": "",
+          "description": "One short line shown to the user: how the answer changes the research.",
+          "examples": [
+            "Buyers and shop-floor users talk in different places."
+          ],
+          "title": "Why It Helps",
+          "type": "string"
+        },
+        "fills": {
+          "$ref": "#/$defs/IntakeFill",
+          "default": "other",
+          "description": "Which intake field the answer fills."
+        },
+        "options": {
+          "description": "3-5 answer chips written for THIS brief.",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 3,
+          "title": "Options",
+          "type": "array"
+        },
+        "multi_select": {
+          "default": false,
+          "description": "True if more than one chip may be chosen.",
+          "title": "Multi Select",
+          "type": "boolean"
+        },
+        "allow_free_text": {
+          "default": true,
+          "description": "True if the user may answer in their own words.",
+          "title": "Allow Free Text",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "question",
+        "options"
+      ],
+      "title": "ClarifyingQuestion",
+      "type": "object"
     },
     "Competitor": {
       "additionalProperties": false,
@@ -1191,6 +1261,11 @@
           "title": "Emotion",
           "type": "array"
         },
+        "role": {
+          "$ref": "#/$defs/EvidenceRole",
+          "default": "unknown",
+          "description": "Who the author is, when the post shows it (1.1, V3)."
+        },
         "trust": {
           "const": "untrusted_user_content",
           "default": "untrusted_user_content",
@@ -1209,6 +1284,19 @@
       ],
       "title": "Evidence",
       "type": "object"
+    },
+    "EvidenceRole": {
+      "description": "Who the post's author is, when the post shows it (change V3).",
+      "enum": [
+        "buyer",
+        "influencer",
+        "user",
+        "consumer",
+        "other",
+        "unknown"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
     },
     "ExcludedLanguage": {
       "additionalProperties": false,
@@ -1442,6 +1530,108 @@
         "inconclusive"
       ],
       "title": "HypothesisStatus",
+      "type": "string"
+    },
+    "Intake": {
+      "additionalProperties": false,
+      "description": "What the user told us before planning (change V3; brief.intake in schema 1.1). Empty = agent decides.",
+      "properties": {
+        "audience_roles": {
+          "description": "Who exactly to reach (e.g. plant managers who sign off budgets; operators on the shop floor).",
+          "items": {
+            "type": "string"
+          },
+          "title": "Audience Roles",
+          "type": "array"
+        },
+        "goal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "What the research is for (content calendar, campaign, positioning, product research, sales).",
+          "title": "Goal"
+        },
+        "offer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "What the user offers.",
+          "title": "Offer"
+        },
+        "channels_in_use": {
+          "description": "Channels the user already uses.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Channels In Use",
+          "type": "array"
+        },
+        "competitors_user": {
+          "description": "Competitors the user named; always searched.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Competitors User",
+          "type": "array"
+        },
+        "timeframe": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "When the user needs to act, in their words.",
+          "title": "Timeframe"
+        },
+        "other_answers": {
+          "description": "Answers that fill no field above.",
+          "items": {
+            "$ref": "#/$defs/QAnswer"
+          },
+          "title": "Other Answers",
+          "type": "array"
+        },
+        "questions_asked": {
+          "description": "The questions shown to the user.",
+          "items": {
+            "$ref": "#/$defs/ClarifyingQuestion"
+          },
+          "title": "Questions Asked",
+          "type": "array"
+        }
+      },
+      "title": "Intake",
+      "type": "object"
+    },
+    "IntakeFill": {
+      "description": "What a clarifying question fills in brief.intake (change V3).",
+      "enum": [
+        "audience_roles",
+        "goal",
+        "offer",
+        "channels_in_use",
+        "market",
+        "competitors",
+        "timeframe",
+        "other"
+      ],
+      "title": "IntakeFill",
       "type": "string"
     },
     "Interpretation": {
@@ -3232,6 +3422,27 @@
         }
       },
       "title": "Playbook",
+      "type": "object"
+    },
+    "QAnswer": {
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "description": "The question asked.",
+          "title": "Question",
+          "type": "string"
+        },
+        "answer": {
+          "description": "The answer given.",
+          "title": "Answer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "answer"
+      ],
+      "title": "QAnswer",
       "type": "object"
     },
     "Quote": {

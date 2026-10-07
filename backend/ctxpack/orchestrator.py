@@ -176,6 +176,7 @@ def loop_state(run_id: str, record: bool = False, no_apify: bool = False,
         brief_text=run.brief_text, record=record, brief=brief_context(run))
     ctx.llm_usd = run.cost_llm_usd
     ctx.apify_unavailable, ctx.apify_usd_cap = no_apify, apify_usd_cap
+    ctx.must_search = list((run.intake or {}).get("competitors_user") or [])  # V3: always searched
     return LoopState(ctx=ctx, interp=interp, plan=plan, check_stop=lambda: check_stop(run_id))
 
 

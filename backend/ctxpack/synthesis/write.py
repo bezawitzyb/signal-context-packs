@@ -726,7 +726,8 @@ def evidence_entry(d: Any, ev_id: str, chars: int) -> dict:
             "date_precision": str(d.date_precision), "language": d.language or "und",
             "text": excerpt(d, chars), "text_en": d.text_en, "redacted": d.redacted, "short_form": d.short_form,
             "engagement_percentile": d.engagement_percentile, "author_hash": d.author_hash,
-            "emotion": list(dict.fromkeys((d.extraction or {}).get("emotion", [])))}
+            "emotion": list(dict.fromkeys((d.extraction or {}).get("emotion", []))),
+            "role": (d.extraction or {}).get("role") or "unknown"}
 
 
 async def write_run(run_id: str, ctx: BriefContext, *, redo: bool = False) -> WriteOutcome:

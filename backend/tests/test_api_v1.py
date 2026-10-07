@@ -129,27 +129,45 @@ async def test_two_queued_runs_start_by_themselves_one_after_the_other(api):
         assert status["status"] == "complete" and status["pack_id"]
 
 
-async def test_clarifying_question_then_answer(api, monkeypatch):
-    from ctxpack.agent import interpret as ip
-    from ctxpack.schemas.plan import ClarifyingQuestion, PlanResult
-
-    real = ip.interpret
-
-    async def ask_first(brief, **kw):
-        out = await real(brief, **kw)
-        if kw.get("clarification") is None and kw.get("allow_question"):
-            out.result = PlanResult(interpretation=out.result.interpretation, plan=None,
-                                    clarifying_question=ClarifyingQuestion(
-                                        question="Which country?", options=["NL", "DE", "global"]))
-        return out
-
-    monkeypatch.setattr(ip, "interpret", ask_first)
-    run = await service.create_run("snacks")
-    assert run["status"] == "needs_clarification" and run["clarifying_question"]["question"] == "Which country?"
+async def test_questions_then_answers_fill_the_intake_and_plan(api):
+    """V3: 0-3 questions with chips; answers fill brief.intake; a market answer sets the markets."""
+    run = await service.create_run("snacks")                     # fake mode: a market and a role question
+    qs = run["clarifying_questions"]
+    assert run["status"] == "needs_clarification" and [q["fills"] for q in qs] == ["market", "audience_roles"]
+    assert all(q["why_it_helps"] and 3 <= len(q["options"]) <= 5 for q in qs)
     with pytest.raises(ValueError):
         service.start_run(run["run_id"])
-    planned = await service.answer_question(run["run_id"], "NL")
-    assert planned["status"] == "awaiting_approval" and planned["plan"] and planned["clarifying_question"] is None
+    planned = await service.answer_questions(run["run_id"], [
+        {"id": "Q1", "chosen": ["Netherlands"]},
+        {"id": "Q2", "chosen": ["Parents buying for kids"], "text": "school lunch boxes"}])
+    assert planned["status"] == "awaiting_approval" and planned["plan"] and planned["clarifying_questions"] == []
+    assert planned["interpretation"]["market"] == "NL"
+    assert planned["intake"]["audience_roles"] == ["Parents buying for kids", "school lunch boxes"]
+    assert [q["id"] for q in planned["intake"]["questions_asked"]] == ["Q1", "Q2"]
+
+
+async def test_skip_all_still_plans(api):
+    run = await service.create_run("snacks")
+    planned = await service.answer_questions(run["run_id"], [], skip_all=True)
+    assert planned["status"] == "awaiting_approval" and planned["plan"]
+    assert planned["intake"]["audience_roles"] == [] and planned["intake"]["questions_asked"]
+
+
+async def test_editing_chips_replans_in_place_and_keeps_added_competitors(api):
+    run = await service.create_run("Gen Z and meal prep")
+    assert run["status"] == "awaiting_approval"
+    edited = await service.replan(run["run_id"], {"markets": ["NL"], "competitors": ["Hello Fresh NL"],
+                                                  "audience_roles": ["students"]})
+    assert edited["run_id"] == run["run_id"] and edited["status"] == "awaiting_approval"
+    assert edited["interpretation"]["market"] == "NL"
+    assert edited["intake"]["competitors_user"] == ["Hello Fresh NL"]
+    assert edited["interpretation"]["competitors"][0] == "Hello Fresh NL"
+    assert edited["intake"]["audience_roles"] == ["students"]
+
+
+async def test_an_intake_given_upfront_means_no_questions(api):
+    run = await service.create_run("snacks", intake={"goal": "content calendar", "audience_roles": ["parents"]})
+    assert run["status"] == "awaiting_approval" and run["intake"]["goal"] == "content calendar"
 
 
 def test_events_replay_from_the_pack_when_the_run_is_gone(api):
@@ -298,14 +316,18 @@ def test_options_come_from_config(api):
     assert opts["modes"]["standard"]["max_usd"] > opts["modes"]["quick"]["max_usd"]
 
 
-def test_snacks_gets_one_question_in_fake_mode_and_agents_never_do(api):
+def test_snacks_gets_questions_in_fake_mode_and_agents_never_do(api):
     run = client.post("/api/v1/runs", json={"brief": "snacks"}, headers=KEY).json()
-    assert run["status"] == "needs_clarification" and len(run["clarifying_question"]["options"]) >= 3
-    answered = client.post(f"/api/v1/runs/{run['run_id']}/answer", json={"answer": "Netherlands, young adults"},
+    assert run["status"] == "needs_clarification" and len(run["clarifying_questions"]) == 2
+    answered = client.post(f"/api/v1/runs/{run['run_id']}/answer",
+                           json={"answers": [{"id": "Q1", "chosen": ["Netherlands"]}, {"id": "Q2", "skipped": True}]},
                            headers=KEY).json()
     assert answered["status"] == "awaiting_approval" and answered["plan"]
+    replanned = client.post(f"/api/v1/runs/{run['run_id']}/replan", json={"languages": ["nl"]}, headers=KEY).json()
+    assert replanned["interpretation"]["languages"] == ["nl"]
+    assert client.post(f"/api/v1/runs/{run['run_id']}/replan", json={}, headers={"X-API-Key": "nope"}).status_code == 401
     agent = client.post("/api/v1/runs", json={"brief": "snacks", "auto_approve": True}, headers=KEY).json()
-    assert agent["status"] == "queued" and agent["clarifying_question"] is None   # agents: never a question
+    assert agent["status"] == "queued" and agent["clarifying_questions"] == []   # agents: never a question
     wrong = client.post("/api/v1/runs", json={"brief": "snacks"}, headers={"X-API-Key": "nope"})
     assert wrong.status_code == 401 and "run key" in wrong.json()["detail"]
 
@@ -404,17 +426,17 @@ def test_owner_cost_view_needs_the_main_key_not_the_guest_key(api, monkeypatch):
     get_settings.cache_clear()
 
 
-def test_run_again_inputs_keep_the_clarifying_answer(api):
-    """V1: every run and pack can be started again with all its inputs, the clarifying answer included."""
+def test_run_again_inputs_keep_the_answers(api):
+    """V1 + V3: every run and pack can be started again with all its inputs, the answers included."""
     made = client.post("/api/v1/runs", json={"brief": "snacks", "mode": "quick", "time_window_days": 90,
                                              "brand_voice": "dry Dutch humour"}, headers=KEY).json()
     assert made["status"] == "needs_clarification"
-    q = made["clarifying_question"]["question"]
-    answered = client.post(f"/api/v1/runs/{made['run_id']}/answer", json={"answer": "Netherlands, young adults"},
-                           headers=KEY).json()
+    answered = client.post(f"/api/v1/runs/{made['run_id']}/answer",
+                           json={"answers": [{"id": "Q2", "chosen": ["Parents buying for kids"]}]}, headers=KEY).json()
     inputs = answered["inputs"]
-    assert inputs == {"brief": "snacks", "mode": "quick", "time_window_days": 90, "brand_voice": "dry Dutch humour",
-                      "clarification": {"question": q, "answer": "Netherlands, young adults"}}
+    assert {k: inputs[k] for k in ("brief", "mode", "time_window_days", "brand_voice")} == {
+        "brief": "snacks", "mode": "quick", "time_window_days": 90, "brand_voice": "dry Dutch humour"}
+    assert inputs["intake"]["audience_roles"] == ["Parents buying for kids"]
     db.update_run(made["run_id"], pack_id=api.pack_id)
     with db.session() as s:                                    # link the fixture pack to this run
         row = s.get(db.PackRow, api.pack_id)
@@ -422,4 +444,6 @@ def test_run_again_inputs_keep_the_clarifying_answer(api):
         s.add(row)
         s.commit()
     assert client.get(f"/api/v1/packs/{api.pack_id}/inputs").json() == inputs
+    again = client.post("/api/v1/runs", json={"brief": "snacks", "intake": inputs["intake"]}, headers=KEY).json()
+    assert again["status"] == "awaiting_approval"                # answers restored: not asked again
     assert client.get("/api/v1/packs/pk_missing/inputs").status_code == 404

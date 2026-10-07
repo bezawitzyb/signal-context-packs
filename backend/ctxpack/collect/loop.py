@@ -225,6 +225,8 @@ def first_message(ctx: RunContext, interp: Interpretation, plan: Plan) -> str:
         "HYPOTHESES\n" + "\n".join(f"- {h.id}: {h.statement}" for h in plan.hypotheses),
         "RESEARCH QUESTIONS\n" + "\n".join(f"- {q.id}: {q.text}" for q in plan.research_questions),
         "STARTING SOURCE UNITS (from the plan; adapt as you learn)\n" + units,
+        *(["COMPETITORS THE USER NAMED (search each at least once by name; finish is refused until you do)\n"
+           + "\n".join(f"- {c}" for c in ctx.must_search)] if ctx.must_search else []),
         "LIMITS (enforced by the tools)\n"
         f"- tool calls: {lim['max_tool_calls']} (coverage_report and finish do not count)\n"
         f"- collection time: {lim['collection_secs']} s\n"

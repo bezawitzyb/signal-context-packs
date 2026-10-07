@@ -110,7 +110,7 @@ def test_brief_input_limits():
 def test_plan_result_is_question_or_plan(example):
     interp = example["brief"]["interpreted"]
     question = {"question": "Which country?", "options": ["NL", "DE", "global"]}
-    assert PlanResult(interpretation=interp, clarifying_question=question).plan is None
+    assert PlanResult(interpretation=interp, clarifying_questions=[question]).plan is None
     with pytest.raises(ValidationError, match="exactly one"):
         PlanResult(interpretation=interp)
 

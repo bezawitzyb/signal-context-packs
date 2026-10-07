@@ -49,7 +49,8 @@ export interface RunStatus {
     | "complete" | "partial" | "failed" | "stopped";
   stage: string | null; queue_position: number | null; pack_id: string | null; error: string | null;
   created_at: string; interpretation: Interpretation | null; plan: Plan | null;
-  clarifying_question: { question: string; options: string[] } | null;
+  clarifying_questions: Question[];
+  intake: IntakeData | null;
   collection: {
     sources_used: { source_unit: string; platform: string; reason: string; kept: number; relevant_share: number }[];
     sources_dropped: { source_unit: string; reason: string }[];
@@ -58,6 +59,22 @@ export interface RunStatus {
   } | null;
   inputs?: RunInputs;
   estimate: Estimate;
+}
+
+/** A clarifying question written for this brief (V3): answer chips, free text, or skip. */
+export interface Question {
+  id: string; question: string; why_it_helps?: string; fills: string; options: string[];
+  multi_select?: boolean; allow_free_text?: boolean;
+}
+/** What the user told us before planning (brief.intake). */
+export interface IntakeData {
+  audience_roles?: string[]; goal?: string | null; offer?: string | null; channels_in_use?: string[];
+  competitors_user?: string[]; timeframe?: string | null; other_answers?: { question: string; answer: string }[];
+  questions_asked?: Question[];
+}
+export interface QuestionAnswer { id: string; chosen?: string[]; text?: string; skipped?: boolean }
+export interface PlanEdits {
+  markets?: string[]; languages?: string[]; audience?: string; audience_roles?: string[]; competitors?: string[];
 }
 
 export interface ItemResult { pack_id: string; item: Record<string, unknown>; evidence: Evidence[]; note: string }
@@ -133,7 +150,8 @@ export const exportUrl = (packId: string, kind: "json" | "md" | "prompt" | "skil
 export interface Estimate { mode: string; max_usd: number; typical_usd_low: number; typical_usd_high: number;
   typical_minutes: number; collection_secs: number; max_tool_calls: number }
 export interface Options { modes: Record<"quick" | "standard", Estimate>; default_mode: "quick" | "standard";
-  time_window_days_options: number[]; default_time_window_days: number; brand_voice_max_chars: number }
+  time_window_days_options: number[]; default_time_window_days: number; brand_voice_max_chars: number;
+  languages: Record<string, string>; max_languages: Record<"quick" | "standard", number> }
 export const getOptions = () => request<Options>("/options");
 
 export interface PlanUnit { platform: string; kind: string; target: string; reason: string; enabled: boolean;
@@ -143,10 +161,12 @@ export interface Plan { hypotheses: { id: string; statement: string }[];
 
 // --- runs (the run key is required to create, answer, start and stop) -----------------
 export const createRun = (runKey: string, body: { brief: string; mode: "quick" | "standard";
-  time_window_days?: number; brand_voice?: string; auto_approve?: boolean }) =>
+  time_window_days?: number; brand_voice?: string; auto_approve?: boolean; intake?: IntakeData }) =>
   request<RunStatus>("/runs", { method: "POST", body: JSON.stringify(body) }, runKey);
-export const answerQuestion = (runKey: string, runId: string, answer: string) =>
-  request<RunStatus>(`/runs/${runId}/answer`, { method: "POST", body: JSON.stringify({ answer }) }, runKey);
+export const answerQuestions = (runKey: string, runId: string, body: { answers: QuestionAnswer[]; skip_all?: boolean }) =>
+  request<RunStatus>(`/runs/${runId}/answer`, { method: "POST", body: JSON.stringify(body) }, runKey);
+export const replanRun = (runKey: string, runId: string, edits: PlanEdits) =>
+  request<RunStatus>(`/runs/${runId}/replan`, { method: "POST", body: JSON.stringify(edits) }, runKey);
 export const startRun = (runKey: string, runId: string,
   body: { disabled_units?: number[]; removed_questions?: string[] } = {}) =>
   request<RunStatus>(`/runs/${runId}/start`, { method: "POST", body: JSON.stringify(body) }, runKey);

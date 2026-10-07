@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field, field_validator
 from ctxpack.collect.relevance import BriefContext, brief_block
 from ctxpack.config import load_yaml
 from ctxpack.llm.client import LLMError, batched, load_prompt, structured, untrusted
-from ctxpack.schemas.enums import Emotion, Stance
+from ctxpack.schemas.enums import EvidenceRole, Emotion, Stance
 
 log = logging.getLogger(__name__)
 
@@ -55,8 +55,17 @@ class ExtractionItem(BaseModel):
     humour_or_irony: bool = False
     code_switching: bool = False
     time_occasion_cues: list[str] = Field(default_factory=list)
+    role: EvidenceRole = Field(default=EvidenceRole.unknown, description="Who the author is, only when the text "
+                               "shows it: buyer, influencer, user, consumer, other; unknown otherwise.")
 
     _known_stance = field_validator("stance", mode="before")(_stance)
+
+    @field_validator("role", mode="before")
+    @classmethod
+    def _known_role(cls, value: object) -> object:
+        """An unknown role word is "unknown" instead of failing the whole batch (a paid retry)."""
+        v = str(value or "").strip().lower()
+        return v if v in EvidenceRole.__members__ else EvidenceRole.unknown
 
     @field_validator("emotion", mode="before")
     @classmethod

@@ -39,7 +39,7 @@ def test_briefs_file_has_the_f5_briefs_plus_the_v2_brief():
                                                "Heat pumps for homeowners in Germany", "snacks"]
     assert briefs[4]["id"] == "eu_manufacturing" and briefs[4]["expect"]["languages"] == ["de", "pl"]
     assert [b["mode"] for b in briefs[2:4]] == ["standard", "quick"]
-    assert briefs[3]["source_diversity_exempt"] and briefs[3]["expect"]["clarifying_question"]
+    assert briefs[3]["source_diversity_exempt"] and briefs[3]["expect"]["questions_fill"] == ["market", "audience_roles"]
 
 
 def test_groundedness_and_claims_with_evidence(pack):
@@ -130,12 +130,16 @@ def test_score_save_and_publish_with_human_ratings(pack, out_dirs):
     assert ev.previous("genz_meal_prep", pack["pack_id"])["pack_id"] == pack["pack_id"]
 
 
-def test_clarifying_question_expectation():
-    p = {"brief": {"interpreted": {"market": "global"}}, "coverage": {}}
-    asked = ev.expectations(p, {"clarifying_question": True}, 0.05,
-                            {"question": "Which market?", "options": ["NL", "DE", "UK"], "answer": "NL"})
-    assert asked[0]["pass"] is True and "3 options" in asked[0]["detail"]
-    assert ev.expectations(p, {"clarifying_question": True}, 0.05, None)[0]["pass"] is None
+def test_clarifying_questions_expectations():
+    """V3: how many questions, about what, and never one the brief already answers."""
+    p = {"brief": {"text": "snacks in Poland", "interpreted": {"market": "PL"}}, "coverage": {}}
+    qs = {"questions": [{"id": "Q1", "question": "Which market?", "fills": "market", "options": []},
+                        {"id": "Q2", "question": "Who?", "fills": "audience_roles", "options": []}]}
+    res = {c["check"]: c for c in ev.expectations(p, {"questions_max": 1, "questions_fill": ["audience_roles"]}, 0.05, qs)}
+    assert res["at most 1 question(s)"]["pass"] is False
+    assert res["asks about audience_roles"]["pass"] is True
+    assert res["never asks what the brief already says"]["pass"] is False          # it names Poland
+    assert ev.expectations(p, {"questions_max": 1}, 0.05, None)[0]["pass"] is None   # not checked yet
 
 
 def test_api_evals_before_and_after_a_run(pack, out_dirs):

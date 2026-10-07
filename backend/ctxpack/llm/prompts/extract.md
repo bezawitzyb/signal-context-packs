@@ -39,6 +39,11 @@ For EVERY item, by its id, return:
 - time_occasion_cues: moments, times or occasions mentioned (e.g. "after
   the gym", "Sinterklaas", "late at night", "lunch at work"). Empty if
   none.
+- role: who the author is, ONLY when the item itself shows it: buyer
+  (decides or pays, e.g. "I sign off the budget"), influencer (advises or
+  champions, e.g. a consultant or lead recommending tools), user (uses the
+  product or service day to day), consumer (buys or eats for themselves),
+  other; unknown if the item does not show it. Never guess from style.
 
 Write needs, pains, objections, questions and cues in English. Judge only
 from the item's own words; do not add outside facts. If an item says too

@@ -8,6 +8,7 @@ model. Unit kinds per platform come from catalog.yaml (unit_types).
 
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass
 from typing import Self
@@ -16,9 +17,10 @@ from pydantic import Field, ValidationError, model_validator
 
 from ctxpack.config import load_yaml, mode_limits
 from ctxpack.llm.client import load_prompt, structured
-from ctxpack.schemas.enums import CollectionPlatform, Mode
+from ctxpack.schemas.enums import CollectionPlatform, IntakeFill, Mode
 from ctxpack.schemas.plan import (
     ClarifyingQuestion,
+    Intake,
     Interpretation,
     Plan,
     PlanHypothesis,
@@ -50,9 +52,15 @@ def unit_kinds() -> dict[CollectionPlatform, set[str]]:
     return kinds
 
 
-def _check(interp: Interpretation, plan: Plan | None) -> None:
+def _check(interp: Interpretation, plan: Plan | None, questions: list[ClarifyingQuestion] = ()) -> None:
     """Rules the model must follow; a violation triggers the client's one retry with the error."""
     errors = []
+    most = load_yaml("modes")["clarifying"]["max_questions"]
+    if len(questions) > most:
+        errors.append(f"ask at most {most} clarifying questions, not {len(questions)}")
+    ids = [q.id for q in questions]
+    if len(set(ids)) != len(ids):
+        errors.append(f"duplicate question ids: {ids}")
     regions = set(load_yaml("markets")["regions"])
     for m in interp.markets:
         if not (_MARKET.match(m.code) or m.code in regions):
@@ -119,11 +127,12 @@ class PlanOnlyAnswer(Strict):
 
 
 class PlanAnswer(Strict):
-    """What the model returns when a clarifying question is allowed: the question OR the plan lists."""
+    """What the model returns when questions are allowed: 1-3 clarifying questions OR the plan lists (V3)."""
 
     interpretation: Interpretation
-    clarifying_question: ClarifyingQuestion | None = Field(
-        default=None, description="Only if market or audience truly cannot be inferred; then leave the lists empty.")
+    clarifying_questions: list[ClarifyingQuestion] = Field(
+        default_factory=list, description="0-3 questions that would most improve THIS research; then leave the "
+        "lists empty. None if the brief is specific enough.")
     hypotheses: list[PlanHypothesis] = Field(default_factory=list, description="3-5 testable hypotheses.")
     research_questions: list[ResearchQuestion] = Field(default_factory=list, description="5-8 research questions.")
     starting_units: list[StartingSourceUnit] = Field(default_factory=list, description="3-6 starting source units.")
@@ -131,15 +140,15 @@ class PlanAnswer(Strict):
     @model_validator(mode="after")
     def _valid(self) -> Self:
         has_plan = bool(self.hypotheses or self.research_questions or self.starting_units)
-        if (self.clarifying_question is None) != has_plan:
-            raise ValueError("give exactly one of: clarifying_question, or the plan "
+        if bool(self.clarifying_questions) == has_plan:
+            raise ValueError("give exactly one of: clarifying_questions, or the plan "
                              "(hypotheses, research_questions, starting_units)")
-        _check(self.interpretation, _build_plan(self) if has_plan else None)
+        _check(self.interpretation, _build_plan(self) if has_plan else None, self.clarifying_questions)
         return self
 
     def to_result(self) -> PlanResult:
-        if self.clarifying_question:
-            return PlanResult(interpretation=self.interpretation, clarifying_question=self.clarifying_question)
+        if self.clarifying_questions:
+            return PlanResult(interpretation=self.interpretation, clarifying_questions=self.clarifying_questions)
         return PlanResult(interpretation=self.interpretation, plan=_build_plan(self))
 
 
@@ -171,18 +180,24 @@ def _sources_block() -> str:
     return "\n".join(lines)
 
 
-def _user_message(brief: str, window_days: int, allow_question: bool,
-                  clarification: tuple[str, str] | None) -> str:
-    options = load_yaml("modes")["time_window_days_options"]
+def _user_message(brief: str, window_days: int, allow_question: bool, intake: Intake | None,
+                  edits: dict | None) -> str:
+    cfg = load_yaml("modes")
+    options = cfg["time_window_days_options"]
     parts = [f"<brief>\n{brief.strip()}\n</brief>"]
-    if clarification:
-        question, answer = clarification
-        parts.append(f"You already asked: {question}\nThe answer: {answer}\n"
-                     "Use this answer; fields it settles are no longer assumed.")
+    if intake is not None and not intake.empty():
+        known = intake.model_dump(exclude={"questions_asked"}, exclude_defaults=True)
+        parts.append("The user already told you (use it; fields it settles are no longer assumed; write research "
+                     "questions and hypotheses per audience role when roles are given, and set their role):\n"
+                     + json.dumps(known, ensure_ascii=False, indent=1))
+    if edits:
+        parts.append("The user edited your interpretation; keep these exactly and plan for them:\n"
+                     + json.dumps(edits, ensure_ascii=False, indent=1))
     parts.append(f"Default time_window_days: {window_days} (allowed: {options}).")
-    parts.append("A clarifying question IS allowed (only if market or audience truly cannot be inferred)."
+    parts.append(f"Clarifying questions ARE allowed: 0 to {cfg['clarifying']['max_questions']}, only the gaps that "
+                 "would most change this research; none if the brief is specific enough."
                  if allow_question else
-                 "A clarifying question is NOT allowed: make your best assumption, list it in assumed, "
+                 "Clarifying questions are NOT allowed: make your best assumptions, list them in assumed, "
                  "and give the plan.")
     parts.append("Sources the tools can search:\n" + _sources_block())
     return "\n\n".join(parts)
@@ -202,34 +217,76 @@ def _fake_answer(brief: str, ask: bool) -> dict:
               "markets": [{"code": "global", "countries": [], "weight": 1.0, "assumed": True}],
               "assumed": ["market", "audience"]}
     return {"interpretation": interp, "hypotheses": [], "research_questions": [], "starting_units": [],
-            "clarifying_question": {"question": "Which market and audience is this for?",
-                                    "options": ["Netherlands, young adults", "Germany, families",
-                                                "Global, Gen Z", "UK, office workers"]}}
+            "clarifying_questions": [
+                {"id": "Q1", "question": "Which market should this cover?", "fills": "market",
+                 "why_it_helps": "Each country snacks and talks about it in its own places and language.",
+                 "options": ["Netherlands", "Germany", "United Kingdom", "Global"], "multi_select": False,
+                 "allow_free_text": True},
+                {"id": "Q2", "question": "Who should this speak to?", "fills": "audience_roles",
+                 "why_it_helps": "Shoppers, parents and retailers talk about snacks in different places.",
+                 "options": ["Young adults buying for themselves", "Parents buying for kids",
+                             "Retail buyers", "Everyone"], "multi_select": True, "allow_free_text": True}]}
 
 
 async def interpret(brief: str, *, mode: Mode | str = Mode.quick, window_days: int | None = None,
-                    allow_question: bool = True,
-                    clarification: tuple[str, str] | None = None) -> Interpreted:
-    """ONE reasoner call: interpretation + (question | plan), plus the estimate from config.
+                    allow_question: bool = True, intake: Intake | None = None,
+                    edits: dict | None = None) -> Interpreted:
+    """ONE reasoner call: interpretation + (0-3 clarifying questions | plan), plus the estimate from config.
 
-    allow_question=False for agents (API auto_approve / MCP). After a
-    clarification (question, answer) no second question is possible.
+    allow_question=False for agents (API auto_approve / MCP). Questions are asked only while the user has
+    told us nothing yet (no intake, no edits). A question the brief already answers is dropped in code; if
+    none is left, one plan-only call follows. Edits (markets, languages, audience, competitors) win.
     """
     window = window_days or load_yaml("modes")["default_time_window_days"]
-    ask = allow_question and clarification is None
-    schema = PlanAnswer if ask else PlanOnlyAnswer
-    res = await structured("reasoner", load_prompt("interpret_plan"),
-                           _user_message(brief, window, ask, clarification), schema, TOOL,
-                           description="Record the interpretation and either one clarifying question or the plan.",
-                           max_tokens=6000, fake=lambda user: _fake_answer(brief, ask))
-    result = res.data.to_result()
+    ask = allow_question and (intake is None or intake.empty()) and not edits
+    usd = 0.0
+    for attempt in ((True, False) if ask else (False,)):
+        schema = PlanAnswer if attempt else PlanOnlyAnswer
+        res = await structured("reasoner", load_prompt("interpret_plan"),
+                               _user_message(brief, window, attempt, intake, edits), schema, TOOL,
+                               description="Record the interpretation and either the clarifying questions or the plan.",
+                               max_tokens=6000, fake=lambda user, a=attempt: _fake_answer(brief, a))
+        usd += res.usd
+        result = res.data.to_result()
+        if result.clarifying_questions:
+            result.clarifying_questions = drop_answered(result.clarifying_questions, brief)
+            if not result.clarifying_questions:
+                continue  # every question was already answered by the brief: plan straight away
+        break
     if window_days:  # a window the user chose wins over the model's reading (V1: inputs are never lost)
         result.interpretation.time_window_days = window_days
-    settle_markets(result, brief, str(mode))
-    return Interpreted(result=result, estimate=estimate(mode), usd=res.usd)
+    settle_markets(result, brief, str(mode), edits)
+    _apply_edits(result, intake, edits)
+    return Interpreted(result=result, estimate=estimate(mode), usd=usd)
 
 
-def settle_markets(result: PlanResult, brief: str, mode: str) -> None:
+def drop_answered(questions: list[ClarifyingQuestion], brief: str) -> list[ClarifyingQuestion]:
+    """Never ask what the brief already says (V3): a market question when the brief names a place."""
+    from ctxpack.agent.markets import places_in
+
+    places = places_in(brief)
+    named = bool(places["regions"] or places["countries"])
+    kept = [q for q in questions if not (q.fills == IntakeFill.market and named)]
+    for n, q in enumerate(kept, 1):
+        q.id = f"Q{n}"
+    return kept
+
+
+def _apply_edits(result: PlanResult, intake: Intake | None, edits: dict | None) -> None:
+    """The user's own words win: edited audience, and competitors (user ones first, always kept)."""
+    interp = result.interpretation
+    if edits and edits.get("audience"):
+        interp.audience = str(edits["audience"]).strip()
+    names = list((intake.competitors_user if intake else []))
+    if edits and "competitors" in edits:
+        names += [str(c).strip() for c in edits["competitors"] if str(c).strip()]
+    else:
+        names += interp.competitors
+    seen: set[str] = set()
+    interp.competitors = [c for c in names if not (c.casefold() in seen or seen.add(c.casefold()))]
+
+
+def settle_markets(result: PlanResult, brief: str, mode: str, edits: dict | None = None) -> None:
     """Code decides the final geography and languages (V2): regions expand, a place named in the brief
     is never "global", languages come from the markets plus English (capped per mode); queries in a
     left-out language are dropped, and a starting unit left without queries goes too."""
@@ -237,8 +294,21 @@ def settle_markets(result: PlanResult, brief: str, mode: str) -> None:
     from ctxpack.schemas.plan import ExcludedLanguage, Market
 
     interp = result.interpretation
-    markets = mk.normalise([m.model_dump() for m in interp.markets], brief)
+    edits = edits or {}
+    chosen_markets = [{"code": c, "assumed": False} for c in edits.get("markets") or []]
+    markets = mk.normalise(chosen_markets or [m.model_dump() for m in interp.markets], brief)
     langs, excluded = mk.choose_languages(markets, interp.languages, mode, mk.places_in(brief)["countries"])
+    if edits.get("languages"):  # the user's own choice of languages (supported ones, any number up to the cap)
+        supported = load_yaml("modes")["languages"]["supported"]
+        mine = [lang for lang in dict.fromkeys(edits["languages"]) if lang in supported]
+        cap = load_yaml("modes")["languages"]["max_per_mode"][mode]
+        if mine:
+            dropped = [lang for lang in langs if lang not in mine]
+            excluded = [e for e in excluded if e["language"] not in mine]
+            excluded += [{"language": lang, "reason": "removed by you"} for lang in dropped]
+            excluded += [{"language": lang, "reason": f"over the {cap}-language limit for this mode"}
+                         for lang in mine[cap:]]
+            langs = mine[:cap]
     interp.markets = [Market(**m) for m in markets]
     interp.market = mk.label(markets)
     interp.languages = langs

@@ -1,9 +1,11 @@
 // "Run again with these inputs" (V1) and what this browser remembers: the Ask form draft and "My packs".
 // Browser storage can be missing or blocked (private windows): every read and write is wrapped.
 
+import type { IntakeData } from "./api";
+
 export interface RunInputs {
   brief: string; mode: string; time_window_days: number | null; brand_voice: string | null;
-  clarification: { question: string; answer: string } | null;
+  intake: IntakeData | null;
 }
 
 /** The Ask page pre-filled with a run's inputs; `change` applies a one-click re-plan (thin screen). */
@@ -12,7 +14,10 @@ export function rerunUrl(i: RunInputs, change: { brief?: string; mode?: string; 
   const window = change.window ?? i.time_window_days;
   if (window) p.set("window", String(window));
   if (i.brand_voice) p.set("voice", i.brand_voice);
-  if (i.clarification?.answer) p.set("answer", i.clarification.answer);
+  const answers = i.intake ? { ...i.intake, questions_asked: undefined } : null;
+  if (answers && Object.values(answers).some((v) => (Array.isArray(v) ? v.length : v))) {
+    p.set("intake", JSON.stringify(answers));  // your earlier answers: the new run is not asked again
+  }
   return `/?${p.toString()}#ask`;
 }
 
@@ -39,9 +44,16 @@ const DRAFT = "signal.askDraft";
 export const loadDraft = (): AskDraft | null => read<AskDraft | null>(() => sessionStorage, DRAFT, null);
 export const saveDraft = (d: AskDraft): void => write(() => sessionStorage, DRAFT, d);
 
-const ANSWER = "signal.rememberedAnswer";
-export const rememberAnswer = (a: string): void => write(() => sessionStorage, ANSWER, a);
-export const rememberedAnswer = (): string => read<string>(() => sessionStorage, ANSWER, "");
+/** The intake carried by a "Run again" link (?intake=...), or null. */
+export function intakeFromParam(raw: string | null): IntakeData | null {
+  if (!raw) return null;
+  try {
+    const v = JSON.parse(raw);
+    return v && typeof v === "object" ? (v as IntakeData) : null;
+  } catch {
+    return null;
+  }
+}
 
 // --- "My packs": packs made in this browser -------------------------------------------------
 export interface MyPack { pack_id: string; brief: string; at: string }

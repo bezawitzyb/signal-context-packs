@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from ctxpack.config import load_yaml
 from ctxpack.schemas.enums import (
+    IntakeFill,
     CollectionPlatform,
     ComplianceCategory,
     InterpretationField,
@@ -97,22 +98,57 @@ class Interpretation(Strict):
 
 
 class ClarifyingQuestion(Strict):
-    """At most one, only if market or audience truly cannot be inferred. Never asked of agents."""
+    """One of 0-3 questions that would most improve THIS research (change V3). Never asked of agents."""
 
-    question: str = Field(description="The question.", examples=["Which country is the launch in?"])
-    options: list[str] = Field(min_length=3, max_length=5, description="3-5 suggested answers.")
+    id: str = Field(default="Q1", pattern=r"^Q\d{1,2}$", description="Q1, Q2, Q3.", examples=["Q1"])
+    question: str = Field(description="The question, in the user's terms and the brief's language.",
+                          examples=["Who should this speak to?"])
+    why_it_helps: str = Field(default="", description="One short line shown to the user: how the answer changes "
+                              "the research.", examples=["Buyers and shop-floor users talk in different places."])
+    fills: IntakeFill = Field(default=IntakeFill.other, description="Which intake field the answer fills.")
+    options: list[str] = Field(min_length=3, max_length=5, description="3-5 answer chips written for THIS brief.")
+    multi_select: bool = Field(default=False, description="True if more than one chip may be chosen.")
+    allow_free_text: bool = Field(default=True, description="True if the user may answer in their own words.")
+
+
+class QAnswer(Strict):
+    question: str = Field(description="The question asked.")
+    answer: str = Field(description="The answer given.")
+
+
+class Intake(Strict):
+    """What the user told us before planning (change V3; brief.intake in schema 1.1). Empty = agent decides."""
+
+    audience_roles: list[str] = Field(default_factory=list, description="Who exactly to reach (e.g. plant managers "
+                                      "who sign off budgets; operators on the shop floor).")
+    goal: str | None = Field(default=None, description="What the research is for (content calendar, campaign, "
+                             "positioning, product research, sales).")
+    offer: str | None = Field(default=None, description="What the user offers.")
+    channels_in_use: list[str] = Field(default_factory=list, description="Channels the user already uses.")
+    competitors_user: list[str] = Field(default_factory=list, description="Competitors the user named; always "
+                                        "searched.")
+    timeframe: str | None = Field(default=None, description="When the user needs to act, in their words.")
+    other_answers: list[QAnswer] = Field(default_factory=list, description="Answers that fill no field above.")
+    questions_asked: list[ClarifyingQuestion] = Field(default_factory=list,
+                                                      description="The questions shown to the user.")
+
+    def empty(self) -> bool:
+        return not (self.audience_roles or self.goal or self.offer or self.channels_in_use
+                    or self.competitors_user or self.timeframe or self.other_answers)
 
 
 class PlanHypothesis(Strict):
     id: str = Field(pattern=r"^HYP-\d{2,}$", description="Hypothesis id.", examples=["HYP-01"])
     statement: str = Field(description="A testable statement.",
                            examples=["Students see meal prep as a money saver first."])
+    role: str | None = Field(default=None, description="The audience role it is about, if the user chose roles.")
 
 
 class ResearchQuestion(Strict):
     id: str = Field(pattern=r"^RQ-\d{2,}$", description="Research question id.", examples=["RQ-01"])
     text: str = Field(description="What collection should answer.",
                       examples=["What stops students from meal prepping?"])
+    role: str | None = Field(default=None, description="The audience role it is about, if the user chose roles.")
 
 
 class SourceQuery(Strict):
@@ -146,16 +182,16 @@ class Plan(Strict):
 
 
 class PlanResult(Strict):
-    """Output of the interpret + plan call: EITHER a clarifying question OR a plan."""
+    """Output of the interpret + plan call: EITHER clarifying questions OR a plan."""
 
     interpretation: Interpretation
-    clarifying_question: ClarifyingQuestion | None = None
+    clarifying_questions: list[ClarifyingQuestion] = Field(default_factory=list)
     plan: Plan | None = None
 
     @model_validator(mode="after")
     def _one_of(self) -> Self:
-        if (self.clarifying_question is None) == (self.plan is None):
-            raise ValueError("give exactly one of clarifying_question or plan")
+        if bool(self.clarifying_questions) == (self.plan is not None):
+            raise ValueError("give exactly one of clarifying_questions or plan")
         return self
 
 

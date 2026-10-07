@@ -305,3 +305,24 @@ def test_fixture_mode_never_writes_the_cache(offline):
     ctx, _ = make_ctx()
     run(tools.search_reddit(ctx, "r/MealPrepSunday", 20, "x"))
     assert not (get_settings().data_path / "cache").exists()
+
+
+def test_finish_is_refused_until_user_competitors_are_searched():
+    """V3: competitors the user named are always searched; at the limits they become a gap instead."""
+    import asyncio
+
+    from ctxpack.collect import tools as t
+
+    ctx = t.RunContext(run_id="r", mode="quick", brief=t.BriefContext(topic="x"), window_days=180,
+                       store=None)
+    ctx.must_search = ["HelloFresh"]
+    ctx.coverage_after_last_collection = True
+    out = asyncio.run(t.finish(ctx, "done", [], []))
+    assert out["status"] == "refused" and "HelloFresh" in out["problems"][0]
+    ctx.queries.append("hellofresh ervaringen")
+    assert asyncio.run(t.finish(ctx, "done", [], []))["status"] == "ok"
+    ctx2 = t.RunContext(run_id="r", mode="quick", brief=t.BriefContext(topic="x"), window_days=180, store=None)
+    ctx2.must_search, ctx2.coverage_after_last_collection = ["Factor"], True
+    ctx2.calls = ctx2.limits["max_tool_calls"]                        # no calls left: finish, with a gap
+    assert asyncio.run(t.finish(ctx2, "done", [], []))["status"] == "ok"
+    assert ctx2.finished["gaps"] == ["Not searched (limits reached): Factor, named by the user"]

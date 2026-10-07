@@ -240,6 +240,30 @@ class Requester(StrEnum):
     cli = "cli"
 
 
+class IntakeFill(StrEnum):
+    """What a clarifying question fills in brief.intake (change V3)."""
+
+    audience_roles = "audience_roles"
+    goal = "goal"
+    offer = "offer"
+    channels_in_use = "channels_in_use"
+    market = "market"
+    competitors = "competitors"
+    timeframe = "timeframe"
+    other = "other"
+
+
+class EvidenceRole(StrEnum):
+    """Who the post's author is, when the post shows it (change V3)."""
+
+    buyer = "buyer"
+    influencer = "influencer"
+    user = "user"
+    consumer = "consumer"
+    other = "other"
+    unknown = "unknown"
+
+
 class InterpretationField(StrEnum):
     """Interpretation fields that can be marked as assumed (inferred, not stated)."""
 

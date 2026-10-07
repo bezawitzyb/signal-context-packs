@@ -79,7 +79,9 @@ class Run(SQLModel, table=True):
     cost_breakdown: dict | None = Field(default=None, sa_type=JSON)
     brand_voice: str | None = None    # used ONLY by the playbook call (never in analysis)
     clarifying_question: dict | None = Field(default=None, sa_type=JSON)  # waiting for the user's answer
-    clarification: dict | None = Field(default=None, sa_type=JSON)  # {question, answer} once answered ("Run again")
+    clarification: dict | None = Field(default=None, sa_type=JSON)  # {question, answer} (before V3; read only)
+    clarifying_questions: list | None = Field(default=None, sa_type=JSON)  # V3: 0-3 questions waiting for answers
+    intake: dict | None = Field(default=None, sa_type=JSON)  # V3: what the user told us (brief.intake)
     # Run-level metrics (Step 3.2, code only): platform lens, what performs, competitors, opportunities, coverage
     analysis: dict | None = Field(default=None, sa_type=JSON)
     # Draft pack sections (Step 3.3): generic points, written items, evidence; verified in Step 3.4

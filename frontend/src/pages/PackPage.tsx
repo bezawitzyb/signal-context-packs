@@ -433,7 +433,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
               <button type="button" onClick={() => getPackInputs(pack.pack_id)
                         .then((i) => navigate(rerunUrl(i))).catch(() => navigate(rerunUrl({
                           brief: pack.brief.text, mode: pack.mode, time_window_days: pack.brief.interpreted.time_window_days,
-                          brand_voice: pack.brief.brand_voice ?? null, clarification: null })))}
+                          brand_voice: pack.brief.brand_voice ?? null, intake: pack.brief.intake ?? null })))}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-sm text-ink-2">
                 <RotateCcw aria-hidden="true" size={14} /> Run again with these inputs
               </button>

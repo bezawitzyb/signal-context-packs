@@ -10,34 +10,34 @@ briefs:
   - id: genz_meal_prep
     brief: Gen Z and meal prep
     mode: standard
-    expect: {market: global, languages: [en]}
+    expect: {market: global, languages: [en], questions_max: 3}
     reuse_pack: pk_FSdLk4CH1zZO   # rebuilt in Step 5.4 twice (was pk_CamfAsJ7Zbdr, then pk_74QaEuaavYgs)
 
   - id: nl_snack_brand
     brief: Launching a snack brand in the Netherlands
     mode: standard
-    expect: {market: NL, languages: [nl, en]}
+    expect: {market: NL, languages: [nl, en], questions_max: 1}
     reuse_pack: pk_i4iFso1HnLWR   # rebuilt in Step 5.4 twice (was pk_wrvZBhDFsLR9, then pk_2cfiymbkno_7)
 
   - id: de_heat_pumps
     brief: Heat pumps for homeowners in Germany
     mode: standard
-    expect: {market: DE, languages: [de], compliance_category: energy_environmental}
+    expect: {market: DE, languages: [de], compliance_category: energy_environmental, questions_max: 1}
     reuse_pack: pk_WPKWWfPABYxN   # researched in Step 5.1, rebuilt in Step 5.4 (was pk_0yCXA3I3WI--)
     note: B2B-like; energy and green claims. Becomes the third example (feature it after a privacy check).
 
   - id: snacks_vague
     brief: snacks
     mode: quick
-    expect: {clarifying_question: true}
+    expect: {questions_fill: [market, audience_roles]}
     reuse_pack: pk_r5nbddoJzHFK   # researched in Step 5.1; not rebuilt (Quick analysis budget nearly spent)
     source_diversity_exempt: true
-    note: Vague and thin on purpose. The clarifying question is recorded; the run takes the first option.
+    note: Vague and thin on purpose. The clarifying questions are recorded; a new run answers each with its first chip.
 
   - id: eu_manufacturing
     brief: digital manufacturing / frontline operations software for plant managers in Europe incl. Germany, Poland and the Nordics
     mode: standard
-    expect: {markets_include: [eu], countries_include: [DE, PL], languages: [de, pl]}
+    expect: {markets_include: [eu], countries_include: [DE, PL], languages: [de, pl], questions_fill: [audience_roles]}
     note: Change V2 - several markets and languages; B2B. Not run yet (needs a paid Standard run; cost shown first).
 
 # PRD 14.3 targets (the numbers the /evals page shows pass / fail against).
