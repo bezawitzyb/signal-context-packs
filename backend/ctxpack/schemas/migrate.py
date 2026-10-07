@@ -9,6 +9,7 @@ idempotent and also run on packs saved as 1.1 before a later step existed:
       relations, sections_meta and performance_takeaways start empty.
   V5  white_space[] and the scored opportunities -> one opportunities[] (status "signal", confidence at
       most emerging, "not checked" for existing solutions); WSP-xx renamed to the new OPP ids.
+  V7  news_hooks[] starts empty (no search was made); channel timing chips come from the moments.
 Packs are never written back in an older version.
 """
 
@@ -22,7 +23,7 @@ from typing import Any
 def needs_migration(pack: dict[str, Any]) -> bool:
     from ctxpack.schemas.pack import SCHEMA_VERSION
 
-    return pack.get("schema_version") != SCHEMA_VERSION or "pain_points" not in pack or "white_space" in pack
+    return pack.get("schema_version") != SCHEMA_VERSION or "pain_points" not in pack or "white_space" in pack or "news_hooks" not in pack
 
 
 def migrate(pack: dict[str, Any]) -> dict[str, Any]:
@@ -38,6 +39,12 @@ def migrate(pack: dict[str, Any]) -> dict[str, Any]:
         out = _move_pains(out)
     if "white_space" in out:
         out = _opportunities_v5(out)
+    if "news_hooks" not in out:
+        from ctxpack.synthesis.news import channel_timing
+
+        out = {**out, "news_hooks": [],
+               "channel_plan": channel_timing(out.get("channel_plan", []), out.get("moments", []),
+                                              out.get("evidence", []), [], [])}
     return out
 
 

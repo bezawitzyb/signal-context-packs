@@ -381,6 +381,24 @@ Definition:
   - Migration: old white space and scored opportunities become
     opportunities with status "signal"; their ids are renamed everywhere.
 
+6.1d News hooks and timing (change V7, schema 1.1)
+  - news_hooks[] (at most 5): {id NWS-xx, headline (own words), date,
+    kind (news | regulation | event), source_url, why_it_matters,
+    related_ids, claim_type external}. One web search step after
+    collection, in the brief's languages, for the last 30 and next 90
+    days (modes.yaml news), tied to the top themes and pain points.
+    Kept only when the URL came back from the search and the date is in
+    that span: no URL -> dropped; never from model memory.
+  - channel_plan[].timing[]: {label, when, why, evidence_ids, claim_type
+    observed | external, source_url, item_id}. Observed: the pack's
+    moments, and weekdays / seasons / times of day named in at least 2
+    posts on that channel's platform (code). External: upcoming news
+    hooks and calendar facts (budget cycles, deadlines) ONLY with a cited
+    URL. A chip without its receipt is refused by the schema.
+  - playbook.this_week[].news_hook_id may link a hook. UI: "Ride this
+    now" in the summary; chips on channel cards; "Rides the news" in
+    the this-week plan.
+
 6.2 Top-level JSON sections
   schema_version, pack_id, generated_at, mode (quick | standard)
   brief              raw text + interpreted {topic, markets[] (1.1; market
@@ -982,7 +1000,7 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
 ================================================================================
  NFR1 Performance   Quick <= ~7 min, Standard <= ~12 min end to end; plan
                     visible <= 15 s.
- NFR2 Cost          Quick typically USD 1.50-3, hard cap USD 4.20;
+ NFR2 Cost          Quick typically USD 1.50-3, hard cap USD 4.60;
                     Standard typically USD 5-7, hard cap USD 10.00
                     (sums of the three caps in modes.yaml: Apify,
                     collection LLM, analysis LLM).

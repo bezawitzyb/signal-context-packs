@@ -3746,6 +3746,7 @@
    "timing": "Year-end"
   }
  ],
+ "news_hooks": [],
  "opportunities": [
   {
    "id": "OPP-01",
@@ -4046,7 +4047,21 @@
     "German-language heat pump and home-owner subreddits (check rules before posting)",
     "Energy-efficiency and Altbau renovation threads"
    ],
-   "tone_note": "Practical, a bit weary, no sales talk. Give house data and kWh/euro figures, and admit where a heat pump does not fit."
+   "tone_note": "Practical, a bit weary, no sales talk. Give house data and kWh/euro figures, and admit where a heat pump does not fit.",
+   "timing": [
+    {
+     "label": "Year-end subsidy rush",
+     "when": "Year-end",
+     "why": "We want to get the work done and the application in before the year ends.",
+     "evidence_ids": [
+      "EV-0004",
+      "EV-0015"
+     ],
+     "claim_type": "observed",
+     "source_url": null,
+     "item_id": "MOM-04"
+    }
+   ]
   },
   {
    "id": "CHN-02",
@@ -4072,7 +4087,59 @@
     "#Altbau",
     "#Wärmepumpe"
    ],
-   "tone_note": "Sober, number-driven, dry humour. Expect sharp one-liners in the comments and answer them with figures."
+   "tone_note": "Sober, number-driven, dry humour. Expect sharp one-liners in the comments and answer them with figures.",
+   "timing": [
+    {
+     "label": "One-year bill review",
+     "when": "After 1 year",
+     "why": "After a year we look at the first annual electricity bill and compare it with gas.",
+     "evidence_ids": [
+      "EV-0048",
+      "EV-0023",
+      "EV-0035"
+     ],
+     "claim_type": "observed",
+     "source_url": null,
+     "item_id": "MOM-01"
+    },
+    {
+     "label": "Cold-season peak",
+     "when": "Winter",
+     "why": "Cold weather is when we see whether the heat pump is comfortable and efficient.",
+     "evidence_ids": [
+      "EV-0062",
+      "EV-0045",
+      "EV-0036"
+     ],
+     "claim_type": "observed",
+     "source_url": null,
+     "item_id": "MOM-02"
+    },
+    {
+     "label": "First winter after installation",
+     "when": "First winter / Heizperiode",
+     "why": "We judge the heat pump in our first heating season, when the setup shows its flaws.",
+     "evidence_ids": [
+      "EV-0026",
+      "EV-0036"
+     ],
+     "claim_type": "observed",
+     "source_url": null,
+     "item_id": "MOM-03"
+    },
+    {
+     "label": "Evenings",
+     "when": "named in 2 posts",
+     "why": "People on youtube bring up evenings when they talk about this.",
+     "evidence_ids": [
+      "EV-0045",
+      "EV-0059"
+     ],
+     "claim_type": "observed",
+     "source_url": null,
+     "item_id": null
+    }
+   ]
   },
   {
    "id": "CHN-03",
@@ -4100,7 +4167,8 @@
     "#Altbau",
     "#Heizungstausch"
    ],
-   "tone_note": "Short, technical and concrete. A dry joke is fine, but the tip has to carry information."
+   "tone_note": "Short, technical and concrete. A dry joke is fine, but the tip has to carry information.",
+   "timing": []
   },
   {
    "id": "CHN-04",
@@ -4121,7 +4189,46 @@
    "communities_or_hashtags": [
     "Public heat pump forums (read the rules; no hidden promotion)"
    ],
-   "tone_note": "Informal forum register, 'Forumsfreund', figures first. Disclose who you are."
+   "tone_note": "Informal forum register, 'Forumsfreund', figures first. Disclose who you are.",
+   "timing": [
+    {
+     "label": "One-year bill review",
+     "when": "After 1 year",
+     "why": "After a year we look at the first annual electricity bill and compare it with gas.",
+     "evidence_ids": [
+      "EV-0048",
+      "EV-0023",
+      "EV-0035"
+     ],
+     "claim_type": "observed",
+     "source_url": null,
+     "item_id": "MOM-01"
+    },
+    {
+     "label": "First winter after installation",
+     "when": "First winter / Heizperiode",
+     "why": "We judge the heat pump in our first heating season, when the setup shows its flaws.",
+     "evidence_ids": [
+      "EV-0026",
+      "EV-0036"
+     ],
+     "claim_type": "observed",
+     "source_url": null,
+     "item_id": "MOM-03"
+    },
+    {
+     "label": "Winter",
+     "when": "named in 2 posts",
+     "why": "People on web_forum bring up winter when they talk about this.",
+     "evidence_ids": [
+      "EV-0001",
+      "EV-0026"
+     ],
+     "claim_type": "observed",
+     "source_url": null,
+     "item_id": null
+    }
+   ]
   }
  ],
  "playbook": {
@@ -4481,6 +4588,7 @@
     "hook_id": "HOOK-02",
     "angle": "Post a data block for a non-insulated house with radiators: Baujahr, Heizlast estimate, Vorlauftemperatur and the question of whether a WP is enough. Reply to every answer with figures.",
     "moment_id": null,
+    "news_hook_id": null,
     "why_now": "The house-data format is what Reddit answers best, and it starts the week with listening and conversation."
    },
    {
@@ -4492,6 +4600,7 @@
     "hook_id": "HOOK-01",
     "angle": "Annual WP electricity bill in kWh and euro next to the gas baseline year, with the full table in a pinned comment.",
     "moment_id": "MOM-01",
+    "news_hook_id": null,
     "why_now": "A first annual bill is the moment owners compare with gas, and this review is the format with the clearest pull in the pack."
    },
    {
@@ -4503,6 +4612,7 @@
     "hook_id": "HOOK-05",
     "angle": "Heizkurve and VL Temperatur: what to check after the Heizungsbauer has left, shown on the controller display.",
     "moment_id": "MOM-03",
+    "news_hook_id": null,
     "why_now": "The first heating season is when flaws in the setup show, and tips on concrete faults perform on TikTok."
    },
    {
@@ -4514,6 +4624,7 @@
     "hook_id": "HOOK-10",
     "angle": "KfW Ablauf in steps, with the points where people say they are unsure marked as open questions and a link to the official rules.",
     "moment_id": "MOM-04",
+    "news_hook_id": null,
     "why_now": "If the year-end subsidy rush seen in the data applies, owners are asking now. We frame it as an observation, not as a deadline."
    },
    {
@@ -4525,6 +4636,7 @@
     "hook_id": "HOOK-12",
     "angle": "The coldest days: what the meter shows, and how often the Heizstab ran, in a single case with its house data.",
     "moment_id": "MOM-02",
+    "news_hook_id": null,
     "why_now": "Cold weather is when owners see whether a WP is comfortable and efficient. The evidence for this moment is speculative, so we treat it as a test."
    }
   ]
@@ -6200,6 +6312,7 @@
    "text": "Ich vermute der Nutzen der Kombination PV und Wärmepumpe wird von vielen überschätzt. Aber die PV liefert halt ziemlich genau dann am wenigsten bzw. fast nichts wenn die Wärmepumpe am meisten braucht: im Winter.\n\nDie Kombination PV und Klimaanlage ist da besser, löst aber das",
    "text_en": "I suspect the benefit of combining PV and heat pump is overestimated by many. But PV delivers pretty much the least or almost nothing when the heat pump needs the most: in winter. The combination of PV and air conditioning is better, but solves the opposite problem.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "4f86f132c8a21b14d7a563bafc7064a79a859a33256490e14ce93467b21b4b63",
@@ -6221,6 +6334,7 @@
    "text": "Was mir hier stärker bewusst wird, ist das die Kombination aus PV + WP die Spreizung Sommer/Winter nochmal verstärkt ... Überangebot im Sommer und Mangel im Winter. Ohne Speichermedien wird es sich wohl nicht lösen lassen, wenn wir alles auf Strom umstellen.",
    "text_en": "Thanks for the post. Does your trend actually show strongly rising annual costs - 1500, 1800, 2000 euros? What becomes clearer to me here is that the combination of PV + heat pump amplifies the summer/winter spread even more... surplus in summer and shortage in winter. Without storage media it probably won't be solvable if we switch everything to electricity.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "8958bea7cab4ce3ef241210ff3ac557989ceb8a24178a71d003b84b310cb592f",
@@ -6242,6 +6356,7 @@
    "text": "getauscht würden, wären wir bei 150.000. PV + WP kosten einen Bruchteil und sind damit wirtschaftlicher. Wenn man die Primärenergie auf dem Dach selber macht, ist die Dämmung nicht mehr so wichtig.\n\nDein Budget wird vermutlich nicht für PV-Erweiterung PLUS WP reichen, da muss",
    "text_en": "We have a similar house, albeit smaller than yours. We checked a new roof insulation and rejected it because of exorbitant costs. If windows were also replaced, we'd be at 150,000. PV + heat pump cost a fraction of that and are therefore more economical. If you make the primary energy yourself on the roof, insulation is no longer as important. Your budget probably won't be enough for PV expansion PLUS heat pump - you might need an additional loan.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 27.0,
    "author_hash": "4a23508bab90ac256d43c56c33fb1fe6a910481ed0071cc37b7b03847971f778",
@@ -6261,6 +6376,7 @@
    "text": "PV Anlage auf Winkelbungalow\n\nHi,\n\nzum Jahresende möchte ich mir gerne noch eine PV Anlage installieren lassen. Ziel ist es vor allem die garantierte Förderung mitzunehmen.\n\nZusammengefasst sind es\n\n17kWp verteilt auf Ost, West und Süd\n\ndavon 14 Module in Südrichtung und je 11",
    "text_en": "PV system on angled bungalow. Hi, by year-end I would like to have a PV system installed. The main goal is to take advantage of the guaranteed subsidies. In summary, it is: 17 kWp distributed across east, west and south. 14 modules facing south and 11 modules each facing west and east. 13.5 kWh storage from Tesla. Emergency power. 22 kW wallbox. I think the storage is oversized, but it should be designed for future use with an electric car and heat pump. Does that work or is further information needed for evaluation? Thanks in advance.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 13.1,
    "author_hash": "be3725f93bec5b95be88b814de2bb67d44919c75d44a297987185a1b5746f73a",
@@ -6280,6 +6396,7 @@
    "text": "PV-Planung mit Fronius Verto Plus: Wohin mit der NO-Seite? (SW + SO voll, kein MPPT mehr frei)\n\nHallo zusammen,\n\nich stecke gerade in der Detailplanung meiner Photovoltaikanlage und stehe bezüglich der MPPT-Belegung und Wechselrichter-Auswahl vor einer Denkaufgabe. Vielleicht",
    "text_en": "PV planning with Fronius Verto Plus: Where to put the NE side? (SW + SO full, no MPPT left)\n\nHello everyone,\n\nI'm currently in the detailed planning of my photovoltaic system and am facing a mental puzzle regarding MPPT allocation and inverter selection. Maybe someone here has experience with similar setups or a tip for an elegant solution.\n\n**The starting situation & planned areas:**\n\n* **South-West (main roof):** approx. 13 kWp (requires 2 MPPTs according to electrician)\n* **South-East (garage):** just under 3 kWp (occupies the 3rd MPPT)\n* **North-East (back of main roof with windows):** approx. 8 kWp – I would like to include this area directly to capture yield from diffuse light and mornings. This side is probably relatively productive especially in the colder season, or helps fill the storage at all.\n\n**Planned hardware:**\n\n* **Inverter:** Fronius Verto Plus (20 or 25 kW)\n* **Storage:** Fronius Reserva Pro (is to be used/expanded in conjunction with a heat pump coming soon)\n\n**The problem:** The Fronius Verto Plus offers 3 MPPTs. With the SW main roof (2 MPPTs) and garage (1 MPPT) all connections are occupied. For the North-East area with its ~8 kWp I have no MPPT tracker free at the main inverter.\n\nOf course, I would be very happy to connect everything to just one inverter and not have to buy a second one just for that. Then I would probably leave the North-East side alone.\n\n**My questions to the community:**\n\n1. **How do I best solve the NE roof?**\n* Integrate a second smaller inverter (e.g., a separate Fronius Primo/Symo) just for the 8 kWp NE side?\n* Can the 13 kWp on South-West be placed on *one* MPPT under certain conditions (e.g., by parallel connection of identical strings, provided the Verto Plus current/voltage allow it)?\n* Or could micro-inverters / module optimizers at location X make sense here?\n2. **Experiences / Tips:** Does anyone have a similar multi-orientation setup with Fronius and Reserva Pro in use?\n\nThank you in advance for your input and assessments!",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 62.7,
    "author_hash": "f4370efc43e0f4fd7b8be67c9d2b5808123def24bbc72405507c990c79a65e8b",
@@ -6299,6 +6416,7 @@
    "text": "Zeige mir einen Altbau mit Wärmepumpe, und ich zeige Dir eine eiskalte teure Bude!",
    "text_en": "Show me an old building with a heat pump, and I'll show you an ice-cold expensive place!",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 30.3,
    "author_hash": "5ce1d2a5c069592ff133389d1c64029d107b2d59b8ea48c73c3625d9e2be9184",
@@ -6320,6 +6438,7 @@
    "text": "steigende Energiekosten wissen müssen.\n\nDenn nicht jede Wärmepumpe spart automatisch Geld. Besonders im Altbau kann eine falsche Entscheidung schnell teuer werden. Gleichzeitig ist auch die Gasheizung keine perfekte Lösung für die Zukunft, da klimaneutrale Brennstoffe und",
    "text_en": "Heat pump or gas? The decision that can cost you €30,000. What heating installers don't say. Heat pump or gas heating in 2026? This decision can cost German homeowners tens of thousands of euros. Many owners are currently asking themselves: Should I install a heat pump? Is a new gas heating still allowed? What does the new heating law really mean? And is the subsidy actually worth it? In this video you'll learn what homeowners in Germany now need to know about the Building Energy Act, the heat pump mandate, gas heating, subsidies, old building renovation and rising energy costs. Because not every heat pump automatically saves money. Especially in old buildings, a wrong decision can quickly become expensive. At the same time, gas heating is not a perfect solution for the future either, as climate-neutral fuels and rising energy prices will play a role in the long term. We talk about: – Heat pump vs. gas heating 2026 – What changed in the heating law – Whether gas heaters are allowed again – What costs really arise with a heat pump – Why old building owners need to be particularly careful – How much subsidy there really is – What mistakes homeowners should avoid – Why an independent energy consultant is important – When district heating or solar thermal energy might make sense – Which heating decision can be best for pensioners, families and owners – This video is especially important for everyone who owns a single-family house, has an old heating system in the basement, or is facing the decision of whether to modernize now, wait, or switch to a new gas heating system. Before you sign a contract, you should know this information. Important: This video does not replace individual energy consulting. Always have your house inspected by an independent energy consultant before making a heating decision.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 84.9,
    "author_hash": "c4ca14bb034936a9c70b46ca4d04e0bed68760168793e3cb55ca4cedf89c5e31",
@@ -6341,6 +6460,7 @@
    "text": "der Begriff \"Altbau\" Etikettenschwindel. Mit Maßnahmen wie neue Fenster, Dämmung, Anpassung der Heizflächen plus einer PV-Anlage im Rücken kann ich sicherlich gut und relativ effizient mit einer Wärmepumpe heizen. Aber der ehemalige Altbau wurde vorher eben auch auf den nahezu",
    "text_en": "Sorry, but for me the term 'old building' is a misnomer. With measures like new windows, insulation, adjustment of heating surfaces plus a PV system in the background, I can certainly heat efficiently with a heat pump. But the former old building was previously upgraded to nearly the latest standard. And just comparing the energy price or consumption price is misleading. You have to include the production costs, i.e. all the necessary structural measures to make the old building heat pump compatible so that you can ultimately achieve the consumption price, and factor that into the cost calculation.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "f59dfff8f6b9a3c1044a116a87ac13ae988460602fb7aa6fc4a7b9236a1a0574",
@@ -6362,6 +6482,7 @@
    "text": "Einfamilienhaus mit ungefähr 100 m² Wohnfläche. Das Haus ist leider nicht außen gedämmt und wir haben normale Heizkörper, also keine Fußbodenheizung.\n\nLaut Energieausweis sieht es auch nicht besonders gut aus: Öl ist der Hauptenergieträger, der Energiebedarf liegt bei 296,7",
    "text_en": "Replace old oil furnace with heat pump - is it worthwhile with an uninsulated house? Hello everyone, I'm currently considering whether it would be worthwhile to replace the old oil furnace with a heat pump. It is an older single-family house with approximately 100 sqm living area. Unfortunately, the house is not externally insulated and we have regular radiators, so no underfloor heating. According to the energy certificate, things don't look particularly good: oil is the main energy source, the energy requirement is 296.7 kWh/(m²a) and the energy efficiency class is H. Therefore, I am somewhat uncertain whether a heat pump would even be worthwhile for such a house or whether the heating costs would be too high. I have read that the state sometimes offers funding of up to 70% when replacing an old oil furnace with a heat pump. I would therefore be interested in whether anyone here has already made a similar conversion. Thank you very much!",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 82.3,
    "author_hash": "d5c203390a2a21abdfe8728a6122b18b289dd661496f51946546c1ff90944f70",
@@ -6384,6 +6505,7 @@
    "text": "Bei dieser geringen Ersparnis, welche bei meinem Gastarif nochmal niedriger wäre, dauert es ja ewig bis sich die Anlage amortisiert hat. Solange meine Gasheizung läuft, wäre es in meinen Augen nicht sinnvoll diese durch eine Wärmepumpe zu ersetzen.",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "d252664c225070c81cbd8b9d09c86e240e8487e1aeb59df4e6d42e46bb00191e",
@@ -6405,6 +6527,7 @@
    "text": "Minute 3:20 ungefähr: Früher 28.000 kwh Wärme gebraucht, jetzt plötzlich nur 21.000. Ja so geht die Rechnung natürlich auf.... Erst wenn die Wärmepumpe billiger ist mit 28.000kwh Produktion ist sie rentabel....",
    "text_en": "Around minute 3:20: Previously needed 28,000 kWh of heat, now suddenly only 21,000. Yes, the calculation works that way of course.... Only when the heat pump is cheaper with 28,000 kWh production is it profitable....",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "d2000d11c05986f450734b9d9190b5f0193b9b988f9e97c903c80b13bbaacc6b",
@@ -6426,6 +6549,7 @@
    "text": "Wenn mann isoliert, dan sinkt der energiebedarf sowieso. Und wenn das haus isoliert ist, dan wird der gasbedarf so gering, dass es auch dann nicht lohnt um eine warmepumpe zu kaufen (entschuldige meine schreibefehler, ich bin Hollander)",
    "text_en": "If you insulate, then energy demand decreases anyway. And if the house is insulated, then the gas demand becomes so low that it is not worth buying a heat pump either (excuse my spelling errors, I am Dutch)",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 80.9,
    "author_hash": "e65e2aff047abe31655e614fda7eb3cfe7cb26dda00852767c08954521ed81a3",
@@ -6445,6 +6569,7 @@
    "text": "Thema. Unser Bankberater meinte zu uns, das wäre ein Paradoxon, weil eigentlich niemand, der das beantragt und bekommt schon drin wohnt während die Heizung getauscht wird, sondern erst nachher einzieht. Er wüsste selbst auch nicht wie das genau funktioniert.\nUnser Heizungsbauer,",
    "text_en": "It was also a topic for us. Our bank advisor told us it would be a paradox, because actually nobody who applies for and receives it already lives there while the heating is being replaced, but only moves in afterwards. He himself also didn't know exactly how that works.\nOur heating installer, who has been filing and managing these applications for most heating replacements for years, simply said: \"Doesn't matter, the money always comes once the application is through\".",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 18.9,
    "author_hash": "532c48d1a9a2c253c0196634e6d3d1541422d1036d0297aa502ad8f5e41f99d9",
@@ -6467,6 +6592,7 @@
    "text": "Förderantrag bereits fertig, und abgabebereit. Um die 16% Geschwindigkeitsbonus zu erhalten muss es sich dabei jedoch um selbstgenutztes Wohneigentum handeln.\nlt. Energieberater und Heizungsbauer funktioniert das nur wenn man dort bereits gemeldet ist.\nSprich Hauptwohnsitz auf",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 52.3,
    "author_hash": "54d7bba33ccc89b6c31e557c5136680ce9e0e6d732b2eaba8df39581948541bf",
@@ -6488,6 +6614,7 @@
    "text": "Wärmepumpe wird konkret - Wie ist der KfW Ablauf\n\nBei uns wird die Planung für eine Wärmepumpe konkret. Wir haben soweit die Angebote von Installateuren und Elektriker zusammen und würden mit den Arbeiten voraussichtlich Ende des Jahres beginnen. Rein technisch sehen wir uns",
    "text_en": "Heat pump becomes concrete - What is the KfW process? For us, the planning for a heat pump is becoming concrete. We have collected the offers from installers and electricians and would presumably start work at the end of the year. From a technical perspective, we see ourselves as quite well informed/advised. However, what we are currently unclear about is the topic of subsidies/loans from KfW. Specifically, we're currently asking ourselves: - The KfW loan with 0.1% interest seems to be available only **after** the work is completed and billed. So you have to advance the loan amount yourself first. Does anyone know how long the KfW payout takes roughly and how did you solve this problem? In practice, you take out a loan because you don't have the money. So of course it's a bit annoying that this is how it's handled - especially since we're not talking about small amounts. - Does it make sense to approach your house bank already based on offers regarding a KfW loan or do you need a subsidy commitment from KfW first? - Does anyone have any hot tips regarding subsidies, loans, general financing?",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 55.5,
    "author_hash": "725a55136429d2bd8b70410b2d162121271bea05e16d72297b1c4b18407ce63d",
@@ -6510,6 +6637,7 @@
    "text": "Tankentsorgung separat vergebbar?\n\nHi zusammen,\n\nBin jetzt in den letzten Zügen bei einer Entscheidung des WP Einbaus.\n\nJetzt bin ich verwirrt und wollte doch mal die Profis hier Fragen.\n\nMuss die Tankentsorgung Teil des Angebots des Heizungsbauers sein? Ich habe eine SHKler der",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 52.3,
    "author_hash": "3f0bc5e35d1f8c0cd164eee4d2b844f20e5fe45c4428e82d219946a1fb663603",
@@ -6531,6 +6659,7 @@
    "text": "Wärmepumpe mit KFW-Förderung? Oder doch ohne?\n\nWir möchten ein Reihenmittelhaus aus den 70ern (ca. 110 m²) kernsanieren, unter anderem mit neuer Fußbodenheizung und Luft/Wasser-Wärmepumpe.\n\nFür **FBH + Wärmepumpe komplett** habe ich von einer Fachfirma ein Angebot über ca.",
    "text_en": "Heat pump with KFW funding? Or without? We want to completely core-renovate a row-house middle unit from the 70s (approx. 110 m²), including a new underfloor heating and air/water heat pump. For FBH + heat pump complete, I got a quote from a specialist firm for approx. 52,000 €. Despite possible 70% KfW funding, I find that very high, especially since the eligible costs are limited. Therefore I'm considering awarding the trades separately. For underfloor heating I'm at around 6,000 € for 110 m², including milling, pipes, sealing, heating circuit distributor and installation. The company has already worked for my cousin and did good work there. For the heat pump I have a self-employed plumber, who I know well and who has already renovated my apartment. The heat pump I could procure myself or he could pass it on to me at cost. The problem: He has not yet accompanied KfW funding and doesn't know the process. Therefore my questions: Can an energy consultant apply for and oversee KfW funding, even though FBH and heat pump are carried out by different companies? What about self-performed work? Can I e.g. do the foundation for the external unit, core drilling and other preparatory work myself, while connection, electrical work and commissioning are of course handled by the specialist? And lastly: Which air/water heat pump with good value for money could you recommend for a heating load of approximately 5–7 kW? Which matching hot water tank would you take with it? It's important to me to buy something sensible and durable and not to cut corners in the wrong places. Has anyone implemented a similar project with separate awarding and still received funding?",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 13.1,
    "author_hash": "ba95499a070e005120b8476e82f2a3b3842e1a8d6f005f5bee3f67bfde0f8747",
@@ -6552,6 +6681,7 @@
    "text": "Förderung.\n\nAllerdings lese ich immer wieder schwierig. Es ist ein seriösen Energie zu finden, der auch tatsächlich was von der Materie versteht.\n\nHat hier jemand Empfehlungen aus dem Großraum Frankfurt beziehungsweise Main-Kinzig-Kreis genauer gesagt, Nidderau.\n\nDanke!",
    "text_en": "Energy consultant Main Kinzig district. Hello everyone, we would like to replace the oil furnace in our single-family house, built in 1925, with a heat pump. Whether air-to-air or air-to-water, I haven't finally decided yet. As a first step, I would like to go through everything with an energy consultant, which we need anyway for the funding. However, I keep reading that it is difficult. It is difficult to find a serious energy consultant who actually understands the subject. Does anyone have recommendations from the Frankfurt metropolitan area or Main-Kinzig district, specifically Nidderau? Thanks!",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.8,
    "author_hash": "e77b7fd2ceac044fb8ae0708b758ced8747545566ddb5ebb227ad9be30e5c431",
@@ -6573,6 +6703,7 @@
    "text": "fürchte das ist jetzt das Resultat aus:\n\na) Die Gesellschaft hat als ganzes handwerkliche Fähigkeiten immer mehr outgesourced, sodass der Durchschnittsotto nicht einmal mehr ein Bild aufhängen kann\n\nund\n\nb) alle müssen studieren, sonst verdient man nix!\n\nResultat: extrem wenige",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 66.3,
    "author_hash": "d25be1976529b60e4a079674b0fa7478be988345a636348b1be7861136c9a9e4",
@@ -6594,6 +6725,7 @@
    "text": "Geräte bzw. das Material liegen teilweise **massiv über den Preisen seriöser Online-Fachhändler**.\n\nBei identischen Modellnummern habe ich schon **10.000 € Differenz** gesehen, im Schnitt sind es etwa **7.000 €**. In zwei Angeboten gibt es nur einen großen Pauschalposten",
    "text_en": "Heat pump offer in old building – are 7-10k € markup on devices really normal? Hello everyone, I'm currently getting quotes for a heat pump in an old building. After several different assessments regarding manufacturer, heating power and installation options, I now have five offers. All relatively young companies within an hour radius that could come with a week's notice. Renowned companies in the area don't have time for an appointment for over a month. What I notice in all offers: The prices for the devices or materials are sometimes **massively above the prices of reputable online specialist retailers**. For identical model numbers I've already seen **10,000 € difference**, on average it's about **7,000 €**. In two offers there's only one large lump sum including installation, so you can't even understand the markup there. It is expressly **not about the labour cost**. Good tradespeople should earn good money and I think a reasonable material markup is completely legitimate. But somewhere I'm missing the proportionality in such differences. An online specialist retailer sells me the same heat pump for example for X €. And even **at this price the retailer still has to cover their costs and make a profit**. If the heating installer then charges 7-10k € more for the same device, I wonder how high the actual margin on the material must be. In addition, there are sometimes quite high flat-rate items. Example: For the disposal of a small plastic tank, one offer charges almost **2,000 € net** – including disposal. This is a tank that two people can easily get up the stairs. Then there are several other items that seem quite generously calculated to me. In the end, all offers including separate meter cabinet for the heat pump meter come to about **40,000 €**, after subsidy that would be about **20,000 € personal contribution** for me. And then there's always the argument: *\"You're getting 50% subsidy.\"* That's nice, but with the offers I have the feeling I'm paying about 10,000€ too much. The subsidy doesn't automatically make a high offer economical – ultimately the subsidy money also comes from public funds. **Therefore my questions:** * Are such material markups of 7-10k € on heat pumps really normal? * How big was the difference between online price and tradesperson's offer for you? * Can you buy the heat pump or certain components yourself from the specialist retailer and only commission the tradesperson for installation/commissioning? * Is a subsidy still basically possible? How do you see it or what experiences did you have with your offers? The text was optimized by AI.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 81.4,
    "author_hash": "4d0580c1b047fcf14a66995a65a9410a23017123d8bd96c592db1355ef4135f4",
@@ -6616,6 +6748,7 @@
    "text": "Wenn man ein älteres Haus saniert, baut man sicherlich auch eine neue Heizung ein. Ob das zwingend eine Wärmepumpe sein muß, sei mal dahingestellt. Herr Habeck möchte das so. Ob man selbst das möchte, ist längst noch nicht so sicher.\n>",
    "text_en": "If you renovate an older house, you'll certainly install a new heating system. Whether a heat pump must be the choice is debatable. Mr. Habeck wants it that way. Whether you personally want it is far from certain. [Quoted text about renovation with architect and energy consultant taking almost two years, contractor overload, difficulty getting appointments, high costs.] This situation will probably not end soon. For your renovation, there must be heating demand calculations. Ask your architect about them (or the energy consultant). If something should be wrong, the contractor must of course fix it. Don't let that go too long, warranty periods run out. [Quoted text asking about heating rod / heating element.] Every refrigerator and every air conditioner contains a heat pump. In a closed circuit, a transfer medium circulates. It is compressed by a pump, which makes it warm, warmer than the surroundings, and provides via heating hose...",
    "redacted": true,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "25afe08b334cd245015a25163ca4a32e6ba55c9541043a30c20181add91c6938",
@@ -6638,6 +6771,7 @@
    "text": "Das Problem ist ja nicht nur die Wärmepumpe, sondern der unverschämt teure Stromtarif von 50 ct/kWh.",
    "text_en": "The problem is not just the heat pump, but the outrageously expensive electricity tariff of 50 ct/kWh.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "59830ed32abaff50df008be8df3f213eb0ff1bb005943b7bc23329aee04fcaaf",
@@ -6659,6 +6793,7 @@
    "text": "Verbrauch] von Sept. 2022 bis Sept. 2023 ... fast 14.000 kWh. ... Die Stromkosten incl. MWST und Umlage [betrugen] rund 7.000 Euro und [waren] damit fast DOPPELT so hoch wie mit der guten alten Gasheizung.\n\n—",
    "text_en": "Against the satellite dish and the TV antenna the heritage protection authority has no objections?\n\n[Quote from user: After 1 year we received the first annual electricity bill from the city utilities for the heat pump. It almost knocked us off our socks.\n\nFor the heat pump, i.e. for heating and hot water [consumption was] from Sept. 2022 to Sept. 2023 ... almost 14,000 kWh. ... The electricity costs incl. VAT and levies [were] around 7,000 euros and [were] thus almost DOUBLE as high as with the good old gas heater.]\n\nIf I query the electricity price for 14 MWh for postal code 70191 at Check24, I get offers around 30 ct/kWh at e.g. 5 €/m base price. That would be about 4,200 € electricity costs per year.\n\nOf course that is also quite a lot.\n\nThe coefficient of performance of a heat pump should be at least 3, better 4, so 33 MWh of heat would come from 11 MWh of electricity (I subtracted 3 MWh for \"general electricity consumption\"), possibly even 40 MWh. That is quite a lot for a freshly insulated house. I almost have the impression that the heat pump is not pumping at all, but only heating with the heating rod.\n\nWhat did the house need in electricity and gas before the conversion?\n\n[Quote from user: The city utilities have now written to us that we can apply for a special tariff for the heat pump, but that would only be about 8 cents cheaper, instead of 47 cents probably 39 cents per kw plus VAT and levies.]\n\nToo expensive.",
    "redacted": true,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "25afe08b334cd245015a25163ca4a32e6ba55c9541043a30c20181add91c6938",
@@ -6681,6 +6816,7 @@
    "text": "Irgendwas wurde hier richtig verpfuscht, denn bei einer JAZ von 3 (für ein saniertes Haus eher mittelmäßig) wäre das ein Wärmebedarf von 42 000 kWh und die sind selbst für ein unsaniertes Haus von 1970 in dieser Größe sehr schlecht. Wirklich sinnvoll passt das nur zum",
    "text_en": "We have a heat pump running; however, the first full winter is still ahead. The problem is certainly not to be found in the heat pump itself, but elsewhere. Something went really wrong here, because with a JAZ of 3 (for a renovated house rather mediocre) that would be a heat requirement of 42,000 kWh, and those are very bad even for an unrenovated house from 1970 of this size. It really only makes sense with permanent immersion heater operation. Was an energy consultant involved in the renovation? What order of magnitude did he calculate as the new energy requirement? In addition, there's the high electricity price. 38 cents is really no bargain; we concluded at 29.x cents this fall. With us, everything runs through one meter, since the difference between heat electricity and household electricity is too small. In fairness, it must be said that a reasonably well-adjusted heat pump with JAZ=3 at 30c/kWh electricity is about even with gas heating. The portals spit out about 10c/kWh gas for me.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "f7b92a495db710d76e0abd6bf946efa37550b70fac3c5f76af99113e990676bf",
@@ -6703,6 +6839,7 @@
    "text": "Forumsfreund\n\nvielen Dank für diese Info\n\nIch vermute zunächst mal dass Du auch eine Phtopholtaik auf dem Dach hast, das wird ja empfohlen und das wäre ein Grund für diese Differenz gegenüber unserer Rechnung.\n\nAls nächstes interessiert mich stark, welchen KW-Preis Du bei Deinem",
    "text_en": null,
    "redacted": true,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "4317de399c0876dc4c9d0e3d077f5b395d0eb7f985079460067ce0e20a74a77f",
@@ -6725,6 +6862,7 @@
    "text": "Hi,\n\nwir haben ebenfalls Erdwärme.\n\nEinbau war super - die Einstellung vom Fachbetrieb, naja. Die ersten Nächte haben wir ordentlich im Winter geschwitzt.\n\nEiner der wichtigsten Parameter, die den Stromverbrauch beeinflussen, dürfte tatsächlich die Heizkurve sein. Das habe ich",
    "text_en": "Hi, we also have ground-source heat. The installation was great—the adjustment by the specialist, well, not so much. The first nights in winter we sweated quite a bit. One of the most important parameters influencing electricity consumption is probably the heating curve. I found that out after lots of research. Therefore the important question: What value is your heating curve set to?",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "a37420cbaadbcddfd5d0ed29d6e3a57f99e2d2e4e6c61eb0ae38608295cc828f",
@@ -6746,6 +6884,7 @@
    "text": "Begrenze die Vorlauftemperatur in dieser Heizperiode einfach mal auf 55 Grad und schau wie es sich verhält.\nKann dir aus eigener Erfahrung nur sagen, dass wir bis dato noch kejn einziges Haus hatten bei dem es noch nicht funktioniert hat.\nVersuch macht klug. :)",
    "text_en": "Simply limit the flow temperature to 55 degrees during this heating season and see how it behaves. I can only tell you from my own experience that we haven't had a single house yet where it didn't work. Trial and error teaches us. :)",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 77.6,
    "author_hash": "74433c3483a9a14ae15feb7bb77435dd34a30a18b955936d7d693b74eed39440",
@@ -6767,6 +6906,7 @@
    "text": "oben von den Forumsfreunden geschrieben, die Häuser und Bewohner zu individuell.\n\nKannst Du die von mir oben gestellten Fragen mit eigener Recherche im Heizungskeller beantworten (und warst vielleicht schon mal auf der Fachhandwerksebene Deiner Steuerung)?\n\nAnsonsten führt kein",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "b9541ae286e91398a2a38abdd8dca6e8cbd301213f334c3b94e9a0b9e13bd803",
@@ -6786,6 +6926,7 @@
    "text": "Heizperiode begonnen hat.\n\nGenerell hilt: die Wärmepumpe läuft umso effizienter, je niedriger die benötigen Temperaturen sind.\n\nAktuell gibt es günstigere Stromtarife. Falls Du wechseln kannst, wäre das vielleicht eine gute Gelegenheit.",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "b9541ae286e91398a2a38abdd8dca6e8cbd301213f334c3b94e9a0b9e13bd803",
@@ -6805,6 +6946,7 @@
    "text": "habe.***\n\nDie Frage taucht immer wieder auf: Warum kostet eine Wärmepumpe in Deutschland häufig 30.000–40.000 €, während vergleichbare Anlagen in anderen europäischen Ländern deutlich günstiger installiert werden?\n\nNach Durchsicht von europäischen Kostenvergleichen, deutschen",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 46.8,
    "author_hash": "03379ab81e80ef8987492665ad9ad9127ade37f1d1d1625cce5fd9a2a0728fab",
@@ -6827,6 +6969,7 @@
    "text": "Ich hatte 18.000-22.000kwh Verbrauch über 3 Jahre mit Gas Brennwert.\nHeizreport wollte bei mir glaub auch 14kw.\n\nIch bin geschwankt zwischen 8kw Modell und 12kw Modell.\n\nFazit: Was vielen nicht bewusst ist, teilweise sind die Modell Unterschiede sehe gering zwischen den",
    "text_en": "I had 18,000-22,000 kWh consumption over 3 years with gas condensing boiler. Heizreport probably wanted about 14 kW for me too. I was torn between an 8 kW model and a 12 kW model. Conclusion: What many people don't realize is that model differences are sometimes very small between the individual levels. For example, Samsung R32 8 kW cannot modulate lower than the 12 kW device (or the 12 kW device can modulate very well downward). When I found that out, I just put the 12 kW model in place. It costs a few hundred more in purchase price and you have peace of mind. The heating element hasn't run for a second. It can be that with the heating model you want, the same compressor is in the different sizes and the smaller step is actually only software-wise weaker. And if that's the case, then just take the larger model and be done with it. With Samsung, the difference was between 6 and 8 kW model. You need to check what the minimum power consumption is, and if it's the same, then the devices can also modulate down equally far...",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 52.3,
    "author_hash": "5cbd63b4e6f6f2a4de2792255fe921ea4b0c14693bea4608bbc9b1b0c8bcc1ec",
@@ -6848,6 +6991,7 @@
    "text": "formuliert, liegt aber im Prinzip richtig. Punkt 1 man muss sich intensiv mit der Materie auseinander setzen und jedes Gebäude muss individuell betrachtet werden. Punkt 2. Was kann man mit Dämmung erreichen. Hier braucht es oft nicht die grosse Lösung meist können auch Maßnahmen",
    "text_en": "The article is of course somewhat sensationalized, but it's basically right. Point 1: you have to engage intensively with the subject and every building must be considered individually. Point 2: what can you achieve with insulation? Often you don't need the big solution - usually measures like roof and windows can already do a lot. Point 3: size the heating correctly and if necessary evaluate alternatives.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 30.3,
    "author_hash": "0c396d88d0c37e1ac61a28eed0b5d5185142ff943bc1ccec9e719b62849a2495",
@@ -6867,6 +7011,7 @@
    "text": "Starke Abweichung berechnete Heizlast / realer Verbrauch\n\nWir wollen aktuell in die Planung für den Umstieg von Gasheizung auf Wärmepumpe zu machen. Dafür habe ich über [heizreport.de](http://heizreport.de) eine raumweise Heizlastberechnung gemacht. Der berechnete Wert weicht",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 72.4,
    "author_hash": "72970ca13d3211c6a3d8712f173ba664c5b7bfe00395026399c593df6cac2291",
@@ -6889,6 +7034,7 @@
    "text": "Deine Videos sind sehr informativ danke dafür. Natürlich müssen die Heizbänder in die Rechnung, weil eine Gasheizung sie nicht braucht. Habe übrigens eine Wolf 07 selbst eingebaut (ohne Heizbänder.) Jaz von Mitte Sept bis jetzt 4,55, Haus von 1870, 165 m2, 22°, Heizkörper, kein",
    "text_en": null,
    "redacted": true,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 72.7,
    "author_hash": "e5ebaf274d3e6626c92a213eb68136902105989ae17433485c2c1d77cbe203ca",
@@ -6911,6 +7057,7 @@
    "text": "Bei uns läuft die WP seit einigen Tagen nach Putins Einmarsch, also Anfang März 2022. Die WP benötigt (stark gerundet) etwa ein Viertel der Energie in kWh wie die Gasheizung, in Zahlen 4.500 kWh Strom vs. 18.000 kWh Gas, was ziemlich exakt meiner theoretischen Berechnung",
    "text_en": null,
    "redacted": true,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "db94782e8bacab4dace0d50ad17ef176308d440b738a367f286a812f7c39c3bf",
@@ -6933,6 +7080,7 @@
    "text": "Hallo,\n\nDanke für das anschauliche Video bzw. Videos!\nDiese erleichterten mir sicherlich die Entscheidung für eine WP!\n\nIch besitze seit Oktober 2025 eine WP Vissmann 150-A – 6 KW mit Puff. 250/75 L\nMein Haus (kleineres Fertighaus) auch von den 90 J. und natürlich ohne",
    "text_en": "Hello,\n\nThank you for the instructive videos!\nThese certainly made my decision for a heat pump easier!\n\nI have owned a Viessmann 150-A – 6 KW with buffer tank 250/75 L since October 2025.\nMy house (smaller prefabricated house) also from the 90s and of course without underfloor heating.\nA fireplace is also present and is an advantage especially on cold days (I heat the ground floor)\n\nI previously had a pellet boiler 16 years old (sack ware, no silo) with solar thermal, where I should have invested anyway.\nSo after brief back-and-forth deliberation I decided on the heat pump.\n\nAfter the first winter, which for us on the Swabian Alps was also long, cold and not very sunny, I can draw a very positive conclusion.\n\nA plus point was certainly the fireplace, especially on the cold days, and there were several nights between 8-15 degrees below zero.\nAt the same time, I was able to manually control the heat pump or set it so that the heat pump generated hot water around 13:00 (+2/–2 degrees outside temperature) and not already at 5:30 in the morning.\n\nGreetings",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "c9787d56c71b7fb52160b111c49e84b5fd0415478a068bdf663d933f11e4898a",
@@ -6955,6 +7103,7 @@
    "text": "Viele nennen Wärmepumpen Stromfresser.\nAber wer einmal versteht, dass eine Wärmepumpe aus 1 kW Strom bis zu 4 kW Wärme macht, merkt schnell:\n\nDas Problem ist nicht die Technik.\nDas Problem ist fehlende Rechnung.\n\nGas bleibt 1 zu 1.\nWärmepumpe arbeitet mit Umweltenergie.\n\nUnd",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 81.9,
    "author_hash": "dafd4236edcb4a39cc6ec5528a131b5c22b28827f1874458977543a493acbb6e",
@@ -6976,6 +7125,7 @@
    "text": "Darf man Mikroblasenabscheider im freien montieren? Regen, Schnee usw. kein Problem?",
    "text_en": "Is it allowed to mount microbubble separators outdoors? No problem with rain, snow, etc.?",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 4.3,
    "author_hash": "071fb22a69d1493385196ad756bbdcc1432aff6a68aaabf6a68dfb5ce8a5d3e8",
@@ -6995,6 +7145,7 @@
    "text": "Wenn der Wärmetauscher undicht wird, kann brennbares Gas ins Heizwasser gelangen und bis ins Gebäude transportiert werden. Entscheidend ist dann, wo es austritt. Mit der richtigen Position des Mikroblasenabscheiders oder einer Abblaseleitung nach außen lässt sich das sauber",
    "text_en": "Many heat pumps with propane are simply set up like conventional systems. Exactly that can become a problem in case of error. If the heat exchanger leaks, flammable gas can enter the heating water and be transported into the building. What matters then is where it escapes. With the correct position of the microbubble separator or a blow-off line to the outside, this can be solved cleanly. If you're unsure whether your system is set up correctly, check it carefully.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 92.6,
    "author_hash": "656daeff45effe710313c623a94fa0166046c32a09787a42995cb79dedb2613e",
@@ -7016,6 +7167,7 @@
    "text": "Wärmepumpen sind Stromheizungen.\nWer das schön rechnet, der kann sein Gewissen beruhigen.\nMehr nicht.\n\nMein Heizungsbauer fährt Lamborghini SV700.\nWegen der Subventionen sagt er.\n\nReparaturen nur durch Werkskundendienst.\nEr schlägt nochmal 300 Euro drauf.\nDanke.",
    "text_en": "Heat pumps are electric heaters. Whoever calculates that nicely can ease their conscience. Nothing more. My heating installer drives a Lamborghini SV700. Because of the subsidies, he says. Repairs only through factory customer service. He adds another 300 euros on top. Thanks.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "0c0788568bcb515b741c505a798a7abec04c406a796ea98c269f1928f444598d",
@@ -7038,6 +7190,7 @@
    "text": "mit Gas etwa die gleiche Menge Energie. Ganz offensichtlich arbeitet Deine Wärmepumpe (fast) ausschließlich mit ihrem Heizstab (der eigentlich nur für Notsituationen eingebaut ist, in denen die Pumpenfunktion wegen zu geringer Außentemperatur nicht mehr ausreicht). Geh doch mal",
    "text_en": "The gas price is irrelevant in this context, what matters is energy consumption. Gas is generally billed in kWh, electricity too. You would have to extract the energy consumption from the corresponding bills. [Quoted user discussing typical heating costs for a new single-family house with gas or oil heating without photovoltaics.] According to this source it is 40 to 50 kWh/m² per year for a new building. However, I cannot imagine that your house (probably built between 1955 to 1965) with subsequent thermal insulation measures meets new building standards. Furthermore, user behavior plays a huge role in heating energy requirements. [User response:] Of course, a separate meter was installed for the heat pump. There is also a separate bill for that. I only spoke of this one. [Reply:] All the worse! Then the heat pump alone consumed the 14 MWh. I need about the same amount of energy for a similar living area in a similar climate zone with gas. It is obvious that your heat pump is working (almost) exclusively with its electric heating element (which is actually only built in for emergency situations where the pump function is no longer sufficient due to too low outside temperatures). Why don't you go check the box and feel the temperature of the air it blows out. It should be noticeably cold. As mentioned, you could also record the system's consumption in detail, for example every morning before breakfast: read the meter and write down the meter reading.",
    "redacted": true,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "25afe08b334cd245015a25163ca4a32e6ba55c9541043a30c20181add91c6938",
@@ -7060,6 +7213,7 @@
    "text": "Heizlast ist ja worst-case, nicht durchschnitt.",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 52.3,
    "author_hash": "683b42788fd5899a5e5d95ee43fa902e355ac63c963276666c963a01dc0ec93e",
@@ -7079,6 +7233,7 @@
    "text": "[user] was ist deine VL Temperatur für die Heizung und für Warmwasser?",
    "text_en": "What is your flow temperature for heating and for hot water?",
    "redacted": true,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 72.7,
    "author_hash": "615303d9516f7a41178e0194793fc0241bbc42075be58d565dd194603b33464e",
@@ -7098,6 +7253,7 @@
    "text": "Wenn da ne Ölheizung drin ist wird ja wohl kein Gasanschluss bestehen. Der müsste ja auch erstmal bezahlt werden. Und ob der Schorni ne uralt- Gastherme als Neuinstallation abnimmt halte ich auch für ne gewagte These.",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 35.2,
    "author_hash": "35fde8ab07db8c96d764267e7999ea68fa2f5b95ecb063e0405060c4584467ae",
@@ -7119,6 +7275,7 @@
    "text": "Mit Ölheizung 30000kWh 5000€\n9kW R290 LWWP 6000kWh 1680€\n25kW Pelletofen 3to 500-1200€\nLWWP steht im Winter, der Pelletofen mit KI und fest 55°C Vorlauf als Zentralheizung 250m2 Morgens und Abends ist den Frauen seit Jahrzehnt viel lieber. 21-24°C Taupunkte 7-10°C, mit",
    "text_en": "With oil heating 30000kWh €5000\n9kW R290 Air-Water heat pump 6000kWh €1680\n25kW pellet stove 3 tons €500-1200\nAir-Water heat pump stands idle in winter, the pellet stove with AI and fixed 55°C flow temperature as central heating 250m2 mornings and evenings is what the women have preferred for decades. 21-24°C dew points 7-10°C, with heat pump almost double the air humidity compared to earlier with oil heating. 100kW floor heating/radiators metal system with 20 tons for 10kW heating load DIN EN12831 x4 formerly ground source heat pump.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "65a4dd6256fb832142e9f508015e386f0b07a1fc325013e5834d958d35d2f3f1",
@@ -7140,6 +7297,7 @@
    "text": "Getrennte Firmen für FBH und Wärmepumpe geht, Rechnung muss nur nach der Beantragung von der Förderung sein. Eigenleistung nur auf Material wäre möglich wenn euch das ein Heizungsbauer abnimmt und unterschreibt, gibt sogar extra ein Formular dafür. Aber das macht in der Regel",
    "text_en": "Separate contractors for floor heating and heat pump is possible, invoice just has to be after applying for subsidy. Own work only on materials would be possible if a heating installer accepts it and signs for you, there's even a separate form for it. But usually nobody does that....",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 6.4,
    "author_hash": "fdf0f38213ab282745a043c7101dee59ac7e21641d853c466748deb0f545d478",
@@ -7161,6 +7319,7 @@
    "text": "Wir sind grad mitten in der Kernsanierung von ner alten Bude aus 1920 und einem Vorbesitzer der mehr als nur gepfuscht hat.\n\nÜberraschungen gibt es immer. Stell dich drauf ein. Nimms einfach hin. Kannste nix gegen machen.\n\nAber Rechnet ernsthaft durch ob es überhaupt",
    "text_en": "We're right in the middle of a core renovation of an old building from 1920 and a previous owner who did more than just botch the job. Surprises always come. Prepare for it. Just accept it. You can't do anything about it. But seriously calculate whether it's even economical to bring it to KFW55 standard. Specifically: what does it cost more compared to just bringing it to the current GEG standard, and whether the funding you get covers that and what you save long-term. We actively decided against a KFW standard. Instead a larger heat pump, just current double-glazed windows, roof only the bare minimum insulated. Until that would be paid off, even with a subsidy grant, we would already be retired. Addendum: 1. Eigenleistung saves money. You can do the core demolition yourself 2. Are your better half's parents still alive? You quickly get a huge hatred of the previous owners in something like this.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 81.4,
    "author_hash": "d2c4a28ad748c22f32389627ea747596c70e296b76390fd38ecd44d7b1b0dbc4",
@@ -7184,6 +7343,7 @@
    "text": "Wärmepumpe nach 1 Jahr: Diese Abrechnung glaubt mir keiner!\n\nWie viel Strom verbraucht eine Wärmepumpe im Jahr? Nach 12 Monaten ziehe ich die ehrliche Bilanz: Wärmepumpe Stromverbrauch Altbau, Was kostet der Strom für eine Wärmepumpe im Monat? Wie viel Strom verbraucht eine",
    "text_en": "Heat pump after 1 year: This bill nobody believes!\n\nHow much electricity does a heat pump consume per year? After 12 months I draw the honest balance: Heat pump electricity consumption old building, How much does electricity for a heat pump cost per month? How much electricity does a heat pump consume per year? What does a heat pump consume in winter and is a heat pump worthwhile in old buildings at all!\n\nSubscribe to my channel for free: [user]\n\n▬ My Equipment ▬▬▬▬▬▬▬▬▬▬▬▬▬\n\nCanon EOS M50 Mark II: https://amzn.to/3xn5yhT\nCamera microphone Hollyland Lark M1: https://amzn.to/4culoGd\nMy tripod: http://amzn.to/2o0blB9\nMy laptop: https://amzn.to/3CvQWMi\nMy laptop microphone Blue Microphones Snowball iCE: https://amzn.to/45xEmcM\nMy greenscreen: http://amzn.to/2nenLZu\n\n▬ Many more info ▬▬▬▬▬▬▬▬▬▬▬▬\n\nFollow me on Pinterest: https://www.pinterest.de/macpaverick/\nFacebook: [user]\n\n▬ About this channel ▬▬▬▬▬▬▬▬▬▬▬▬\nThis channel was created with the idea of helping other people and perhaps making the world a little better!\n\nYou can expect here:\n\n- Garden videos with garden tips and garden work around the garden\n- Helpful instructions in the areas of house & garden, household, technology and more.\n\nIf you like the video, I would be happy about a like from you!\nOtherwise just keep following me, or subscribe to me and don't miss any of my videos!\n-----------------------------------------------------------------------------------------------------------\n\nNote:\nThis video is only for illustration. No guarantee for accuracy.\nThe use of the content shown is at your own risk.\n\n*Links are affiliate links related to Amazon's partner program. These serve for orientation and quick finding of products and are paid commission as appropriate if they are used. This does not incur any additional costs for you!",
    "redacted": true,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 98.5,
    "author_hash": "d838ebc416a6716d0c1be07a4c4d0b321a14aee6d579a2ae0ff8c9c3aec3c324",
@@ -7205,6 +7365,7 @@
    "text": "Eltern bauen sollten.\n\nEs geht um ein **Einfamilienhaus Baujahr 1965**, das in weiten Teilen noch unsaniert ist. Fenster sind 2-fach verglast aus 1990.\n\nAktuell läuft dort eine **Ölheizung aus 1990 ohne Brennwerttechnik**. Der Ölverbrauch liegt bei ungefähr **3.500",
    "text_en": "Old oil heating replacement: cheap used gas condensing boiler or directly heat pump?\n\nHello everyone,\n\nwe are currently considering which new heating system we should best install in my parents' house.\n\nIt's about a **single-family house built in 1965**, which is largely still unrennovated. Windows are double-glazed from 1990.\n\nCurrently there is an **oil heating system from 1990 without condensing technology**. The oil consumption is approximately **3,500 liters/year**.\n\nI have already had a heat pump quote. After subsidies, the complete measure would probably cost us approximately **20,000 € out-of-pocket**.\n\nNow, however, an interesting alternative arises:\n\nIn the neighborhood, a **approximately 5-year-old gas condensing boiler including attachments and hot water storage tank** is being removed and offered for **1,500 €** (after the house sale a heat pump was installed there, the boiler works and was always maintained). The gas connection is already in our basement.\n\nSo I would still need to find a heating engineer who can properly connect the system and assist me at least with the removal or dismantling of the oil heating. For the condensing boiler, a corresponding exhaust pipe would also need to be fitted into the existing chimney. (Edit: Gas connection is already available in the basement)\n\nSo we could probably replace the old oil heating for a fraction of the costs and immediately reduce running costs - or am I missing something?\n\nOn the other hand, of course, the question arises whether it makes sense to invest in a gas boiler now when the heat pump could fundamentally be the long-term solution.\n\nThe problem is: **The long-term use of the house is still completely open.** My parents would have to thoroughly renovate the house in the next 5–10 years anyway. So it could be that they move out at some point and I take over the house, then thoroughly renovate it myself – or possibly even tear it down and rebuild it.\n\nAt the same time, the house is currently still quite unrennovated. A heat pump would probably not run particularly optimally or efficiently under these conditions and possibly further measures on the building and/or on the radiators would be necessary first.\n\nTherefore my consideration:\n\n**Option 1:** Now install the used gas condensing boiler for 1,500 € + installation/ancillary work and bridge the next 5–10 years with it.\n\n**Option 2:** Now directly invest approximately 20,000 € out-of-pocket in a heat pump and have long-term peace of mind.\n\n**Option 3:** Buy a new gas boiler – which to me, given the investment and foreseeable developments, seems rather unattractive.\n\nHow would you assess the situation?\n\nI am aware that a blanket answer is difficult. I am mainly interested in whether the cheap gas solution as a **5–10-year interim solution** can be economically viable or whether I will just create an additional problem.\n\nMany thanks in advance!\n\nThe text was optimized with AI.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 59.3,
    "author_hash": "4d0580c1b047fcf14a66995a65a9410a23017123d8bd96c592db1355ef4135f4",
@@ -7226,6 +7387,7 @@
    "text": "mit folgenden Eckdaten:\n\n*Baujahr 1978\n\n*Ölheizung, jedoch immer gepflegt und mit aktuellem \"Raketenbrenner\".\n\n*Alufenster im Erdgeschoss, insgesamt 170m2\n\n*Moderene Kunststofffenster aus den 2010ern im Obergeschoss - dort sind auch Klimaanlagen verbaut, insgesamt",
    "text_en": "Which measure for our house from 1978\n\nHello everyone,\n\nwe bought an existing property last year with the following key facts:\n\n*Built in 1978\n\n*Oil heating, but always well-maintained and with current \"rocket burner\".\n\n*Aluminum windows on the ground floor, total 170m2\n\n*Modern plastic windows from the 2010s on the upper floor - there are also air conditioning units installed there, total 130m2\n\n*Oil consumption from November 25 to September 26: about 4000 liters of oil.\n\n*We have had an e-car since September 26\n\nI worked out a few scenarios with the help of Perplexity, but I definitely still need an assessment of what makes the most sense:\n\nI currently have about 15,000–20,000 € available and am wondering how to use it most sensibly:\n\n1. PV expansion to 19 kWp + wallbox + 3 air conditioning units (complete package for approx. 15,800 €).\n\n•Goal: More self-consumption for electric car and climate-heating, significantly reduce oil consumption.\n•Battery remains at 9 kWh.\n\n2. Complete conversion to heat pump (oil out, heat pump in).\n\n•We already have a quote for a Samsung Mono-HT R290-16 (16 kW) with 260-liter storage tank for approx. 33,900 € gross.\n\n•With funding (KfW, oil heating replacement) that would perhaps be 13,000–19,000 € remaining costs.\n\n•Question: Is it worth it with our high consumption and existing PV?\n\n3. Replace windows in ground floor (16 panes, approx. 20,000 €).\n\n•Would reduce heating requirements, but the amortization looks rather mediocre so far (70+ years according to my calculation).\n\n•More of a comfort and value investment than an economic measure.\n\nQuestions for you:\n\n•Would you expand PV first or switch directly to a heat pump given our situation?\n•Do you see the combination of PV + climate-heating as a sensible interim solution before switching completely to heat pump?\n•Is the window replacement worth it at all, or should one rather invest the money in PV/heat pump?\n•Does anyone have similar experiences with oil consumption, PV and climate-heating in an old building of this size?\nThanks in advance for your assessments!",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.8,
    "author_hash": "32202280626aa66fab08360a46e002daaae9cc231a5d562cfb76e3548aeeabe8",
@@ -7248,6 +7410,7 @@
    "text": "Das Stromnetz interessiert nicht mehr, die Themen PV, Bat., WP (H&K), BEV mit Bidi V2H, Not-Gen., sind durch - da kann geregelt werden was wolle, das tangiert hinter einer Inselanlage mit Netzbackup und einer parallelen Balkonsolar gar nicht mehr.",
    "text_en": "The power grid doesn't matter anymore, the topics PV, battery, heat pump (heating & cooling), electric vehicle with bidirectional V2H charging, backup generator are done – any regulations that might apply can be controlled, but behind an off-grid system with grid backup and a separate balcony solar installation, it doesn't matter anyway.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 70.4,
    "author_hash": "f5e067741aa5da8fd8926e1c6ac754f434ebb6d888690aa26313e27fec035a07",
@@ -7269,6 +7432,7 @@
    "text": "1:27 was interessiert gewesen wäre, welchen Gasjahresverbrauch in kWh hattest Du denn die Jahre davor?",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "517aa3ac9a778ec1f98181166997f96d6902017d0ad1df06bceb341b9fd16002",
@@ -7288,6 +7452,7 @@
    "text": "Gaszentralheizung hatte, kann ich nur die Jahresrechnung vom GAS mit der neuen Jahresrechnung NACH Umbau mit dem Strom vergleichen.\n\nEs kann sein dass in den letzten Jahren auch der Gaspreis gestiegen ist so dass ein Vergleich Heizkosten GAS vor 2 oder 3 Jahren und früher auch",
    "text_en": null,
    "redacted": true,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "4317de399c0876dc4c9d0e3d077f5b395d0eb7f985079460067ce0e20a74a77f",
@@ -7310,6 +7475,7 @@
    "text": "Und jetzt hat sich alles geändert. Ich wäre froh ich dürfte 1000 euro Strom zahlen. 3000l Heizöl für 4500 Euro, eine Woche später lag der Preis bei 1,82 Euro. Ob er jemals wieder auf 1.20 oder drunter sinkt wissen die Götter .",
    "text_en": "And now everything has changed. I wish I only had to pay 1000 euros for electricity. 3000 liters of heating oil for 4500 euros, a week later the price was at 1.82 euros. Whether it will ever drop to 1.20 or below, only the gods know.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 72.7,
    "author_hash": "d6ed2a0d82ee91834caa3750a7a558e791d0aede0d02a0589c9fd8342cad0e34",
@@ -7331,6 +7497,7 @@
    "text": "Im Betrieb immer sinnvoll zu wechseln, die größte Wärmepumpe dürfte günstiger heizen als eine Ölheizung. Allerdings ist natürlich nicht die Anschaffung enthalten… das gegen zu rechnen ist aber eher Klüngelei, schließlich wird Öl immer teurer werden\n\nUnd viele Wärmepumpen",
    "text_en": "In operation always worth switching, the largest heat pump should be cheaper to heat than an oil heater. However, of course the acquisition cost is not included... but counting that against it is rather fiddling, after all oil will always get more expensive. And many heat pumps can now also achieve high temperatures.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 57.0,
    "author_hash": "f6968881cb097be23cc2a59b9f8ddb0caee9d65068bced135064737ba354feb2",
@@ -7350,6 +7517,7 @@
    "text": "Enpal Wärmepumpe Angebot\n\n**Hallo zusammen,**\nmeine Schwiegereltern haben ein Angebot von Enpal für den Austausch ihrer alten Ölheizung gegen eine Luft-Wasser-Wärmepumpe erhalten und würde gerne eure Einschätzung dazu hören. Sie wohnen in einem Einfamilienhaus BJ2000 mit ca.",
    "text_en": "Enpal Heat Pump Offer\n\n**Hello everyone,**\nmy in-laws received an offer from Enpal to replace their old oil heating with an air-water heat pump and would like to get your assessment. They live in a detached house from 2000 with approximately 160m2 without a basement (only storage rooms). It was an energy-saving house back then.\n\n**Key points of the offer:**\n**1. Heat pump and technology**\nManufacturer: Enpal\nModel: EODU-V12-M1-AW-9E\nHeating capacity: 10 kW (at A−7/W35)\nSCOP: up to 4.94 (35 °C) or 3.96 (55 °C)\nSound power level: 47 dB(A) at 1 m distance\nIntegrated electrical auxiliary heating: 9 kW\nRefrigerant: R290 (propane)\n10 years manufacturer warranty on the heat pump\nIncluding indoor unit, hot water tank (at least 170 l), buffer tank (at least 16 l), control and energy manager\n\n**2. Installation and additional services**\nAssembly and commissioning\nElectrical connection and connection of control technology\nFoundation for outdoor unit\nPossible core drilling and sealing\nDisassembly and disposal of old oil heating (up to 200 kg)\nHydraulic balancing including documentation\nRegistration with network operator\n\n**3. Additional costs**\nDisassembly and disposal of old oil tank: €1,932.77\n\n**4. Cost overview**\nHeat pump complete package including delivery: €23,716.64\nInstallation package: €12,795.13\nDisassembly and disposal of oil tank: €1,932.77\nEnpal bonus: −€2,521.01\n\n**Total price:**\nNet: €35,923.53\nGross: €42,749.00\nIndicated KfW subsidy: −€22,400.00\n\n**Anticipated customer's share: €20,349.00**\nAccording to the offer, the subsidy is subject to approval and disbursement by KfW. First, the full purchase price must be paid to Enpal.\n\n**My questions to you:**\nHow do you assess the price of around €42,750 gross before subsidy, to me it seems far too expensive honestly.\nDoes anyone have experience with the Enpal heat pump or specifically with this model?\nIs the offered heating capacity of 10 kW plausible or should one definitely check a heating load calculation?",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 61.9,
    "author_hash": "a8213b0d09d8e40c366c9d7b02293d6912550416285b03bdad3384028f84ab9c",
@@ -7372,6 +7540,7 @@
    "text": "Es wäre gut wenn die Anbieter die Formulare für ihre Anlage gleich vor ausgefüllt mit beilegen. Wäre für mich ein kauf Argument.",
    "text_en": "It would be good if manufacturers included pre-filled forms for their system. That would be a buying argument for me.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 30.3,
    "author_hash": "af20b1e5949dc565f48508160405774ebbf97fd895edc32ec8e3dc3fcec0e47d",
@@ -7391,6 +7560,7 @@
    "text": "Tankentsorgung muss ein zertifizierter Entsorgungsbetrieb machen. Das darf ein normaler Heizungsbauer eh nicht. Der darf den Brenner und so entsorgen, aber nicht die Tanks.\n\nWichtig ist, alle Angebote für den Förderantrag bereit zu haben. Was nicht beantragt wurde, wird auch",
    "text_en": "Tank disposal must be done by a certified disposal company. A normal heating installer isn't allowed to do that anyway. They can dispose of the burner and so on, but not the tanks.\n\nIt's important to have all offers ready for the funding application. What wasn't applied for won't be funded either. So if you for example don't have a quote from the electrician, you're out of luck. And if additional costs arise because the quote was measured too tightly or things were forgotten (e.g., insulation, circulation pump, expansion tank), then you're left holding the bag.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 27.0,
    "author_hash": "8741846cf25a606af6654f5bc3a7cf4caca1eb297b8459dc9304e1614482d120",
@@ -7412,6 +7582,7 @@
    "text": "21,5 Grad im Wohnzimmer, 19,5 Grad im Rest. Hilfe, das wäre selbst mir deutlich zu kalt. Da würde ich abends mit der Bettdecke zugedeckt im Wohnzimmer sitzen. Meine Frauen würden mich aus dem Haus jagen. Wir haben im Wohnzimmer abends 25 Grad und in der restlichen Zimmern",
    "text_en": "21.5 degrees in the living room, 19.5 degrees in the rest. Help, that would be far too cold even for me. I would sit in the living room in the evening covered with the duvet. My wife would throw me out of the house. We have 25 degrees in the living room in the evening and at least 22.5 degrees in the other rooms. Can a heat pump even achieve that?",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "d1a28e4e7d96301f2beea402af2923f57cd89172fe7902975f88d505a9c83760",
@@ -7434,6 +7605,7 @@
    "text": "Verstehe ich das richtig das wenn es keine CO² Steuer geben würde wäre eine Wärmepumpe nicht mal wirtschaftlicher als eine Gasheizung und ich müsste nicht mal Angst vor kalten Wintern haben da ja Gas bzw. Öl mühelos die Vorlauftemperatur schafft! Könnte es sein das wir nur von",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "6682560dd01a75474575354f388facc4bfa15908ab9751cec41f87c42e40d8bc",
@@ -7456,6 +7628,7 @@
    "text": "Wenn ich bei der Kostenrechnung politisch und nicht wissenschaftlich begründete Preissteigerung zu Grunde lege mit Habecks kungelgeschäften, kriege ich natürlich das gewünschte Ergebnis. Schalten wir weitere Kraftwerke ab und kaufen teures lLNG mit katastrophalen umweltsünden",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 28.8,
    "author_hash": "75cf95ca2474cc33ce479847cf2828d09a7a88d48daff7c462fc7e30e3a43675",
@@ -7478,6 +7651,7 @@
    "text": "Es gibt 4 Arten von WP. Die Luft-Wasser-WP ist am billigsten und die am meisten installierte. Sie ist aber nur für die Übergangszeit geeignet. Ab 4°C und weniger wird sie mit Strom beheizt und das wird teuer. Die Stromheizung ist notwendig damit die Flüssigkeiten nicht",
    "text_en": "There are 4 types of heat pumps. The air-to-water heat pump is the cheapest and the most commonly installed. However, it is only suitable for the transition season. At 4°C and below it is heated with electricity and that becomes expensive. The electric heater is necessary so that the liquids do not freeze. The air-to-water heat pump is installed outside, so even at -20°C. Without heating, it would be broken after the first cold winter days.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 30.3,
    "author_hash": "961ed2216d80ee21c64a442353a92e25ef0d260c84668cab62428c2079f24dae",
@@ -7497,6 +7671,7 @@
    "text": "Wer Thermondo mit der Installation seiner Wärmepumpe beauftragt ist auf jeden Fall deutlich vom abgesteckten Pfad abgekommen.",
    "text_en": "Whoever commissions Thermondo with the installation of their heat pump is definitely off the beaten path.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 96.0,
    "author_hash": "abbf88b9d383847ecc39f9ebfd2a4138993b938a7361a65da94679b01ca6e34c",
@@ -7518,6 +7693,7 @@
    "text": "Von Enpal liest man oft nichts gutes und deren PV Anlagen sind am Ende gerne mal doppelt so teurer wie bei einen freien Solateur / Elektriker",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 67.7,
    "author_hash": "653daccd4749a8aecd58c24269a6850a00d43b1ee9bdbf7d085fd244a12f12ab",
@@ -7537,6 +7713,7 @@
    "text": "Dann kommt noch §14a EnWG wo die Wärmepumpe noch runter geregelt werden kann wenn zu viele das Netz belasten.",
    "text_en": "Then there's §14a EnWG where the heat pump can still be throttled if too many burden the grid.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 70.4,
    "author_hash": "65cef3264e446385cf729b6c8dd099ee28eb407b1c41483bd1bd090a19367ee2",
@@ -7556,6 +7733,7 @@
    "text": "Den Kredit von der KfW mit 0,1 Prozent bekommen die wenigsten.",
    "text_en": "Very few people get the KfW loan at 0.1 percent.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 27.0,
    "author_hash": "d425b5d2d2be1316cad63fc58d16157f5c9ed45c796b8f77de123e592ff6ac14",
@@ -7577,6 +7755,7 @@
    "text": "auch gut geeignet um das E-Bike zu laden bestimmt",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 98.9,
    "author_hash": "634b68ad5ca429963f90ce2c2251ec5d2317235c3bef720d8e0e6e90f56c6626",
@@ -7596,6 +7775,7 @@
    "text": "140 qm Wohnfläche, solide Substanz, aber energetisch eine Vollkatastrophe mit alter Ölheizung und ungedämmtem Dach).\n\nEin Energieberater hat uns grob geschätzt, dass eine vollständige Kernsanierung auf KfW 55-Standard (neue Wärmepumpe, Fußbodenheizung, Dämmung,",
    "text_en": "Complete renovation of old building (1960s) vs. new building: Are the estimated 350,000 € renovation costs realistic? We are currently facing the decision of our lives and would like an assessment from the community. We can take over my wife's parents' house (built 1968, approximately 140 sqm living area, solid structure, but energetically a complete disaster with an old oil furnace and uninsulated roof). An energy consultant roughly estimated that a complete renovation to KfW 55 standard (new heat pump, underfloor heating, insulation, triple glazing, PV system, new electrical) would cost around 350,000 €. However, a turnkey new building of similar size would cost us at least 480,000 € including demolition and ancillary construction costs. We tend toward renovation, but we are enormously afraid of unforeseen surprises in the old building (contaminants, damp basement). Are 350,000 € for a complete renovation realistic or are we walking into a cost trap with our eyes open?",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 86.9,
    "author_hash": "ce5252e5c016517d08bcd09fe28dfa8ecf297c776bf66253a5d4e2fe478dfe9a",
@@ -7618,6 +7798,7 @@
    "text": "Wenn deine Wärmepumpe ständig startet und stoppt, ist das kein normales Verhalten.\nIn den meisten Fällen liegt es an zu wenig Volumen oder zu geringem Durchfluss.\nDas kostet Effizienz und unnötig Strom. #wärmepumpe #heizung #energie #hausbau #sanierung",
    "text_en": null,
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": 84.0,
    "author_hash": "656daeff45effe710313c623a94fa0166046c32a09787a42995cb79dedb2613e",
@@ -7637,6 +7818,7 @@
    "text": "welcher die Einstellung überprüft. Denke der Vergleich mit anderen ist wenig hilfreich, weil die Häuser (und Bewohner) nicht vergleichbar sein werden.",
    "text_en": "What is twice as high - the costs or the consumption? And the good old gas heating was before renovation, right? If the consumption deviates too much from the energy consultant's forecast, it probably makes sense to have a specialist come and check the settings. I think comparing with others is not very helpful because the houses (and occupants) are not comparable.",
    "redacted": false,
+   "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
    "author_hash": "4f86f132c8a21b14d7a563bafc7064a79a859a33256490e14ce93467b21b4b63",

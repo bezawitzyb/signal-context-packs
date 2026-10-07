@@ -36,6 +36,7 @@ One JSON object (`context_pack.json`) is behind every view of a pack: the web pa
 | `PERF` | performing post | `PERF-01` |
 | `TKW` | what-performs takeaway | `TKW-01` |
 | `MOM` | moment | `MOM-01` |
+| `NWS` | news hook | `NWS-01` |
 | `OPP` | opportunity | `OPP-01` |
 | `DO` | do-first action | `DO-01` |
 | `CHN` | channel | `CHN-01` |
@@ -102,6 +103,7 @@ Used at: `(top level)`
 | `performance_takeaways` | list of [Takeaway](#takeaway) | no | What performs, as 1-3 recommendations (1.1). |  |
 | `sections_meta` | object | no | Per section: so_what, and empty_reason + next_steps when empty (1.1). |  |
 | `moments` | list of [Moment](#moment) | no | Layer 6: when it matters. |  |
+| `news_hooks` | list of [NewsHook](#newshook) | no | Ride this now (V7): dated news, regulation and events with their source URL. |  |
 | `opportunities` | list of [Opportunity](#opportunity) | no | Opportunities you can trust (1.1; replaces white_space and the scored opportunities). |  |
 | `channel_plan` | list of [Channel](#channel) | no | Where to show up, in priority order. |  |
 | `playbook` | [Playbook](#playbook) | no | Hooks, creative brief, keywords, this week. |  |
@@ -313,6 +315,22 @@ Plus every field of [InsightItem](#insightitem).
 | `name` | text | yes | Ritual, season, holiday or payday. | `"Sunday reset"` |
 | `timing` | text | yes | When it happens. | `"Sunday afternoons"` |
 
+### NewsHook
+
+Used at: `news_hooks[]` - Something in the news to ride (V7). Found by web search; never without a URL, never invented.
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `id` | text | yes | Stable news hook id (NWS-NN). | `"NWS-01"` |
+| `type` | "news_hook" | no | Item type, always "news_hook". |  |
+| `headline` | text | yes | What happened or is coming, in our own words. |  |
+| `date` | text | yes | When it happened or happens. |  |
+| `kind` | "news" | "regulation" | "event" | yes | news, regulation or event. |  |
+| `source_url` | text | yes | Where the search found it. |  |
+| `why_it_matters` | text | yes | Why it matters for this audience, in one sentence. |  |
+| `related_ids` | list of text | no | Themes or pain points it connects to. |  |
+| `claim_type` | "external" | no | Always external. |  |
+
 ### Opportunity
 
 Used at: `opportunities[]` - One opportunity you can trust (1.1, V5): replaces white space and the scored opportunities.
@@ -351,6 +369,7 @@ Used at: `channel_plan[]`
 | `formats` | list of text | no | Formats to use there. |  |
 | `communities_or_hashtags` | list of text | no | Where exactly to post. |  |
 | `tone_note` | text | no | How to sound there. |  |
+| `timing` | list of [TimingItem](#timingitem) | no | When to show up there (V7). |  |
 
 ### Playbook
 
@@ -696,6 +715,20 @@ Used at: `opportunities[].components` - PRD 5.5; all 0-1, computed in code and s
 | `novelty` | number | yes | 1.0 if non_obvious, else 0.4 (scoring.yaml). |  |
 | `saturation` | number | yes | Share naming a brand as already solving it. |  |
 
+### TimingItem
+
+Used at: `channel_plan[].timing[]` - When to show up on a channel (V7): from the evidence (observed) or a cited source (external).
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `label` | text | yes | Short chip text. | `"Sunday reset"` |
+| `when` | text | yes | When it happens. | `"Sunday afternoons"` |
+| `why` | text | yes | Why it matters for this channel. |  |
+| `evidence_ids` | list of text | no | Receipts (observed). |  |
+| `claim_type` | "observed" | "external" | yes | observed (posts) or external (cited source). |  |
+| `source_url` | text or null | no | The cited source (external only). |  |
+| `item_id` | text or null | no | The moment or news hook it comes from. |  |
+
 ### Hook
 
 Used at: `playbook.hooks[]`
@@ -768,6 +801,7 @@ Used at: `playbook.this_week[]`
 | `hook_id` | text | yes | Hook to open with. | `"HOOK-01"` |
 | `angle` | text | yes | The angle of the post. |  |
 | `moment_id` | text or null | no | Moment it rides on, if any. |  |
+| `news_hook_id` | text or null | no | News hook it rides on (V7). |  |
 | `why_now` | text | yes | Why this week. |  |
 
 ### DecisionLogEntry

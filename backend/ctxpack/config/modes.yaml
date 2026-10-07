@@ -7,7 +7,7 @@ modes:
     collection_secs: 300
     apify_usd: 1.80
     llm_usd: 1.40               # collection: plan + agent loop + tools
-    analysis_llm_usd: 1.00      # after collection: extraction, clustering, writing, verifying, playbook
+    analysis_llm_usd: 1.40      # after collection: extraction, clustering, writing, verifying, playbook (1.00 -> 1.40: V4-V7 steps)
     unit_share_max: 0.30        # share of item_budget per source unit
     min_relevant: 60
     item_budget: 600            # raw items per run
@@ -99,6 +99,15 @@ synthesis:
 opportunities:
   searches_max: 4               # opportunities checked by web search per pack (the rest: "not searched")
   solutions_max: 3              # existing solutions listed per opportunity
+
+# News hooks and timing (change V7, PRD 6.1d): one web search step after collection; nothing without a URL.
+news:
+  lookback_days: 30             # news, regulation and events from this many days ago ...
+  lookahead_days: 90            # ... up to this many days ahead (trade fairs, deadlines)
+  max_hooks: 5
+  searches_max: 3               # web searches in the one news call
+  timing_per_channel_max: 4     # timing chips per channel card
+  time_mention_min_posts: 2     # a weekday / season / time of day becomes a chip from this many posts
 
 # Verification (guide Step 3.4, prompt F4-9 claim mode). Same for every mode.
 verification:

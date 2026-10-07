@@ -17,6 +17,7 @@ from typing import Any
 
 from ctxpack.config import load_yaml
 from ctxpack.schemas import pack as P
+from ctxpack.synthesis import news as news_mod
 from ctxpack.synthesis.confidence import LEVELS
 from ctxpack.synthesis.write import INSIGHT_SECTIONS
 
@@ -236,7 +237,8 @@ def coverage(run: Any, docs: list[Any], evidence: list[dict], thin: bool) -> dic
 
 def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict], clusters: dict[str, Any],
              docs: list[Any], brand_voice: str | None, extra_spots: list[str] = (),
-             opportunities: list[dict] = (), id_map: dict[str, str] | None = None) -> tuple[P.ContextPack, list[str]]:
+             opportunities: list[dict] = (), id_map: dict[str, str] | None = None,
+             news: dict | None = None) -> tuple[P.ContextPack, list[str]]:
     """(validated ContextPack, content-bar shortfalls). Raises if the pack is invalid."""
     from ctxpack import db
 
@@ -287,7 +289,9 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
         "moments": [insight(P.Moment, it) for it in s["moments"]],
         "opportunities": [_fields(P.Opportunity, it, components=_fields(P.OpportunityComponents, it["components"])
                                   if it.get("components") else None) for it in opportunities],
-        "channel_plan": parts["channel_plan"],
+        "news_hooks": [_fields(P.NewsHook, h) for h in (news or {}).get("hooks", [])],
+        "channel_plan": news_mod.channel_timing(parts["channel_plan"], s["moments"], evidence,
+                                                (news or {}).get("hooks", []), (news or {}).get("calendar", [])),
         "playbook": parts["playbook"],
         "hypotheses": [_fields(P.Hypothesis, it) for it in s["hypotheses"]],
         "compliance_flags": [_fields(P.ComplianceFlag, f) for f in flags],
@@ -361,6 +365,13 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
     voice = brand_voice if brand_voice is not None else (run.brand_voice if use_run_brand_voice else None)
     interp = Interpretation.model_validate(run.interpretation)
     s = draft["verified"]["sections"]
+    # V7: news hooks first (saved: a retry never pays again), so this week's posts can ride them
+    if "news_v7" not in draft or redo:
+        hooks, calendar, usd = await news_mod.find(s, interp)
+        out.usd += usd
+        draft["news_v7"] = {"hooks": hooks, "calendar": calendar}
+        db.update_run(run_id, draft=draft)
+    news = draft["news_v7"]
     key = voice or "_neutral"
     saved = {} if redo else (draft.get("playbooks") or {}).get(key) or {}
     if saved.get("parts"):
@@ -374,7 +385,7 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
                  + (f"\nWhat the user offers: {intake['offer']} - tailor the objection answers to it"
                     if intake.get("offer") else "\nWhat the user offers: not given - end each objection answer "
                                                   "with how to adapt it to your offer"))
-        parts, stats, usd = await playbook.write_playbook(s, brief, voice)
+        parts, stats, usd = await playbook.write_playbook(s, brief, voice, news["hooks"])
         out.calls += 1
         out.usd += usd
         out.playbook_dropped, out.hooks_without_tension = stats.dropped, stats.hooks_without_tension
@@ -404,7 +415,7 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
     mapping = draft["opportunities_v5"]["mapping"]
     parts, flags = rename_ids(parts, mapping), rename_ids(flags, mapping)
     pack, out.bar_short = assemble(run, interp, draft, parts, flags, clusters, docs, voice,
-                                   opportunities=draft["opportunities_v5"]["items"], id_map=mapping)
+                                   opportunities=draft["opportunities_v5"]["items"], id_map=mapping, news=news)
     out.pack_id = db.save_pack(pack, run_id=run_id)
     log.info("run %s packaged %s (thin: %s)", run_id, out.pack_id, out.bar_short)
     return out

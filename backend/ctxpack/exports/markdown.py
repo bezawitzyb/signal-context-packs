@@ -97,6 +97,11 @@ def to_markdown(pack: dict) -> str:
     for d in pack["do_first"]:
         add(f"1. **{inline(d['action'])}** - {inline(d['why'])} *[{d['id']}; effort {d['effort']}, impact "
             f"{d['impact']}; {inline(d['owner_hint'])}; based on {', '.join(d['why_ids'])}]*")
+    if pack.get("news_hooks"):
+        add("\n### Ride this now")
+        for h in pack["news_hooks"]:
+            add(f"- **{inline(h['headline'])}** ({h['date']}, {h['kind']}) - {inline(h['why_it_matters'])} "
+                f"[source]({h['source_url']}) *[{h['id']}; external]*")
     add("\n### Five truths")
     for t in snap["five_truths"]:
         add(f"- {inline(t['text'])} *[{', '.join(t['item_ids'])}]*")
@@ -118,12 +123,18 @@ def to_markdown(pack: dict) -> str:
         add(f"{c['priority']}. **{c['platform']}** - {inline(c['why'])} *[{c['id']}; based on {', '.join(c['why_ids'])}]*  ")
         add(f"   Formats: {inline(', '.join(c['formats']))}. Where: {inline(', '.join(c['communities_or_hashtags'])) or '-'}. "
             f"Tone: {inline(c['tone_note'])}")
+        if c.get("timing"):
+            add("   When: " + "; ".join(
+                f"{inline(t['label'])} ({inline(t['when'])}, "
+                + (f"seen in posts {', '.join(t['evidence_ids'])})" if t["claim_type"] == "observed"
+                   else f"external, [source]({t['source_url']}))") for t in c["timing"]))
     add("\n| Day | Platform | Format | Hook | Angle | Why now |")
     add("|---|---|---|---|---|---|")
     hooks = {h["id"]: h for h in pb["hooks"]}
     for w in pb["this_week"]:
         add(f"| {w['day']} | {w['platform']} | {cell(w['format'])} | {cell(hooks[w['hook_id']]['text'])} "
-            f"[{w['hook_id']}] | {cell(w['angle'])} | {cell(w['why_now'])} |")
+            f"[{w['hook_id']}] | {cell(w['angle'])} | {cell(w['why_now'])}"
+            + (f" (rides {w['news_hook_id']})" if w.get("news_hook_id") else "") + " |")
 
     add("\n## Voice\n")
     v = pack["voice"]

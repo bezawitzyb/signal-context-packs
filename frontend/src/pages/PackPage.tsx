@@ -74,6 +74,56 @@ function Ids({ ids }: { ids: string[] }) {
   return <span className="inline-flex flex-wrap gap-x-1">{ids.map((id) => <IdButton key={id} id={id} />)}</span>;
 }
 
+function SourceLink({ url, label = "source" }: { url: string | null | undefined; label?: string }) {
+  const safe = safeUrl(url);
+  return safe ? <a href={safe} target="_blank" rel="noopener noreferrer nofollow" className="underline underline-offset-2">{label}</a> : null;
+}
+
+/** V7: dated news, regulation and events found by web search - every one with its source. */
+function RideThisNow({ pack }: { pack: ContextPack }) {
+  const hooks = pack.news_hooks ?? [];
+  if (!hooks.length) return null;
+  return (
+    <Sub title="Ride this now">
+      <ul className="space-y-3">
+        {hooks.map((h) => (
+          <li key={h.id} className="rounded-lg border border-line p-4">
+            <p className="flex flex-wrap items-baseline gap-2">
+              <span className="font-medium text-ink">{h.headline}</span>
+              <span className="font-mono text-xs text-ink-3">{h.date} · {h.kind}</span><IdTag id={h.id} />
+            </p>
+            <p className="mt-1 text-sm text-ink-2">{h.why_it_matters}</p>
+            <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-ink-3">
+              <span>External source:</span><SourceLink url={h.source_url} label={safeUrl(h.source_url) ? new URL(h.source_url).hostname : "source"} />
+              {h.related_ids.length > 0 && <><span>· connects to</span><Ids ids={h.related_ids} /></>}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </Sub>
+  );
+}
+
+function TimingChips({ timing }: { timing: ContextPack["channel_plan"][number]["timing"] }) {
+  if (!timing?.length) return null;
+  return (
+    <div className="mt-2">
+      <p className="text-xs font-medium uppercase tracking-wide text-ink-3">When</p>
+      <ul className="mt-1 flex flex-wrap gap-2">
+        {timing.map((t, n) => (
+          <li key={n} title={t.why}
+              className={`inline-flex flex-wrap items-center gap-1 rounded-full border px-2 py-0.5 text-xs text-ink-2 ${t.claim_type === "external" ? "border-dashed border-ink-3" : "border-line"}`}>
+            <span className="text-ink">{t.label}</span><span>· {t.when}</span>
+            {t.claim_type === "observed"
+              ? <><span>· seen in posts</span>{t.item_id && <IdButton id={t.item_id} />}</>
+              : <><span>· external</span><SourceLink url={t.source_url} /></>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 // --- sections ------------------------------------------------------------------------------
 
 function Summary({ pack, items }: { pack: ContextPack; items: Map<string, Record<string, unknown>> }) {
@@ -113,6 +163,7 @@ function Summary({ pack, items }: { pack: ContextPack; items: Map<string, Record
           ))}
         </ol>
       </Sub>
+      <RideThisNow pack={pack} />
       <Sub title="Five truths">
         <ul className="space-y-3">
           {s.five_truths.map((t) => (
@@ -151,6 +202,7 @@ function Summary({ pack, items }: { pack: ContextPack; items: Map<string, Record
 function Channels({ pack }: { pack: ContextPack }) {
   const pb = pack.playbook;
   const hooks = Object.fromEntries(pb.hooks.map((h) => [h.id, h.text]));
+  const news = Object.fromEntries((pack.news_hooks ?? []).map((h) => [h.id, h]));
   const planText = pb.this_week.map((w) => `${w.day}: ${w.platform}, ${w.format} - "${hooks[w.hook_id] ?? w.hook_id}" - ${w.angle}`).join("\n");
   return (
     <>
@@ -165,6 +217,7 @@ function Channels({ pack }: { pack: ContextPack }) {
               {c.communities_or_hashtags.length > 0 && <p className="text-sm text-ink-2">Where: {c.communities_or_hashtags.join(", ")}</p>}
               {c.tone_note && <p className="text-sm text-ink-2">Tone: {c.tone_note}</p>}
               <p className="mt-1 font-mono text-xs text-ink-3">based on <Ids ids={c.why_ids} /></p>
+              <TimingChips timing={c.timing} />
             </li>
           ))}
         </ol>
@@ -175,7 +228,11 @@ function Channels({ pack }: { pack: ContextPack }) {
           { header: "Day", cell: (r) => r.day, kind: "data" },
           { header: "Where", cell: (r) => `${r.platform} · ${r.format}` },
           { header: "Hook", cell: (r) => <>{hooks[r.hook_id]} <IdButton id={r.hook_id} /></> },
-          { header: "Angle and why now", cell: (r) => <>{r.angle}<span className="block text-xs text-ink-3">{r.why_now}</span></> },
+          { header: "Angle and why now", cell: (r) => {
+            const n = r.news_hook_id ? news[r.news_hook_id] : undefined;
+            return <>{r.angle}<span className="block text-xs text-ink-3">{r.why_now}</span>
+              {n && <span className="block text-xs text-ink-2">Rides the news: {n.headline} ({n.date}, <SourceLink url={n.source_url} />)</span>}</>;
+          } },
         ]} />
       </Sub>
     </>

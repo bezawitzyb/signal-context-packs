@@ -35,7 +35,8 @@ Return:
   creator, platform, url if known, why_ids). Never a private person.
 - this_week: exactly 5 posts: day (monday-sunday), platform, format,
   hook_id (one of your hooks), angle, moment_id (a MOM-.. id or null),
-  why_now.
+  news_hook_id (an NWS-.. id when the post rides that news, else null),
+  why_now. Use a news hook only when it truly fits; never invent news.
 
 Rules: use only items and ids given; never invent facts, numbers,
 prices, health benefits or product claims; frame anything that is not

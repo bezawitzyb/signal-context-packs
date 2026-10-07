@@ -62,6 +62,7 @@ ID_PREFIXES: dict[str, str] = {
     "PERF": "performing post",
     "TKW": "what-performs takeaway",
     "MOM": "moment",
+    "NWS": "news hook",
     "OPP": "opportunity",
     "DO": "do-first action",
     "CHN": "channel",
@@ -454,6 +455,40 @@ class Opportunity(Strict):
     components: OpportunityComponents | None = Field(default=None, description="The score components (PRD 5.5).")
 
 
+class TimingItem(Strict):
+    """When to show up on a channel (V7): from the evidence (observed) or a cited source (external)."""
+
+    label: str = Field(description="Short chip text.", examples=["Sunday reset"])
+    when: str = Field(description="When it happens.", examples=["Sunday afternoons", "2026-11-12"])
+    why: str = Field(description="Why it matters for this channel.")
+    evidence_ids: list[str] = Field(default_factory=list, description="Receipts (observed).")
+    claim_type: Literal["observed", "external"] = Field(description="observed (posts) or external (cited source).")
+    source_url: str | None = Field(default=None, description="The cited source (external only).")
+    item_id: str | None = Field(default=None, description="The moment or news hook it comes from.")
+
+    @model_validator(mode="after")
+    def _receipt(self) -> Self:
+        if self.claim_type == "external" and not (self.source_url or "").startswith(("http://", "https://")):
+            raise ValueError("an external timing item needs a source URL")
+        if self.claim_type == "observed" and not self.evidence_ids:
+            raise ValueError("an observed timing item needs evidence")
+        return self
+
+
+class NewsHook(Strict):
+    """Something in the news to ride (V7). Found by web search; never without a URL, never invented."""
+
+    id: str = id_field("NWS")
+    type: Literal["news_hook"] = type_field("news_hook")
+    headline: str = Field(description="What happened or is coming, in our own words.")
+    date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$", description="When it happened or happens.")
+    kind: Literal["news", "regulation", "event"] = Field(description="news, regulation or event.")
+    source_url: str = Field(pattern=r"^https?://", description="Where the search found it.")
+    why_it_matters: str = Field(description="Why it matters for this audience, in one sentence.")
+    related_ids: list[str] = Field(default_factory=list, description="Themes or pain points it connects to.")
+    claim_type: Literal["external"] = Field(default="external", description="Always external.")
+
+
 class Channel(Strict):
     id: str = id_field("CHN")
     type: Literal["channel"] = type_field("channel")
@@ -464,6 +499,7 @@ class Channel(Strict):
     formats: list[str] = Field(default_factory=list, description="Formats to use there.")
     communities_or_hashtags: list[str] = Field(default_factory=list, description="Where exactly to post.")
     tone_note: str = Field(default="", description="How to sound there.")
+    timing: list[TimingItem] = Field(default_factory=list, description="When to show up there (V7).")
 
 
 class Hook(Strict):
@@ -513,6 +549,7 @@ class PlanPost(Strict):
     hook_id: str = Field(pattern=item_id("HOOK"), description="Hook to open with.", examples=["HOOK-01"])
     angle: str = Field(description="The angle of the post.")
     moment_id: str | None = Field(default=None, pattern=item_id("MOM"), description="Moment it rides on, if any.")
+    news_hook_id: str | None = Field(default=None, pattern=item_id("NWS"), description="News hook it rides on (V7).")
     why_now: str = Field(description="Why this week.")
 
 
@@ -714,6 +751,8 @@ class ContextPack(Strict):
     sections_meta: dict[str, SectionMeta] = Field(default_factory=dict, description="Per section: so_what, and "
                                                   "empty_reason + next_steps when empty (1.1).")
     moments: list[Moment] = Field(default_factory=list, description="Layer 6: when it matters.")
+    news_hooks: list[NewsHook] = Field(default_factory=list, max_length=5, description="Ride this now (V7): "
+                                       "dated news, regulation and events with their source URL.")
     opportunities: list[Opportunity] = Field(default_factory=list, description="Opportunities you can trust "
                                              "(1.1; replaces white_space and the scored opportunities).")
     channel_plan: list[Channel] = Field(default_factory=list, description="Where to show up, in priority order.")
@@ -750,6 +789,7 @@ class ContextPack(Strict):
         yield from self.what_performs
         yield from self.performance_takeaways
         yield from self.moments
+        yield from self.news_hooks
         yield from self.opportunities
         yield from self.channel_plan
         yield from self.playbook.hooks
@@ -791,7 +831,13 @@ class ContextPack(Strict):
             for ref_field in ("why_ids", "builds_on", "item_ids", "post_ids"):
                 need_items(getattr(item, ref_field, []))
             if isinstance(item, PlanPost):
-                need_items([item.hook_id] + ([item.moment_id] if item.moment_id else []))
+                need_items([item.hook_id] + [i for i in (item.moment_id, item.news_hook_id) if i])
+            if isinstance(item, NewsHook):
+                need_items(item.related_ids)
+            if isinstance(item, Channel):
+                for t in item.timing:
+                    need_ev(t.evidence_ids)
+                    need_items([t.item_id] if t.item_id else [])
             if isinstance(item, ComplianceFlag):
                 need_items([item.item_id])
         for truth in self.snapshot.five_truths:

@@ -95,7 +95,7 @@ def test_ids_by_rank_and_evidence_numbered_by_first_use():
 async def prepared_run():
     run = db.create_run("snacks in NL")
     db.update_run(run.id, interpretation=INTERP, plan=PLAN)
-    docs = [doc(i, f"Ik eet graag chips nummer {i}, echt lekker",
+    docs = [doc(i, f"Ik eet graag chips nummer {i}, echt lekker" + (" op zondag" if i % 4 == 0 else ""),
                 extraction={"verbatim_phrases": [f"chips nummer {i}"], "pains": ["duur"] if i % 2 else [],
                             "brand_mentions": [{"name": "Lays", "stance": "negative"}] if i < 4 else []})
             for i in range(10)]

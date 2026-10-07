@@ -91,6 +91,7 @@ class PlanPostOut(BaseModel):
     hook_id: str
     angle: str
     moment_id: str | None = None
+    news_hook_id: str | None = None
     why_now: str = ""
 
 
@@ -119,7 +120,7 @@ def _line(it: dict, section: str) -> str:
     return head + flags + f" | {it.get('label') or it.get('name') or ''} {it['claim']}".rstrip()
 
 
-def build_prompt(s: dict, brief: str, brand_voice: str | None) -> str:
+def build_prompt(s: dict, brief: str, brand_voice: str | None, news: list[dict] = ()) -> str:
     lines = [_line(it, name) for name in INSIGHT_SECTIONS if name not in ("lexicon", "phrases") for it in s[name]]
     lines += [f"{o['id']} | opportunity | score {o['score']:.2f} | {o['title']}: {o['description']}"
               for o in s["opportunities"]]
@@ -129,6 +130,7 @@ def build_prompt(s: dict, brief: str, brand_voice: str | None) -> str:
     lines += [f"{p['id']} | what_performs | {p['platform']} {p['format']}: {p['why_it_worked']}"
               for p in s["what_performs"]]
     lines += [f"{h['id']} | hypothesis | {h['status']} | {h['statement']}" for h in s["hypotheses"]]
+    lines += [f"{h['id']} | news_hook | {h['date']} | {h['headline']}: {h['why_it_matters']}" for h in news]
     words = ([f"{it['id']}: {it['term']} = {it['meaning']}" for it in s["lexicon"]]
              + [f"{it['id']}: {it['text']}" for it in s["phrases"]])
     g = s.get("guardrails_draft", {})
@@ -144,6 +146,7 @@ def _fake(user: str) -> dict:
     ids = re.findall(r"^(\w+-\d+) \|", user, flags=re.M)
     ten = next((i for i in ids if i.startswith("TEN")), ids[0] if ids else "THM-01")
     mom = next((i for i in ids if i.startswith("MOM")), None)
+    nws = next((i for i in ids if i.startswith("NWS")), None)
     obj = [i for i in ids if i.startswith("OBJ")][:2]
     return {
         "do_first": [{"action": f"Fake action {n}", "why": "Fake.", "why_ids": [ids[n % len(ids)]],
@@ -157,7 +160,8 @@ def _fake(user: str) -> dict:
         "keywords": {"seo": ["chips"], "paid": ["borrelnootjes"], "negatives": ["recept"], "hashtags": ["#borrel"]},
         "targets": [{"name": "forum.fok.nl", "kind": "community", "platform": "web_forum", "why_ids": [ten]}],
         "this_week": [{"day": d, "platform": "instagram", "format": "reel", "hook_id": f"HOOK-{n:02d}",
-                       "angle": "Fake", "moment_id": mom, "why_now": "Fake."}
+                       "angle": "Fake", "moment_id": mom, "news_hook_id": nws if n == 1 else None,
+                       "why_now": "Fake."}
                       for n, d in enumerate(DAYS[:5], 1)],
     }
 
@@ -182,7 +186,7 @@ def known_ids(s: dict) -> set[str]:
     return {it["id"] for name in sections for it in s.get(name, [])}
 
 
-def validate(out: PlaybookOut, s: dict, stats: PlaybookStats) -> dict[str, Any]:
+def validate(out: PlaybookOut, s: dict, stats: PlaybookStats, news: list[dict] = ()) -> dict[str, Any]:
     """Playbook parts with ids, every reference pointing at an existing item."""
     known = known_ids(s)
     platforms = set(Platform.__members__)
@@ -227,6 +231,7 @@ def validate(out: PlaybookOut, s: dict, stats: PlaybookStats) -> dict[str, Any]:
     targets = [{"name": o.name, "kind": o.kind, "platform": o.platform, "url": o.url, "why_ids": refs(o.why_ids)}
                for o in out.targets if o.kind in TargetKind.__members__ and o.platform in platforms]
     moments = {it["id"] for it in s["moments"]}
+    news_ids = {h["id"] for h in news}
     week = []
     for o in out.this_week:
         hook = hook_id_of.get(o.hook_id.strip().upper())
@@ -234,17 +239,20 @@ def validate(out: PlaybookOut, s: dict, stats: PlaybookStats) -> dict[str, Any]:
             stats.drop("plan_post_invalid")
             continue
         moment = (o.moment_id or "").strip().upper()
+        nws = (o.news_hook_id or "").strip().upper()
         week.append({"id": f"PLN-{len(week) + 1:02d}", "day": o.day.strip().lower(), "platform": o.platform,
                      "format": o.format, "hook_id": hook, "angle": o.angle,
-                     "moment_id": moment if moment in moments else None, "why_now": o.why_now})
+                     "moment_id": moment if moment in moments else None,
+                     "news_hook_id": nws if nws in news_ids else None, "why_now": o.why_now})
     return {"do_first": do_first[:3], "channel_plan": channels,
             "playbook": {"hooks": hooks, "creative_brief": cb, "objection_handling": handling,
                          "keywords": out.keywords.model_dump(), "targets": targets, "this_week": week}}
 
 
-async def write_playbook(s: dict, brief: str, brand_voice: str | None) -> tuple[dict, PlaybookStats, float]:
+async def write_playbook(s: dict, brief: str, brand_voice: str | None,
+                         news: list[dict] = ()) -> tuple[dict, PlaybookStats, float]:
     """(validated playbook parts, stats, cost). Brand voice is used here and nowhere else."""
-    res = await structured("reasoner", load_prompt("playbook"), build_prompt(s, brief, brand_voice), PlaybookOut,
+    res = await structured("reasoner", load_prompt("playbook"), build_prompt(s, brief, brand_voice, news), PlaybookOut,
                            "record_playbook", description="Record the playbook.", max_tokens=12000, fake=_fake)
     stats = PlaybookStats()
-    return validate(res.data, s, stats), stats, res.usd
+    return validate(res.data, s, stats, news), stats, res.usd

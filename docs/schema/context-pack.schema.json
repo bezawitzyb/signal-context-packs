@@ -137,6 +137,14 @@
           "description": "How to sound there.",
           "title": "Tone Note",
           "type": "string"
+        },
+        "timing": {
+          "description": "When to show up there (V7).",
+          "items": {
+            "$ref": "#/$defs/TimingItem"
+          },
+          "title": "Timing",
+          "type": "array"
         }
       },
       "required": [
@@ -335,7 +343,7 @@
         },
         "item_id": {
           "description": "The hook or claim flagged.",
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -2599,6 +2607,85 @@
       "title": "MotivationKind",
       "type": "string"
     },
+    "NewsHook": {
+      "additionalProperties": false,
+      "description": "Something in the news to ride (V7). Found by web search; never without a URL, never invented.",
+      "properties": {
+        "id": {
+          "description": "Stable news hook id (NWS-NN).",
+          "examples": [
+            "NWS-01"
+          ],
+          "pattern": "^NWS-\\d{2,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "news_hook",
+          "default": "news_hook",
+          "description": "Item type, always \"news_hook\".",
+          "title": "Type",
+          "type": "string"
+        },
+        "headline": {
+          "description": "What happened or is coming, in our own words.",
+          "title": "Headline",
+          "type": "string"
+        },
+        "date": {
+          "description": "When it happened or happens.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "title": "Date",
+          "type": "string"
+        },
+        "kind": {
+          "description": "news, regulation or event.",
+          "enum": [
+            "news",
+            "regulation",
+            "event"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "source_url": {
+          "description": "Where the search found it.",
+          "pattern": "^https?://",
+          "title": "Source Url",
+          "type": "string"
+        },
+        "why_it_matters": {
+          "description": "Why it matters for this audience, in one sentence.",
+          "title": "Why It Matters",
+          "type": "string"
+        },
+        "related_ids": {
+          "description": "Themes or pain points it connects to.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Related Ids",
+          "type": "array"
+        },
+        "claim_type": {
+          "const": "external",
+          "default": "external",
+          "description": "Always external.",
+          "title": "Claim Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "headline",
+        "date",
+        "kind",
+        "source_url",
+        "why_it_matters"
+      ],
+      "title": "NewsHook",
+      "type": "object"
+    },
     "Objection": {
       "additionalProperties": false,
       "properties": {
@@ -3514,7 +3601,7 @@
           "examples": [
             "OPP-01"
           ],
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -3597,6 +3684,20 @@
           "default": null,
           "description": "Moment it rides on, if any.",
           "title": "Moment Id"
+        },
+        "news_hook_id": {
+          "anyOf": [
+            {
+              "pattern": "^NWS-\\d{2,}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "News hook it rides on (V7).",
+          "title": "News Hook Id"
         },
         "why_now": {
           "description": "Why this week.",
@@ -4844,6 +4945,85 @@
       "title": "ThemeShare",
       "type": "object"
     },
+    "TimingItem": {
+      "additionalProperties": false,
+      "description": "When to show up on a channel (V7): from the evidence (observed) or a cited source (external).",
+      "properties": {
+        "label": {
+          "description": "Short chip text.",
+          "examples": [
+            "Sunday reset"
+          ],
+          "title": "Label",
+          "type": "string"
+        },
+        "when": {
+          "description": "When it happens.",
+          "examples": [
+            "Sunday afternoons",
+            "2026-11-12"
+          ],
+          "title": "When",
+          "type": "string"
+        },
+        "why": {
+          "description": "Why it matters for this channel.",
+          "title": "Why",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "description": "Receipts (observed).",
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "claim_type": {
+          "description": "observed (posts) or external (cited source).",
+          "enum": [
+            "observed",
+            "external"
+          ],
+          "title": "Claim Type",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The cited source (external only).",
+          "title": "Source Url"
+        },
+        "item_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The moment or news hook it comes from.",
+          "title": "Item Id"
+        }
+      },
+      "required": [
+        "label",
+        "when",
+        "why",
+        "claim_type"
+      ],
+      "title": "TimingItem",
+      "type": "object"
+    },
     "Trend": {
       "enum": [
         "rising",
@@ -5263,6 +5443,15 @@
         "$ref": "#/$defs/Moment"
       },
       "title": "Moments",
+      "type": "array"
+    },
+    "news_hooks": {
+      "description": "Ride this now (V7): dated news, regulation and events with their source URL.",
+      "items": {
+        "$ref": "#/$defs/NewsHook"
+      },
+      "maxItems": 5,
+      "title": "News Hooks",
       "type": "array"
     },
     "opportunities": {

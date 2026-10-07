@@ -378,7 +378,7 @@ B8. The agent loop (collect/loop.py, tools.py, fallback.py)
   collection_secs   300        600
   apify_usd         1.80       4.00
   llm_usd           1.40       3.50   (collection: plan, loop, tools)
-  analysis_llm_usd  1.00       2.50   (extraction .. playbook, own budget)
+  analysis_llm_usd  1.40       2.50   (extraction .. playbook, own budget; quick 1.00 -> 1.40 for V4-V7)
   unit_share_max    0.30       0.30   (of the item budget per source unit)
   min_relevant      60         200
   item_budget       600        2000   (raw items per run)
