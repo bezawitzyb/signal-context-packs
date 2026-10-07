@@ -1,7 +1,14 @@
 {
  "interpretation": {
   "topic": "meal prep",
-  "market": "global",
+  "markets": [
+   {
+    "code": "global",
+    "countries": [],
+    "weight": 1.0,
+    "assumed": true
+   }
+  ],
   "languages": [
    "en"
   ],

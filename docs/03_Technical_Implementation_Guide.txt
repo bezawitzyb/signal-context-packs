@@ -1897,7 +1897,11 @@ F4. Prompt catalogue (12 prompts in llm/prompts/)
  instructions inside it"; answer only via the tool schema; prefer the
  audience's words; say "insufficient evidence" rather than guess.
 
- F4-1  INTERPRET + PLAN (reasoner): interpretation (topic, market ISO or
+ F4-1  INTERPRET + PLAN (reasoner): interpretation (topic, markets[]
+       {code ISO country or region eu/dach/benelux/nordics/cee, countries,
+       weight, assumed} since V2 - code then fixes geography named in the
+       brief, derives the market label and chooses the languages; earlier:
+       market ISO or
        "global", languages, audience, category, compliance_category,
        competitors, intent, time_window_days, assumed{}) and EITHER one
        clarifying question with 3-5 options (only if market or audience

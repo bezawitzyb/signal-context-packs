@@ -65,7 +65,7 @@ test("a featured pack: summary, drawer with real posts, agent view, handoff, rep
   await page.keyboard.press("Escape");
 
   await page.getByRole("button", { name: "View as agent" }).click();
-  await expect(page.getByText(/context_pack\.json · schema 1\.0/).first()).toBeVisible();
+  await expect(page.getByText(/context_pack\.json · schema 1\.1/).first()).toBeVisible();
   await page.getByRole("button", { name: "View as agent" }).click();
 
   await page.getByRole("button", { name: "Strong only" }).click();

@@ -89,7 +89,7 @@ def test_after_the_answer_no_second_question(mode, monkeypatch):
 
 @pytest.mark.parametrize("breaks", [
     lambda p: p["starting_units"][0].update(kind="hashtag"),           # reddit has no hashtags
-    lambda p: p["interpretation"].update(market="Netherlands"),
+    lambda p: p["interpretation"].update(markets=[{"code": "Netherlands", "countries": [], "weight": 1}]),
     lambda p: p["interpretation"].update(time_window_days=120),
     lambda p: p["starting_units"][1]["queries"][0].update(language="nl"),  # not a brief language
     lambda p: p["starting_units"][2].update(queries=[]),

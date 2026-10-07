@@ -101,7 +101,7 @@ export function Handoff({ packId, open, onClose }: { packId: string; open: boole
                   run={() => copyRich(exportUrl(packId, "md"))} />
         </Group>
         <Group icon={Download} title="For agents">
-          <Action icon={Download} label="Download JSON" href={exportUrl(packId, "json")} download hint="context_pack.json, schema 1.0" />
+          <Action icon={Download} label="Download JSON" href={exportUrl(packId, "json")} download hint="context_pack.json, schema 1.1" />
           <p className="text-xs text-ink-2">Connect Claude Code (read-only, no key needed):</p>
           <CommandLine text={`claude mcp add --transport http signal ${mcp}`} />
           <p className="text-xs text-ink-2">To also start research, add your run key:</p>

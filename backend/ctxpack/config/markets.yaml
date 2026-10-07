@@ -1,0 +1,68 @@
+# Geography for markets and languages (change V2, PRD FR-A2b). THIS FILE IS THE SOURCE OF TRUTH.
+# Geography only: regions -> countries, countries -> names and official languages. It never lists
+# sources (communities, hashtags, sites) for a market - the agent decides where to look (PRD D10).
+#
+# names: lower-case words that mean the place in a brief (English and local). A brief naming one of
+# them is never interpreted as "global" (checked in code).
+# languages: ISO 639-1, most spoken first. Languages outside modes.yaml languages.supported are
+# shown as excluded ("not supported yet").
+
+regions:
+  eu:
+    name: Europe
+    names: [europe, european, europa, europe-wide, eu, emea, europäisch, europese, européen, européenne, europeo, europea, europeu, europejski]
+    countries: [DE, FR, IT, ES, PL, NL, BE, SE, AT, DK, FI, "NO", IE, PT, CZ, RO, HU, GR, CH, GB, SK, BG, HR, SI, LT, LV, EE, LU]
+  dach:
+    name: DACH
+    names: [dach, d-a-ch, german-speaking]
+    countries: [DE, AT, CH]
+  benelux:
+    name: Benelux
+    names: [benelux, low countries]
+    countries: [NL, BE, LU]
+  nordics:
+    name: Nordics
+    names: [nordics, nordic, scandinavia, scandinavian, norden, skandinavien, pohjoismaat]
+    countries: [SE, DK, "NO", FI, IS]
+  cee:
+    name: Central and Eastern Europe
+    names: [cee, central and eastern europe, central europe, eastern europe, mittel- und osteuropa, europa środkowo-wschodnia]
+    countries: [PL, CZ, SK, HU, RO, BG, HR, SI, LT, LV, EE]
+
+countries:
+  DE: {name: Germany, names: [germany, german, deutschland, deutsch, deutsche], languages: [de]}
+  AT: {name: Austria, names: [austria, austrian, österreich, oesterreich], languages: [de]}
+  CH: {name: Switzerland, names: [switzerland, swiss, schweiz, suisse, svizzera], languages: [de, fr, it]}
+  NL: {name: Netherlands, names: [netherlands, the netherlands, dutch, holland, nederland, nederlandse], languages: [nl]}
+  BE: {name: Belgium, names: [belgium, belgian, belgië, belgie, belgique, flanders, wallonia], languages: [nl, fr]}
+  LU: {name: Luxembourg, names: [luxembourg, luxemburg], languages: [fr, de]}
+  FR: {name: France, names: [france, french, français, française], languages: [fr]}
+  IT: {name: Italy, names: [italy, italian, italia, italiano], languages: [it]}
+  ES: {name: Spain, names: [spain, spanish, españa, espana, español], languages: [es]}
+  PT: {name: Portugal, names: [portugal, portuguese, português], languages: [pt]}
+  PL: {name: Poland, names: [poland, polish, polska, polski, polskie], languages: [pl]}
+  SE: {name: Sweden, names: [sweden, swedish, sverige, svensk, svenska], languages: [sv]}
+  DK: {name: Denmark, names: [denmark, danish, danmark, dansk], languages: [da]}
+  "NO": {name: Norway, names: [norway, norwegian, norge, norsk], languages: [nb]}
+  FI: {name: Finland, names: [finland, finnish, suomi, suomalainen], languages: [fi, sv]}
+  IS: {name: Iceland, names: [iceland, icelandic, ísland], languages: [is]}
+  IE: {name: Ireland, names: [ireland, irish, éire], languages: [en]}
+  GB: {name: United Kingdom, names: [uk, united kingdom, britain, great britain, british, england, scotland, wales], languages: [en]}
+  CZ: {name: Czechia, names: [czechia, czech republic, czech, česko], languages: [cs]}
+  SK: {name: Slovakia, names: [slovakia, slovak, slovensko], languages: [sk]}
+  HU: {name: Hungary, names: [hungary, hungarian, magyarország], languages: [hu]}
+  RO: {name: Romania, names: [romania, romanian, românia], languages: [ro]}
+  BG: {name: Bulgaria, names: [bulgaria, bulgarian], languages: [bg]}
+  HR: {name: Croatia, names: [croatia, croatian, hrvatska], languages: [hr]}
+  SI: {name: Slovenia, names: [slovenia, slovenian, slovenija], languages: [sl]}
+  LT: {name: Lithuania, names: [lithuania, lithuanian, lietuva], languages: [lt]}
+  LV: {name: Latvia, names: [latvia, latvian, latvija], languages: [lv]}
+  EE: {name: Estonia, names: [estonia, estonian, eesti], languages: [et]}
+  GR: {name: Greece, names: [greece, greek, ελλάδα], languages: [el]}
+  US: {name: United States, names: [usa, us market, united states, america, american], languages: [en]}
+  CA: {name: Canada, names: [canada, canadian], languages: [en, fr]}
+  AU: {name: Australia, names: [australia, australian], languages: [en]}
+  NZ: {name: New Zealand, names: [new zealand], languages: [en]}
+  BR: {name: Brazil, names: [brazil, brazilian, brasil], languages: [pt]}
+  MX: {name: Mexico, names: [mexico, mexican, méxico], languages: [es]}
+  IN: {name: India, names: [india, indian], languages: [en]}

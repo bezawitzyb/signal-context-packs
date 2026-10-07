@@ -2,7 +2,7 @@
 // this file never stores, logs or shows it.
 import type {
   ConfidenceLabel,
-  ContextPack10,
+  ContextPack11,
   Evidence1,
   Interpretation,
 } from "./types";
@@ -12,7 +12,7 @@ import type { RunInputs } from "./rerun";
 type DeepRequired<T> = T extends (infer U)[] ? DeepRequired<U>[]
   : T extends object ? { [K in keyof T]-?: DeepRequired<T[K]> } : T;
 
-export type ContextPack = DeepRequired<ContextPack10>;
+export type ContextPack = DeepRequired<ContextPack11>;
 export type Evidence = DeepRequired<Evidence1>;
 export type Label = ConfidenceLabel;
 

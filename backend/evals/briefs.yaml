@@ -34,6 +34,12 @@ briefs:
     source_diversity_exempt: true
     note: Vague and thin on purpose. The clarifying question is recorded; the run takes the first option.
 
+  - id: eu_manufacturing
+    brief: digital manufacturing / frontline operations software for plant managers in Europe incl. Germany, Poland and the Nordics
+    mode: standard
+    expect: {markets_include: [eu], countries_include: [DE, PL], languages: [de, pl]}
+    note: Change V2 - several markets and languages; B2B. Not run yet (needs a paid Standard run; cost shown first).
+
 # PRD 14.3 targets (the numbers the /evals page shows pass / fail against).
 targets:
   quote_groundedness: 1.0

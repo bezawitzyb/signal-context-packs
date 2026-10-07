@@ -432,9 +432,12 @@ def save_pack(pack: ContextPack, run_id: str | None = None, featured: bool = Fal
 
 
 def get_pack(pack_id: str) -> dict | None:
+    """The pack as the current schema version (older stored packs are migrated on read)."""
+    from ctxpack.schemas.migrate import current
+
     with session() as s:
         row = s.get(PackRow, pack_id)
-        return row.pack if row else None
+        return current(row.pack) if row else None
 
 
 def set_featured(pack_id: str, featured: bool = True) -> None:
@@ -455,7 +458,11 @@ def get_pack_for_run(run_id: str) -> dict | None:
     """The latest pack built from a run (featured packs keep their run id even without the run)."""
     with session() as s:
         row = s.exec(select(PackRow).where(PackRow.run_id == run_id).order_by(PackRow.created_at.desc())).first()
-        return row.pack if row else None
+        if row is None:
+            return None
+    from ctxpack.schemas.migrate import current
+
+    return current(row.pack)
 
 
 def latest_pack_for_brief(brief_text: str) -> PackRow | None:

@@ -18,6 +18,7 @@ from typing import Any, Iterator
 
 from ctxpack import db
 from ctxpack.collect import tools
+from ctxpack.agent.markets import primary_country
 from ctxpack.config import load_yaml
 from ctxpack.schemas.enums import EventType, FinishReason
 from ctxpack.schemas.plan import Interpretation, StartingSourceUnit
@@ -62,7 +63,7 @@ def starting_call(unit: StartingSourceUnit, interp: Interpretation) -> tuple[str
         args = {"hashtag": unit.target.lstrip("#"), "reason": reason}
         return "search_instagram", args, tools.unit_for("search_instagram", args)
     if platform == "web":
-        country = interp.market if interp.market != "global" else ""
+        country = primary_country([m.model_dump() for m in interp.markets])  # V2: first country of the top market
         language = (unit.queries[0].language if unit.queries else interp.languages[0])
         return "web_search", {"query": _web_query(unit), "country": country, "language": language,
                               "reason": reason}, None
@@ -169,7 +170,7 @@ def _follow_up_call(unit: str, query: str, interp: Interpretation) -> tuple[str,
     if family == "instagram":
         return "search_instagram", {"hashtag": query.replace(" ", ""), "reason": reason}
     if family == "web":
-        country = interp.market if interp.market != "global" else ""
+        country = primary_country([m.model_dump() for m in interp.markets])  # V2: first country of the top market
         return "web_search", {"query": f"site:{rest} {query}", "country": country,
                               "language": interp.languages[0], "reason": reason}
     return None

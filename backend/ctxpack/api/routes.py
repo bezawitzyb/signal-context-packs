@@ -147,7 +147,7 @@ async def get_evals() -> dict[str, Any]:
 
 @router.get("/schema")
 async def get_schema() -> JSONResponse:
-    """The Context Pack 1.0 JSON schema."""
+    """The Context Pack 1.1 JSON schema."""
     from ctxpack.schemas.pack import ContextPack
 
     return JSONResponse(ContextPack.model_json_schema())

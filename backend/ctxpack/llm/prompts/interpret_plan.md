@@ -15,12 +15,18 @@ language and intent.
 
 1. INTERPRETATION
 - topic: what the conversation is about, in plain words.
-- market: ISO 3166-1 alpha-2 code in capitals (NL, DE, US), or "global"
-  when the brief names no country and the topic is not tied to one.
-  With no country in the brief, use global, never a single country.
-- languages: ISO 639-1 codes, most important first. Use the market's
-  local language(s) first; add "en" only where locals really discuss the
-  topic in English (e.g. expats, young people, international products).
+- markets: one entry per market the brief means. code: an ISO 3166-1
+  alpha-2 country in capitals (NL, DE, US), a region in lower case (eu
+  for Europe, dach, benelux, nordics, cee), or "global" only when the
+  brief names no place and the topic is not tied to one. countries: the
+  ISO countries in that market, the ones the brief names first (e.g.
+  "Europe incl. Germany and Poland" -> code eu, countries DE, PL, ...).
+  weight: the share of the research for that market (they add up to 1).
+  assumed: true if the brief does not state it. Leave "market" and
+  "languages_excluded" empty: code fills them.
+- languages: ISO 639-1 codes, most important first: the markets' local
+  languages, and "en" where locals really discuss the topic in English.
+  Code makes the final choice from the markets (and keeps English).
 - audience: who we listen to. Be concrete (age, life stage, role,
   situation), inferred from the brief if not stated.
 - category: the product or service category.
@@ -38,7 +44,7 @@ language and intent.
   Do not mark a field assumed if the brief states it.
 
 2. EITHER ONE CLARIFYING QUESTION OR THE PLAN
-Ask a clarifying question only if it is allowed AND the market or the
+Ask a clarifying question only if it is allowed AND the markets or the
 audience truly cannot be inferred: the brief is a bare category with no
 audience, no country and no purpose (e.g. one word). If a reasonable
 reading exists, do not ask: assume it and list it in "assumed". When you

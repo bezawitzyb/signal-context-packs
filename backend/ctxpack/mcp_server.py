@@ -125,7 +125,7 @@ async def get_pack_status(run_id: str, ctx: Context) -> dict[str, Any]:
 
 
 @mcp.resource("schema://context-pack", name="context-pack-schema", mime_type="application/json",
-              description="JSON schema of Context Pack 1.0.")
+              description="JSON schema of Context Pack 1.1.")
 def schema_resource() -> str:
     from ctxpack.schemas.pack import ContextPack
 

@@ -1,5 +1,5 @@
 {
- "schema_version": "1.0",
+ "schema_version": "1.1",
  "pack_id": "pk_i4iFso1HnLWR",
  "generated_at": "2026-10-06T13:15:20.478111Z",
  "mode": "standard",
@@ -7,11 +7,22 @@
   "text": "Launching a snack brand in the Netherlands",
   "interpreted": {
    "topic": "snacking habits, preferences and attitudes toward new snack brands",
+   "markets": [
+    {
+     "code": "NL",
+     "countries": [
+      "NL"
+     ],
+     "weight": 1.0,
+     "assumed": false
+    }
+   ],
    "market": "NL",
    "languages": [
     "nl",
     "en"
    ],
+   "languages_excluded": [],
    "audience": "Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers",
    "category": "snacks",
    "compliance_category": "food_nutrition",

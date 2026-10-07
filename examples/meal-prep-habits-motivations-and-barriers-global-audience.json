@@ -1,5 +1,5 @@
 {
- "schema_version": "1.0",
+ "schema_version": "1.1",
  "pack_id": "pk_FSdLk4CH1zZO",
  "generated_at": "2026-10-06T13:12:08.327416Z",
  "mode": "standard",
@@ -7,10 +7,19 @@
   "text": "Gen Z and meal prep",
   "interpreted": {
    "topic": "meal prep habits, motivations and barriers among Gen Z",
+   "markets": [
+    {
+     "code": "global",
+     "countries": [],
+     "weight": 1.0,
+     "assumed": true
+    }
+   ],
    "market": "global",
    "languages": [
     "en"
    ],
+   "languages_excluded": [],
    "audience": "Gen Z adults aged 18-27, students and early-career, cooking for themselves on a budget",
    "category": "food and meal preparation (home cooking, meal prep containers, meal kits)",
    "compliance_category": "food_nutrition",

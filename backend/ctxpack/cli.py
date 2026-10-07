@@ -823,7 +823,7 @@ def pack(
         show("TEST HOOKS (not in the pack)", [
             f"{h} -> " + (f"[{flagged[h]['category']}] {flagged[h]['rule_area']}: {flagged[h]['safer_wording']}"
                           if h in flagged else "no flag") for h in test_hook])
-    console.print(f"\n[bold]PACK[/bold] {out.pack_id} | valid schema 1.0 | thin evidence "
+    console.print(f"\n[bold]PACK[/bold] {out.pack_id} | valid schema 1.1 | thin evidence "
                   f"{p['coverage']['thin_evidence']}{': ' + ', '.join(out.bar_short) if out.bar_short else ''}",
                   highlight=False)
     console.print(f"[bold]PLAYBOOK CHECK[/bold] hooks {len(p['playbook']['hooks'])} | hooks without a tension "

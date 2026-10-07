@@ -32,7 +32,9 @@ FRONTEND = REPO_DIR / "frontend"
 
 def featured_packs() -> list[dict]:
     """featured/pk_*.json (evals.json and evals_human.json are not packs)."""
-    return [json.loads(p.read_text(encoding="utf-8")) for p in sorted(FEATURED.glob("*.json"))
+    from ctxpack.schemas.migrate import current
+
+    return [current(json.loads(p.read_text(encoding="utf-8"))) for p in sorted(FEATURED.glob("*.json"))
             if not p.stem.startswith("evals")]
 
 

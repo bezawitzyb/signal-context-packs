@@ -245,6 +245,7 @@ class InterpretationField(StrEnum):
 
     topic = "topic"
     market = "market"
+    markets = "markets"
     languages = "languages"
     audience = "audience"
     category = "category"

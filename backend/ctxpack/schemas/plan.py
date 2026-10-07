@@ -40,13 +40,34 @@ class BriefInput(Strict):
         return self
 
 
+class Market(Strict):
+    """One market of the brief (schema 1.1, change V2)."""
+
+    code: str = Field(description='ISO 3166-1 alpha-2 country in capitals (NL), a region in lower case '
+                                  '(eu, dach, benelux, nordics, cee), or "global".', examples=["NL", "eu"])
+    countries: list[str] = Field(default_factory=list, description="ISO alpha-2 countries in this market, "
+                                 "the ones the brief names first. Empty for global.", examples=[["DE", "PL", "SE"]])
+    weight: float = Field(default=1.0, ge=0, description="Share of the research for this market (weights sum to 1).")
+    assumed: bool = Field(default=False, description="True if the brief does not state this market.")
+
+
+class ExcludedLanguage(Strict):
+    language: str = Field(description="ISO 639-1 code.")
+    reason: str = Field(description="Why it was left out, in plain words.")
+
+
 class Interpretation(Strict):
     """How the brief was understood. Inferred fields are listed in `assumed`."""
 
     topic: str = Field(description="What the conversation is about.", examples=["meal prep"])
-    market: str = Field(description='ISO 3166-1 alpha-2 country code, or "global".', examples=["NL"])
+    markets: list[Market] = Field(min_length=1, description="Markets of the brief (1.1). A brief naming a "
+                                  'country or region is never "global".')
+    market: str = Field(default="", description="Short market label made in code from markets (e.g. NL, "
+                        '"EU (DE, PL, SE, +3)", global). Leave it empty.', examples=["NL"])
     languages: list[str] = Field(min_length=1, description="ISO 639-1 codes, most important first.",
                                  examples=[["nl", "en"]])
+    languages_excluded: list[ExcludedLanguage] = Field(
+        default_factory=list, description="Languages left out, with the reason (1.1; filled in code). Leave it empty.")
     audience: str = Field(description="Who we listen to.", examples=["students aged 18-25"])
     category: str = Field(description="Product or service category.", examples=["snacks"])
     compliance_category: ComplianceCategory = Field(description="Regulated area that drives compliance checks.")
@@ -56,6 +77,23 @@ class Interpretation(Strict):
     assumed: list[InterpretationField] = Field(
         default_factory=list, description="Fields that were inferred rather than stated in the brief."
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _from_1_0(cls, data: object) -> object:
+        """Schema 1.0 had one `market` (ISO code or "global"): it becomes markets[] (migration 1.0 -> 1.1)."""
+        if isinstance(data, dict) and "markets" not in data and data.get("market"):
+            code = str(data["market"])
+            data = {**data, "markets": [{"code": code, "countries": [] if code == "global" else [code.upper()],
+                                         "weight": 1.0, "assumed": "market" in (data.get("assumed") or [])}]}
+        return data
+
+    @model_validator(mode="after")
+    def _label(self) -> Self:
+        from ctxpack.agent.markets import label
+
+        self.market = label([m.model_dump() for m in self.markets])
+        return self
 
 
 class ClarifyingQuestion(Strict):

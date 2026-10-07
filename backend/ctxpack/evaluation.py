@@ -155,11 +155,11 @@ def source_diversity(pack: dict, target: int, exempt: bool) -> dict[str, Any]:
 def schema_valid(pack: dict) -> dict[str, Any]:
     from pydantic import ValidationError
 
-    from ctxpack.schemas.pack import ContextPack
+    from ctxpack.schemas.pack import SCHEMA_VERSION, ContextPack
 
     try:
         ContextPack.model_validate(pack)
-        return _metric(1.0, 1.0, True, "valid Context Pack 1.0")
+        return _metric(1.0, 1.0, True, f"valid Context Pack {SCHEMA_VERSION}")
     except ValidationError as exc:
         return _metric(0.0, 1.0, False, f"{exc.error_count()} schema error(s): {str(exc).splitlines()[1][:120]}")
 
@@ -299,6 +299,23 @@ def expectations(pack: dict, expect: dict, min_share: float, clarifying: dict | 
     if "market" in expect:
         out.append({"check": f"market is {expect['market']}", "pass": interp["market"] == expect["market"],
                     "detail": f"interpreted market: {interp['market']}"})
+    markets = interp.get("markets") or []
+    if "markets_include" in expect:  # V2: several markets
+        codes = {m["code"] for m in markets}
+        out.append({"check": f"markets include {', '.join(expect['markets_include'])}",
+                    "pass": set(expect["markets_include"]) <= codes, "detail": f"markets: {interp['market']}"})
+    if "countries_include" in expect:
+        found = {c for m in markets for c in m["countries"]}
+        out.append({"check": f"countries include {', '.join(expect['countries_include'])}",
+                    "pass": set(expect["countries_include"]) <= found,
+                    "detail": f"{len(found)} countries in the markets"})
+    if expect.get("languages"):
+        missing = [lang for lang in expect["languages"] if lang not in interp["languages"]]
+        out.append({"check": "brief languages chosen", "pass": not missing,
+                    "detail": "chosen: " + ", ".join(interp["languages"]) + (
+                        "; left out: " + "; ".join(f"{e['language']} ({e['reason']})"
+                                                   for e in interp.get("languages_excluded", []))
+                        if interp.get("languages_excluded") else "")})
     for lang in expect.get("languages", []):
         share = mix.get(lang, 0.0)
         out.append({"check": f"{lang} posts in the corpus", "pass": share >= min_share,

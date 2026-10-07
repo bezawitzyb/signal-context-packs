@@ -330,7 +330,8 @@ Definition:
 
 6.2 Top-level JSON sections
   schema_version, pack_id, generated_at, mode (quick | standard)
-  brief              raw text + interpreted {topic, market, languages,
+  brief              raw text + interpreted {topic, markets[] (1.1; market
+                     = label), languages, languages_excluded[] (1.1),
                      audience, category, compliance_category, competitors,
                      intent, time_window_days} + brand_voice (optional)
   digest             <= 500 tokens, generated last from verified content
@@ -473,6 +474,19 @@ P0 = must ship; P1 = stretch. AC = acceptance criteria.
 EPIC A - BRIEF AND PLAN
  FR-A1 [P0] One input box; optional mode (Quick / Standard), time window
        (30 / 90 / 180 / 365 days, default 180) and one-line brand voice.
+ FR-A2b [P0] Markets and languages (change V2, schema 1.1). The
+       interpretation holds markets[] {code (ISO country, or a region:
+       eu, dach, benelux, nordics, cee), countries[], weight, assumed}
+       instead of one market; "market" stays as a short label made in
+       code. Named regions and countries are always recognised: if the
+       brief names a place, the result is never "global" (checked in
+       code). Languages are chosen in code from the markets' official
+       languages (weighted) plus English, only from the supported list in
+       config/modes.yaml, capped per mode (Quick 4, Standard 6). The plan
+       screen shows chosen and excluded languages, each exclusion with
+       its reason. Google Trends and locale choices use the countries.
+       Region -> countries and country -> languages live in
+       config/markets.yaml (geography only, never sources).
  FR-A2 [P0] Interpretation in one call: topic, market, languages,
        audience, category, compliance_category, intent, time window;
        inferred fields tagged "assumed". At most ONE clarifying question,

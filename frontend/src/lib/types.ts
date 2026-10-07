@@ -1,9 +1,9 @@
 /* Generated from docs/schema/context-pack.schema.json by npm run types - do not edit. */
 
 /**
- * Always 1.0.
+ * Always 1.1 (1.0 packs are migrated).
  */
-export type SchemaVersion = "1.0";
+export type SchemaVersion = "1.1";
 /**
  * Random id; the pack's link.
  */
@@ -25,15 +25,49 @@ export type Text = string;
  */
 export type Topic = string;
 /**
- * ISO 3166-1 alpha-2 country code, or "global".
+ * Markets of the brief (1.1). A brief naming a country or region is never "global".
+ *
+ * @minItems 1
  */
-export type Market = string;
+export type Markets = [Market, ...Market[]];
+/**
+ * ISO 3166-1 alpha-2 country in capitals (NL), a region in lower case (eu, dach, benelux, nordics, cee), or "global".
+ */
+export type Code = string;
+/**
+ * ISO alpha-2 countries in this market, the ones the brief names first. Empty for global.
+ */
+export type Countries = string[];
+/**
+ * Share of the research for this market (weights sum to 1).
+ */
+export type Weight = number;
+/**
+ * True if the brief does not state this market.
+ */
+export type Assumed = boolean;
+/**
+ * Short market label made in code from markets (e.g. NL, "EU (DE, PL, SE, +3)", global). Leave it empty.
+ */
+export type Market1 = string;
 /**
  * ISO 639-1 codes, most important first.
  *
  * @minItems 1
  */
 export type Languages = [string, ...string[]];
+/**
+ * ISO 639-1 code.
+ */
+export type Language = string;
+/**
+ * Why it was left out, in plain words.
+ */
+export type Reason = string;
+/**
+ * Languages left out, with the reason (1.1; filled in code). Leave it empty.
+ */
+export type LanguagesExcluded = ExcludedLanguage[];
 /**
  * Who we listen to.
  */
@@ -65,6 +99,7 @@ export type TimeWindowDays = number;
 export type InterpretationField =
   | "topic"
   | "market"
+  | "markets"
   | "languages"
   | "audience"
   | "category"
@@ -75,7 +110,7 @@ export type InterpretationField =
 /**
  * Fields that were inferred rather than stated in the brief.
  */
-export type Assumed = InterpretationField[];
+export type Assumed1 = InterpretationField[];
 /**
  * Optional brand voice (used only by the playbook).
  */
@@ -524,7 +559,7 @@ export type Meaning = string;
 /**
  * ISO 639-1 code.
  */
-export type Language = string;
+export type Language1 = string;
 /**
  * Their words (standard >= 15).
  */
@@ -604,7 +639,7 @@ export type Text5 = string;
 /**
  * ISO 639-1 code.
  */
-export type Language1 = string;
+export type Language2 = string;
 /**
  * Recurring phrases.
  */
@@ -1664,7 +1699,7 @@ export type SourceUnit = string | null;
 /**
  * The agent's reason for the call.
  */
-export type Reason = string;
+export type Reason1 = string;
 /**
  * What came back.
  */
@@ -1684,7 +1719,7 @@ export type Platform6 = "reddit" | "tiktok" | "youtube" | "instagram" | "web_for
 /**
  * Verdict reason, e.g. "kept: 58% relevant".
  */
-export type Reason1 = string;
+export type Reason2 = string;
 /**
  * Documents kept from it.
  */
@@ -1704,7 +1739,7 @@ export type SourceUnit2 = string;
 /**
  * Why it was dropped.
  */
-export type Reason2 = string;
+export type Reason3 = string;
 /**
  * Sources dropped, with reasons.
  */
@@ -1740,7 +1775,7 @@ export type Kept1 = number;
 /**
  * ISO 639-1 code.
  */
-export type Language2 = string;
+export type Language3 = string;
 /**
  * Share of kept documents.
  */
@@ -1835,7 +1870,7 @@ export type DatePrecision = "day" | "month" | "year" | "unknown";
 /**
  * ISO 639-1 code.
  */
-export type Language3 = string;
+export type Language4 = string;
 /**
  * Verbatim excerpt, PII-redacted, max 280 chars.
  */
@@ -1874,9 +1909,9 @@ export type Trust = "untrusted_user_content";
 export type Evidence = Evidence1[];
 
 /**
- * Context Pack 1.0 - the canonical object (context_pack.json).
+ * Context Pack 1.1 - the canonical object (context_pack.json). 1.0 packs are migrated when read.
  */
-export interface ContextPack10 {
+export interface ContextPack11 {
   schema_version?: SchemaVersion;
   pack_id: PackId;
   generated_at: GeneratedAt;
@@ -1922,15 +1957,30 @@ export interface Brief {
  */
 export interface Interpretation {
   topic: Topic;
-  market: Market;
+  markets: Markets;
+  market?: Market1;
   languages: Languages;
+  languages_excluded?: LanguagesExcluded;
   audience: Audience;
   category: Category;
   compliance_category: ComplianceCategory;
   competitors?: Competitors;
   intent: Intent;
   time_window_days: TimeWindowDays;
+  assumed?: Assumed1;
+}
+/**
+ * One market of the brief (schema 1.1, change V2).
+ */
+export interface Market {
+  code: Code;
+  countries?: Countries;
+  weight?: Weight;
   assumed?: Assumed;
+}
+export interface ExcludedLanguage {
+  language: Language;
+  reason: Reason;
 }
 /**
  * The one-screen summary.
@@ -2129,7 +2179,7 @@ export interface LexiconEntry {
   type?: Type3;
   term: Term;
   meaning: Meaning;
-  language: Language;
+  language: Language1;
 }
 /**
  * Verified members of total relevant posts.
@@ -2174,7 +2224,7 @@ export interface Phrase {
   related_ids?: RelatedIds3;
   type?: Type4;
   text: Text5;
-  language: Language1;
+  language: Language2;
 }
 /**
  * Verified members of total relevant posts.
@@ -2709,19 +2759,19 @@ export interface DecisionLogEntry {
   seq: Seq;
   tool: Tool;
   source_unit?: SourceUnit;
-  reason: Reason;
+  reason: Reason1;
   result_summary: ResultSummary;
 }
 export interface SourceUsed {
   source_unit: SourceUnit1;
   platform: Platform6;
-  reason: Reason1;
+  reason: Reason2;
   kept: Kept;
   relevant_share: RelevantShare;
 }
 export interface SourceDropped {
   source_unit: SourceUnit2;
-  reason: Reason2;
+  reason: Reason3;
 }
 /**
  * What happened to every collected item.
@@ -2736,7 +2786,7 @@ export interface CoverageCounts {
   kept: Kept1;
 }
 export interface LanguageShare {
-  language: Language2;
+  language: Language3;
   share: Share2;
 }
 /**
@@ -2778,7 +2828,7 @@ export interface Evidence1 {
   text_fragment_url?: TextFragmentUrl;
   posted_at?: PostedAt;
   date_precision?: DatePrecision;
-  language: Language3;
+  language: Language4;
   text: Text10;
   text_en?: TextEn;
   redacted?: Redacted;

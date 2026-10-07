@@ -53,8 +53,13 @@ def unit_kinds() -> dict[CollectionPlatform, set[str]]:
 def _check(interp: Interpretation, plan: Plan | None) -> None:
     """Rules the model must follow; a violation triggers the client's one retry with the error."""
     errors = []
-    if not _MARKET.match(interp.market):
-        errors.append(f'market must be an ISO alpha-2 code in capitals or "global", got {interp.market!r}')
+    regions = set(load_yaml("markets")["regions"])
+    for m in interp.markets:
+        if not (_MARKET.match(m.code) or m.code in regions):
+            errors.append(f'market code must be an ISO alpha-2 country in capitals, a region in {sorted(regions)} '
+                          f'or "global", got {m.code!r}')
+        errors += [f"country {c!r} is not an ISO alpha-2 code in capitals" for c in m.countries
+                   if not re.fullmatch(r"[A-Z]{2}", c)]
     errors += [f"language {code!r} is not an ISO 639-1 code" for code in interp.languages if not _LANG.match(code)]
     options = load_yaml("modes")["time_window_days_options"]
     if interp.time_window_days not in options:
@@ -193,7 +198,8 @@ def _fake_answer(brief: str, ask: bool) -> dict:
     recorded = json.loads((FAKE_DIR / f"{TOOL}.json").read_text(encoding="utf-8"))
     if not (ask and len(brief.split()) <= 1):
         return recorded
-    interp = {**recorded["interpretation"], "topic": brief.strip(), "market": "global",
+    interp = {**recorded["interpretation"], "topic": brief.strip(),
+              "markets": [{"code": "global", "countries": [], "weight": 1.0, "assumed": True}],
               "assumed": ["market", "audience"]}
     return {"interpretation": interp, "hypotheses": [], "research_questions": [], "starting_units": [],
             "clarifying_question": {"question": "Which market and audience is this for?",
@@ -219,4 +225,25 @@ async def interpret(brief: str, *, mode: Mode | str = Mode.quick, window_days: i
     result = res.data.to_result()
     if window_days:  # a window the user chose wins over the model's reading (V1: inputs are never lost)
         result.interpretation.time_window_days = window_days
+    settle_markets(result, brief, str(mode))
     return Interpreted(result=result, estimate=estimate(mode), usd=res.usd)
+
+
+def settle_markets(result: PlanResult, brief: str, mode: str) -> None:
+    """Code decides the final geography and languages (V2): regions expand, a place named in the brief
+    is never "global", languages come from the markets plus English (capped per mode); queries in a
+    left-out language are dropped, and a starting unit left without queries goes too."""
+    from ctxpack.agent import markets as mk
+    from ctxpack.schemas.plan import ExcludedLanguage, Market
+
+    interp = result.interpretation
+    markets = mk.normalise([m.model_dump() for m in interp.markets], brief)
+    langs, excluded = mk.choose_languages(markets, interp.languages, mode, mk.places_in(brief)["countries"])
+    interp.markets = [Market(**m) for m in markets]
+    interp.market = mk.label(markets)
+    interp.languages = langs
+    interp.languages_excluded = [ExcludedLanguage(**e) for e in excluded]
+    if result.plan is not None:
+        for unit in result.plan.starting_units:
+            unit.queries = [q for q in unit.queries if q.language in langs]
+        result.plan.starting_units = [u for u in result.plan.starting_units if u.queries]

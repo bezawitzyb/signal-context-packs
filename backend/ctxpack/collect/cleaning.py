@@ -283,22 +283,28 @@ def make_draft(
 
 
 # --------------------------------------------------------------------------
-# 3. Dates (absolute + relative, en / nl / de) and the time window
+# 3. Dates (absolute + relative; en nl de, and since V2 fr it es pt pl sv da nb fi) and the time window
 # --------------------------------------------------------------------------
 
 _MONTHS = {
-    1: ["jan", "january", "januari", "januar", "jän", "jänner"],
-    2: ["feb", "february", "februari", "februar"],
-    3: ["mar", "march", "maart", "mrt", "märz", "maerz", "mrz"],
-    4: ["apr", "april"],
-    5: ["may", "mei", "mai"],
-    6: ["jun", "june", "juni"],
-    7: ["jul", "july", "juli"],
-    8: ["aug", "august", "augustus"],
-    9: ["sep", "sept", "september"],
-    10: ["oct", "october", "okt", "oktober"],
-    11: ["nov", "november"],
-    12: ["dec", "december", "dez", "dezember"],
+    1: ["jan", "january", "januari", "januar", "jän", "jänner", "janvier", "gennaio", "enero", "janeiro", "stycznia",
+        "styczeń", "januar", "tammikuuta", "tammikuu"],
+    2: ["feb", "february", "februari", "februar", "février", "fevrier", "febbraio", "febrero", "fevereiro", "lutego",
+        "luty", "helmikuuta", "helmikuu"],
+    3: ["mar", "march", "maart", "mrt", "märz", "maerz", "mrz", "mars", "marzo", "março", "marca", "marzec", "marts",
+        "maaliskuuta", "maaliskuu"],
+    4: ["apr", "april", "avril", "aprile", "abril", "kwietnia", "kwiecień", "huhtikuuta", "huhtikuu"],
+    5: ["may", "mei", "mai", "maggio", "mayo", "maio", "maja", "maj", "toukokuuta", "toukokuu"],
+    6: ["jun", "june", "juni", "juin", "giugno", "junio", "junho", "czerwca", "czerwiec", "kesäkuuta", "kesäkuu"],
+    7: ["jul", "july", "juli", "juillet", "luglio", "julio", "julho", "lipca", "lipiec", "heinäkuuta", "heinäkuu"],
+    8: ["aug", "august", "augustus", "août", "aout", "agosto", "sierpnia", "sierpień", "augusti", "elokuuta", "elokuu"],
+    9: ["sep", "sept", "september", "septembre", "settembre", "septiembre", "setembro", "września", "wrzesień",
+        "syyskuuta", "syyskuu"],
+    10: ["oct", "october", "okt", "oktober", "octobre", "ottobre", "octubre", "outubro", "października",
+         "październik", "lokakuuta", "lokakuu"],
+    11: ["nov", "november", "novembre", "noviembre", "novembro", "listopada", "listopad", "marraskuuta", "marraskuu"],
+    12: ["dec", "december", "dez", "dezember", "décembre", "decembre", "dicembre", "diciembre", "dezembro", "grudnia",
+         "grudzień", "joulukuuta", "joulukuu"],
 }
 _MONTH = {name: num for num, names in _MONTHS.items() for name in names}
 _MONTH_RE = "|".join(sorted(map(re.escape, _MONTH), key=len, reverse=True))
@@ -309,21 +315,34 @@ _NUMBER_WORDS = {"a": 1, "an": 1, "one": 1, "een": 1, "één": 1, "ein": 1, "ein
 _UNITS = {
     **dict.fromkeys(["s", "sec", "secs", "second", "seconds", "seconde", "seconden", "sekunde", "sekunden"], ("days", 0)),
     **dict.fromkeys(["m", "min", "mins", "minute", "minutes", "minuut", "minuten"], ("days", 0)),
-    **dict.fromkeys(["h", "hr", "hrs", "hour", "hours", "uur", "uren", "stunde", "stunden"], ("hours", 1)),
-    **dict.fromkeys(["d", "day", "days", "dag", "dagen", "tag", "tage", "tagen"], ("days", 1)),
-    **dict.fromkeys(["w", "wk", "wks", "week", "weeks", "weken", "woche", "wochen"], ("days", 7)),
-    **dict.fromkeys(["mo", "mos", "month", "months", "maand", "maanden", "monat", "monate", "monaten"], ("months", 1)),
-    **dict.fromkeys(["y", "yr", "yrs", "year", "years", "jaar", "jaren", "jahr", "jahre", "jahren"], ("years", 1)),
+    **dict.fromkeys(["h", "hr", "hrs", "hour", "hours", "uur", "uren", "stunde", "stunden", "heure", "heures", "ora",
+                     "ore", "hora", "horas", "godzinę", "godziny", "godzin", "timme", "timmar", "time", "timer",
+                     "tunti", "tuntia"], ("hours", 1)),
+    **dict.fromkeys(["d", "day", "days", "dag", "dagen", "tag", "tage", "tagen", "jour", "jours", "giorno", "giorni",
+                     "día", "días", "dia", "dias", "dzień", "dni", "dagar", "dage", "dager", "päivä", "päivää"],
+                    ("days", 1)),
+    **dict.fromkeys(["w", "wk", "wks", "week", "weeks", "weken", "woche", "wochen", "semaine", "semaines", "settimana",
+                     "settimane", "semana", "semanas", "tydzień", "tygodnie", "tygodni", "vecka", "veckor", "uge",
+                     "uger", "uke", "uker", "viikko", "viikkoa"], ("days", 7)),
+    **dict.fromkeys(["mo", "mos", "month", "months", "maand", "maanden", "monat", "monate", "monaten", "mois", "mese",
+                     "mesi", "mes", "meses", "mês", "miesiąc", "miesiące", "miesięcy", "månad", "månader", "måned",
+                     "måneder", "kuukausi", "kuukautta"], ("months", 1)),
+    **dict.fromkeys(["y", "yr", "yrs", "year", "years", "jaar", "jaren", "jahr", "jahre", "jahren", "an", "ans",
+                     "anno", "anni", "año", "años", "ano", "anos", "rok", "lata", "lat", "år", "vuosi", "vuotta"],
+                    ("years", 1)),
 }
 _UNIT_RE = "|".join(sorted(map(re.escape, _UNITS), key=len, reverse=True))
 _QTY = r"(\d+|" + "|".join(map(re.escape, _NUMBER_WORDS)) + r")"
-_REL_AGO = re.compile(rf"\b{_QTY}\s*({_UNIT_RE})\.?\s+(?:ago|geleden)\b", re.I)
-_REL_VOR = re.compile(rf"\bvor\s+{_QTY}\s+({_UNIT_RE})\b", re.I)
+# "3 days ago" (en nl it pl sv da nb fi pt) and "vor 3 Tagen", "il y a 3 jours", "hace 3 días", "há 3 dias"
+_REL_AGO = re.compile(rf"(?<!\w){_QTY}\s*({_UNIT_RE})\.?\s+(?:ago|geleden|fa|temu|sedan|siden|sitten|atrás)(?!\w)", re.I)
+_REL_VOR = re.compile(rf"(?<!\w)(?:vor|il y a|hace|há)\s+{_QTY}\s+({_UNIT_RE})(?!\w)", re.I)
 _REL_SHORT = re.compile(r"^(\d+)\s*(mo|[smhdwy])$", re.I)
 _DAY_WORDS = {
-    0: ["today", "just now", "vandaag", "zojuist", "net", "heute", "gerade", "gerade eben", "soeben"],
-    1: ["yesterday", "gisteren", "gestern"],
-    2: ["eergisteren", "vorgestern"],
+    0: ["today", "just now", "vandaag", "zojuist", "net", "heute", "gerade", "gerade eben", "soeben",
+        "aujourd'hui", "oggi", "hoy", "hoje", "dzisiaj", "dziś", "idag", "i dag", "tänään"],
+    1: ["yesterday", "gisteren", "gestern", "ieri", "ayer", "ontem", "wczoraj", "igår", "i går", "eilen"],
+    2: ["eergisteren", "vorgestern", "avant-hier", "anteayer", "anteontem", "przedwczoraj", "i förrgår",
+        "i forgårs", "toissapäivänä"],
 }
 
 

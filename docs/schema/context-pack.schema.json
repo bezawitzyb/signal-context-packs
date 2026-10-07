@@ -1210,6 +1210,27 @@
       "title": "Evidence",
       "type": "object"
     },
+    "ExcludedLanguage": {
+      "additionalProperties": false,
+      "properties": {
+        "language": {
+          "description": "ISO 639-1 code.",
+          "title": "Language",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Why it was left out, in plain words.",
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "language",
+        "reason"
+      ],
+      "title": "ExcludedLanguage",
+      "type": "object"
+    },
     "FinishReason": {
       "enum": [
         "finish",
@@ -1435,8 +1456,18 @@
           "title": "Topic",
           "type": "string"
         },
+        "markets": {
+          "description": "Markets of the brief (1.1). A brief naming a country or region is never \"global\".",
+          "items": {
+            "$ref": "#/$defs/Market"
+          },
+          "minItems": 1,
+          "title": "Markets",
+          "type": "array"
+        },
         "market": {
-          "description": "ISO 3166-1 alpha-2 country code, or \"global\".",
+          "default": "",
+          "description": "Short market label made in code from markets (e.g. NL, \"EU (DE, PL, SE, +3)\", global). Leave it empty.",
           "examples": [
             "NL"
           ],
@@ -1456,6 +1487,14 @@
           },
           "minItems": 1,
           "title": "Languages",
+          "type": "array"
+        },
+        "languages_excluded": {
+          "description": "Languages left out, with the reason (1.1; filled in code). Leave it empty.",
+          "items": {
+            "$ref": "#/$defs/ExcludedLanguage"
+          },
+          "title": "Languages Excluded",
           "type": "array"
         },
         "audience": {
@@ -1513,7 +1552,7 @@
       },
       "required": [
         "topic",
-        "market",
+        "markets",
         "languages",
         "audience",
         "category",
@@ -1529,6 +1568,7 @@
       "enum": [
         "topic",
         "market",
+        "markets",
         "languages",
         "audience",
         "category",
@@ -1874,6 +1914,54 @@
         "finish_reason"
       ],
       "title": "LoopSummary",
+      "type": "object"
+    },
+    "Market": {
+      "additionalProperties": false,
+      "description": "One market of the brief (schema 1.1, change V2).",
+      "properties": {
+        "code": {
+          "description": "ISO 3166-1 alpha-2 country in capitals (NL), a region in lower case (eu, dach, benelux, nordics, cee), or \"global\".",
+          "examples": [
+            "NL",
+            "eu"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "countries": {
+          "description": "ISO alpha-2 countries in this market, the ones the brief names first. Empty for global.",
+          "examples": [
+            [
+              "DE",
+              "PL",
+              "SE"
+            ]
+          ],
+          "items": {
+            "type": "string"
+          },
+          "title": "Countries",
+          "type": "array"
+        },
+        "weight": {
+          "default": 1.0,
+          "description": "Share of the research for this market (weights sum to 1).",
+          "minimum": 0,
+          "title": "Weight",
+          "type": "number"
+        },
+        "assumed": {
+          "default": false,
+          "description": "True if the brief does not state this market.",
+          "title": "Assumed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code"
+      ],
+      "title": "Market",
       "type": "object"
     },
     "Mode": {
@@ -4521,12 +4609,12 @@
     }
   },
   "additionalProperties": false,
-  "description": "Context Pack 1.0 - the canonical object (context_pack.json).",
+  "description": "Context Pack 1.1 - the canonical object (context_pack.json). 1.0 packs are migrated when read.",
   "properties": {
     "schema_version": {
-      "const": "1.0",
-      "default": "1.0",
-      "description": "Always 1.0.",
+      "const": "1.1",
+      "default": "1.1",
+      "description": "Always 1.1 (1.0 packs are migrated).",
       "title": "Schema Version",
       "type": "string"
     },
@@ -4754,7 +4842,7 @@
     "instructions_for_agents",
     "coverage"
   ],
-  "title": "Context Pack 1.0",
+  "title": "Context Pack 1.1",
   "type": "object",
   "$schema": "https://json-schema.org/draft/2020-12/schema"
 }

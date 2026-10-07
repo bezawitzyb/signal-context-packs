@@ -19,7 +19,7 @@ const EXAMPLES = [
 ];
 
 const FIELD_LABELS: Record<string, string> = {
-  topic: "Topic", market: "Market", languages: "Languages", audience: "Audience", category: "Category",
+  topic: "Topic", market: "Markets", languages: "Languages", audience: "Audience", category: "Category",
   intent: "Goal", time_window_days: "Time window", competitors: "Brands named", compliance_category: "Rules area",
 };
 
@@ -32,6 +32,15 @@ function useRotatingExample(paused: boolean) {
     return () => clearInterval(t);
   }, [paused]);
   return EXAMPLES[n];
+}
+
+/** "pl" -> "Polish" (the browser knows every language name; the code is the fallback). */
+function languageName(code: string): string {
+  try {
+    return new Intl.DisplayNames(["en"], { type: "language" }).of(code) ?? code;
+  } catch {
+    return code;
+  }
 }
 
 // --- the form -------------------------------------------------------------------------------
@@ -253,7 +262,7 @@ export function PlanReview({ run }: { run: RunStatus }) {
   };
 
   const fields: [string, string][] = [
-    ["topic", interp.topic], ["market", interp.market], ["languages", interp.languages.join(", ")],
+    ["topic", interp.topic], ["market", interp.market ?? ""], ["languages", interp.languages.map(languageName).join(", ")],
     ["audience", interp.audience], ["intent", interp.intent],
     ["time_window_days", `last ${interp.time_window_days} days`],
     ...(interp.competitors?.length ? [["competitors", interp.competitors.join(", ")] as [string, string]] : []),
@@ -278,6 +287,16 @@ export function PlanReview({ run }: { run: RunStatus }) {
             </div>
           ))}
         </dl>
+        {(interp.languages_excluded ?? []).length > 0 && (
+          <div className="mt-3 rounded-lg border border-line px-4 py-3 text-sm">
+            <p className="text-xs font-medium uppercase tracking-wide text-ink-3">Languages left out</p>
+            <ul className="mt-1 space-y-0.5 text-ink-2">
+              {interp.languages_excluded!.map((e) => (
+                <li key={e.language}><span className="text-ink">{languageName(e.language)}</span>: {e.reason}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       <section aria-labelledby="start-here">

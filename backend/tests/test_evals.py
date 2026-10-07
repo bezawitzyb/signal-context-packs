@@ -33,11 +33,12 @@ def out_dirs(tmp_path, monkeypatch):
     return tmp_path
 
 
-def test_briefs_file_has_the_four_f5_briefs():
+def test_briefs_file_has_the_f5_briefs_plus_the_v2_brief():
     briefs = ev.load_briefs()["briefs"]
-    assert [b["brief"] for b in briefs] == ["Gen Z and meal prep", "Launching a snack brand in the Netherlands",
-                                           "Heat pumps for homeowners in Germany", "snacks"]
-    assert [b["mode"] for b in briefs[2:]] == ["standard", "quick"]
+    assert [b["brief"] for b in briefs][:4] == ["Gen Z and meal prep", "Launching a snack brand in the Netherlands",
+                                               "Heat pumps for homeowners in Germany", "snacks"]
+    assert briefs[4]["id"] == "eu_manufacturing" and briefs[4]["expect"]["languages"] == ["de", "pl"]
+    assert [b["mode"] for b in briefs[2:4]] == ["standard", "quick"]
     assert briefs[3]["source_diversity_exempt"] and briefs[3]["expect"]["clarifying_question"]
 
 

@@ -30,6 +30,17 @@ modes:
     typical_minutes: 12
 
 default_mode: quick
+
+# Languages (change V2, PRD FR-A2b): chosen in code from the markets' official languages (weighted)
+# plus English, only from this list, at most max_per_mode. The rest is shown as excluded with a reason.
+languages:
+  supported: {en: English, de: German, nl: Dutch, fr: French, it: Italian, es: Spanish, pl: Polish,
+              sv: Swedish, da: Danish, nb: Norwegian, fi: Finnish, pt: Portuguese}
+  max_per_mode: {quick: 4, standard: 6}
+  english_weight: 0.15          # English joins every run with at least this share (lingua franca, expats)
+  model_language_bonus: 0.10    # a language the planner picked for this brief gets this extra share
+  named_country_weight: 0.30    # a country the brief names gets this extra weight; its main language is always kept
+  min_share_of_top: 0.25        # a market language scoring below this share of the top language is left out
 parallel_tool_calls_max: 3      # concurrent tool calls from one model turn
 queue_max: 3                    # runs waiting behind the live one (FIFO)
 time_window_days_options: [30, 90, 180, 365]

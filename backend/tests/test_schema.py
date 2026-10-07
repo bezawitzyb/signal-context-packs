@@ -22,8 +22,10 @@ def example() -> dict:
 
 
 def test_example_pack_is_valid(example):
+    assert example["schema_version"] == "1.0"                    # the fixture stays 1.0: it tests the migration
     pack = ContextPack.model_validate(example)
-    assert pack.schema_version == "1.0"
+    assert pack.schema_version == "1.1"
+    assert pack.brief.interpreted.markets[0].code == example["brief"]["interpreted"]["market"]
     assert len(pack.do_first) == 3
     assert len(pack.playbook.this_week) == 5
 

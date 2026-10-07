@@ -1,4 +1,4 @@
-"""Context Pack schema 1.0 (PRD Section 6).
+"""Context Pack schema 1.1 (PRD Section 6; 1.0 packs are migrated, schemas/migrate.py).
 
 One object behind every deliverable (web page, JSON, MCP, skill, Markdown).
 Every field has a description; docs/SCHEMA.md is generated from them by
@@ -39,7 +39,8 @@ from ctxpack.schemas.enums import (
 )
 from ctxpack.schemas.plan import Interpretation
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
+OLDER_VERSIONS = ("1.0",)  # read and migrated (schemas/migrate.py); never written
 
 # PRD 6.5 - same IDs in JSON, UI and every export.
 ID_PREFIXES: dict[str, str] = {
@@ -623,9 +624,16 @@ class Evidence(Strict):
 
 
 class ContextPack(Strict):
-    """Context Pack 1.0 - the canonical object (context_pack.json)."""
+    """Context Pack 1.1 - the canonical object (context_pack.json). 1.0 packs are migrated when read."""
 
-    schema_version: Literal["1.0"] = Field(default=SCHEMA_VERSION, description="Always 1.0.")
+    schema_version: Literal["1.1"] = Field(default=SCHEMA_VERSION, description="Always 1.1 (1.0 packs are migrated).")
+
+    @model_validator(mode="before")
+    @classmethod
+    def _migrate(cls, data: object) -> object:
+        from ctxpack.schemas.migrate import migrate
+
+        return migrate(data) if isinstance(data, dict) else data
     pack_id: str = Field(pattern=r"^[A-Za-z0-9_-]{8,40}$", description="Random id; the pack's link.",
                          examples=["pk_7f3k9q2m"])
     generated_at: datetime = Field(description="When the pack was finished (UTC, ISO 8601).",

@@ -112,6 +112,16 @@ def _field_rows(model: type[BaseModel], names: list[str]) -> list[str]:
     return rows
 
 
+# Hand-written per version (this file generates SCHEMA.md; never edit SCHEMA.md itself).
+CHANGELOG = [
+    "- **1.1** (changes V1-V10, in progress): `brief.interpreted.markets[]` {code, countries, weight, "
+    "assumed} replaces the single market (V2); `market` is now a short label made in code; "
+    "`languages_excluded[]` lists left-out languages with the reason. 1.0 packs are migrated when read "
+    "(`schemas/migrate.py`).",
+    "- **1.0**: first version.",
+]
+
+
 def missing_descriptions(root: type[BaseModel] = ContextPack) -> list[str]:
     return [f"{m.__name__}.{n}" for m, _ in models_in_order(root)
             for n, f in m.model_fields.items() if not f.description]
@@ -126,6 +136,10 @@ def build_markdown() -> str:
         "One JSON object (`context_pack.json`) is behind every view of a pack: the web page, "
         "the API, MCP, the skill export and the Markdown brief. The machine-readable version is "
         "[`schema/context-pack.schema.json`](schema/context-pack.schema.json).",
+        "",
+        "**Changelog**",
+        "",
+        *CHANGELOG,
         "",
         "**Rules for every pack**",
         "",
