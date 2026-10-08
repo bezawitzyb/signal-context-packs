@@ -220,16 +220,59 @@ class FoundPoint(Strict):
     item_ids: list[str] = Field(min_length=1, description="Items that show it.")
 
 
+class Comparison(Strict):
+    """One generic point checked against the evidence (V9)."""
+
+    generic_point: str = Field(description="What a generic answer says.")
+    status: Literal["confirmed", "contradicted", "not_seen"] = Field(
+        description="confirmed (the posts say it too), contradicted (they say otherwise) or not_seen.")
+    item_ids: list[str] = Field(default_factory=list, description="Findings that confirm or contradict it.")
+
+
 class GenericVsFound(Strict):
     generic_points: list[str] = Field(description="What a generic AI answer says (no evidence).")
-    what_we_found: list[FoundPoint] = Field(description="What the evidence shows instead.")
+    what_we_found: list[FoundPoint] = Field(description="What the evidence shows instead (new to the generic "
+                                            "answer).")
+    comparison: list[Comparison] = Field(default_factory=list, description="Every generic point with its status "
+                                         "(V9); empty in packs made before V9.")
+
+
+class Finding(Strict):
+    """A finding for the summary (V9): plain strength words, a quote and what it is good enough for."""
+
+    text: str = Field(description="The finding in one sentence.")
+    item_ids: list[str] = Field(min_length=1, description="Items that back it.")
+    quote: Quote | None = Field(default=None, description="One verbatim quote from its evidence.")
+    quote_en: str | None = Field(default=None, description="English translation of the quote's post, when not "
+                                 "English.")
+    label: ConfidenceLabel = Field(description="Confidence label of the item.")
+    people: int = Field(ge=0, description="Distinct people behind it.")
+    communities: int = Field(ge=0, description="Platforms they came from.")
+    strength_text: str = Field(description='Plain words, e.g. "Emerging - 5 people in 2 communities".')
+    good_enough_to: str = Field(description="What it is safe to use it for (scoring.yaml plain_labels).")
+
+
+class Position(Strict):
+    """The one message to own (V9), written by the playbook call from verified items."""
+
+    statement: str = Field(description="The message, in a few words.")
+    for_whom: str = Field(description="Who it is for.")
+    against_doubt: str = Field(description="The doubt or objection it answers.")
+    item_ids: list[str] = Field(min_length=1, description="Items it is built on.")
 
 
 class Snapshot(Strict):
-    five_truths: list[Truth] = Field(max_length=5, description="Up to five most important truths.")
+    five_truths: list[Truth] = Field(max_length=5, description="Up to five most important findings (kept for "
+                                     "agents; the page shows findings[]).")
+    findings: list[Finding] = Field(default_factory=list, max_length=3, description="What we heard most clearly "
+                                    "(V9): the top 3 findings with a quote and plain strength words.")
+    represents: str = Field(default="", description="Who the evidence represents (V9): posts, people, platforms.")
+    position: Position | None = Field(default=None, description="Recommended position (V9).")
     top_opportunity: Pick | None = Field(default=None, description="The single best opportunity.")
     top_risk: Pick | None = Field(default=None, description="The single biggest risk.")
-    coverage_grade: CoverageGrade = Field(description="How well the evidence covers the brief: a (best) to d.")
+    coverage_grade: CoverageGrade = Field(description="How well the evidence covers the brief: a (best) to d; "
+                                          "at most c in a thin-evidence pack (V9).")
+    grade_note: str = Field(default="", description="Why the grade was capped, if it was (V9).")
     generic_vs_found: GenericVsFound = Field(description="Generic answer next to what we found.")
 
 
@@ -242,6 +285,8 @@ class DoFirst(Strict):
     effort: Level = Field(description="low, medium or high.")
     impact: Level = Field(description="low, medium or high.")
     owner_hint: str = Field(default="", description="Who would usually own it.", examples=["social team"])
+    success_measure: str = Field(default="", description="How you will know it worked (V9).",
+                                 examples=["replies asking for the full figures table"])
 
 
 # --------------------------------------------------------------------------
@@ -596,6 +641,7 @@ class PostBrief(Strict):
     avoid: list[str] = Field(default_factory=list, description="Guardrail phrases (not this / never claim) to avoid.")
     news_hook_id: str | None = Field(default=None, pattern=item_id("NWS"), description="News hook it rides.")
     based_on: list[str] = Field(min_length=1, description="Items the brief is built from.")
+    success_measure: str = Field(default="", description="How you will know the post worked (V9).")
     confidence: ConfidenceLabel = Field(description="The weakest label among the items it uses (code).")
 
 
@@ -921,8 +967,15 @@ class ContextPack(Strict):
                     need_items([t.item_id] if t.item_id else [])
             if isinstance(item, ComplianceFlag):
                 need_items([item.item_id])
-        for truth in self.snapshot.five_truths:
+        for truth in self.snapshot.five_truths + self.snapshot.findings:
             need_items(truth.item_ids)
+        for f in self.snapshot.findings:
+            if f.quote:
+                need_ev([f.quote.evidence_id])
+        for row in self.snapshot.generic_vs_found.comparison:
+            need_items(row.item_ids)
+        if self.snapshot.position:
+            need_items(self.snapshot.position.item_ids)
         for meta in self.sections_meta.values():
             need_items(meta.see_also)
         for pick in (self.snapshot.top_opportunity, self.snapshot.top_risk):
@@ -938,6 +991,9 @@ class ContextPack(Strict):
             for quote in getattr(item, "quotes", []):
                 if quote.text not in ev_text[quote.evidence_id]:
                     raise ValueError(f"{item.id}: quote is not an exact substring of {quote.evidence_id}")
+        for f in self.snapshot.findings:
+            if f.quote and f.quote.text not in ev_text[f.quote.evidence_id]:
+                raise ValueError(f"finding quote is not an exact substring of {f.quote.evidence_id}")
 
         if not self.coverage.thin_evidence:
             if len(self.do_first) != 3:

@@ -104,7 +104,21 @@ def search_evidence(pack_id: str, query: str = "", platform: str | None = None, 
 
 EXPORTS = {"json": ("application/json", "context_pack.json"), "md": ("text/markdown; charset=utf-8", "brief.md"),
            "prompt": ("text/plain; charset=utf-8", "prompt_block.txt"), "skill": ("application/zip", None),
-           "calendar": ("text/csv; charset=utf-8", "content_calendar.csv")}
+           "calendar": ("text/csv; charset=utf-8", "content_calendar.csv"),
+           "quick": ("text/plain; charset=utf-8", "quick_brief.txt")}
+
+
+def reading_guide() -> dict[str, Any]:
+    """V9: scoring.yaml plain_labels and plain_claim_types (page badges, tooltips, "How to read this")."""
+    cfg = load_yaml("scoring")
+    return {"labels": cfg["plain_labels"], "claim_types": cfg["plain_claim_types"]}
+
+
+def handoff(pack_id: str) -> list[dict[str, Any]]:
+    """V9: the hand-off options with purpose, length and a one-line preview (computed in code)."""
+    from ctxpack.exports.handoff import handoff_options
+
+    return handoff_options(pack(pack_id))
 
 
 def post_briefs(pack_id: str) -> dict[str, Any]:
@@ -127,16 +141,17 @@ def calendar(pack_id: str) -> dict[str, Any]:
 
 
 def export(pack_id: str, kind: str) -> tuple[bytes, str, str]:
-    """(content, media type, file name) for json | md | prompt | skill | calendar."""
+    """(content, media type, file name) for json | md | prompt | skill | calendar | quick."""
     import json
 
     from ctxpack.exports.calendar_csv import to_calendar_csv
     from ctxpack.exports.markdown import to_markdown
     from ctxpack.exports.prompt_block import to_prompt_block
+    from ctxpack.exports.quick_brief import to_quick_brief
     from ctxpack.exports.skill import skill_zip
 
     if kind not in EXPORTS:
-        raise ValueError("export must be json, md, prompt, skill or calendar")
+        raise ValueError("export must be json, md, prompt, skill, calendar or quick")
     p = pack(pack_id)
     media, name = EXPORTS[kind]
     if kind == "json":
@@ -147,6 +162,8 @@ def export(pack_id: str, kind: str) -> tuple[bytes, str, str]:
         return to_prompt_block(p).encode("utf-8"), media, name
     if kind == "calendar":
         return to_calendar_csv(p), media, name
+    if kind == "quick":
+        return to_quick_brief(p).encode("utf-8"), media, name
     name, data = skill_zip(p)
     return data, media, name
 

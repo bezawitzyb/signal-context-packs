@@ -62,6 +62,10 @@ def write_data(out: Path, packs: list[dict]) -> list[str]:
     (data / "packs.json").write_text(json.dumps([card(p) for p in packs], ensure_ascii=False, indent=1),
                                      encoding="utf-8")
     (data / "evals.json").write_text(json.dumps(published(), ensure_ascii=False, indent=1), encoding="utf-8")
+    from ctxpack.api.service import reading_guide
+
+    (data / "reading_guide.json").write_text(json.dumps(reading_guide(), ensure_ascii=False, indent=1),
+                                             encoding="utf-8")
     return [p["pack_id"] for p in packs]
 
 

@@ -144,8 +144,26 @@ export const searchEvidence = (packId: string, q: string, opts: { platform?: str
   return request<EvidenceResult>(`/packs/${encodeURIComponent(packId)}/evidence?${params}`);
 };
 const MIRROR_FILES = { json: "context_pack.json", md: "brief.md", prompt: "prompt_block.txt", skill: "skill.zip",
-  calendar: "content_calendar.csv" };
-export const exportUrl = (packId: string, kind: keyof typeof MIRROR_FILES) => MIRROR
+  calendar: "content_calendar.csv", quick: "quick_brief.txt" };
+export type ExportKind = keyof typeof MIRROR_FILES;
+
+/** V9: plain words for every strength label and claim type (scoring.yaml). */
+export interface ReadingGuide {
+  labels: Record<Label, { words: string; good_enough_to: string }>;
+  claim_types: Record<"observed" | "inferred" | "external", string>;
+}
+export const getReadingGuide = () => MIRROR ? staticJson<ReadingGuide>("reading_guide.json")
+  : request<ReadingGuide>("/reading-guide");
+
+/** V9: a hand-off option, computed in code (purpose, length in pages, one-line preview). */
+export interface HandoffOption {
+  kind: ExportKind; title: string; purpose: string; length: string; preview: string;
+  action: "copy" | "download"; more: boolean;
+}
+export const getHandoff = (packId: string) => MIRROR
+  ? staticJson<HandoffOption[]>(`packs/${encodeURIComponent(packId)}/handoff.json`)
+  : request<HandoffOption[]>(`/packs/${encodeURIComponent(packId)}/handoff`);
+export const exportUrl = (packId: string, kind: ExportKind) => MIRROR
   ? `${DATA}/packs/${encodeURIComponent(packId)}/${MIRROR_FILES[kind]}`
   : `${BASE}/packs/${encodeURIComponent(packId)}/export/${kind}`;
 

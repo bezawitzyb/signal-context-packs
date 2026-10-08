@@ -1,8 +1,8 @@
-// HANDOFF (guide Step 4.4): for AI tools, for your team, for agents. The run key is never shown:
+// HANDOFF (guide Step 4.4, V9): options written for marketers - purpose, length and preview from the API. The run key is never shown:
 // the MCP command uses the <YOUR_KEY> placeholder.
 import { useEffect, useRef, useState } from "react";
-import { Bot, Check, Copy, Download, FileText, Printer, Users, X } from "lucide-react";
-import { exportUrl, LIVE_URL, MIRROR } from "../lib/api";
+import { Bot, Braces, CalendarDays, Check, Copy, Download, FileText, Printer, X } from "lucide-react";
+import { exportUrl, getHandoff, LIVE_URL, MIRROR, type ExportKind, type HandoffOption } from "../lib/api";
 import { markdownToHtml } from "../lib/markdown";
 
 async function copyText(url: string): Promise<void> {
@@ -23,39 +23,6 @@ async function copyRich(url: string): Promise<void> {
   }
 }
 
-function Action({ icon: Icon, label, hint, run, href, download }: {
-  icon: typeof Copy; label: string; hint?: string; run?: () => Promise<void> | void; href?: string; download?: boolean;
-}) {
-  const [state, setState] = useState<"idle" | "done" | "error">("idle");
-  const click = async () => {
-    try { await run?.(); setState("done"); setTimeout(() => setState("idle"), 1800); } catch { setState("error"); }
-  };
-  const body = (
-    <>
-      <span className="flex items-center gap-2 text-sm font-medium text-ink">
-        {state === "done" ? <Check aria-hidden="true" size={15} /> : <Icon aria-hidden="true" size={15} />}
-        <span aria-live="polite">{state === "done" ? "Done" : state === "error" ? "Could not copy - try again" : label}</span>
-      </span>
-      {hint && <span className="mt-0.5 block text-xs text-ink-3">{hint}</span>}
-    </>
-  );
-  const cls = "block w-full rounded-lg border border-line p-3 text-left hover:border-ink";
-  return href
-    ? <a href={href} download={download} className={cls}>{body}</a>
-    : <button type="button" onClick={click} className={cls}>{body}</button>;
-}
-
-function Group({ icon: Icon, title, children }: { icon: typeof Copy; title: string; children: React.ReactNode }) {
-  return (
-    <section>
-      <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-3">
-        <Icon aria-hidden="true" size={14} />{title}
-      </h3>
-      <div className="space-y-2">{children}</div>
-    </section>
-  );
-}
-
 function CommandLine({ text }: { text: string }) {
   const [done, setDone] = useState(false);
   return (
@@ -70,15 +37,56 @@ function CommandLine({ text }: { text: string }) {
   );
 }
 
+const TOAST: Partial<Record<ExportKind, string>> = {
+  quick: "Quick brief copied - paste it into your AI tool",
+  prompt: "Brief for your AI writer copied - paste it into your AI tool",
+  md: "Full report copied - paste it into Notion or Google Docs",
+};
+const ICON: Record<ExportKind, typeof Copy> = { quick: Bot, prompt: Bot, md: FileText, calendar: CalendarDays,
+  skill: Download, json: Braces };
+
+/** V9: one hand-off option - what it is for, how long it is, and a one-line preview. */
+function Option({ packId, o, onToast }: { packId: string; o: HandoffOption; onToast: (t: string) => void }) {
+  const [error, setError] = useState(false);
+  const Icon = ICON[o.kind];
+  const body = (
+    <>
+      <span className="flex items-center gap-2 text-sm font-medium text-ink"><Icon aria-hidden="true" size={15} />{o.title}
+        <span className="ml-auto font-normal text-xs text-ink-3">{o.length}</span></span>
+      <span className="mt-0.5 block text-sm text-ink-2">{error ? "Could not copy - try again" : o.purpose}</span>
+      {o.preview && <span className="mt-1 block truncate text-xs text-ink-3">{o.preview}</span>}
+    </>
+  );
+  const cls = `block w-full rounded-lg border p-3 text-left hover:border-ink ${o.more ? "border-dashed border-line" : "border-line"}`;
+  if (o.action === "download") {
+    return <a href={exportUrl(packId, o.kind)} download className={cls}
+              onClick={() => onToast(`${o.title} downloading`)}>{body}</a>;
+  }
+  const copy = async () => {
+    try {
+      await (o.kind === "md" ? copyRich : copyText)(exportUrl(packId, o.kind));
+      setError(false);
+      onToast(TOAST[o.kind] ?? `${o.title} copied`);
+    } catch { setError(true); }
+  };
+  return <button type="button" onClick={copy} className={cls}>{body}</button>;
+}
+
 export function Handoff({ packId, open, onClose }: { packId: string; open: boolean; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const [options, setOptions] = useState<HandoffOption[] | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
     if (open && !d.open) d.showModal();
     if (!open && d.open) d.close();
-  }, [open]);
+    if (open && !options) getHandoff(packId).then(setOptions).catch(() => setOptions([]));
+  }, [open, options, packId]);
+  const say = (t: string) => { setToast(t); setTimeout(() => setToast(null), 2600); };
   const mcp = `${MIRROR ? LIVE_URL : window.location.origin}/mcp`;  // the mirror has no server
+  const main = (options ?? []).filter((o) => !o.more);
+  const more = (options ?? []).filter((o) => o.more);
   return (
     <dialog ref={ref} onClose={onClose} aria-labelledby="handoff-title"
             className="m-auto w-full max-w-2xl rounded-xl border border-line bg-paper p-0 text-ink backdrop:bg-ink/30">
@@ -88,28 +96,32 @@ export function Handoff({ packId, open, onClose }: { packId: string; open: boole
           <X aria-hidden="true" size={18} />
         </button>
       </header>
-      <div className="grid gap-6 p-5 md:grid-cols-3">
-        <Group icon={Bot} title="For AI tools">
-          <Action icon={Copy} label="Copy prompt block" hint="Paste into ChatGPT, Claude or any AI tool before you ask."
-                  run={() => copyText(exportUrl(packId, "prompt"))} />
-          <Action icon={Download} label="Download skill" href={exportUrl(packId, "skill")} download
-                  hint="claude.ai: Settings → Features → upload the zip. Claude Code: unzip into ~/.claude/skills/." />
-        </Group>
-        <Group icon={Users} title="For your team">
-          <Action icon={Printer} label="Print / Save as PDF" hint="A clean printable brief." run={() => { onClose(); setTimeout(() => window.print(), 50); }} />
-          <Action icon={FileText} label="Copy for Notion / Docs" hint="Pastes with headings, lists and tables."
-                  run={() => copyRich(exportUrl(packId, "md"))} />
-          <Action icon={Download} label="Download content calendar" href={exportUrl(packId, "calendar")} download
-                  hint="4 weeks of post ideas. Notion: Import → CSV turns it into a database." />
-        </Group>
-        <Group icon={Download} title="For agents">
-          <Action icon={Download} label="Download JSON" href={exportUrl(packId, "json")} download hint="context_pack.json, schema 1.1" />
-          <p className="text-xs text-ink-2">Connect Claude Code (read-only, no key needed):</p>
-          <CommandLine text={`claude mcp add --transport http signal ${mcp}`} />
-          <p className="text-xs text-ink-2">To also start research, add your run key:</p>
-          <CommandLine text={`claude mcp add --transport http signal ${mcp} --header "X-API-Key: <YOUR_KEY>"`} />
-        </Group>
+      <div className="space-y-4 p-5">
+        {options === null && <p className="text-sm text-ink-3">Loading the options…</p>}
+        <div className="grid gap-2 sm:grid-cols-2">
+          {main.map((o) => <Option key={o.kind} packId={packId} o={o} onToast={say} />)}
+          <button type="button" onClick={() => { onClose(); setTimeout(() => window.print(), 50); }}
+                  className="block w-full rounded-lg border border-line p-3 text-left hover:border-ink">
+            <span className="flex items-center gap-2 text-sm font-medium text-ink"><Printer aria-hidden="true" size={15} />Print / Save as PDF
+              <span className="ml-auto font-normal text-xs text-ink-3">summary first</span></span>
+            <span className="mt-0.5 block text-sm text-ink-2">A clean printable report: the one-page summary, then the rest.</span>
+          </button>
+        </div>
+        {more.length > 0 && (
+          <details className="rounded-lg border border-line p-3">
+            <summary className="cursor-pointer text-sm text-ink-2">More: Claude and developers</summary>
+            <div className="mt-3 space-y-2">
+              {more.map((o) => <Option key={o.kind} packId={packId} o={o} onToast={say} />)}
+              <p className="text-xs text-ink-2">Connect Claude Code (read-only, no key needed):</p>
+              <CommandLine text={`claude mcp add --transport http signal ${mcp}`} />
+              <p className="text-xs text-ink-2">To also start research, add your run key:</p>
+              <CommandLine text={`claude mcp add --transport http signal ${mcp} --header "X-API-Key: <YOUR_KEY>"`} />
+            </div>
+          </details>
+        )}
       </div>
+      <p role="status" aria-live="polite"
+         className={`mx-5 mb-4 rounded-lg bg-ink px-3 py-2 text-sm text-paper ${toast ? "" : "sr-only"}`}>{toast ?? ""}</p>
     </dialog>
   );
 }

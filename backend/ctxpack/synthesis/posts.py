@@ -64,6 +64,7 @@ class PostBriefOut(BaseModel):
     avoid: list[str] = Field(default_factory=list)
     news_hook_id: str | None = None
     based_on: list[str] = Field(default_factory=list)
+    success_measure: str = ""
 
 
 def user_channels(intake: dict | None) -> list[str]:
@@ -157,7 +158,7 @@ def validate_briefs(raw: list[PostBriefOut], s: dict, *, hooks: dict[str, dict],
             "avoid": list(dict.fromkeys(phrases[a.strip().casefold()] for a in b.avoid
                                         if a.strip().casefold() in phrases)),
             "news_hook_id": nws if nws in news_ids else None,
-            "based_on": used,
+            "based_on": used, "success_measure": b.success_measure.strip(),
             "confidence": min(labels, key=LEVELS.index) if labels else "speculative"})
     rank = {ch: n for n, ch in enumerate(mine)}
     kept.sort(key=lambda b: rank.get(b["channel"], len(rank)))   # stable: the model's order inside a channel

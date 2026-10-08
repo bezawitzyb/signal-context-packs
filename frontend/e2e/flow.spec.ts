@@ -43,9 +43,10 @@ test("brief to pack, with the evidence drawer and accessibility checks", async (
   await page.keyboard.press("Escape");
   await expect(drawer).toBeHidden();
 
-  await page.getByRole("button", { name: "Handoff" }).click();
-  await expect(page.getByRole("button", { name: /Copy prompt block/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Download skill/ })).toHaveAttribute("href", /\/export\/skill$/);
+  await page.getByRole("button", { name: "Hand off" }).click();
+  await expect(page.getByRole("button", { name: /Quick brief/ })).toBeVisible();
+  await page.getByText("More: Claude and developers").click();
+  await expect(page.getByRole("link", { name: /Teach Claude this research/ })).toHaveAttribute("href", /\/export\/skill$/);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toBeHidden();
 });
@@ -71,7 +72,8 @@ test("a featured pack: summary, drawer with real posts, agent view, handoff, rep
   await page.getByRole("button", { name: "Strong only" }).click();
   await expect(page.getByText(/shown/).first()).toBeVisible();
 
-  await page.getByRole("link", { name: "Replay the research" }).first().click();
+  await page.locator("details.research > summary").click();               // V9: collapsed by default
+  await page.getByRole("link", { name: "Watch how this pack was made" }).first().click();
   await page.getByRole("button", { name: /Skip to the end/ }).click();
   await expect(page.getByText(/of \d+ events · done/)).toBeVisible();   // the public copy has no cost events
   await noSeriousA11yIssues(page, "Replay");

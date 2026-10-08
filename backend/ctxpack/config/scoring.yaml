@@ -83,3 +83,24 @@ consolidation:
 opportunities:
   supported_min_authors: 3
   supported_min_communities: 2
+
+# Plain words for the pack page, "How to read this" and every badge tooltip (change V9).
+# good_enough_to: what a marketer can safely use a finding for at that label.
+plain_labels:
+  strong:
+    words: "Strong - many different people in several communities say this"
+    good_enough_to: "commit budget"
+  moderate:
+    words: "Moderate - a clear pattern, from a fair number of people"
+    good_enough_to: "brief creative"
+  emerging:
+    words: "Emerging - a few people say this; worth testing"
+    good_enough_to: "test a post"
+  speculative:
+    words: "Early signal - only one or two people; check before acting"
+    good_enough_to: "explore, not act on yet"
+plain_claim_types:
+  observed: "seen in posts"
+  inferred: "our interpretation of the posts"
+  external: "from outside sources"
+grade_cap_thin: c               # a thin-evidence pack never shows a grade above this

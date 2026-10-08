@@ -152,50 +152,95 @@ extends both. `featured/` and `examples/` are migrated in each step and must val
   CSV with BOM, formula-safe cells, Dutch and Polish characters intact; user channels preferred.
 - **Paid:** rebuild check (about $0.30 per pack).
 
-### V9 Revised pack page and handoff - about 7 h
-- **Files:** `PackPage.tsx` and components (three parts + research, progressive disclosure, sticky
-  part nav, "How to read this" from scoring.yaml), `Handoff.tsx` (marketer-worded options with
-  computed length and preview; toasts), new quick-brief export tier, Markdown and print order,
-  replay renamed "Watch how this pack was made", mobile layout, e2e test updated.
-- **Config:** `modes.yaml` `exports.words_per_page: 450`, `exports.quick_brief_max_words: 250`.
-- **Tests:** e2e: first screen shows the Summary on a 1300x900 window; grep of UI strings finds no
-  "token", "JSON schema", "evidence id"; every badge has a tooltip; phone width (390 px) has no
-  horizontal scroll; exports follow page order.
-- **Paid:** none.
+### V9 Revised pack page and handoff - about 8 h (revised 2026-10-08 after a marketing-director audit)
+
+Goal: easier to **read**, **trust** and **act on**. Changes against the original V9 request are marked
+(new) / (changed) / (cut).
+
+- **Summary (first screen, under a minute)**
+  - One line: audience, goal, market, plus **"Who this represents"** (new): "N public posts from about
+    M people, mostly <platforms>; the vocal online minority, not market share".
+  - **What we heard most clearly** (changed: replaces "What we found" + "Five key truths"): 3 findings,
+    each with one quote (English translation shown under non-English quotes, new), a plain strength
+    label and "N people, M communities".
+  - **Recommended position** (new): one message, for whom, against which doubt, with item links.
+    Written by the existing playbook call (no new call).
+  - **Your plan** (changed): the top 3 calendar items = "Do this first", each with a **success
+    measure** (new, playbook call), and up to 2 news hooks (Ride this now).
+  - **How sure are we?** (new): one line per finding, "Good enough to: test a post / brief creative /
+    commit budget", from scoring.yaml labels.
+- **Understand your audience**
+  - Their words (vocabulary, phrases, say / don't say).
+  - (changed) **What they want / What stops them** as two blocks (motivations | pain points +
+    objections), with tensions as the bridge cards between them; linked chips (V4) kept.
+  - Segments (empty-state reason), Landscape by platform and over time.
+  - **Generic AI answer vs. what people say** (changed): per generic point a status: confirmed /
+    contradicted / not seen / new - from the existing non-obvious check (no new call).
+- **Act on it**
+  - **One plan** (changed): post briefs + 4-week calendar; week 1 = "this week" (the separate
+    this-week table and Do-first list fold into it; JSON keeps both fields for agents).
+  - Channels with timing chips; what performs (takeaways first); opportunities (supported | early
+    signal); guardrails.
+- **The research** (collapsed): sources, method, hypotheses, blind spots, all evidence,
+  "Watch how this pack was made" (renamed; "a recording - it won't run again or cost anything").
+- **Trust fixes** (new, code only): no "grade A" next to "thin evidence" (the grade is capped and
+  says why); "Five truths" renamed everywhere; confidence never colour-only.
+- **Hand-off** (changed: 4 options + "More"): Quick brief (half a page, new tier), Brief for your AI
+  writer (~2 pages), Full report (Notion / Docs / PDF; print view = one-page executive summary
+  first), Content calendar (CSV). More: Teach Claude (skill), For developers (JSON, API).
+  Length labels computed (words -> pages); toast after copy. (cut) "Send to Notion".
+- Progressive disclosure, sticky part nav ("How to read this" from scoring.yaml), mobile one column,
+  exports in page order - as in the original request.
+- **Files:** PackPage.tsx + components, Handoff.tsx, exports (markdown, print, new quick_brief.py),
+  synthesis/playbook.py + prompt (position, success measures), the non-obvious check (generic-point
+  status), finalize.py (findings, represents line, grade cap), schema 1.1 additions + migration.
+- **Schema 1.1 additions:** `snapshot.findings[]` {text, item_ids, quote, strength_text, good_enough_to},
+  `snapshot.represents`, `snapshot.position` {statement, for_whom, against_doubt, item_ids},
+  `generic_vs_found.comparison[]` {generic_point, status, item_ids}, `success_measure` on
+  do_first and post briefs. Old packs: empty / derived in code; `five_truths` kept for agents.
+- **Config:** `exports.words_per_page: 450`, `exports.quick_brief_max_words: 250`;
+  `scoring.yaml good_enough_to` per label.
+- **Tests:** e2e first screen shows the Summary at 1300x900; no "token", "JSON schema", "evidence id"
+  in UI strings; every badge has a tooltip; 390 px has no horizontal scroll; exports follow page
+  order; thin packs never show grade A; every comparison row has a status.
+- **Paid:** one rebuild on a saved corpus (`pack --from-run RUN_ID --redo`, about USD 0.40 Anthropic,
+  no Apify) to check the position, measures and comparison wording. Asked before running.
 
 Wireframe (desktop; on a phone the left nav becomes a menu and everything is one column):
 
 ```
 +----------------------------------------------------------------------------------+
-| SIGNAL                                              Packs   API      [Hand off v] |
+| SIGNAL                                                       Packs  [Hand off v]  |
 +------------------+---------------------------------------------------------------+
-| SUMMARY        * | Plant managers in DE, PL, Nordics - goal: content calendar     |
-|  Understand      | Grade B · 240 posts · 6 platforms     How to read this (?)     |
-|   Their words    | ------------------------------------------------------------- |
-|   Pain points    | WHAT WE FOUND                                                  |
-|   Tensions       |  1. ...plain line...  2. ...  3. ...                           |
-|   Motivations    | DO THIS FIRST                                                  |
-|   Objections     |  [1] action ...   [2] action ...   [3] action ...              |
-|   Segments       | FIVE KEY TRUTHS                                                |
-|   Landscape      |  "quote"  ● Strong · 14 people        (x5, one line each)      |
-|  Act on it       | RIDE THIS NOW                                                  |
-|   Posts+calendar |  [news hook 1 · date · source]  [news hook 2]                  |
-|   Channels       +---------------------------------------------------------------+
-|   Opportunities  | UNDERSTAND YOUR AUDIENCE                                       |
-|   Guardrails     |  Their words | Pain points | Tensions | Motivations | Objection|
-|  The research >  |  card: headline / so-what / one quote   [comes from: PAIN-02]  |
-|                  |                                           Show more (8)        |
+| SUMMARY        * | Homeowners in DE - goal: content calendar                      |
+|  Understand      | 101 posts from ~80 people, mostly Reddit + YouTube (vocal       |
+|   Their words    | online minority, not market share)        How to read this (?) |
+|   Want / Stops   | ------------------------------------------------------------- |
+|   Segments       | WHAT WE HEARD MOST CLEARLY                                     |
+|   Generic vs us  |  1. finding   "quote" (EN: ...)   Emerging - 5 people, 2 comm. |
+|   Landscape      |     Good enough to: test a post                                |
+|  Act on it       |  2. ...   3. ...                                               |
+|   Your plan      | RECOMMENDED POSITION                                           |
+|   Channels       |  "Honest numbers, house by house" - for Altbau owners who      |
+|   Opportunities  |   doubt a heat pump fits their house          [TEN-01 MOT-01]  |
+|   Guardrails     | YOUR PLAN - DO THIS FIRST                                      |
+|  The research >  |  [1] post ... measure: replies asking for the table  (Wk1 Tue) |
+|                  |  [2] ...  [3] ...        RIDE THIS NOW [hook · date · source]  |
+|                  +---------------------------------------------------------------+
+|                  | UNDERSTAND YOUR AUDIENCE                                       |
+|                  |  Their words | What they want  <-tension->  What stops them    |
+|                  |  Generic AI answer vs. what people say:                        |
+|                  |   subsidies are the main worry  -> NOT SEEN in the posts      |
+|                  |   old houses: will it work?     -> CONFIRMED  [TEN-01]        |
 |                  +---------------------------------------------------------------+
 |                  | ACT ON IT                                                      |
-|                  |  Post briefs: [card][card][card]  > draft (copy)               |
-|                  |  Calendar  W1 | W2 | W3 | W4   (channel · day · brief)         |
-|                  |  Channels with timing chips · What performs (takeaway first)   |
-|                  |  Opportunities: supported | early signal · Guardrails          |
+|                  |  Your plan: Wk1 | Wk2 | Wk3 | Wk4   brief cards > draft (copy)  |
+|                  |  Channels + timing · What performs · Opportunities · Guardrails|
 |                  +---------------------------------------------------------------+
-|                  | THE RESEARCH  (collapsed)  sources · method · hypotheses ·     |
-|                  |                blind spots · all evidence · Watch how it was made|
+|                  | THE RESEARCH (collapsed) sources · method · hypotheses ·      |
+|                  |   blind spots · evidence · Watch how this pack was made        |
 +------------------+---------------------------------------------------------------+
-  [Ask this pack]  (side panel, V10)
+Hand off: Quick brief (1/2 page) · AI writer brief (~2 pages) · Full report · Calendar CSV · More v
 ```
 
 ### V10 "Ask this pack" - about 4 h

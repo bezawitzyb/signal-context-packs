@@ -11,6 +11,9 @@ idempotent and also run on packs saved as 1.1 before a later step existed:
       most emerging, "not checked" for existing solutions); WSP-xx renamed to the new OPP ids.
   V7  news_hooks[] starts empty (no search was made); channel timing chips come from the moments.
   V8  post_briefs[], drafts[] and content_calendar[] start empty (model defaults; nothing to convert).
+  V9  snapshot.findings (top 3 of the five truths, with a quote and plain strength words), represents
+      (from the evidence) and the grade cap for thin packs, all in code; position and the generic-point
+      comparison stay empty (they need the model).
 Packs are never written back in an older version.
 """
 
@@ -24,7 +27,8 @@ from typing import Any
 def needs_migration(pack: dict[str, Any]) -> bool:
     from ctxpack.schemas.pack import SCHEMA_VERSION
 
-    return pack.get("schema_version") != SCHEMA_VERSION or "pain_points" not in pack or "white_space" in pack or "news_hooks" not in pack
+    return (pack.get("schema_version") != SCHEMA_VERSION or "pain_points" not in pack or "white_space" in pack
+            or "news_hooks" not in pack or "findings" not in (pack.get("snapshot") or {}))
 
 
 def migrate(pack: dict[str, Any]) -> dict[str, Any]:
@@ -46,7 +50,37 @@ def migrate(pack: dict[str, Any]) -> dict[str, Any]:
         out = {**out, "news_hooks": [],
                "channel_plan": channel_timing(out.get("channel_plan", []), out.get("moments", []),
                                               out.get("evidence", []), [], [])}
+    if "findings" not in (out.get("snapshot") or {}):
+        out = _summary_v9(out)
     return out
+
+
+def _summary_v9(pack: dict[str, Any]) -> dict[str, Any]:
+    """V9: the summary's findings, the represents line and the grade cap, from what the pack already holds."""
+    from ctxpack.synthesis.finalize import _PLATFORM_WORDS, capped_grade, finding
+
+    snap = dict(pack.get("snapshot") or {})
+    items = {it["id"]: it for name in ("landscape", "pain_points", "tensions", "motivations", "objections",
+                                       "segments", "moments") for it in _items(pack, name)}
+    evidence = {e["id"]: e for e in pack.get("evidence", [])}
+    picks = [items[t["item_ids"][0]] for t in snap.get("five_truths", []) if t["item_ids"][0] in items]
+    thin = bool((pack.get("coverage") or {}).get("thin_evidence"))
+    snap["findings"] = [finding(it, evidence, thin) for it in picks[:3] if it.get("confidence")]
+    by_platform: dict[str, int] = {}
+    for e in pack.get("evidence", []):
+        by_platform[e["platform"]] = by_platform.get(e["platform"], 0) + 1
+    top = [_PLATFORM_WORDS.get(k, k) for k, _ in sorted(by_platform.items(), key=lambda kv: -kv[1])[:2]]
+    relevant = ((pack.get("coverage") or {}).get("counts") or {}).get("relevant", 0)
+    snap["represents"] = (f"{relevant} public posts, mostly on {' and '.join(top)}. This is what vocal people say "
+                          "online, not a survey of the whole market.") if relevant and top else ""
+    grade, note = capped_grade(snap.get("coverage_grade", "d"), bool((pack.get("coverage") or {}).get("thin_evidence")))
+    snap.update(coverage_grade=grade, grade_note=note)
+    return {**pack, "snapshot": snap}
+
+
+def _items(pack: dict[str, Any], name: str) -> list[dict]:
+    value = pack.get(name) or []
+    return value.get("themes", []) if name == "landscape" and isinstance(value, dict) else value
 
 
 def migrate_1_0_to_1_1(pack: dict[str, Any]) -> dict[str, Any]:

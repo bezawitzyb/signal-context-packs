@@ -140,10 +140,14 @@ Used at: `snapshot`
 
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
-| `five_truths` | list of [Truth](#truth) | yes | Up to five most important truths. |  |
+| `five_truths` | list of [Truth](#truth) | yes | Up to five most important findings (kept for agents; the page shows findings[]). |  |
+| `findings` | list of [Finding](#finding) | no | What we heard most clearly (V9): the top 3 findings with a quote and plain strength words. |  |
+| `represents` | text | no | Who the evidence represents (V9): posts, people, platforms. |  |
+| `position` | [Position](#position) or null | no | Recommended position (V9). |  |
 | `top_opportunity` | [Pick](#pick) or null | no | The single best opportunity. |  |
 | `top_risk` | [Pick](#pick) or null | no | The single biggest risk. |  |
-| `coverage_grade` | enum [CoverageGrade](#enum-coveragegrade) | yes | How well the evidence covers the brief: a (best) to d. |  |
+| `coverage_grade` | enum [CoverageGrade](#enum-coveragegrade) | yes | How well the evidence covers the brief: a (best) to d; at most c in a thin-evidence pack (V9). |  |
+| `grade_note` | text | no | Why the grade was capped, if it was (V9). |  |
 | `generic_vs_found` | [GenericVsFound](#genericvsfound) | yes | Generic answer next to what we found. |  |
 
 ### DoFirst
@@ -159,6 +163,7 @@ Used at: `do_first[]`
 | `effort` | enum [Level](#enum-level) | yes | low, medium or high. |  |
 | `impact` | enum [Level](#enum-level) | yes | low, medium or high. |  |
 | `owner_hint` | text | no | Who would usually own it. | `"social team"` |
+| `success_measure` | text | no | How you will know it worked (V9). | `"replies asking for the full figures table"` |
 
 ### Landscape
 
@@ -413,6 +418,7 @@ Used at: `post_briefs[]` - A post to make (V8), built from pain points, objectio
 | `avoid` | list of text | no | Guardrail phrases (not this / never claim) to avoid. |  |
 | `news_hook_id` | text or null | no | News hook it rides. |  |
 | `based_on` | list of text | yes | Items the brief is built from. |  |
+| `success_measure` | text | no | How you will know the post worked (V9). |  |
 | `confidence` | enum [ConfidenceLabel](#enum-confidencelabel) | yes | The weakest label among the items it uses (code). |  |
 
 ### PostDraft
@@ -604,6 +610,33 @@ Used at: `snapshot.five_truths[]`
 | `text` | text | yes | One of the five most important findings. |  |
 | `item_ids` | list of text | yes | Items that back it. | `["TEN-01"]` |
 
+### Finding
+
+Used at: `snapshot.findings[]` - A finding for the summary (V9): plain strength words, a quote and what it is good enough for.
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `text` | text | yes | The finding in one sentence. |  |
+| `item_ids` | list of text | yes | Items that back it. |  |
+| `quote` | [Quote](#quote) or null | no | One verbatim quote from its evidence. |  |
+| `quote_en` | text or null | no | English translation of the quote's post, when not English. |  |
+| `label` | enum [ConfidenceLabel](#enum-confidencelabel) | yes | Confidence label of the item. |  |
+| `people` | integer | yes | Distinct people behind it. |  |
+| `communities` | integer | yes | Platforms they came from. |  |
+| `strength_text` | text | yes | Plain words, e.g. "Emerging - 5 people in 2 communities". |  |
+| `good_enough_to` | text | yes | What it is safe to use it for (scoring.yaml plain_labels). |  |
+
+### Position
+
+Used at: `snapshot.position` - The one message to own (V9), written by the playbook call from verified items.
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `statement` | text | yes | The message, in a few words. |  |
+| `for_whom` | text | yes | Who it is for. |  |
+| `against_doubt` | text | yes | The doubt or objection it answers. |  |
+| `item_ids` | list of text | yes | Items it is built on. |  |
+
 ### Pick
 
 Used at: `snapshot.top_opportunity`
@@ -620,7 +653,8 @@ Used at: `snapshot.generic_vs_found`
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
 | `generic_points` | list of text | yes | What a generic AI answer says (no evidence). |  |
-| `what_we_found` | list of [FoundPoint](#foundpoint) | yes | What the evidence shows instead. |  |
+| `what_we_found` | list of [FoundPoint](#foundpoint) | yes | What the evidence shows instead (new to the generic answer). |  |
+| `comparison` | list of [Comparison](#comparison) | no | Every generic point with its status (V9); empty in packs made before V9. |  |
 
 ### Theme
 
@@ -1006,6 +1040,16 @@ Used at: `snapshot.generic_vs_found.what_we_found[]`
 |---|---|---|---|---|
 | `text` | text | yes | What the evidence actually shows. |  |
 | `item_ids` | list of text | yes | Items that show it. |  |
+
+### Comparison
+
+Used at: `snapshot.generic_vs_found.comparison[]` - One generic point checked against the evidence (V9).
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `generic_point` | text | yes | What a generic answer says. |  |
+| `status` | "confirmed" | "contradicted" | "not_seen" | yes | confirmed (the posts say it too), contradicted (they say otherwise) or not_seen. |  |
+| `item_ids` | list of text | no | Findings that confirm or contradict it. |  |
 
 ### EmotionShare
 

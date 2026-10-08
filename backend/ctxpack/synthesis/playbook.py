@@ -36,6 +36,7 @@ class DoFirstOut(BaseModel):
     effort: str = "medium"
     impact: str = "medium"
     owner_hint: str = ""
+    success_measure: str = ""
 
     _effort = field_validator("effort", mode="before")(_level)
     _impact = field_validator("impact", mode="before")(_level)
@@ -87,6 +88,13 @@ class TargetOut(BaseModel):
     why_ids: list[str] = Field(default_factory=list)
 
 
+class PositionOut(BaseModel):
+    statement: str = ""
+    for_whom: str = ""
+    against_doubt: str = ""
+    item_ids: list[str] = Field(default_factory=list)
+
+
 class PlanPostOut(BaseModel):
     day: str
     platform: str
@@ -99,6 +107,7 @@ class PlanPostOut(BaseModel):
 
 
 class PlaybookOut(BaseModel):
+    position: PositionOut | None = None
     do_first: list[DoFirstOut] = Field(default_factory=list)
     channel_plan: list[ChannelOut] = Field(default_factory=list)
     hooks: list[HookOut] = Field(default_factory=list)
@@ -157,8 +166,11 @@ def _fake(user: str) -> dict:
     obj = [i for i in ids if i.startswith("OBJ")][:2]
     backed = [i for i in ids if i.split("-")[0] in ("TEN", "PAIN", "OBJ", "THM", "MOT", "SEG", "MOM")] or [ten]
     return {
+        "position": {"statement": "Fake position", "for_whom": "Fake audience", "against_doubt": "Fake doubt",
+                     "item_ids": [ten]},
         "do_first": [{"action": f"Fake action {n}", "why": "Fake.", "why_ids": [ids[n % len(ids)]],
-                      "effort": "low", "impact": "high", "owner_hint": "social team"} for n in range(3)],
+                      "effort": "low", "impact": "high", "owner_hint": "social team",
+                      "success_measure": "Fake measure"} for n in range(3)],
         "channel_plan": [{"platform": p, "why": "Fake.", "why_ids": [ten], "formats": ["post"]}
                          for p in ("web_forum", "instagram", "tiktok")],
         "hooks": [{"text": f"Fake hook {n} lekker", "why_ids": [ten]} for n in range(1, 11)],
@@ -177,7 +189,8 @@ def _fake(user: str) -> dict:
                                         for k in range(3)],
                          "structure": "story -> lesson -> question", "format": fmt,
                          "their_words_to_use": [i for i in ids if i.startswith("LEX")][:2], "cta": "Fake CTA",
-                         "avoid": [], "news_hook_id": nws if n == 1 else None, "based_on": [ten]}
+                         "avoid": [], "news_hook_id": nws if n == 1 else None, "based_on": [ten],
+                         "success_measure": "Fake post measure"}
                         for n, (ch, fmt) in enumerate([("instagram", "carousel"), ("tiktok", "short_video"),
                                                        ("web_forum", "text_post"), ("instagram", "text_post"),
                                                        ("tiktok", "short_video"), ("web_forum", "text_post")], 1)],
@@ -217,7 +230,8 @@ def validate(out: PlaybookOut, s: dict, stats: PlaybookStats, news: list[dict] =
     for o in out.do_first:
         if why := refs(o.why_ids):
             do_first.append({"id": f"DO-{len(do_first) + 1:02d}", "action": o.action, "why": o.why, "why_ids": why,
-                             "effort": o.effort, "impact": o.impact, "owner_hint": o.owner_hint})
+                             "effort": o.effort, "impact": o.impact, "owner_hint": o.owner_hint,
+                             "success_measure": o.success_measure.strip()})
         else:
             stats.drop("do_first_without_evidence")
     channels = []
@@ -267,7 +281,14 @@ def validate(out: PlaybookOut, s: dict, stats: PlaybookStats, news: list[dict] =
                      "news_hook_id": nws if nws in news_ids else None, "why_now": o.why_now})
     briefs = posts.validate_briefs(out.post_briefs, s, hooks={h["id"]: h for h in hooks}, hook_id_of=hook_id_of,
                                    channels=channels, intake=intake, news=news, stats=stats)
-    return {"do_first": do_first[:3], "channel_plan": channels,
+    position = None
+    if out.position and out.position.statement.strip():
+        if pos_ids := refs(out.position.item_ids):
+            position = {"statement": out.position.statement.strip(), "for_whom": out.position.for_whom.strip(),
+                        "against_doubt": out.position.against_doubt.strip(), "item_ids": pos_ids}
+        else:
+            stats.drop("position_without_evidence")
+    return {"position": position, "do_first": do_first[:3], "channel_plan": channels,
             "playbook": {"hooks": hooks, "creative_brief": cb, "objection_handling": handling,
                          "keywords": out.keywords.model_dump(), "targets": targets, "this_week": week},
             "post_briefs": briefs}

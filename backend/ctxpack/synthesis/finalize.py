@@ -176,18 +176,93 @@ def sections_meta(pack: dict, written: dict[str, dict], alive: set[str], interp:
     return out
 
 
-def snapshot(sections: dict, generic: list[str], grade: str, opportunities: list[dict] = ()) -> dict:
+def plain(label: str) -> dict:
+    """scoring.yaml plain words for a confidence label (V9)."""
+    return load_yaml("scoring")["plain_labels"][label]
+
+
+def finding(it: dict, evidence: dict[str, dict], thin: bool = False) -> dict:
+    """A summary finding (V9): plain strength words with counts, one quote and its English translation.
+    In a thin-evidence pack no finding is called good enough to commit budget (moderate's use at most)."""
+    label = it["confidence"]["label"]
+    use = plain("moderate" if thin and label == "strong" else label)["good_enough_to"]
+    st = it.get("strength") or {}
+    people, communities = st.get("distinct_authors", 0), len(st.get("platforms") or [])
+    quote = next((q for q in it.get("quotes", []) if q["evidence_id"] in evidence), None)
+    ev = evidence.get(quote["evidence_id"]) if quote else None
+    return {"text": it["claim"], "item_ids": [it["id"]], "quote": quote,
+            "quote_en": (ev or {}).get("text_en") if (ev or {}).get("language") not in (None, "en") else None,
+            "label": label, "people": people, "communities": communities,
+            "strength_text": f"{plain(label)['words'].split(' - ')[0]} - {people} "
+                             f"{'person' if people == 1 else 'people'} in {communities} "
+                             f"{'community' if communities == 1 else 'communities'}",
+            "good_enough_to": use}
+
+
+def comparison(generic: list[str], claims: list[dict]) -> list[dict]:
+    """V9: every generic point confirmed, contradicted or not seen, from the non-obvious check's matches.
+    Empty when the check gave no matches (packs written before V9)."""
+    if not any("generic_match" in it for it in claims):
+        return []
+    rows = []
+    for n, point in enumerate(generic):
+        hits = [it for it in claims if (it.get("generic_match") or {}).get("point") == n]
+        same = [it["id"] for it in hits if it["generic_match"]["relation"] == "same"]
+        against = [it["id"] for it in hits if it["generic_match"]["relation"] == "contradicts"]
+        status = "contradicted" if len(against) > len(same) else "confirmed" if same else "not_seen"
+        rows.append({"generic_point": point, "status": status,
+                     "item_ids": against if status == "contradicted" else same})
+    return rows
+
+
+def capped_grade(grade: str, thin: bool) -> tuple[str, str]:
+    """V9: a thin-evidence pack never shows a top grade next to its "thin evidence" warning."""
+    cap = load_yaml("scoring")["grade_cap_thin"]
+    if thin and grade < cap:
+        return cap, (f"Capped at {cap}: the sources are broad (grade {grade}), but too few findings met the "
+                     f"minimum bar.")
+    return grade, ""
+
+
+_PLATFORM_WORDS = {"reddit": "Reddit", "tiktok": "TikTok", "youtube": "YouTube", "instagram": "Instagram",
+                   "linkedin": "LinkedIn", "x": "X", "web_forum": "forums", "web_review": "review sites",
+                   "web_editorial": "articles"}
+
+
+def represents(docs: list[Any]) -> str:
+    """V9: who the evidence speaks for, in one plain line."""
+    relevant = [d for d in docs if d.is_relevant]
+    if not relevant:
+        return ""
+    people = len({d.author_hash for d in relevant if d.author_hash})
+    by_platform: dict[str, int] = {}
+    for d in relevant:
+        by_platform[str(d.platform)] = by_platform.get(str(d.platform), 0) + 1
+    top = [_PLATFORM_WORDS.get(p, p) for p, _ in sorted(by_platform.items(), key=lambda kv: -kv[1])[:2]]
+    who = f" from about {people} people" if people else ""
+    return (f"{len(relevant)} public posts{who}, mostly on {' and '.join(top)}. This is what vocal people say "
+            f"online, not a survey of the whole market.")
+
+
+def snapshot(sections: dict, generic: list[str], grade: str, opportunities: list[dict] = (), *,
+             evidence: list[dict] = (), thin: bool = False, position: dict | None = None,
+             who: str = "") -> dict:
     claims = sorted((it for n in ("themes", "pain_points", "tensions", "motivations", "objections",
                                   "segments", "moments") for it in sections.get(n, [])), key=_rank_key)
     truths = [{"text": it["claim"], "item_ids": [it["id"]]} for it in claims[:5]]
     found = [{"text": it["claim"], "item_ids": [it["id"]]} for it in claims if it.get("non_obvious")][:5]
     opp = (opportunities or [None])[0]
     risk = sections["risks"][0] if sections["risks"] else None
+    ev = {e["id"]: e for e in evidence}
+    grade, note = capped_grade(grade, thin)
     return {"five_truths": truths,
+            "findings": [finding(it, ev, thin) for it in claims[:3]],
+            "represents": who, "position": position,
             "top_opportunity": {"item_id": opp["id"], "text": opp["opportunity"]} if opp else None,
             "top_risk": {"item_id": risk["id"], "text": risk["text"]} if risk else None,
-            "coverage_grade": grade,
-            "generic_vs_found": {"generic_points": generic, "what_we_found": found}}
+            "coverage_grade": grade, "grade_note": note,
+            "generic_vs_found": {"generic_points": generic, "what_we_found": found,
+                                 "comparison": comparison(generic, claims)}}
 
 
 def digest(pack: dict, max_chars: int) -> str:
@@ -329,7 +404,9 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
         posts_mod.week_start(data["generated_at"].date()))
     data["sections_meta"] = sections_meta(data, notes.get("meta", {}), alive, interp)
     data["snapshot"] = snapshot(s, draft.get("generic_points", []),
-                                analysis.get("coverage", {}).get("grade", "d"), list(opportunities))
+                                analysis.get("coverage", {}).get("grade", "d"), list(opportunities),
+                                evidence=data["evidence"], thin=data["coverage"]["thin_evidence"],
+                                position=parts.get("position"), who=represents(docs))
     data["digest"] = digest(_jsonable(data), load_yaml("modes")["content_bar"]["digest_max_chars"])
     return P.ContextPack.model_validate(data), bar_short
 

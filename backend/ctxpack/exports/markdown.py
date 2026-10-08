@@ -8,6 +8,7 @@ quote-reuse note is repeated next to them.
 from __future__ import annotations
 
 from ctxpack.exports.common import DISCLAIMER, HOOKS_NOTE, badge, cell, inline, privacy_line
+from ctxpack.config import load_yaml
 from ctxpack.exports.calendar_csv import CHANNEL_NAMES, FORMAT_NAMES
 
 
@@ -63,7 +64,12 @@ def _claims(items: list[dict], title_key: str | None = None) -> list[str]:
     return out or ["- None found."]
 
 
+STATUS_WORDS = {"confirmed": "Confirmed by the posts", "contradicted": "Contradicted by the posts",
+                "not_seen": "Not seen in the posts"}
+
+
 def to_markdown(pack: dict) -> str:
+    """Same parts and order as the pack page (V9): Summary, Understand your audience, Act on it, The research."""
     _INDEX.clear()
     for name in ("pain_points", "tensions", "motivations", "objections", "segments", "moments"):
         _INDEX.update({it["id"]: inline(it["claim"])[:90] for it in pack.get(name, [])})
@@ -84,63 +90,56 @@ def to_markdown(pack: dict) -> str:
     add(f"# Context Pack: {inline(i['topic'])} ({i['market']})")
     add("")
     add(f"*Brief:* {inline(b['text'])}  ")
-    add(f"*Audience:* {inline(i['audience'])} | *Languages:* {', '.join(i['languages'])} | *Mode:* {pack['mode']} | "
-        f"*Window:* {i['time_window_days']} days{' | *Brand voice:* ' + inline(b['brand_voice']) if b.get('brand_voice') else ''}")
+    goal = (b.get("intake") or {}).get("goal")
+    add(f"*Audience:* {inline(i['audience'])}{' | *Goal:* ' + inline(goal) if goal else ''} | *Languages:* "
+        f"{', '.join(i['languages'])} | *Mode:* {pack['mode']} | *Window:* {i['time_window_days']} days"
+        f"{' | *Brand voice:* ' + inline(b['brand_voice']) if b.get('brand_voice') else ''}")
     add(f"*Pack:* {pack['pack_id']} | *Generated:* {pack['generated_at']} | *Coverage grade:* "
-        f"{snap['coverage_grade']} | *Relevant posts:* {cov['counts']['relevant']}")
+        f"{snap['coverage_grade']}{' (' + inline(snap['grade_note']) + ')' if snap.get('grade_note') else ''} | "
+        f"*Relevant posts:* {cov['counts']['relevant']}")
     if cov["thin_evidence"]:
         add("")
         add("> **Thin evidence.** This pack does not meet the minimum content bar; see Blind spots for what is "
             "short. Treat its findings as early signals.")
 
+    # ---- SUMMARY ----------------------------------------------------------------------------
     add("\n## Summary\n")
-    add("### Do first")
+    if snap.get("represents"):
+        add(f"*Who this represents:* {inline(snap['represents'])}")
+    add("\n### What we heard most clearly")
+    for f in snap.get("findings") or []:
+        add(f"- **{inline(f['text'])}** *[{', '.join(f['item_ids'])}; {f['strength_text']}; good enough to: "
+            f"{f['good_enough_to']}]*")
+        if f.get("quote"):
+            add(f"  > {inline(f['quote']['text'])} ({f['quote']['evidence_id']})")
+            if f.get("quote_en"):
+                add(f"  > *In English (the post):* {inline(f['quote_en'])[:280]}")
+    if not snap.get("findings"):
+        L += [f"- {inline(t['text'])} *[{', '.join(t['item_ids'])}]*" for t in snap["five_truths"][:3]]
+    pos = snap.get("position")
+    if pos:
+        add("\n### Recommended position")
+        add(f"**{inline(pos['statement'])}** - for {inline(pos['for_whom'])}, answering: "
+            f"{inline(pos['against_doubt'])} *[{', '.join(pos['item_ids'])}]*")
+    add("\n### Your plan: do this first")
     for d in pack["do_first"]:
         add(f"1. **{inline(d['action'])}** - {inline(d['why'])} *[{d['id']}; effort {d['effort']}, impact "
             f"{d['impact']}; {inline(d['owner_hint'])}; based on {', '.join(d['why_ids'])}]*")
+        if d.get("success_measure"):
+            add(f"   - How you'll know it worked: {inline(d['success_measure'])}")
     if pack.get("news_hooks"):
         add("\n### Ride this now")
-        for h in pack["news_hooks"]:
+        for h in pack["news_hooks"][:2]:
             add(f"- **{inline(h['headline'])}** ({h['date']}, {h['kind']}) - {inline(h['why_it_matters'])} "
                 f"[source]({h['source_url']}) *[{h['id']}; external]*")
-    add("\n### Five truths")
-    for t in snap["five_truths"]:
-        add(f"- {inline(t['text'])} *[{', '.join(t['item_ids'])}]*")
     if snap.get("top_opportunity"):
         add(f"\n**Top opportunity:** {inline(snap['top_opportunity']['text'])} *[{snap['top_opportunity']['item_id']}]*  ")
     if snap.get("top_risk"):
         add(f"**Top risk:** {inline(snap['top_risk']['text'])} *[{snap['top_risk']['item_id']}]*")
-    add("\n### A generic AI answer vs. what people actually say")
-    add("| Generic answer | What we found |")
-    add("|---|---|")
-    gp, found = snap["generic_vs_found"]["generic_points"][:6], snap["generic_vs_found"]["what_we_found"]
-    for n in range(max(len(gp), len(found))):
-        left = cell(gp[n]) if n < len(gp) else ""
-        right = f"{cell(found[n]['text'])} [{', '.join(found[n]['item_ids'])}]" if n < len(found) else ""
-        add(f"| {left} | {right} |")
 
-    add("\n## Channels and this week\n")
-    for c in pack["channel_plan"]:
-        add(f"{c['priority']}. **{c['platform']}** - {inline(c['why'])} *[{c['id']}; based on {', '.join(c['why_ids'])}]*  ")
-        add(f"   Formats: {inline(', '.join(c['formats']))}. Where: {inline(', '.join(c['communities_or_hashtags'])) or '-'}. "
-            f"Tone: {inline(c['tone_note'])}")
-        if c.get("timing"):
-            add("   When: " + "; ".join(
-                f"{inline(t['label'])} ({inline(t['when'])}, "
-                + (f"seen in posts {', '.join(t['evidence_ids'])})" if t["claim_type"] == "observed"
-                   else f"external, [source]({t['source_url']}))") for t in c["timing"]))
-    add("\n| Day | Platform | Format | Hook | Angle | Why now |")
-    add("|---|---|---|---|---|---|")
-    hooks = {h["id"]: h for h in pb["hooks"]}
-    for w in pb["this_week"]:
-        add(f"| {w['day']} | {w['platform']} | {cell(w['format'])} | {cell(hooks[w['hook_id']]['text'])} "
-            f"[{w['hook_id']}] | {cell(w['angle'])} | {cell(w['why_now'])}"
-            + (f" (rides {w['news_hook_id']})" if w.get("news_hook_id") else "") + " |")
-
-    if pack.get("post_briefs"):
-        L.extend(posts_section(pack))
-
-    add("\n## Voice\n")
+    # ---- UNDERSTAND YOUR AUDIENCE -----------------------------------------------------------
+    add("\n## Understand your audience\n")
+    add("### Their words")
     v = pack["voice"]
     add(f"**Tone:** {inline(v['tone'])}  ")
     if v.get("code_switching"):
@@ -158,12 +157,31 @@ def to_markdown(pack: dict) -> str:
     add("\n**Not this:**")
     L += [f"- {inline(s)}" for s in g["not_this"]] or ["- -"]
 
-    add("\n## Pain points\n")
+    add("\n### What they want")
+    L += _meta(pack, "motivations")
+    for kind in ("need", "pain", "job"):  # pains: pain_points since 1.1 (kept here for older packs)
+        items = [m for m in pack["motivations"] if m["kind"] == kind]
+        if items:
+            add(f"**{kind.capitalize()}s**")
+            L += _claims(items)
+    if not pack["motivations"]:
+        add("- None found.")
+
+    add("\n### What stops them")
     L += _meta(pack, "pain_points")
     if pack.get("pain_points"):
+        add("**What gets in their way**")
         L += _claims(pack["pain_points"])
+    L += _meta(pack, "objections")
+    if pack["objections"]:
+        add("\n**Why they would say no**")
+        L += _claims(pack["objections"])
+    handling = {h["objection_id"]: h["response"] for h in pb["objection_handling"]}
+    if handling:
+        add("\n**How to answer them:**")
+        L += [f"- {oid}: {inline(r)}" for oid, r in handling.items()]
 
-    add("\n## Tensions and motivations\n")
+    add("\n### Tensions: where wanting meets what stops them")
     L += _meta(pack, "tensions")
     for t in pack["tensions"]:
         add(f"- **{inline(t['claim'])}** *[{t['id']}; {badge(t)}]*")
@@ -172,34 +190,33 @@ def to_markdown(pack: dict) -> str:
         L += _quotes(t)
     if not pack["tensions"]:
         add("- None found.")
-    add("")
-    L += _meta(pack, "motivations")
-    for kind in ("need", "pain", "job"):  # pains: pain_points since 1.1 (kept here for older packs)
-        items = [m for m in pack["motivations"] if m["kind"] == kind]
-        if items:
-            add(f"**{kind.capitalize()}s**")
-            L += _claims(items)
 
-    add("\n## Segments\n")
+    add("\n### Segments")
     L += _meta(pack, "segments")
     if pack["segments"] or not (pack.get("sections_meta") or {}).get("segments", {}).get("empty_reason"):
         L += _claims(pack["segments"], "name")
 
-    add("\n## Objections and competitors\n")
-    L += _meta(pack, "objections")
-    L += _claims(pack["objections"])
-    handling = {h["objection_id"]: h["response"] for h in pb["objection_handling"]}
-    if handling:
-        add("\n**How to answer them:**")
-        L += [f"- {oid}: {inline(r)}" for oid, r in handling.items()]
-    if pack["competitors"]:
-        add("\n| Brand | Mentions | Share | How they talk about it | Praised | Mocked |")
-        add("|---|---|---|---|---|---|")
-        for c in pack["competitors"][:8]:
-            add(f"| {cell(c['name'])} | {c['mentions']} | {c['share_of_mentions']:.0%} | {cell(c['tone'])} | "
-                f"{cell(', '.join(c['praised']))} | {cell(', '.join(c['mocked']))} |")
+    add("\n### A generic AI answer vs. what people actually say")
+    gvf = snap["generic_vs_found"]
+    if gvf.get("comparison"):
+        add("| A generic answer says | What the posts show |")
+        add("|---|---|")
+        for row in gvf["comparison"]:
+            ids = f" [{', '.join(row['item_ids'])}]" if row["item_ids"] else ""
+            add(f"| {cell(row['generic_point'])} | {STATUS_WORDS[row['status']]}{ids} |")
+        if gvf["what_we_found"]:
+            add("\n**New - what a generic answer misses:**")
+            L += [f"- {inline(f['text'])} [{', '.join(f['item_ids'])}]" for f in gvf["what_we_found"]]
+    else:
+        add("| Generic answer | What we found |")
+        add("|---|---|")
+        gp, found = gvf["generic_points"][:6], gvf["what_we_found"]
+        for n in range(max(len(gp), len(found))):
+            left = cell(gp[n]) if n < len(gp) else ""
+            right = f"{cell(found[n]['text'])} [{', '.join(found[n]['item_ids'])}]" if n < len(found) else ""
+            add(f"| {left} | {right} |")
 
-    add("\n## Landscape and platform lens\n")
+    add("\n### Landscape")
     L += _meta(pack, "themes")
     L += _claims(pack["landscape"]["themes"], "label")
     if pack["landscape"].get("whats_new"):
@@ -208,12 +225,46 @@ def to_markdown(pack: dict) -> str:
     for lens in pack["landscape"]["platform_lens"]:
         add(f"\n**{lens['platform']}** ({lens['kept_posts']} posts) [{lens['id']}]: {inline(lens['tone'])} "
             f"What is unique: {inline(lens['what_is_unique'])}")
+    if pack["moments"]:
+        add("\n**When it matters**")
+        L += _claims(pack["moments"], "name")
     culture = [c for part in pack["culture"].values() for c in part]
     if culture:
         add("\n**Culture and codes**")
         L += _claims(culture, "name")
+    if pack["competitors"]:
+        add("\n| Brand | Mentions | Share | How they talk about it | Praised | Mocked |")
+        add("|---|---|---|---|---|---|")
+        for c in pack["competitors"][:8]:
+            add(f"| {cell(c['name'])} | {c['mentions']} | {c['share_of_mentions']:.0%} | {cell(c['tone'])} | "
+                f"{cell(', '.join(c['praised']))} | {cell(', '.join(c['mocked']))} |")
 
-    add("\n## What performs\n")
+    # ---- ACT ON IT --------------------------------------------------------------------------
+    add("\n## Act on it\n")
+    if pack.get("post_briefs"):
+        L.extend(posts_section(pack))
+    else:
+        add("### Your plan: this week")
+        add("| Day | Platform | Format | Hook | Angle | Why now |")
+        add("|---|---|---|---|---|---|")
+        hooks = {h["id"]: h for h in pb["hooks"]}
+        for w in pb["this_week"]:
+            add(f"| {w['day']} | {w['platform']} | {cell(w['format'])} | {cell(hooks[w['hook_id']]['text'])} "
+                f"[{w['hook_id']}] | {cell(w['angle'])} | {cell(w['why_now'])}"
+                + (f" (rides {w['news_hook_id']})" if w.get("news_hook_id") else "") + " |")
+
+    add("\n### Channels")
+    for c in pack["channel_plan"]:
+        add(f"{c['priority']}. **{c['platform']}** - {inline(c['why'])} *[{c['id']}; based on {', '.join(c['why_ids'])}]*  ")
+        add(f"   Formats: {inline(', '.join(c['formats']))}. Where: {inline(', '.join(c['communities_or_hashtags'])) or '-'}. "
+            f"Tone: {inline(c['tone_note'])}" + (f" Posts a week: {c['posts_per_week']}." if c.get("posts_per_week") else ""))
+        if c.get("timing"):
+            add("   When: " + "; ".join(
+                f"{inline(t['label'])} ({inline(t['when'])}, "
+                + (f"seen in posts {', '.join(t['evidence_ids'])})" if t["claim_type"] == "observed"
+                   else f"external, [source]({t['source_url']}))") for t in c["timing"]))
+
+    add("\n### What performs")
     L += _meta(pack, "what_performs")
     for t in pack.get("performance_takeaways", []):
         add(f"- **{inline(t['takeaway'])}** {inline(t['why'])} *(inferred)* [{t['id']}"
@@ -224,10 +275,7 @@ def to_markdown(pack: dict) -> str:
           f"{inline(p['why_it_worked'])} *(inferred)* [{p['id']}, {p['evidence_id']}]" for p in pack["what_performs"]] \
         or ["- No engagement data in this pack."]
 
-    add("\n## Moments\n")
-    L += _claims(pack["moments"], "name")
-
-    add("\n## Opportunities\n")
+    add("\n### Opportunities")
     L += _meta(pack, "opportunities")
     for o in pack["opportunities"]:
         status = "Supported" if o["status"] == "supported" else "Early signal - check before acting"
@@ -241,15 +289,23 @@ def to_markdown(pack: dict) -> str:
     if not pack["opportunities"] and not (pack.get("sections_meta") or {}).get("opportunities"):
         add("- None found.")
 
-    add("\n## Playbook\n")
-    add("### Hooks")
+    add("\n### Guardrails")
+    add(f"- **Never claim:** {inline('; '.join(g['never_claim'])) or '-'}")
+    add(f"- **Sensitivities:** {inline('; '.join(g['sensitivities'])) or '-'}")
+    add(f"- **Quotes:** {g['quote_reuse_note']}")
+    if pack["compliance_flags"]:
+        add("\n**Compliance flags (check with legal - not legal advice)**")
+        L += [f"- {f['id']} on {f['item_id']} ({f['category']}): {inline(f['why'])} Safer: "
+              f"{inline(f['safer_wording'])}" for f in pack["compliance_flags"]]
+
+    add("\n### Hooks, creative brief and keywords")
     add(f"*{HOOKS_NOTE}*")
     for h in pb["hooks"]:
         legal = "".join(f" **[check with legal: {f['category']}, {f['id']}]**" for f in flags_by_item.get(h["id"], []))
         add(f"- {inline(h['text'])} *[{h['id']}; {', '.join(h['why_ids'])}]*{legal}")
     cb = pb.get("creative_brief")
     if cb:
-        add("\n### Creative brief")
+        add("\n**Creative brief**")
         for key in ("objective", "audience", "insight", "message", "tone"):
             add(f"- **{key.capitalize()}:** {inline(cb[key])}")
         if cb["mandatories"]:
@@ -257,27 +313,19 @@ def to_markdown(pack: dict) -> str:
         if cb["avoid"]:
             add(f"- **Avoid:** {inline('; '.join(cb['avoid']))}")
     k = pb["keywords"]
-    add("\n### Keywords")
+    add("\n**Keywords**")
     for key in ("seo", "paid", "negatives", "hashtags"):
         add(f"- **{key.upper() if key in ('seo',) else key.capitalize()}:** {inline(', '.join(k[key])) or '-'}")
     if pb["targets"]:
-        add("\n### Public communities and creators")
+        add("\n**Public communities and creators**")
         L += [f"- {inline(t['name'])} ({t['kind']}, {t['platform']}){' ' + t['url'] if t.get('url') else ''}"
               for t in pb["targets"]]
-    if pack["compliance_flags"]:
-        add("\n### Compliance flags (check with legal - not legal advice)")
-        L += [f"- {f['id']} on {f['item_id']} ({f['category']}): {inline(f['why'])} Safer: "
-              f"{inline(f['safer_wording'])}" for f in pack["compliance_flags"]]
 
-    add("\n## Blind spots\n")
+    # ---- THE RESEARCH -----------------------------------------------------------------------
+    add("\n## The research\n")
+    add("### Blind spots")
     L += [f"- {inline(s['text'])}" for s in pack["blind_spots"]]
-
-    add("\n## Guardrails\n")
-    add(f"- **Never claim:** {inline('; '.join(g['never_claim'])) or '-'}")
-    add(f"- **Sensitivities:** {inline('; '.join(g['sensitivities'])) or '-'}")
-    add(f"- **Quotes:** {g['quote_reuse_note']}")
-
-    add("\n## Method\n")
+    add("\n### Method")
     n = cov["counts"]
     add(f"Collected {n['collected']}, duplicates {n['duplicates']}, spam {n['spam']}, out of window "
         f"{n['out_of_window']}, kept {n['kept']} (undated {n['undated']}), relevant {n['relevant']}. "
@@ -301,8 +349,9 @@ def to_markdown(pack: dict) -> str:
         L += [f"- {s['source_unit']}: {inline(s['reason'])}" for s in cov["sources_dropped"]]
     add("\n**Privacy:** authors are stored only as salted hashes; personal details are redacted. "
         f"{g['quote_reuse_note']} {privacy_line()}")
-    add(f"\n**Confidence labels:** strong, moderate, emerging, speculative. \"Safe to state\" = strong, "
-        f"observed and confirmed by the claim check. Evidence ids (EV-...) point to the posts in context_pack.json.")
+    add("\n**How to read the strength labels:** " + " ".join(
+        f"{w['words']}." for w in load_yaml("scoring")["plain_labels"].values())
+        + " Evidence ids (EV-...) point to the posts in context_pack.json.")
     add(f"\n*{DISCLAIMER}*")
     return "\n".join(L) + "\n"
 
@@ -312,7 +361,7 @@ def posts_section(pack: dict) -> list[str]:
     briefs = {b["id"]: b for b in pack["post_briefs"]}
     drafts = {d["post_brief_id"]: d for d in pack.get("drafts", [])}
     words = {x["id"]: x["term"] for x in pack["voice"]["lexicon"]}
-    out = ["\n## Post briefs and content calendar\n", HOOKS_NOTE, ""]
+    out = ["\n### Your plan: post briefs and content calendar\n", HOOKS_NOTE, ""]
     if pack.get("content_calendar"):
         out += ["| Week | Day | Channel | Post | Why then | Status |", "|---|---|---|---|---|---|"]
         for e in pack["content_calendar"]:
@@ -321,7 +370,7 @@ def posts_section(pack: dict) -> list[str]:
                        f"| {cell(b['angle'] or b['hook'])} [{b['id']}] | {cell(e['timing_reason'])} | idea |")
         out.append("")
     for b in pack["post_briefs"]:
-        out.append(f"### {b['id']}: {inline(b['angle'] or b['hook'])}")
+        out.append(f"#### {b['id']}: {inline(b['angle'] or b['hook'])}")
         out.append(f"*{CHANNEL_NAMES.get(b['channel'], b['channel'])}, {FORMAT_NAMES.get(b['format'], b['format'])}; "
                    f"for {inline(b['role'])}; confidence {b['confidence']}"
                    + (f"; rides {b['news_hook_id']}" if b.get("news_hook_id") else "") + "*  ")

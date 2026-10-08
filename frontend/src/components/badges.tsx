@@ -2,6 +2,7 @@
 // a shape (● ◐ ○ ◌), a word and the counts, readable in greyscale.
 import { ShieldCheck } from "lucide-react";
 import type { Label } from "../lib/api";
+import { useGuide } from "../lib/readingGuide";
 
 const LEVEL: Record<Label, { glyph: string; word: string; tone: string }> = {
   strong: { glyph: "●", word: "Strong", tone: "bg-ink text-paper border-ink" },
@@ -14,11 +15,16 @@ export function ConfidenceBadge({ label, matching, ofTotal, score }: {
   label: Label; matching?: number; ofTotal?: number; score?: number;
 }) {
   const l = LEVEL[label];
+  const guide = useGuide();
   const counts = matching !== undefined && ofTotal !== undefined ? `${matching} of ${ofTotal} posts` : null;
+  const plain = guide?.labels[label];
+  // V9: every badge explains itself in plain words (scoring.yaml), never colour-only
+  const title = plain ? `${plain.words}. Good enough to: ${plain.good_enough_to}.${counts ? ` (${counts})` : ""}`
+    : `${l.word}${counts ? ` - ${counts}` : ""}${score !== undefined ? ` (score ${score.toFixed(2)})` : ""}`;
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs ${l.tone}`}
-      title={score !== undefined ? `Confidence score ${score.toFixed(2)} (PRD 5.4)` : undefined}
+      title={title} data-badge="confidence"
     >
       <span aria-hidden="true" className="text-[1.05em] font-bold leading-none">{l.glyph}</span>
       <span className="font-medium">{l.word}</span>
@@ -28,8 +34,9 @@ export function ConfidenceBadge({ label, matching, ofTotal, score }: {
 }
 
 export function ClaimTypeTag({ type }: { type: "observed" | "inferred" | "external" }) {
-  const text = { observed: "Observed", inferred: "Inferred", external: "External" }[type];
-  const hint = {
+  const guide = useGuide();
+  const text = { observed: "Seen in posts", inferred: "Our interpretation", external: "Outside source" }[type];
+  const hint = guide?.claim_types[type] ?? {
     observed: "People say this directly in the posts.",
     inferred: "Our reading of the posts, not said in so many words.",
     external: "From outside the posts.",

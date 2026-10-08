@@ -437,6 +437,39 @@ Definition:
     GET /packs/{id}/post-briefs, /packs/{id}/calendar, export kind
     "calendar"; MCP: get_post_briefs(pack_id), get_calendar(pack_id).
 
+6.1f Pack page and hand-off (change V9, schema 1.1; revised after a
+     marketing-director audit, docs/04_Changes_Plan.md)
+  - Page in three parts plus the research: SUMMARY (fits one laptop
+    screen: who it is for, snapshot.represents, snapshot.findings - the
+    top 3 with one quote, its English translation, plain strength words
+    "N people, M communities" and "good enough to" from scoring.yaml
+    plain_labels -, snapshot.position, the plan's first 3 moves with
+    their success_measure, up to 2 news hooks); UNDERSTAND YOUR AUDIENCE
+    (their words; what they want / what stops them with tensions as the
+    bridge; segments; generic answer vs. the posts with a status per
+    generic point - confirmed | contradicted | not_seen - from the
+    non-obvious check, no new call; landscape); ACT ON IT (one plan:
+    post briefs + 4-week calendar, this week = week 1; channels; what
+    performs; opportunities; guardrails, with the rest of the playbook
+    folded away); THE RESEARCH (collapsed).
+  - Trust: a thin-evidence pack shows the coverage grade at most
+    scoring.yaml grade_cap_thin (c) with snapshot.grade_note, and no
+    finding in it is "good enough to commit budget". Every strength
+    badge has its plain words as a tooltip; "How to read this" lists
+    them (GET /reading-guide).
+  - position and success_measure (do_first, post briefs) come from the
+    playbook call (no new call). Packs made before V9 get findings,
+    represents and the grade cap in code when read; position and the
+    comparison stay empty.
+  - Hand-off (GET /packs/{id}/handoff): Quick brief (new, at most
+    exports.quick_brief_max_words), Brief for your AI writer, Full
+    report, Content calendar, Print / Save as PDF (Summary = page 1);
+    under "More": Teach Claude (skill) and For developers (JSON, API).
+    Each shows purpose, length in pages (exports.words_per_page) and a
+    one-line preview; a toast says what was copied. "Send to Notion" is
+    not built (no new service). Replay is called "Watch how this pack
+    was made". brief.md and print follow the page order.
+
 6.2 Top-level JSON sections
   schema_version, pack_id, generated_at, mode (quick | standard)
   brief              raw text + interpreted {topic, markets[] (1.1; market

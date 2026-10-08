@@ -1,5 +1,5 @@
 // Generic, schema-driven blocks so most pack sections need no bespoke code (guide Step 4.1).
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { Evidence, InsightLike } from "../lib/api";
 import { ClaimCard, usePack, LinkChips } from "./cards";
 import { Quote } from "./Quote";
@@ -47,9 +47,27 @@ export function EmptyNote({ meta, fallback }: { meta?: SectionNotes; fallback: s
   );
 }
 
-export function ItemSection<T extends InsightLike>({ id, title, items, filter = "all", titleKey, empty, columns = 2, level = 2, meta }: {
+/** V9 progressive disclosure: the top items, then "Show more (n)". */
+export function ShowMore<T>({ items, limit, render }: { items: T[]; limit: number; render: (shown: T[]) => ReactNode }) {
+  const [all, setAll] = useState(false);
+  const shown = all ? items : items.slice(0, limit);
+  return (
+    <>
+      {render(shown)}
+      {items.length > limit && (
+        <button type="button" onClick={() => setAll(!all)} aria-expanded={all}
+                className="mt-3 rounded-lg border border-line px-3 py-1.5 text-sm text-ink-2 hover:border-ink hover:text-ink print:hidden">
+          {all ? "Show fewer" : `Show more (${items.length - limit})`}
+        </button>
+      )}
+    </>
+  );
+}
+
+export function ItemSection<T extends InsightLike>({ id, title, items, filter = "all", titleKey, empty, columns = 2, level = 2, meta,
+  limit = 4 }: {
   id?: string; title: string; items: T[]; filter?: Filter; titleKey?: keyof T; empty?: string; columns?: 1 | 2; level?: 2 | 3;
-  meta?: SectionNotes;
+  meta?: SectionNotes; limit?: number;
 }) {
   const shown = applyFilter(items, filter);
   return (
@@ -61,11 +79,13 @@ export function ItemSection<T extends InsightLike>({ id, title, items, filter = 
         items.length ? <p className="rounded-lg border border-dashed border-line-strong p-4 text-sm text-ink-3">Nothing matches this filter.</p>
           : <EmptyNote meta={meta} fallback={empty ?? "None found in this evidence."} />
       ) : (
-        <div className={`grid gap-3 ${columns === 2 ? "md:grid-cols-2" : ""}`}>
-          {shown.map((it) => (
-            <ClaimCard key={it.id} item={it} title={titleKey ? String(it[titleKey] ?? "") : undefined} />
-          ))}
-        </div>
+        <ShowMore items={shown} limit={limit} render={(part) => (
+          <div className={`grid gap-3 ${columns === 2 ? "md:grid-cols-2" : ""}`}>
+            {part.map((it) => (
+              <ClaimCard key={it.id} item={it} title={titleKey ? String(it[titleKey] ?? "") : undefined} />
+            ))}
+          </div>
+        )} />
       )}
     </section>
   );

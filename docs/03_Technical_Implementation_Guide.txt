@@ -1194,6 +1194,16 @@ WHAT  synthesis/playbook.py: ONE reasoner call (F4-11) from verified
       (Notion CSV, BOM, exports/safe_cells.py), brief.md, prompt block,
       skill references/posts.md; API post-briefs, calendar and export
       kind "calendar"; MCP get_post_briefs, get_calendar.
+      Change V9 (PRD 6.1f): finalize.snapshot adds findings (plain words
+      and "good enough to" from scoring.yaml plain_labels; capped in thin
+      packs), represents, position (playbook call) and the generic-point
+      comparison (matches from the non-obvious check); the grade is
+      capped at grade_cap_thin in thin packs. exports/quick_brief.py and
+      exports/handoff.py (purpose, pages, preview); markdown.py follows
+      the page order. Frontend: PackPage.tsx (parts + PartNav),
+      components/summary.tsx, components/plan.tsx, Handoff.tsx,
+      lib/readingGuide.ts. e2e/v9.spec.ts checks the first screen at
+      1300x900, UI words, badge tooltips, hand-off options and 390 px.
 PROMPT
   Read CLAUDE.md, Step 3.5, F4-11, F4-12 and PRD 11.4. Implement and run
   on the verified NL pack twice: without a brand voice and with "dry

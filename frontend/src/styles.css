@@ -41,14 +41,18 @@ body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
 }
 
 /* Print / Save as PDF: a clean brief (no navigation, no buttons, sections not split across pages). */
+/* V9: nothing on the pack page may push the page sideways on a phone (long links, words, ids) */
+.pack-part { overflow-wrap: anywhere; }
+.pack-part .grid > *, .pack-part li, .pack-part article { min-width: 0; }
+
 @media print {
   html, body { background: #fff; }
-  button, dialog, nav[aria-label="Sections"] { display: none !important; }
+  button, dialog, nav[aria-label="Pack parts"] { display: none !important; }
   main { max-width: none !important; padding: 0 !important; }
   .pack-layout { display: block !important; }                     /* the section menu is hidden: one column */
   .pack-layout > div { max-width: none !important; }
   a { color: inherit; text-decoration: none; }
-  .pack-section ~ .pack-section { break-before: page; }          /* each main section starts on a clean page */
+  .pack-part ~ .pack-part { break-before: page; }                /* V9: the Summary prints as page 1 */
   article, figure, li { break-inside: avoid; }
   a.print-url::after { content: " " attr(href); font-size: 0.68rem; word-break: break-all; }
 }

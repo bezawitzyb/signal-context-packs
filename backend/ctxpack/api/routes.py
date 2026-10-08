@@ -130,10 +130,16 @@ async def get_calendar(pack_id: str) -> Any:
     return await _call(asyncio.to_thread, service.calendar, pack_id)
 
 
+@router.get("/packs/{pack_id}/handoff")
+async def get_handoff(pack_id: str) -> Any:
+    """The hand-off options (V9): purpose, length in pages and a one-line preview."""
+    return await _call(asyncio.to_thread, service.handoff, pack_id)
+
+
 @router.get("/packs/{pack_id}/export/{kind}")
-async def get_export(pack_id: str, kind: Literal["json", "md", "prompt", "skill", "calendar"]) -> Response:
-    """Download: json (context_pack.json), md (brief.md), prompt (prompt_block.txt), skill (zip) or calendar
-    (content_calendar.csv, Notion import)."""
+async def get_export(pack_id: str, kind: Literal["json", "md", "prompt", "skill", "calendar", "quick"]) -> Response:
+    """Download: json (context_pack.json), md (brief.md), prompt (prompt_block.txt), skill (zip), calendar
+    (content_calendar.csv, Notion import) or quick (quick_brief.txt, V9)."""
     data, media, name = await _call(asyncio.to_thread, service.export, pack_id, kind)
     return Response(content=data, media_type=media, headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
@@ -148,6 +154,12 @@ async def get_options() -> dict[str, Any]:
             "default_mode": cfg["default_mode"], "time_window_days_options": cfg["time_window_days_options"],
             "languages": cfg["languages"]["supported"], "max_languages": cfg["languages"]["max_per_mode"],
             "default_time_window_days": cfg["default_time_window_days"], "brand_voice_max_chars": 200}
+
+
+@router.get("/reading-guide")
+async def get_reading_guide() -> dict[str, Any]:
+    """V9: plain words for every strength label and claim type ("How to read this"), from scoring.yaml."""
+    return service.reading_guide()
 
 
 @router.get("/evals")

@@ -319,6 +319,41 @@
       "title": "ClarifyingQuestion",
       "type": "object"
     },
+    "Comparison": {
+      "additionalProperties": false,
+      "description": "One generic point checked against the evidence (V9).",
+      "properties": {
+        "generic_point": {
+          "description": "What a generic answer says.",
+          "title": "Generic Point",
+          "type": "string"
+        },
+        "status": {
+          "description": "confirmed (the posts say it too), contradicted (they say otherwise) or not_seen.",
+          "enum": [
+            "confirmed",
+            "contradicted",
+            "not_seen"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "item_ids": {
+          "description": "Findings that confirm or contradict it.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Item Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "generic_point",
+        "status"
+      ],
+      "title": "Comparison",
+      "type": "object"
+    },
     "Competitor": {
       "additionalProperties": false,
       "properties": {
@@ -1155,6 +1190,15 @@
           ],
           "title": "Owner Hint",
           "type": "string"
+        },
+        "success_measure": {
+          "default": "",
+          "description": "How you will know it worked (V9).",
+          "examples": [
+            "replies asking for the full figures table"
+          ],
+          "title": "Success Measure",
+          "type": "string"
         }
       },
       "required": [
@@ -1449,6 +1493,88 @@
       "title": "ExistingSolution",
       "type": "object"
     },
+    "Finding": {
+      "additionalProperties": false,
+      "description": "A finding for the summary (V9): plain strength words, a quote and what it is good enough for.",
+      "properties": {
+        "text": {
+          "description": "The finding in one sentence.",
+          "title": "Text",
+          "type": "string"
+        },
+        "item_ids": {
+          "description": "Items that back it.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Item Ids",
+          "type": "array"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quote"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "One verbatim quote from its evidence."
+        },
+        "quote_en": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "English translation of the quote's post, when not English.",
+          "title": "Quote En"
+        },
+        "label": {
+          "$ref": "#/$defs/ConfidenceLabel",
+          "description": "Confidence label of the item."
+        },
+        "people": {
+          "description": "Distinct people behind it.",
+          "minimum": 0,
+          "title": "People",
+          "type": "integer"
+        },
+        "communities": {
+          "description": "Platforms they came from.",
+          "minimum": 0,
+          "title": "Communities",
+          "type": "integer"
+        },
+        "strength_text": {
+          "description": "Plain words, e.g. \"Emerging - 5 people in 2 communities\".",
+          "title": "Strength Text",
+          "type": "string"
+        },
+        "good_enough_to": {
+          "description": "What it is safe to use it for (scoring.yaml plain_labels).",
+          "title": "Good Enough To",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "item_ids",
+        "label",
+        "people",
+        "communities",
+        "strength_text",
+        "good_enough_to"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
     "FinishReason": {
       "enum": [
         "finish",
@@ -1499,11 +1625,19 @@
           "type": "array"
         },
         "what_we_found": {
-          "description": "What the evidence shows instead.",
+          "description": "What the evidence shows instead (new to the generic answer).",
           "items": {
             "$ref": "#/$defs/FoundPoint"
           },
           "title": "What We Found",
+          "type": "array"
+        },
+        "comparison": {
+          "description": "Every generic point with its status (V9); empty in packs made before V9.",
+          "items": {
+            "$ref": "#/$defs/Comparison"
+          },
+          "title": "Comparison",
           "type": "array"
         }
       },
@@ -3985,6 +4119,44 @@
       "title": "Playbook",
       "type": "object"
     },
+    "Position": {
+      "additionalProperties": false,
+      "description": "The one message to own (V9), written by the playbook call from verified items.",
+      "properties": {
+        "statement": {
+          "description": "The message, in a few words.",
+          "title": "Statement",
+          "type": "string"
+        },
+        "for_whom": {
+          "description": "Who it is for.",
+          "title": "For Whom",
+          "type": "string"
+        },
+        "against_doubt": {
+          "description": "The doubt or objection it answers.",
+          "title": "Against Doubt",
+          "type": "string"
+        },
+        "item_ids": {
+          "description": "Items it is built on.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Item Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "statement",
+        "for_whom",
+        "against_doubt",
+        "item_ids"
+      ],
+      "title": "Position",
+      "type": "object"
+    },
     "PostBrief": {
       "additionalProperties": false,
       "description": "A post to make (V8), built from pain points, objections, hooks, opportunities and news hooks.",
@@ -4111,6 +4283,12 @@
           "minItems": 1,
           "title": "Based On",
           "type": "array"
+        },
+        "success_measure": {
+          "default": "",
+          "description": "How you will know the post worked (V9).",
+          "title": "Success Measure",
+          "type": "string"
         },
         "confidence": {
           "$ref": "#/$defs/ConfidenceLabel",
@@ -4621,13 +4799,40 @@
       "additionalProperties": false,
       "properties": {
         "five_truths": {
-          "description": "Up to five most important truths.",
+          "description": "Up to five most important findings (kept for agents; the page shows findings[]).",
           "items": {
             "$ref": "#/$defs/Truth"
           },
           "maxItems": 5,
           "title": "Five Truths",
           "type": "array"
+        },
+        "findings": {
+          "description": "What we heard most clearly (V9): the top 3 findings with a quote and plain strength words.",
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "maxItems": 3,
+          "title": "Findings",
+          "type": "array"
+        },
+        "represents": {
+          "default": "",
+          "description": "Who the evidence represents (V9): posts, people, platforms.",
+          "title": "Represents",
+          "type": "string"
+        },
+        "position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Position"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Recommended position (V9)."
         },
         "top_opportunity": {
           "anyOf": [
@@ -4655,7 +4860,13 @@
         },
         "coverage_grade": {
           "$ref": "#/$defs/CoverageGrade",
-          "description": "How well the evidence covers the brief: a (best) to d."
+          "description": "How well the evidence covers the brief: a (best) to d; at most c in a thin-evidence pack (V9)."
+        },
+        "grade_note": {
+          "default": "",
+          "description": "Why the grade was capped, if it was (V9).",
+          "title": "Grade Note",
+          "type": "string"
         },
         "generic_vs_found": {
           "$ref": "#/$defs/GenericVsFound",

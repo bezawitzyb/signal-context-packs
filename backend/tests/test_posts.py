@@ -149,7 +149,7 @@ async def test_calendar_csv_imports_with_accents_and_safe_cells(packed):
 
 async def test_briefs_reach_every_export(packed):
     md = to_markdown(packed)
-    assert "## Post briefs and content calendar" in md and DRAFT_LABEL in md and "| Week | Day |" in md
+    assert "### Your plan: post briefs and content calendar" in md and DRAFT_LABEL in md and "| Week | Day |" in md
     assert "POST BRIEFS" in to_prompt_block(packed)
     assert "PST-01" in references(packed)["posts.md"]
 

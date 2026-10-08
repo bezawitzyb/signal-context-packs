@@ -8,8 +8,10 @@ from pathlib import Path
 
 def write_exports(pack: dict, out_dir: Path) -> dict[str, Path]:
     """Every export of one pack into out_dir (UTF-8): context_pack.json, digest.json, brief.md,
-    prompt_block.txt, content_calendar.csv (V8) and the skill zip. Returns {kind: path}."""
+    prompt_block.txt, content_calendar.csv (V8), quick_brief.txt + handoff.json (V9) and the skill zip. Returns {kind: path}."""
     from ctxpack.exports.calendar_csv import to_calendar_csv
+    from ctxpack.exports.handoff import handoff_options
+    from ctxpack.exports.quick_brief import to_quick_brief
     from ctxpack.exports.markdown import to_markdown
     from ctxpack.exports.prompt_block import to_prompt_block
     from ctxpack.exports.skill import skill_zip
@@ -18,13 +20,16 @@ def write_exports(pack: dict, out_dir: Path) -> dict[str, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = {"json": out_dir / "context_pack.json", "digest": out_dir / "digest.json",
              "markdown": out_dir / "brief.md", "prompt_block": out_dir / "prompt_block.txt",
-             "calendar": out_dir / "content_calendar.csv"}
+             "calendar": out_dir / "content_calendar.csv", "quick": out_dir / "quick_brief.txt",
+             "handoff": out_dir / "handoff.json"}
     paths["json"].write_text(json.dumps(pack, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
     paths["digest"].write_text(json.dumps(digest_view(pack), ensure_ascii=False, indent=1, default=str),
                                encoding="utf-8")
     paths["markdown"].write_text(to_markdown(pack), encoding="utf-8")
     paths["prompt_block"].write_text(to_prompt_block(pack), encoding="utf-8")
     paths["calendar"].write_bytes(to_calendar_csv(pack))
+    paths["quick"].write_text(to_quick_brief(pack), encoding="utf-8")
+    paths["handoff"].write_text(json.dumps(handoff_options(pack), ensure_ascii=False, indent=1), encoding="utf-8")
     for old in out_dir.glob("*.zip"):  # a renamed skill must not leave its old zip behind
         old.unlink()
     name, data = skill_zip(pack)

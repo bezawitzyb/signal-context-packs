@@ -193,7 +193,7 @@ export type QuestionsAsked = ClarifyingQuestion[];
  */
 export type Digest = string;
 /**
- * Up to five most important truths.
+ * Up to five most important findings (kept for agents; the page shows findings[]).
  *
  * @maxItems 5
  */
@@ -215,17 +215,91 @@ export type Text1 = string;
  */
 export type ItemIds = [string, ...string[]];
 /**
+ * What we heard most clearly (V9): the top 3 findings with a quote and plain strength words.
+ *
+ * @maxItems 3
+ */
+export type Findings = [] | [Finding] | [Finding, Finding] | [Finding, Finding, Finding];
+/**
+ * The finding in one sentence.
+ */
+export type Text2 = string;
+/**
+ * Items that back it.
+ *
+ * @minItems 1
+ */
+export type ItemIds1 = [string, ...string[]];
+/**
+ * Evidence the quote comes from.
+ */
+export type EvidenceId = string;
+/**
+ * Exact substring of that evidence text.
+ */
+export type Text3 = string;
+/**
+ * English translation of the quote's post, when not English.
+ */
+export type QuoteEn = string | null;
+/**
+ * Confidence label of the item.
+ */
+export type ConfidenceLabel = "strong" | "moderate" | "emerging" | "speculative";
+/**
+ * Distinct people behind it.
+ */
+export type People = number;
+/**
+ * Platforms they came from.
+ */
+export type Communities = number;
+/**
+ * Plain words, e.g. "Emerging - 5 people in 2 communities".
+ */
+export type StrengthText = string;
+/**
+ * What it is safe to use it for (scoring.yaml plain_labels).
+ */
+export type GoodEnoughTo = string;
+/**
+ * Who the evidence represents (V9): posts, people, platforms.
+ */
+export type Represents = string;
+/**
+ * The message, in a few words.
+ */
+export type Statement = string;
+/**
+ * Who it is for.
+ */
+export type ForWhom = string;
+/**
+ * The doubt or objection it answers.
+ */
+export type AgainstDoubt = string;
+/**
+ * Items it is built on.
+ *
+ * @minItems 1
+ */
+export type ItemIds2 = [string, ...string[]];
+/**
  * The item picked.
  */
 export type ItemId = string;
 /**
  * One-line summary.
  */
-export type Text2 = string;
+export type Text4 = string;
 /**
- * How well the evidence covers the brief: a (best) to d.
+ * How well the evidence covers the brief: a (best) to d; at most c in a thin-evidence pack (V9).
  */
 export type CoverageGrade = "a" | "b" | "c" | "d";
+/**
+ * Why the grade was capped, if it was (V9).
+ */
+export type GradeNote = string;
 /**
  * What a generic AI answer says (no evidence).
  */
@@ -233,17 +307,33 @@ export type GenericPoints = string[];
 /**
  * What the evidence actually shows.
  */
-export type Text3 = string;
+export type Text5 = string;
 /**
  * Items that show it.
  *
  * @minItems 1
  */
-export type ItemIds1 = [string, ...string[]];
+export type ItemIds3 = [string, ...string[]];
 /**
- * What the evidence shows instead.
+ * What the evidence shows instead (new to the generic answer).
  */
 export type WhatWeFound = FoundPoint[];
+/**
+ * What a generic answer says.
+ */
+export type GenericPoint = string;
+/**
+ * confirmed (the posts say it too), contradicted (they say otherwise) or not_seen.
+ */
+export type Status = "confirmed" | "contradicted" | "not_seen";
+/**
+ * Findings that confirm or contradict it.
+ */
+export type ItemIds4 = string[];
+/**
+ * Every generic point with its status (V9); empty in packs made before V9.
+ */
+export type Comparison = Comparison1[];
 /**
  * Exactly 3 actions (fewer only in a thin-evidence pack).
  *
@@ -281,6 +371,10 @@ export type Level1 = "low" | "medium" | "high";
  */
 export type OwnerHint = string;
 /**
+ * How you will know it worked (V9).
+ */
+export type SuccessMeasure = string;
+/**
  * Stable theme id (THM-NN).
  */
 export type Id2 = string;
@@ -311,7 +405,7 @@ export type Score = number;
 /**
  * strong, moderate, emerging or speculative.
  */
-export type ConfidenceLabel = "strong" | "moderate" | "emerging" | "speculative";
+export type ConfidenceLabel1 = "strong" | "moderate" | "emerging" | "speculative";
 /**
  * observed, inferred or external.
  */
@@ -380,14 +474,6 @@ export type EvidenceIds =
   | [string, string, string]
   | [string, string, string, string]
   | [string, string, string, string, string];
-/**
- * Evidence the quote comes from.
- */
-export type EvidenceId = string;
-/**
- * Exact substring of that evidence text.
- */
-export type Text4 = string;
 /**
  * Verbatim quotes from the cited evidence.
  */
@@ -734,7 +820,7 @@ export type Type4 = "phrase";
 /**
  * A recurring phrase, verbatim.
  */
-export type Text5 = string;
+export type Text6 = string;
 /**
  * ISO 639-1 code.
  */
@@ -917,7 +1003,7 @@ export type Type6 = "tension";
 /**
  * This side of the tension.
  */
-export type Text6 = string;
+export type Text7 = string;
 /**
  * Evidence for this side.
  *
@@ -1295,7 +1381,7 @@ export type Formats = CultureItem[];
 /**
  * Where they gather.
  */
-export type Communities = CultureItem[];
+export type Communities1 = CultureItem[];
 /**
  * Public creators only.
  */
@@ -1544,7 +1630,7 @@ export type DistinctAuthors1 = number;
 /**
  * Communities or sources it was seen in (code).
  */
-export type Communities1 = string[];
+export type Communities2 = string[];
 /**
  * Product, service or content that already addresses it.
  */
@@ -1699,7 +1785,7 @@ export type Type17 = "hook";
 /**
  * Hook in the audience's voice.
  */
-export type Text7 = string;
+export type Text8 = string;
 /**
  * Tension, lexicon or other items it uses.
  *
@@ -1741,7 +1827,7 @@ export type Avoid = string[];
 /**
  * Items it is based on.
  */
-export type ItemIds2 = string[];
+export type ItemIds5 = string[];
 /**
  * The objection answered.
  */
@@ -1896,13 +1982,13 @@ export type KeyPoints =
 /**
  * One point the post makes.
  */
-export type Text8 = string;
+export type Text9 = string;
 /**
  * Pack items it is built on.
  *
  * @minItems 1
  */
-export type ItemIds3 = [string, ...string[]];
+export type ItemIds6 = [string, ...string[]];
 /**
  * Receipts, taken in code from those items.
  *
@@ -1940,9 +2026,13 @@ export type NewsHookId1 = string | null;
  */
 export type BasedOn = [string, ...string[]];
 /**
+ * How you will know the post worked (V9).
+ */
+export type SuccessMeasure1 = string;
+/**
  * The weakest label among the items it uses (code).
  */
-export type ConfidenceLabel1 = "strong" | "moderate" | "emerging" | "speculative";
+export type ConfidenceLabel2 = "strong" | "moderate" | "emerging" | "speculative";
 /**
  * Posts to make (V8), with receipts.
  */
@@ -2032,7 +2122,7 @@ export type TimingKind = "news_hook" | "channel_timing" | "spread";
 /**
  * Always idea: nothing is scheduled for you.
  */
-export type Status = "idea";
+export type Status1 = "idea";
 /**
  * 4 weeks of post ideas (V8).
  */
@@ -2048,7 +2138,7 @@ export type Type22 = "hypothesis";
 /**
  * The hypothesis from the plan.
  */
-export type Statement = string;
+export type Statement1 = string;
 /**
  * supported, refuted or inconclusive.
  */
@@ -2113,11 +2203,11 @@ export type Type24 = "risk";
 /**
  * The risk.
  */
-export type Text9 = string;
+export type Text10 = string;
 /**
  * Items it relates to.
  */
-export type ItemIds4 = string[];
+export type ItemIds7 = string[];
 /**
  * What could go wrong.
  */
@@ -2139,7 +2229,7 @@ export type Type25 = "blind_spot";
 /**
  * What we could not see, and why.
  */
-export type Text10 = string;
+export type Text11 = string;
 /**
  * Words and framings that fit.
  */
@@ -2358,7 +2448,7 @@ export type Language4 = string;
 /**
  * Verbatim excerpt, PII-redacted, max 280 chars.
  */
-export type Text11 = string;
+export type Text12 = string;
 /**
  * English translation when not English.
  */
@@ -2515,6 +2605,12 @@ export interface ClarifyingQuestion {
  */
 export interface Snapshot {
   five_truths: FiveTruths;
+  findings?: Findings;
+  represents?: Represents;
+  /**
+   * Recommended position (V9).
+   */
+  position?: Position | null;
   /**
    * The single best opportunity.
    */
@@ -2524,15 +2620,49 @@ export interface Snapshot {
    */
   top_risk?: Pick | null;
   coverage_grade: CoverageGrade;
+  grade_note?: GradeNote;
   generic_vs_found: GenericVsFound;
 }
 export interface Truth {
   text: Text1;
   item_ids: ItemIds;
 }
+/**
+ * A finding for the summary (V9): plain strength words, a quote and what it is good enough for.
+ */
+export interface Finding {
+  text: Text2;
+  item_ids: ItemIds1;
+  /**
+   * One verbatim quote from its evidence.
+   */
+  quote?: Quote | null;
+  quote_en?: QuoteEn;
+  label: ConfidenceLabel;
+  people: People;
+  communities: Communities;
+  strength_text: StrengthText;
+  good_enough_to: GoodEnoughTo;
+}
+/**
+ * A verbatim quote. Must be an exact substring of the cited evidence text.
+ */
+export interface Quote {
+  evidence_id: EvidenceId;
+  text: Text3;
+}
+/**
+ * The one message to own (V9), written by the playbook call from verified items.
+ */
+export interface Position {
+  statement: Statement;
+  for_whom: ForWhom;
+  against_doubt: AgainstDoubt;
+  item_ids: ItemIds2;
+}
 export interface Pick {
   item_id: ItemId;
-  text: Text2;
+  text: Text4;
 }
 /**
  * Generic answer next to what we found.
@@ -2540,10 +2670,19 @@ export interface Pick {
 export interface GenericVsFound {
   generic_points: GenericPoints;
   what_we_found: WhatWeFound;
+  comparison?: Comparison;
 }
 export interface FoundPoint {
-  text: Text3;
-  item_ids: ItemIds1;
+  text: Text5;
+  item_ids: ItemIds3;
+}
+/**
+ * One generic point checked against the evidence (V9).
+ */
+export interface Comparison1 {
+  generic_point: GenericPoint;
+  status: Status;
+  item_ids?: ItemIds4;
 }
 export interface DoFirst1 {
   id: Id1;
@@ -2553,6 +2692,7 @@ export interface DoFirst1 {
   effort: Level;
   impact: Level1;
   owner_hint?: OwnerHint;
+  success_measure?: SuccessMeasure;
 }
 /**
  * Layer 1: shape of the conversation.
@@ -2597,7 +2737,7 @@ export interface Counts {
  */
 export interface Confidence {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -2607,13 +2747,6 @@ export interface Strength {
   distinct_authors: DistinctAuthors;
   platforms: Platforms;
   engagement_percentile_median?: EngagementPercentileMedian;
-}
-/**
- * A verbatim quote. Must be an exact substring of the cited evidence text.
- */
-export interface Quote {
-  evidence_id: EvidenceId;
-  text: Text4;
 }
 /**
  * A link to a connected item in another section (1.1, V4): shown as a small chip, never restated.
@@ -2674,7 +2807,7 @@ export interface Counts1 {
  */
 export interface Confidence1 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -2731,7 +2864,7 @@ export interface Counts2 {
  */
 export interface Confidence2 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -2762,7 +2895,7 @@ export interface Phrase {
   related_ids?: RelatedIds3;
   relations?: Relations3;
   type?: Type4;
-  text: Text5;
+  text: Text6;
   language: Language2;
 }
 /**
@@ -2777,7 +2910,7 @@ export interface Counts3 {
  */
 export interface Confidence3 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -2823,7 +2956,7 @@ export interface Counts4 {
  */
 export interface Confidence4 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -2869,7 +3002,7 @@ export interface Counts5 {
  */
 export interface Confidence5 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -2884,14 +3017,14 @@ export interface Strength5 {
  * The "want X" side.
  */
 export interface TensionSide {
-  text: Text6;
+  text: Text7;
   evidence_ids: EvidenceIds7;
 }
 /**
  * The "but Y" side.
  */
 export interface TensionSide1 {
-  text: Text6;
+  text: Text7;
   evidence_ids: EvidenceIds7;
 }
 /**
@@ -2930,7 +3063,7 @@ export interface Counts6 {
  */
 export interface Confidence6 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -2975,7 +3108,7 @@ export interface Counts7 {
  */
 export interface Confidence7 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -3020,7 +3153,7 @@ export interface Counts8 {
  */
 export interface Confidence8 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -3047,7 +3180,7 @@ export interface Competitor {
  */
 export interface Culture {
   formats?: Formats;
-  communities?: Communities;
+  communities?: Communities1;
   creators?: Creators;
   codes?: Codes;
 }
@@ -3091,7 +3224,7 @@ export interface Counts9 {
  */
 export interface Confidence9 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -3172,7 +3305,7 @@ export interface Counts10 {
  */
 export interface Confidence10 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 /**
  * Evidence strength, computed in code.
@@ -3208,7 +3341,7 @@ export interface Opportunity {
   status: OpportunityStatus;
   confidence: Confidence11;
   distinct_authors: DistinctAuthors1;
-  communities?: Communities1;
+  communities?: Communities2;
   existing_solutions?: ExistingSolutions;
   search_note?: SearchNote;
   evidence_ids?: EvidenceIds14;
@@ -3226,7 +3359,7 @@ export interface Opportunity {
  */
 export interface Confidence11 {
   score: Score;
-  label: ConfidenceLabel;
+  label: ConfidenceLabel1;
 }
 export interface ExistingSolution {
   name: Name4;
@@ -3283,7 +3416,7 @@ export interface Playbook {
 export interface Hook {
   id: Id21;
   type?: Type17;
-  text: Text7;
+  text: Text8;
   why_ids: WhyIds2;
 }
 export interface CreativeBrief {
@@ -3294,7 +3427,7 @@ export interface CreativeBrief {
   tone: Tone3;
   mandatories?: Mandatories;
   avoid?: Avoid;
-  item_ids?: ItemIds2;
+  item_ids?: ItemIds5;
 }
 export interface ObjectionHandling1 {
   objection_id: ObjectionId;
@@ -3348,11 +3481,12 @@ export interface PostBrief {
   avoid?: Avoid1;
   news_hook_id?: NewsHookId1;
   based_on: BasedOn;
-  confidence: ConfidenceLabel1;
+  success_measure?: SuccessMeasure1;
+  confidence: ConfidenceLabel2;
 }
 export interface KeyPoint {
-  text: Text8;
-  item_ids: ItemIds3;
+  text: Text9;
+  item_ids: ItemIds6;
   evidence_ids: EvidenceIds16;
 }
 /**
@@ -3380,12 +3514,12 @@ export interface CalendarEntry {
   post_brief_id: PostBriefId1;
   timing_reason: TimingReason;
   timing_kind: TimingKind;
-  status?: Status;
+  status?: Status1;
 }
 export interface Hypothesis {
   id: Id26;
   type?: Type22;
-  statement: Statement;
+  statement: Statement1;
   status: HypothesisStatus;
   why: Why4;
   evidence_ids?: EvidenceIds18;
@@ -3403,13 +3537,13 @@ export interface ComplianceFlag {
 export interface Risk {
   id: Id28;
   type?: Type24;
-  text: Text9;
-  item_ids?: ItemIds4;
+  text: Text10;
+  item_ids?: ItemIds7;
 }
 export interface BlindSpot {
   id: Id29;
   type?: Type25;
-  text: Text10;
+  text: Text11;
 }
 /**
  * Say this / not this; never trimmed from any view.
@@ -3508,7 +3642,7 @@ export interface Evidence1 {
   posted_at?: PostedAt;
   date_precision?: DatePrecision;
   language: Language4;
-  text: Text11;
+  text: Text12;
   text_en?: TextEn;
   redacted?: Redacted;
   requires_login?: RequiresLogin;

@@ -1,15 +1,18 @@
-// S3 PACK PAGE (PRD 10.2, guide Step 4.4): one scrollable page, ~760 px content column, sticky section nav,
-// filters, banners, evidence drawer, View as agent, Handoff. Sections in PRD S3 order.
+// S3 PACK PAGE (PRD 10.2, change V9): three parts - Summary, Understand your audience, Act on it - plus The research
+// (collapsed). Sticky part nav (a menu on phones), progressive disclosure, evidence drawer, View as agent, Hand off.
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { Braces, History, RotateCcw, Share2 } from "lucide-react";
+import { Braces, History, Menu, RotateCcw, Share2 } from "lucide-react";
 import { friendlyError, getPack, getPackInputs, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
 import { ConfidenceBadge, IdTag, ModeBadge } from "../components/badges";
 import { CoverageStrip, LimitationCallout } from "../components/callouts";
 import { HookCard, PackContext, SourceCard, TensionCard, usePack } from "../components/cards";
-import { applyFilter, EmptyNote, type Filter, ItemSection, SectionLead, type SectionNotes, TableSection } from "../components/blocks";
+import { applyFilter, EmptyNote, type Filter, ItemSection, SectionLead, type SectionNotes, ShowMore, TableSection } from "../components/blocks";
+import { SummaryPart } from "../components/summary";
+import { CHANNEL, PlanPart } from "../components/plan";
+import { GuideContext, useLoadGuide } from "../lib/readingGuide";
 import { CopyButton } from "../components/CopyButton";
 import { EvidenceDrawer } from "../components/EvidenceDrawer";
 import { AgentJson } from "../components/AgentJson";
@@ -18,12 +21,14 @@ import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
 import { rerunUrl } from "../lib/rerun";
 
-const NAV: [string, string][] = [
-  ["summary", "Summary"], ["channels", "Channels & this week"], ["voice", "Voice"], ["pain-points", "Pain points"],
-  ["tensions", "Tensions & motivations"],
-  ["segments", "Segments"], ["objections", "Objections & competitors"], ["landscape", "Landscape & platforms"],
-  ["performs", "What performs"], ["moments", "Moments"], ["opportunities", "Opportunities"],
-  ["playbook", "Playbook"], ["blind-spots", "Blind spots"], ["method", "Method"],
+const PARTS: { id: string; title: string; sections: [string, string][] }[] = [
+  { id: "summary", title: "Summary", sections: [] },
+  { id: "understand", title: "Understand your audience", sections: [["their-words", "Their words"],
+    ["want-stops", "Want / what stops them"], ["segments", "Segments"], ["generic", "Generic AI vs. people"],
+    ["landscape", "Landscape"]] },
+  { id: "act", title: "Act on it", sections: [["plan", "Your plan"], ["channels", "Channels"], ["performs", "What performs"],
+    ["opportunities", "Opportunities"], ["guardrails", "Guardrails"]] },
+  { id: "research", title: "The research", sections: [] },
 ];
 const GLYPH: Record<Label, string> = { strong: "●", moderate: "◐", emerging: "○", speculative: "◌" };
 const STOPPED: Record<string, string> = {
@@ -79,31 +84,6 @@ function SourceLink({ url, label = "source" }: { url: string | null | undefined;
   return safe ? <a href={safe} target="_blank" rel="noopener noreferrer nofollow" className="underline underline-offset-2">{label}</a> : null;
 }
 
-/** V7: dated news, regulation and events found by web search - every one with its source. */
-function RideThisNow({ pack }: { pack: ContextPack }) {
-  const hooks = pack.news_hooks ?? [];
-  if (!hooks.length) return null;
-  return (
-    <Sub title="Ride this now">
-      <ul className="space-y-3">
-        {hooks.map((h) => (
-          <li key={h.id} className="rounded-lg border border-line p-4">
-            <p className="flex flex-wrap items-baseline gap-2">
-              <span className="font-medium text-ink">{h.headline}</span>
-              <span className="font-mono text-xs text-ink-3">{h.date} · {h.kind}</span><IdTag id={h.id} />
-            </p>
-            <p className="mt-1 text-sm text-ink-2">{h.why_it_matters}</p>
-            <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-ink-3">
-              <span>External source:</span><SourceLink url={h.source_url} label={safeUrl(h.source_url) ? new URL(h.source_url).hostname : "source"} />
-              {h.related_ids.length > 0 && <><span>· connects to</span><Ids ids={h.related_ids} /></>}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </Sub>
-  );
-}
-
 function TimingChips({ timing }: { timing: ContextPack["channel_plan"][number]["timing"] }) {
   if (!timing?.length) return null;
   return (
@@ -126,116 +106,146 @@ function TimingChips({ timing }: { timing: ContextPack["channel_plan"][number]["
 
 // --- sections ------------------------------------------------------------------------------
 
-function Summary({ pack, items }: { pack: ContextPack; items: Map<string, Record<string, unknown>> }) {
-  const s = pack.snapshot;
-  const badgeOf = (id: string) => {
-    const it = items.get(id) as InsightLike | undefined;
-    return it?.confidence
-      ? <ConfidenceBadge label={it.confidence.label} matching={it.counts?.matching} ofTotal={it.counts?.of_total} />
-      : null;
-  };
+function Channels({ pack }: { pack: ContextPack }) {
   return (
-    <>
-      <div className="mb-6 space-y-3">
-        <CoverageStrip pack={pack} />
-        <LimitationCallout title="What this can't tell you">
-          <ul className="list-disc space-y-0.5 pl-4">
-            {pack.blind_spots.slice(0, 3).map((b) => <li key={b.id}>{b.text}</li>)}
-          </ul>
-          {pack.blind_spots.length > 3 && <a href="#blind-spots" className="mt-1 inline-block underline">All blind spots</a>}
-        </LimitationCallout>
-      </div>
-      <Sub title="Do this first">
-        <ol className="space-y-3">
-          {pack.do_first.map((d) => (
-            <li key={d.id} className="rounded-lg border border-line p-4">
-              <div className="flex items-start justify-between gap-3">
-                <p className="font-medium text-ink">{d.action}</p>
-                <CopyButton text={d.action} />
-              </div>
-              <p className="mt-1 text-sm text-ink-2">{d.why}</p>
-              <p className="mt-2 flex flex-wrap items-center gap-x-2 font-mono text-xs text-ink-3">
-                <span>{d.id}</span><span>effort {d.effort}</span><span>impact {d.impact}</span>
-                {d.owner_hint && <span className="font-sans">{d.owner_hint}</span>}
-                <span>· based on</span><Ids ids={d.why_ids} />
-              </p>
-            </li>
-          ))}
-        </ol>
-      </Sub>
-      <RideThisNow pack={pack} />
-      <Sub title="Five truths">
-        <ul className="space-y-3">
-          {s.five_truths.map((t) => (
-            <li key={t.text} className="flex flex-wrap items-baseline gap-2">
-              <span className="text-[1.02rem] text-ink">{t.text}</span>
-              {badgeOf(t.item_ids[0])}<Ids ids={t.item_ids} />
-            </li>
-          ))}
-        </ul>
-      </Sub>
-      <Sub title="A generic AI answer vs. what people actually say">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-lg border border-line bg-wash p-4">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">Generic answer (no research)</p>
-            <ul className="list-disc space-y-1.5 pl-4 text-sm text-ink-3">
-              {s.generic_vs_found.generic_points.map((g) => <li key={g}>{g}</li>)}
-            </ul>
-          </div>
-          <div className="rounded-lg border border-ink p-4">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink">What people actually say</p>
-            <ul className="space-y-3">
-              {s.generic_vs_found.what_we_found.map((f) => (
-                <li key={f.text}>
-                  <p className="text-sm text-ink">{f.text}</p>
-                  <div className="mt-1 flex flex-wrap items-center gap-2">{badgeOf(f.item_ids[0])}<Ids ids={f.item_ids} /></div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </Sub>
-    </>
+    <ShowMore items={pack.channel_plan} limit={3} render={(part) => (
+      <ol className="space-y-3">
+        {part.map((c) => (
+          <li key={c.id} className="rounded-lg border border-line p-4">
+            <p className="flex items-baseline gap-2"><span className="font-mono text-sm text-ink-3">{c.priority}.</span>
+              <span className="font-medium text-ink">{CHANNEL[c.platform] ?? c.platform}</span>
+              {c.posts_per_week ? <span className="text-xs text-ink-3">{c.posts_per_week} post{c.posts_per_week === 1 ? "" : "s"} a week</span> : null}
+              <IdTag id={c.id} /></p>
+            <p className="mt-1 text-sm text-ink">{c.why}</p>
+            <p className="mt-2 text-sm text-ink-2">Formats: {c.formats.join(", ") || "-"}</p>
+            {c.communities_or_hashtags.length > 0 && <p className="text-sm text-ink-2">Where: {c.communities_or_hashtags.join(", ")}</p>}
+            {c.tone_note && <p className="text-sm text-ink-2">Tone: {c.tone_note}</p>}
+            <TimingChips timing={c.timing} />
+          </li>
+        ))}
+      </ol>
+    )} />
   );
 }
 
-function Channels({ pack }: { pack: ContextPack }) {
+/** Packs made before V8 have no post briefs: their plan is this week's five posts. */
+function ThisWeek({ pack }: { pack: ContextPack }) {
   const pb = pack.playbook;
   const hooks = Object.fromEntries(pb.hooks.map((h) => [h.id, h.text]));
   const news = Object.fromEntries((pack.news_hooks ?? []).map((h) => [h.id, h]));
   const planText = pb.this_week.map((w) => `${w.day}: ${w.platform}, ${w.format} - "${hooks[w.hook_id] ?? w.hook_id}" - ${w.angle}`).join("\n");
+  if (!pb.this_week.length) return <EmptyNote fallback="No posts planned in this pack." />;
   return (
     <>
-      <Sub title="Where to show up">
-        <ol className="space-y-3">
-          {pack.channel_plan.map((c) => (
-            <li key={c.id} className="rounded-lg border border-line p-4">
-              <p className="flex items-baseline gap-2"><span className="font-mono text-sm text-ink-3">{c.priority}.</span>
-                <span className="font-medium text-ink">{c.platform}</span><IdTag id={c.id} /></p>
-              <p className="mt-1 text-sm text-ink">{c.why}</p>
-              <p className="mt-2 text-sm text-ink-2">Formats: {c.formats.join(", ") || "-"}</p>
-              {c.communities_or_hashtags.length > 0 && <p className="text-sm text-ink-2">Where: {c.communities_or_hashtags.join(", ")}</p>}
-              {c.tone_note && <p className="text-sm text-ink-2">Tone: {c.tone_note}</p>}
-              <p className="mt-1 font-mono text-xs text-ink-3">based on <Ids ids={c.why_ids} /></p>
-              <TimingChips timing={c.timing} />
+      <div className="mb-2 flex justify-end"><CopyButton text={planText} label="Copy plan" /></div>
+      <TableSection caption="This week" rowKey={(r) => r.id} rows={pb.this_week} columns={[
+        { header: "Day", cell: (r) => r.day, kind: "data" },
+        { header: "Where", cell: (r) => `${CHANNEL[r.platform] ?? r.platform} · ${r.format}` },
+        { header: "Hook", cell: (r) => <>{hooks[r.hook_id]} <IdButton id={r.hook_id} /></> },
+        { header: "Angle and why now", cell: (r) => {
+          const n = r.news_hook_id ? news[r.news_hook_id] : undefined;
+          return <>{r.angle}<span className="block text-xs text-ink-3">{r.why_now}</span>
+            {n && <span className="block text-xs text-ink-2">Rides the news: {n.headline} ({n.date}, <SourceLink url={n.source_url} />)</span>}</>;
+        } },
+      ]} />
+    </>
+  );
+}
+
+/** V9: what they want and what stops them, with tensions as the bridge between the two. */
+function WantStops({ pack, filter, meta }: { pack: ContextPack; filter: Filter; meta: (n: string) => SectionNotes | undefined }) {
+  const tensions = applyFilter(asItems(pack.tensions), filter);
+  const stops = [...asItems(pack.pain_points ?? []), ...asItems(pack.objections)];
+  return (
+    <>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ItemSection level={3} title="What they want" items={asItems(pack.motivations)} filter={filter} columns={1} limit={3}
+                     meta={meta("motivations")} />
+        <ItemSection level={3} title="What stops them" items={stops} filter={filter} columns={1} limit={3}
+                     meta={meta("pain_points")} empty="No pain points or objections stood out." />
+      </div>
+      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-3">Where wanting meets what stops them</h3>
+      <SectionLead meta={meta("tensions")} />
+      <ShowMore items={tensions} limit={2} render={(part) => (
+        <div className="mb-6 space-y-3">{part.map((t) => <TensionCard key={t.id} item={t as Tension} />)}</div>
+      )} />
+      {!tensions.length && <p className="mb-6 text-sm text-ink-3">No tensions match this filter.</p>}
+      {pack.playbook.objection_handling.length > 0 && (
+        <details className="rounded-lg border border-line p-3">
+          <summary className="cursor-pointer text-sm text-ink-2">How to answer their objections ({pack.playbook.objection_handling.length})</summary>
+          <ul className="mt-2 space-y-2 text-sm">
+            {pack.playbook.objection_handling.map((h) => <li key={h.objection_id} className="text-ink"><IdButton id={h.objection_id} /> {h.response}</li>)}
+          </ul>
+        </details>
+      )}
+    </>
+  );
+}
+
+const STATUS: Record<string, { word: string; glyph: string }> = {
+  confirmed: { word: "Confirmed by the posts", glyph: "✓" },
+  contradicted: { word: "Contradicted by the posts", glyph: "✕" },
+  not_seen: { word: "Not seen in the posts", glyph: "–" },
+};
+
+/** V9: every generic point with what the posts show; then what a generic answer misses. */
+function Generic({ pack }: { pack: ContextPack }) {
+  const g = pack.snapshot.generic_vs_found;
+  const rows = g.comparison ?? [];
+  return (
+    <div className="space-y-4">
+      {rows.length > 0 ? (
+        <TableSection caption="A generic AI answer checked against the posts" rowKey={(r) => r.generic_point} rows={rows} columns={[
+          { header: "A generic answer says", cell: (r) => <span className="text-ink-2">{r.generic_point}</span> },
+          { header: "What the posts show", cell: (r) => <span className="whitespace-nowrap">
+            <span aria-hidden="true">{STATUS[r.status].glyph} </span>{STATUS[r.status].word}{" "}
+            {r.item_ids.slice(0, 2).map((id) => <IdButton key={id} id={id} />)}</span> },
+        ]} />
+      ) : (
+        <div className="rounded-lg border border-line bg-wash p-4">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">Generic answer (no research)</p>
+          <ul className="list-disc space-y-1.5 pl-4 text-sm text-ink-3">{g.generic_points.map((x) => <li key={x}>{x}</li>)}</ul>
+        </div>
+      )}
+      {g.what_we_found.length > 0 && (
+        <div className="rounded-lg border border-ink p-4">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink">New: what a generic answer misses</p>
+          <ul className="space-y-2">
+            {g.what_we_found.map((f) => <li key={f.text} className="text-sm text-ink">{f.text} <Ids ids={f.item_ids} /></li>)}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Guardrails({ pack }: { pack: ContextPack }) {
+  const g = pack.guardrails;
+  const flags = pack.compliance_flags;
+  return (
+    <div className="space-y-4 text-sm">
+      <div className="grid gap-3 md:grid-cols-2">
+        <div className="rounded-lg border border-dashed border-line-strong p-4">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink">Never claim</p>
+          <ul className="list-disc space-y-1 pl-4 text-ink">{g.never_claim.length ? g.never_claim.map((x) => <li key={x}>{x}</li>) : <li>-</li>}</ul>
+        </div>
+        <div className="rounded-lg border border-line p-4">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink">Handle with care</p>
+          <ul className="list-disc space-y-1 pl-4 text-ink">{g.sensitivities.length ? g.sensitivities.map((x) => <li key={x}>{x}</li>) : <li>-</li>}</ul>
+        </div>
+      </div>
+      <p className="text-ink-2">{g.quote_reuse_note}</p>
+      {flags.length > 0 && (
+        <ul className="space-y-2">
+          {flags.map((f) => (
+            <li key={f.id} className="rounded-lg border border-accent/40 p-3 text-ink-2">
+              <span className="font-medium text-ink">Check with legal ({f.category.replace("_", " ")}) on <IdButton id={f.item_id} />.</span>{" "}
+              {f.why} <span className="text-ink">Safer: {f.safer_wording}</span>
             </li>
           ))}
-        </ol>
-      </Sub>
-      <Sub title="This week">
-        <div className="mb-2 flex justify-end"><CopyButton text={planText} label="Copy plan" /></div>
-        <TableSection caption="This week" rowKey={(r) => r.id} rows={pb.this_week} columns={[
-          { header: "Day", cell: (r) => r.day, kind: "data" },
-          { header: "Where", cell: (r) => `${r.platform} · ${r.format}` },
-          { header: "Hook", cell: (r) => <>{hooks[r.hook_id]} <IdButton id={r.hook_id} /></> },
-          { header: "Angle and why now", cell: (r) => {
-            const n = r.news_hook_id ? news[r.news_hook_id] : undefined;
-            return <>{r.angle}<span className="block text-xs text-ink-3">{r.why_now}</span>
-              {n && <span className="block text-xs text-ink-2">Rides the news: {n.headline} ({n.date}, <SourceLink url={n.source_url} />)</span>}</>;
-          } },
-        ]} />
-      </Sub>
-    </>
+        </ul>
+      )}
+    </div>
   );
 }
 
@@ -319,7 +329,17 @@ function Landscape({ pack, filter }: { pack: ContextPack; filter: Filter }) {
           </div>
         </Sub>
       )}
+      <ItemSection level={3} title="When it matters" items={asItems(pack.moments)} filter={filter} titleKey={"name" as keyof InsightLike} />
       {culture.length > 0 && <ItemSection level={3} title="Culture and codes" items={asItems(culture)} filter={filter} titleKey={"name" as keyof InsightLike} />}
+      {pack.competitors.length > 0 && (
+        <Sub title="Brands they mention">
+          <TableSection caption="Competitors" rowKey={(r) => r.id} rows={pack.competitors} columns={[
+            { header: "Brand", cell: (r) => r.name },
+            { header: "Mentions", cell: (r) => `${r.mentions} · ${Math.round(r.share_of_mentions * 100)}%`, kind: "data" },
+            { header: "How they talk about it", cell: (r) => r.tone || "-" },
+          ]} />
+        </Sub>
+      )}
     </>
   );
 }
@@ -331,7 +351,6 @@ function Playbook({ pack }: { pack: ContextPack }) {
   const cbText = cb ? ["objective", "audience", "insight", "message", "tone"].map((k) => `${k}: ${(cb as Record<string, unknown>)[k]}`)
     .concat(cb.mandatories.length ? [`mandatories: ${cb.mandatories.join("; ")}`] : [], cb.avoid.length ? [`avoid: ${cb.avoid.join("; ")}`] : [])
     .join("\n") : "";
-  const otherFlags = pack.compliance_flags.filter((f) => !f.item_id.startsWith("HOOK-"));
   return (
     <>
       <Sub title={`Hooks (${pb.hooks.length})`}>
@@ -373,18 +392,6 @@ function Playbook({ pack }: { pack: ContextPack }) {
               return <li key={t.name} className="text-ink">{url ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{t.name}</a> : t.name}
                 <span className="ml-2 font-mono text-xs text-ink-3">{t.kind} · {t.platform}</span></li>;
             })}
-          </ul>
-        </Sub>
-      )}
-      {otherFlags.length > 0 && (
-        <Sub title="Other compliance flags">
-          <ul className="space-y-2 text-sm">
-            {otherFlags.map((f) => (
-              <li key={f.id} className="rounded-lg border border-accent/40 p-3 text-ink-2">
-                <span className="font-medium text-ink">Check with legal ({f.category.replace("_", " ")}) on <IdButton id={f.item_id} />.</span>{" "}
-                {f.why} <span className="text-ink">Safer: {f.safer_wording}</span>
-              </li>
-            ))}
           </ul>
         </Sub>
       )}
@@ -448,7 +455,8 @@ function Method({ pack }: { pack: ContextPack }) {
             word for word from its post. Labels: strong, moderate, emerging, speculative. "Safe to state" means strong, observed
             and confirmed by the claim check. This is AI-assisted analysis and may contain errors; compliance flags are not
             legal advice.</p>
-          <p><Link to={`/packs/${pack.pack_id}/replay`} className="inline-flex items-center gap-1 text-ink underline"><History aria-hidden="true" size={14} /> Replay the research</Link></p>
+          <p><Link to={`/packs/${pack.pack_id}/replay`} className="inline-flex items-center gap-1 text-ink underline"><History aria-hidden="true" size={14} /> Watch how this pack was made</Link>
+            <span className="ml-1 text-ink-3">- a recording of the research; it won't run again or cost anything.</span></p>
         </div>
       </Sub>
     </>
@@ -457,8 +465,45 @@ function Method({ pack }: { pack: ContextPack }) {
 
 // --- the page ----------------------------------------------------------------------------------
 
+function PartNav() {
+  const links = PARTS.map((part) => (
+    <li key={part.id}>
+      <a href={`#${part.id}`} className="block rounded px-2 py-1 font-medium text-ink hover:bg-wash">{part.title}</a>
+      {part.sections.length > 0 && (
+        <ul className="mb-1 ml-2 border-l border-line pl-2">
+          {part.sections.map(([id, label]) => (
+            <li key={id}><a href={`#${id}`} className="block rounded px-2 py-0.5 text-ink-2 hover:bg-wash hover:text-ink">{label}</a></li>
+          ))}
+        </ul>
+      )}
+    </li>
+  ));
+  return (
+    <>
+      <nav aria-label="Pack parts" className="hidden print:hidden lg:block">
+        <ul className="sticky top-20 space-y-1 text-sm">{links}</ul>
+      </nav>
+      <details className="sticky top-14 z-10 mb-4 rounded-lg border border-line bg-paper text-sm print:hidden lg:hidden">
+        <summary className="flex cursor-pointer items-center gap-2 px-3 py-2 text-ink"><Menu aria-hidden="true" size={15} /> Sections</summary>
+        <ul className="space-y-1 px-2 pb-2">{links}</ul>
+      </details>
+    </>
+  );
+}
+
+function Part({ id, title, children, lead }: { id: string; title: string; children: React.ReactNode; lead?: string }) {
+  return (
+    <section aria-labelledby={id} className={`pack-part mb-16 ${id === "summary" ? "" : "max-w-[760px]"}`}>
+      <h2 id={id} className="mb-1 scroll-mt-24 text-2xl font-semibold tracking-tight text-ink">{title}</h2>
+      {lead && <p className="mb-6 text-sm text-ink-3">{lead}</p>}
+      {children}
+    </section>
+  );
+}
+
 export function PackBody({ pack }: { pack: ContextPack }) {
   const index = useMemo(() => indexPack(pack), [pack]);
+  const guide = useLoadGuide();
   const [filter, setFilter] = useState<Filter>("all");
   const [agent, setAgent] = useState(false);
   const [handoff, setHandoff] = useState(false);
@@ -473,204 +518,209 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   const v = pack.schema_version;
   const sec = (id: string, title: string, name: string, data: unknown, children: React.ReactNode, note?: React.ReactNode) =>
     <Section id={id} title={title} agent={agent} agentData={data} name={name} version={v} note={note}>{children}</Section>;
+  useEffect(() => {   // printing / Save as PDF shows everything that is folded away on screen
+    const open = () => document.querySelectorAll("main details").forEach((d) => d.setAttribute("open", ""));
+    window.addEventListener("beforeprint", open);
+    return () => window.removeEventListener("beforeprint", open);
+  }, []);
 
   return (
+    <GuideContext.Provider value={guide}>
     <PackContext.Provider value={{ evidence: index.evidence, onOpen: setDrawer, claims }}>
       <div className="pack-layout lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
-        <nav aria-label="Sections" className="hidden print:hidden lg:block">
-          <ul className="sticky top-20 space-y-1 text-sm">
-            {NAV.map(([id, label]) => <li key={id}><a href={`#${id}`} className="block rounded px-2 py-1 text-ink-2 hover:bg-wash hover:text-ink">{label}</a></li>)}
-          </ul>
-        </nav>
-        <div className="min-w-0 max-w-[760px]">
-          <header className="mb-8 space-y-3">
+        <PartNav />
+        <div className="min-w-0 max-w-[760px] xl:max-w-[920px]">
+          <header className="mb-4 space-y-2">
             <p className="flex flex-wrap items-center gap-2 font-mono text-xs text-ink-3">
               <span>{pack.pack_id}</span><span>{pack.generated_at.slice(0, 10)}</span><ModeBadge mode={pack.mode} />
             </p>
-            <h1 className="text-3xl font-semibold tracking-tight text-ink">{pack.brief.text}</h1>
-            <p className="text-ink-2">{pack.brief.interpreted.audience} · {pack.brief.interpreted.market}</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-ink md:text-3xl">{pack.brief.text}</h1>
             <p className="hidden font-mono text-xs text-ink print:block">
               Context Pack {pack.pack_id} · {pack.generated_at.slice(0, 10)} · coverage grade {pack.snapshot.coverage_grade} · {pack.mode}
-            </p>
-            <p className="flex flex-wrap gap-3 text-sm text-ink-2" aria-label="Confidence summary">
-              {(Object.keys(GLYPH) as Label[]).map((l) => (
-                <span key={l}><span aria-hidden="true">{GLYPH[l]}</span> {counts[l]} {l}</span>
-              ))}
             </p>
             <div className="flex flex-wrap gap-2 print:hidden">
               <button type="button" onClick={() => setHandoff(true)}
                       className="inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-sm text-paper">
-                <Share2 aria-hidden="true" size={14} /> Handoff
+                <Share2 aria-hidden="true" size={14} /> Hand off
               </button>
               <button type="button" onClick={() => getPackInputs(pack.pack_id)
                         .then((i) => navigate(rerunUrl(i))).catch(() => navigate(rerunUrl({
                           brief: pack.brief.text, mode: pack.mode, time_window_days: pack.brief.interpreted.time_window_days,
                           brand_voice: pack.brief.brand_voice ?? null, intake: pack.brief.intake ?? null })))}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-sm text-ink-2">
-                <RotateCcw aria-hidden="true" size={14} /> Run again with these inputs
+                <RotateCcw aria-hidden="true" size={14} /> Run again
               </button>
               <button type="button" onClick={() => setAgent(!agent)} aria-pressed={agent}
                       className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm ${agent ? "border-ink bg-wash text-ink" : "border-line text-ink-2"}`}>
                 <Braces aria-hidden="true" size={14} /> View as agent
               </button>
+            </div>
+          </header>
+
+          {(pack.coverage.thin_evidence || pack.blind_spots[0]?.text.startsWith("Partial pack:")) && (
+            <div className="mb-6 space-y-2">
+              {pack.coverage.thin_evidence && (
+                <details className="rounded-lg border border-line-strong bg-wash px-3 py-2 text-sm text-ink-2">
+                  <summary className="cursor-pointer"><span className="font-medium text-ink">Thin evidence: treat these findings as
+                    early signals.</span> <span className="underline">Why, and how to get more</span></summary>
+                  <p className="mt-1">{pack.snapshot.grade_note || "This pack does not meet the minimum content bar."}{" "}
+                    <a href="#research" className="underline">What's short</a></p>
+                  <span className="mt-2 flex flex-wrap gap-2 print:hidden">
+                    {[["Run it as Standard", { mode: "standard" }], ["Widen the time window", { window: "365" }],
+                      ["Include English discussion", { suffix: " (include English-language discussion)" }]].map(([label, o]) => {
+                      const opt = o as { mode?: string; window?: string; suffix?: string };
+                      const q = new URLSearchParams({ brief: pack.brief.text + (opt.suffix ?? ""), mode: opt.mode ?? pack.mode,
+                        ...(opt.window ? { window: opt.window } : {}) });
+                      return <Link key={label as string} to={`/?${q}`} className="rounded border border-ink px-2 py-0.5 text-xs text-ink">{label as string}</Link>;
+                    })}
+                  </span>
+                </details>
+              )}
+              {pack.blind_spots[0]?.text.startsWith("Partial pack:") && (
+                <LimitationCallout title="Partial pack">{pack.blind_spots[0].text.replace("Partial pack: ", "")}</LimitationCallout>
+              )}
+            </div>
+          )}
+
+          <Part id="summary" title="Summary">
+            {agent ? <AgentJson name="snapshot" data={{ snapshot: pack.snapshot, do_first: pack.do_first }} schemaVersion={v} />
+              : <SummaryPart pack={pack} />}
+          </Part>
+
+          <Part id="understand" title="Understand your audience" lead="How they talk, what they want, what stops them.">
+            <div className="mb-6 flex flex-wrap items-center gap-3 print:hidden">
+              <p className="flex flex-wrap gap-3 text-sm text-ink-2" aria-label="Findings by strength">
+                {(Object.keys(GLYPH) as Label[]).map((l) => (
+                  <span key={l} title={guide?.labels[l]?.words}><span aria-hidden="true">{GLYPH[l]}</span> {counts[l]} {l}</span>
+                ))}
+              </p>
               <div className="ml-auto flex gap-1" role="group" aria-label="Filter findings">
                 {(["all", "observed", "strong"] as Filter[]).map((f) => (
                   <button key={f} type="button" onClick={() => setFilter(f)} aria-pressed={filter === f}
                           className={`rounded-lg border px-2.5 py-1.5 text-sm ${filter === f ? "border-ink bg-ink text-paper" : "border-line text-ink-2"}`}>
-                    {{ all: "All", observed: "Observed only", strong: "Strong only" }[f]}
+                    {{ all: "All", observed: "Seen in posts only", strong: "Strong only" }[f]}
                   </button>
                 ))}
               </div>
             </div>
-          </header>
+            {sec("their-words", "Their words", "voice", pack.voice, <Voice pack={pack} filter={filter} />)}
+            {sec("want-stops", "What they want and what stops them", "motivations",
+              { motivations: pack.motivations, pain_points: pack.pain_points, objections: pack.objections, tensions: pack.tensions },
+              <WantStops pack={pack} filter={filter} meta={meta} />)}
+            {sec("segments", "Segments", "segments", pack.segments,
+              <ItemSection level={3} title="Who they are" items={asItems(pack.segments)} filter={filter} titleKey={"name" as keyof InsightLike}
+                           meta={meta("segments")} />)}
+            {sec("generic", "A generic AI answer vs. what people actually say", "generic_vs_found",
+              pack.snapshot.generic_vs_found, <Generic pack={pack} />)}
+            {sec("landscape", "Landscape: by platform and over time", "landscape", { landscape: pack.landscape, culture: pack.culture },
+              <Landscape pack={pack} filter={filter} />)}
+          </Part>
 
-          <div className="mb-10 space-y-2">
-            {pack.coverage.thin_evidence && (
-              <LimitationCallout title="Thin evidence">
-                This pack does not meet the minimum content bar, so treat its findings as early signals (see Blind spots for what is short).
-                <span className="mt-2 flex flex-wrap gap-2 print:hidden">
-                  {[["Run it as Standard", { mode: "standard" }], ["Widen the time window", { window: "365" }],
-                    ["Include English discussion", { suffix: " (include English-language discussion)" }]].map(([label, o]) => {
-                    const opt = o as { mode?: string; window?: string; suffix?: string };
-                    const q = new URLSearchParams({ brief: pack.brief.text + (opt.suffix ?? ""), mode: opt.mode ?? pack.mode,
-                      ...(opt.window ? { window: opt.window } : {}) });
-                    return <Link key={label as string} to={`/?${q}`} className="rounded border border-ink px-2 py-0.5 text-xs text-ink">{label as string}</Link>;
-                  })}
-                </span>
-              </LimitationCallout>
-            )}
-            {pack.blind_spots[0]?.text.startsWith("Partial pack:") && (
-              <LimitationCallout title="Partial pack">{pack.blind_spots[0].text.replace("Partial pack: ", "")}</LimitationCallout>
-            )}
-            {pack.coverage.loop.fallback_used && (
-              <LimitationCallout title="Collected automatically">The research agent stopped early, so the remaining planned sources were collected automatically.</LimitationCallout>
-            )}
-          </div>
-
-          {sec("summary", "Summary", "snapshot", { snapshot: pack.snapshot, do_first: pack.do_first },
-            <Summary pack={pack} items={index.items as Map<string, Record<string, unknown>>} />)}
-          {sec("channels", "Channels & this week", "channel_plan", { channel_plan: pack.channel_plan, this_week: pack.playbook.this_week },
-            <Channels pack={pack} />)}
-          {sec("voice", "Voice", "voice", pack.voice, <Voice pack={pack} filter={filter} />)}
-          {sec("pain-points", "Pain points", "pain_points", pack.pain_points,
-            <ItemSection level={3} title="What gets in their way" items={asItems(pack.pain_points ?? [])} filter={filter}
-                         meta={meta("pain_points")} />)}
-          {sec("tensions", "Tensions & motivations", "tensions", { tensions: pack.tensions, motivations: pack.motivations },
-            <>
-              <SectionLead meta={meta("tensions")} />
-              <div className="mb-8 space-y-3">
-                {applyFilter(asItems(pack.tensions), filter).map((t) => <TensionCard key={t.id} item={t as Tension} />)}
-                {applyFilter(asItems(pack.tensions), filter).length === 0 && <p className="text-sm text-ink-3">No tensions match this filter.</p>}
-              </div>
-              <ItemSection level={3} title="What they want to achieve" items={asItems(pack.motivations)} filter={filter}
-                           meta={meta("motivations")} />
-            </>)}
-          {sec("segments", "Segments", "segments", pack.segments,
-            <ItemSection level={3} title="Who they are" items={asItems(pack.segments)} filter={filter} titleKey={"name" as keyof InsightLike}
-                         meta={meta("segments")} />)}
-          {sec("objections", "Objections & competitors", "objections", { objections: pack.objections, competitors: pack.competitors },
-            <>
-              <ItemSection level={3} title="Why they would say no" items={asItems(pack.objections)} filter={filter}
-                           meta={meta("objections")} />
-              {pack.playbook.objection_handling.length > 0 && (
-                <Sub title="How to answer them">
-                  <ul className="space-y-2 text-sm">
-                    {pack.playbook.objection_handling.map((h) => <li key={h.objection_id} className="text-ink"><IdButton id={h.objection_id} /> {h.response}</li>)}
+          <Part id="act" title="Act on it" lead="One plan: post briefs and a 4-week calendar, where to show up, and what to avoid.">
+            {sec("plan", "Your plan", "post_briefs",
+              { post_briefs: pack.post_briefs, drafts: pack.drafts, content_calendar: pack.content_calendar, this_week: pack.playbook.this_week },
+              <PlanPart pack={pack} fallback={<ThisWeek pack={pack} />} />)}
+            {sec("channels", "Channels", "channel_plan", pack.channel_plan, <Channels pack={pack} />)}
+            {sec("performs", "What performs", "what_performs", pack.what_performs,
+              pack.what_performs.length ? (
+                <>
+                <SectionLead meta={meta("what_performs")} />
+                {(pack.performance_takeaways ?? []).length > 0 && (
+                  <ul className="mb-4 space-y-2">
+                    {pack.performance_takeaways.map((t) => (
+                      <li key={t.id} className="rounded-lg border border-ink p-4">
+                        <p className="font-medium text-ink">{t.takeaway}</p>
+                        <p className="mt-1 text-sm text-ink-2">{t.why} <span className="text-ink-3">(our reading)</span></p>
+                      </li>
+                    ))}
                   </ul>
-                </Sub>
-              )}
-              {pack.competitors.length > 0 && (
-                <Sub title="Brands they mention">
-                  <TableSection caption="Competitors" rowKey={(r) => r.id} rows={pack.competitors} columns={[
-                    { header: "Brand", cell: (r) => r.name },
-                    { header: "Mentions", cell: (r) => `${r.mentions} · ${Math.round(r.share_of_mentions * 100)}%`, kind: "data" },
-                    { header: "How they talk about it", cell: (r) => r.tone || "-" },
-                    { header: "", cell: (r) => <IdButton id={r.id} />, kind: "data" },
-                  ]} />
-                </Sub>
-              )}
-            </>)}
-          {sec("landscape", "Landscape & platform lens", "landscape", { landscape: pack.landscape, culture: pack.culture },
-            <Landscape pack={pack} filter={filter} />)}
-          {sec("performs", "What performs", "what_performs", pack.what_performs,
-            pack.what_performs.length ? (
-              <>
-              <SectionLead meta={meta("what_performs")} />
-              {(pack.performance_takeaways ?? []).length > 0 && (
-                <ul className="mb-4 space-y-2">
-                  {pack.performance_takeaways.map((t) => (
-                    <li key={t.id} className="rounded-lg border border-ink p-4">
-                      <p className="font-medium text-ink">{t.takeaway}</p>
-                      <p className="mt-1 text-sm text-ink-2">{t.why} <span className="text-ink-3">(our reading)</span></p>
-                    </li>
-                  ))}
+                )}
+                <details className="group" open={!(pack.performance_takeaways ?? []).length}>
+                  <summary className="cursor-pointer text-sm text-ink-2 hover:text-ink">Example posts ({pack.what_performs.length})</summary>
+                <ul className="mt-3 space-y-3">
+                  {pack.what_performs.map((p) => {
+                    const url = safeUrl(p.url);
+                    return (
+                      <li key={p.id} className="rounded-lg border border-line p-4">
+                        <p className="text-sm text-ink"><span className="font-medium">{p.format}</span> on {CHANNEL[p.platform] ?? p.platform} ·
+                          <span className="font-mono text-xs"> more engagement than {Math.round(p.engagement_percentile)}% of posts</span></p>
+                        <p className="mt-1 text-sm text-ink-2">{p.why_it_worked} <span className="text-ink-3">(our reading)</span></p>
+                        <p className="mt-1 flex gap-2 text-xs">{url && <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">Open the post</a>}
+                          <IdButton id={p.id} /></p>
+                      </li>
+                    );
+                  })}
                 </ul>
-              )}
-              <details className="group" open={!(pack.performance_takeaways ?? []).length}>
-                <summary className="cursor-pointer text-sm text-ink-2 hover:text-ink">Example posts ({pack.what_performs.length})</summary>
-              <ul className="mt-3 space-y-3">
-                {pack.what_performs.map((p) => {
-                  const url = safeUrl(p.url);
-                  return (
-                    <li key={p.id} className="rounded-lg border border-line p-4">
-                      <p className="text-sm text-ink"><span className="font-medium">{p.format}</span> on {p.platform} ·
-                        <span className="font-mono text-xs"> engagement p{Math.round(p.engagement_percentile)}</span></p>
-                      <p className="mt-1 text-sm text-ink-2">{p.why_it_worked} <span className="text-ink-3">(our reading)</span></p>
-                      <p className="mt-1 flex gap-2 text-xs">{url && <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">Open the post</a>}
-                        <IdButton id={p.id} /></p>
-                    </li>
-                  );
-                })}
-              </ul>
-              </details>
-              </>
-            ) : <EmptyNote meta={meta("what_performs")} fallback="No engagement data in this pack, so nothing can be ranked by what performs." />)}
-          {sec("moments", "Moments", "moments", pack.moments,
-            <ItemSection level={3} title="When it matters" items={asItems(pack.moments)} filter={filter} titleKey={"name" as keyof InsightLike}
-                         meta={meta("moments")} />)}
-          {sec("opportunities", "Opportunities", "opportunities", pack.opportunities,
-            pack.opportunities.length ? (
-              <>
-                <SectionLead meta={meta("opportunities")} />
-                <ul className="space-y-3">
-                  {pack.opportunities.map((o) => (
-                    <li key={o.id} className="rounded-lg border border-line p-4">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs ${o.status === "supported" ? "border-ink text-ink" : "border-dashed border-ink-3 text-ink-2"}`}>
-                          <span aria-hidden="true">{o.status === "supported" ? "●" : "◌"}</span>
-                          {o.status === "supported" ? "Supported" : "Early signal - check before acting"}
-                        </span>
-                        <span className="rounded border border-line px-1.5 py-0.5 text-xs text-ink-2">{o.kind.replace(/_/g, " ")}</span>
-                        <span className="ml-auto"><IdButton id={o.id} /></span>
-                      </div>
-                      <p className="mt-2 text-ink">{o.opportunity}</p>
-                      <p className="mt-1 text-xs text-ink-3">
-                        {o.distinct_authors} {o.distinct_authors === 1 ? "person" : "people"} in {o.communities.length}{" "}
-                        {o.communities.length === 1 ? "community" : "communities"} · confidence {o.confidence.label}
-                      </p>
-                      {o.existing_solutions.length > 0 ? (
-                        <p className="mt-2 text-sm text-ink-2">Already out there:{" "}
-                          {o.existing_solutions.map((x, n) => {
-                            const url = safeUrl(x.url);
-                            return <span key={x.url}>{n > 0 && "; "}{url ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{x.name}</a> : x.name}</span>;
-                          })}
+                </details>
+                </>
+              ) : <EmptyNote meta={meta("what_performs")} fallback="No engagement data in this pack, so nothing can be ranked by what performs." />)}
+            {sec("opportunities", "Opportunities", "opportunities", pack.opportunities,
+              pack.opportunities.length ? (
+                <>
+                  <SectionLead meta={meta("opportunities")} />
+                  <ShowMore items={[...pack.opportunities].sort((a, b) => Number(b.status === "supported") - Number(a.status === "supported"))}
+                            limit={3} render={(part) => (
+                  <ul className="space-y-3">
+                    {part.map((o) => (
+                      <li key={o.id} className="rounded-lg border border-line p-4">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs ${o.status === "supported" ? "border-ink text-ink" : "border-dashed border-ink-3 text-ink-2"}`}>
+                            <span aria-hidden="true">{o.status === "supported" ? "●" : "◌"}</span>
+                            {o.status === "supported" ? "Supported" : "Early signal - check before acting"}
+                          </span>
+                          <span className="rounded border border-line px-1.5 py-0.5 text-xs text-ink-2">{o.kind.replace(/_/g, " ")}</span>
+                          <span className="ml-auto"><IdButton id={o.id} /></span>
+                        </div>
+                        <p className="mt-2 text-ink">{o.opportunity}</p>
+                        <p className="mt-1 text-xs text-ink-3">
+                          {o.distinct_authors} {o.distinct_authors === 1 ? "person" : "people"} in {o.communities.length}{" "}
+                          {o.communities.length === 1 ? "community" : "communities"} · confidence {o.confidence.label}
                         </p>
-                      ) : o.search_note ? <p className="mt-2 text-sm text-ink-3">{o.search_note.charAt(0).toUpperCase() + o.search_note.slice(1)}.</p> : null}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : <EmptyNote meta={meta("opportunities")} fallback="No opportunities stood out in this evidence." />)}
-          {sec("playbook", "Playbook", "playbook", { playbook: pack.playbook, compliance_flags: pack.compliance_flags },
-            <Playbook pack={pack} />)}
-          {sec("blind-spots", "Blind spots", "blind_spots", pack.blind_spots,
-            <ul className="list-disc space-y-1.5 pl-5 text-ink">{pack.blind_spots.map((b) => <li key={b.id}>{b.text}</li>)}</ul>)}
-          {sec("method", "Method", "coverage", pack.coverage, <Method pack={pack} />)}
+                        {o.existing_solutions.length > 0 ? (
+                          <p className="mt-2 text-sm text-ink-2">Already out there:{" "}
+                            {o.existing_solutions.map((x, n) => {
+                              const url = safeUrl(x.url);
+                              return <span key={x.url}>{n > 0 && "; "}{url ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{x.name}</a> : x.name}</span>;
+                            })}
+                          </p>
+                        ) : o.search_note ? <p className="mt-2 text-sm text-ink-3">{o.search_note.charAt(0).toUpperCase() + o.search_note.slice(1)}.</p> : null}
+                      </li>
+                    ))}
+                  </ul>
+                  )} />
+                </>
+              ) : <EmptyNote meta={meta("opportunities")} fallback="No opportunities stood out in this evidence." />)}
+            {sec("guardrails", "Guardrails", "guardrails", { guardrails: pack.guardrails, compliance_flags: pack.compliance_flags },
+              <>
+                <Guardrails pack={pack} />
+                <details className="mt-6 rounded-lg border border-line p-3">
+                  <summary className="cursor-pointer text-sm text-ink-2">More from the playbook: hooks, creative brief, keywords, communities</summary>
+                  <div className="mt-4"><Playbook pack={pack} /></div>
+                </details>
+              </>)}
+          </Part>
+
+          <section aria-labelledby="research" className="pack-part mb-16">
+            <details className="research group rounded-lg border border-line">
+              <summary className="cursor-pointer px-4 py-3">
+                <h2 id="research" className="inline scroll-mt-24 text-2xl font-semibold tracking-tight text-ink">The research</h2>
+                <span className="ml-2 text-sm text-ink-3">sources, method, hypotheses, blind spots, every post</span>
+              </summary>
+              <div className="space-y-8 px-4 pb-4">
+                <CoverageStrip pack={pack} />
+                <Sub title="Blind spots">
+                  <ul className="list-disc space-y-1.5 pl-5 text-ink">{pack.blind_spots.map((b) => <li key={b.id}>{b.text}</li>)}</ul>
+                </Sub>
+                <Method pack={pack} />
+              </div>
+            </details>
+          </section>
         </div>
       </div>
       <EvidenceDrawer itemId={drawer} index={index} packId={pack.pack_id} onClose={() => setDrawer(null)} onOpen={setDrawer} />
       <Handoff packId={pack.pack_id} open={handoff} onClose={() => setHandoff(false)} />
     </PackContext.Provider>
+    </GuideContext.Provider>
   );
 }
 

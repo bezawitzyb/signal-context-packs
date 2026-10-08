@@ -184,6 +184,8 @@ class AnswerB(BaseModel):
 class Coverage(BaseModel):
     id: str
     covered: bool
+    generic_point: int | None = None   # V9: the generic point (1-based) it says the same as, or contradicts
+    relation: str = "none"             # V9: same | contradicts | none
 
 
 class CoverageBatch(BaseModel):
@@ -355,7 +357,10 @@ def _fake_b(user: str) -> dict:
 
 
 def _fake_coverage(user: str) -> dict:
-    return {"items": [{"id": i, "covered": False} for i in re.findall(r"^(\w+-\d+): ", user, flags=re.M)]}
+    ids = re.findall(r"^(\w+-\d+): ", user, flags=re.M)
+    return {"items": [{"id": i, "covered": False, "generic_point": 1 if n == 0 else 2 if n == 1 else None,
+                       "relation": "same" if n == 0 else "contradicts" if n == 1 else "none"}
+                      for n, i in enumerate(ids)]}
 
 
 # --------------------------------------------------------------------------
@@ -633,8 +638,9 @@ async def mark_non_obvious(sections: dict, generic: list[str], outcome: WriteOut
     """One worker pass (batched): is each finding already covered by the generic points?"""
     items = [it for name in INSIGHT_SECTIONS for it in sections[name]]
     system = load_prompt("verify_non_obvious")
-    head = "Generic points:\n" + "\n".join(f"- {g}" for g in generic) + "\n\nFindings:\n"
+    head = "Generic points:\n" + "\n".join(f"{n}. {g}" for n, g in enumerate(generic, 1)) + "\n\nFindings:\n"
     verdicts: dict[str, bool] = {}
+    matches: dict[str, dict] = {}
 
     async def run(batch: list[dict]) -> None:
         user = head + "\n".join(f"{it['id']}: {it['claim']}" for it in batch)
@@ -645,10 +651,15 @@ async def mark_non_obvious(sections: dict, generic: list[str], outcome: WriteOut
         outcome.usd += res.usd
         for v in res.data.items:
             verdicts.setdefault(v.id.strip().upper(), not v.covered)
+            rel = v.relation.strip().lower()
+            if rel in ("same", "contradicts") and v.generic_point and 1 <= v.generic_point <= len(generic):
+                matches.setdefault(v.id.strip().upper(), {"point": v.generic_point - 1, "relation": rel})
 
     await batched(items, run, size=_cfg()["non_obvious_batch"], parallel=3)
     for it in items:
         it["non_obvious"] = verdicts.get(it["id"], False)  # no verdict: not claimed as non-obvious
+        if it["id"] in matches:                             # V9: generic point confirmed or contradicted
+            it["generic_match"] = matches[it["id"]]
 
 
 def finish_sections(s: dict, analysis: dict) -> None:
