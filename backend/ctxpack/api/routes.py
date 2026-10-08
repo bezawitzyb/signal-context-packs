@@ -130,6 +130,18 @@ async def get_calendar(pack_id: str) -> Any:
     return await _call(asyncio.to_thread, service.calendar, pack_id)
 
 
+class AskRequest(BaseModel):
+    question: str = Field(min_length=1, max_length=2000, description="The question about this pack.")
+    history: list[dict[str, str]] = Field(default_factory=list, description="Earlier turns: {role, text}.")
+
+
+@router.post("/packs/{pack_id}/ask")
+async def ask_pack(pack_id: str, body: AskRequest, x_api_key: str | None = Header(default=None)) -> Any:
+    """Ask this pack (V10): an answer from this pack only, with numbered citations that open the posts.
+    Without a run key each pack takes a limited number of questions a day."""
+    return await _call(service.ask_pack, pack_id, body.question, body.history, x_api_key)
+
+
 @router.get("/packs/{pack_id}/handoff")
 async def get_handoff(pack_id: str) -> Any:
     """The hand-off options (V9): purpose, length in pages and a one-line preview."""

@@ -2,7 +2,7 @@
 // (collapsed). Sticky part nav (a menu on phones), progressive disclosure, evidence drawer, View as agent, Hand off.
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { Braces, History, Menu, RotateCcw, Share2 } from "lucide-react";
+import { Braces, History, Menu, MessageCircleQuestion, RotateCcw, Share2 } from "lucide-react";
 import { friendlyError, getPack, getPackInputs, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
@@ -17,6 +17,7 @@ import { CopyButton } from "../components/CopyButton";
 import { EvidenceDrawer } from "../components/EvidenceDrawer";
 import { AgentJson } from "../components/AgentJson";
 import { Handoff } from "../components/Handoff";
+import { AskPanel } from "../components/AskPanel";
 import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
 import { rerunUrl } from "../lib/rerun";
@@ -507,6 +508,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [agent, setAgent] = useState(false);
   const [handoff, setHandoff] = useState(false);
+  const [asking, setAsking] = useState(false);
   const navigate = useNavigate();
   const claims = useMemo(() => Object.fromEntries([...index.items.entries()]
     .map(([id, it]) => [id, (it as unknown as { claim?: unknown }).claim])
@@ -542,6 +544,10 @@ export function PackBody({ pack }: { pack: ContextPack }) {
               <button type="button" onClick={() => setHandoff(true)}
                       className="inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-sm text-paper">
                 <Share2 aria-hidden="true" size={14} /> Hand off
+              </button>
+              <button type="button" onClick={() => setAsking(true)} aria-expanded={asking}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-ink px-3 py-1.5 text-sm text-ink">
+                <MessageCircleQuestion aria-hidden="true" size={14} /> Ask this pack
               </button>
               <button type="button" onClick={() => getPackInputs(pack.pack_id)
                         .then((i) => navigate(rerunUrl(i))).catch(() => navigate(rerunUrl({
@@ -719,6 +725,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
       </div>
       <EvidenceDrawer itemId={drawer} index={index} packId={pack.pack_id} onClose={() => setDrawer(null)} onOpen={setDrawer} />
       <Handoff packId={pack.pack_id} open={handoff} onClose={() => setHandoff(false)} />
+      <AskPanel pack={pack} open={asking} onClose={() => setAsking(false)} />
     </PackContext.Provider>
     </GuideContext.Provider>
   );

@@ -221,7 +221,7 @@ async def test_mcp_over_http_reads_freely_and_checks_the_key_header(api):
         tools = await c.post("/mcp/", json=rpc("tools/list", {}, 2), headers=HEADERS)
         names = {t["name"] for t in tools.json()["result"]["tools"]}
         assert names == {"list_packs", "get_pack_view", "get_insight", "search_evidence", "create_context_pack",
-                         "get_pack_status", "get_post_briefs", "get_calendar"}
+                         "get_pack_status", "get_post_briefs", "get_calendar", "ask_pack"}
         listed = await c.post("/mcp/", json=rpc("tools/call", {"name": "list_packs", "arguments": {}}, 3),
                               headers=HEADERS)
         assert api.pack_id in listed.text

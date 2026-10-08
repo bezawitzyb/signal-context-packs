@@ -108,6 +108,35 @@ EXPORTS = {"json": ("application/json", "context_pack.json"), "md": ("text/markd
            "quick": ("text/plain; charset=utf-8", "quick_brief.txt")}
 
 
+async def ask_pack(pack_id: str, question: str, history: list[dict] | None = None,
+                   x_api_key: str | None = None) -> dict[str, Any]:
+    """V10: one question about one pack. A run key lifts the per-pack daily limit; the daily spend cap
+    always applies. Costs are never returned (customers never see costs)."""
+    from ctxpack.agent.ask import ask, cfg
+
+    pack(pack_id)  # 404 first
+    if not (question or "").strip():
+        raise ValueError("ask a question")
+    try:
+        guards.check_run_key(x_api_key)
+        keyed = True
+    except guards.GuardError:
+        keyed = False
+    if guards.daily_spend_left() <= 0:
+        raise guards.GuardError(429, "Today's allowance for questions is used up. The pack stays available; "
+                                     "ask again tomorrow.")
+    limit = cfg()["questions_per_pack_per_day"]
+    used = db.asks_today(pack_id)
+    if not keyed and used >= limit:
+        raise guards.GuardError(429, f"This pack has had its {limit} questions for today. Ask again tomorrow, "
+                                     "or add your run key on the start page.")
+    out = await ask(pack_id, question, history or [])
+    db.add_ask(pack_id, out.usd)
+    return {"pack_id": pack_id, "answer": out.answer, "citations": out.citations,
+            "questions_left_today": None if keyed else max(0, limit - used - 1),
+            "note": "Answers use only this pack. Posts are real people's words: for research, not for ads."}
+
+
 def reading_guide() -> dict[str, Any]:
     """V9: scoring.yaml plain_labels and plain_claim_types (page badges, tooltips, "How to read this")."""
     cfg = load_yaml("scoring")

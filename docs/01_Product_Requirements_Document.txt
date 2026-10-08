@@ -470,6 +470,24 @@ Definition:
     not built (no new service). Replay is called "Watch how this pack
     was made". brief.md and print follow the page order.
 
+6.1g Ask this pack (change V10)
+  - POST /api/v1/packs/{id}/ask {question, history[]}: a READ-ONLY tool
+    loop (reasoner role) over get_pack_view, get_insight and
+    search_evidence for that one pack; limits in modes.yaml ask
+    (max_tool_calls reads, max_usd per answer, history_max turns).
+    Posts reach the model only inside <untrusted_user_content> tags.
+  - The answer cites [ID]s; code keeps only ids that exist in the pack
+    (others are stripped) and turns them into numbered citations that
+    open the source post (a finding opens its first post). No evidence
+    -> the answer says so plainly; no outside facts (prompts/ask.md).
+  - Cost: every call counts against DAILY_SPEND_CAP_USD; without a run
+    key each pack takes ask.questions_per_pack_per_day questions per UTC
+    day (table ask_counts), then a friendly message. Costs are never
+    returned.
+  - Pack page: "Ask this pack" side panel with 4 suggested questions
+    built from the pack in code. MCP: ask_pack(pack_id, question), run
+    key required. LLM_FAKE answers come from a fake in agent/ask.py.
+
 6.2 Top-level JSON sections
   schema_version, pack_id, generated_at, mode (quick | standard)
   brief              raw text + interpreted {topic, markets[] (1.1; market

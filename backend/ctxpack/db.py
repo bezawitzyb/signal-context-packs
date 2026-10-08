@@ -139,6 +139,17 @@ class Spend(SQLModel, table=True):
     usd_llm: float = 0.0
 
 
+class AskCount(SQLModel, table=True):
+    """Questions asked of one pack per UTC day (change V10): the keyless limit and what they cost."""
+
+    __tablename__ = "ask_counts"
+
+    pack_id: str = Field(primary_key=True)
+    date: dt.date = Field(primary_key=True)
+    questions: int = 0
+    usd: float = 0.0
+
+
 # --------------------------------------------------------------------------
 # Engine
 # --------------------------------------------------------------------------
@@ -504,6 +515,23 @@ def add_spend(apify_usd: float = 0.0, llm_usd: float = 0.0, run_id: str | None =
                     run.cost_analysis_llm_usd = (run.cost_analysis_llm_usd or 0.0) + llm_usd
                 run.updated_at = utcnow()
                 s.add(run)
+        s.commit()
+
+
+def asks_today(pack_id: str) -> int:
+    with session() as s:
+        row = s.get(AskCount, (pack_id, utcnow().date()))
+        return row.questions if row else 0
+
+
+def add_ask(pack_id: str, usd: float) -> None:
+    """One more question for this pack today (its cost is in the spend table already)."""
+    today = utcnow().date()
+    with session() as s:
+        row = s.get(AskCount, (pack_id, today)) or AskCount(pack_id=pack_id, date=today)
+        row.questions += 1
+        row.usd += usd
+        s.add(row)
         s.commit()
 
 

@@ -155,6 +155,16 @@ export interface ReadingGuide {
 export const getReadingGuide = () => MIRROR ? staticJson<ReadingGuide>("reading_guide.json")
   : request<ReadingGuide>("/reading-guide");
 
+/** V10: Ask this pack - an answer from this pack only, with numbered citations that open the posts. */
+export interface Citation { n: number; id: string; kind: "post" | "finding"; url: string | null; label: string;
+  platform?: string; date?: string | null }
+export interface AskAnswer { pack_id: string; answer: string; citations: Citation[]; questions_left_today: number | null;
+  note: string }
+export interface AskTurn { role: "user" | "assistant"; text: string }
+export const askPack = (packId: string, question: string, history: AskTurn[], runKey?: string) =>
+  request<AskAnswer>(`/packs/${encodeURIComponent(packId)}/ask`, { method: "POST",
+    body: JSON.stringify({ question, history }) }, runKey || undefined);
+
 /** V9: a hand-off option, computed in code (purpose, length in pages, one-line preview). */
 export interface HandoffOption {
   kind: ExportKind; title: string; purpose: string; length: string; preview: string;

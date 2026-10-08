@@ -124,6 +124,18 @@ posts:
   posts_per_week_max: 7
   calendar_days: [tuesday, thursday, monday, wednesday, friday, saturday, sunday]  # fallback day order
 
+# "Ask this pack" (change V10, PRD 6.1g): a read-only chat over one pack. Every answer counts against
+# DAILY_SPEND_CAP_USD; without a run key each pack takes at most questions_per_pack_per_day.
+ask:
+  max_tool_calls: 6             # reads of the pack per answer (get_pack_view, get_insight, search_evidence)
+  max_usd: 0.10                 # per answer: no new model turn starts once this is spent
+  questions_per_pack_per_day: 20  # without a run key (UTC day)
+  max_tokens: 1500              # one model turn
+  history_max: 6                # earlier turns sent with a follow-up question
+  question_max_chars: 500
+  evidence_per_read: 5          # posts returned by one get_insight or search_evidence read
+  suggested: 4                  # suggested questions on the panel (built in code, no call)
+
 # Verification (guide Step 3.4, prompt F4-9 claim mode). Same for every mode.
 verification:
   claim_batch_items: 12         # claims per worker call (each with up to 5 evidence excerpts)
