@@ -99,6 +99,8 @@ export function Handoff({ packId, open, onClose }: { packId: string; open: boole
           <Action icon={Printer} label="Print / Save as PDF" hint="A clean printable brief." run={() => { onClose(); setTimeout(() => window.print(), 50); }} />
           <Action icon={FileText} label="Copy for Notion / Docs" hint="Pastes with headings, lists and tables."
                   run={() => copyRich(exportUrl(packId, "md"))} />
+          <Action icon={Download} label="Download content calendar" href={exportUrl(packId, "calendar")} download
+                  hint="4 weeks of post ideas. Notion: Import → CSV turns it into a database." />
         </Group>
         <Group icon={Download} title="For agents">
           <Action icon={Download} label="Download JSON" href={exportUrl(packId, "json")} download hint="context_pack.json, schema 1.1" />

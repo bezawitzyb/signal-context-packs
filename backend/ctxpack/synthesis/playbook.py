@@ -1,7 +1,8 @@
 """Playbook call (F4-11, PRD FR-D3): ONE reasoner call from verified items - the only call that sees brand voice.
 
-do_first (3), channel_plan (>= 3), hooks (10-15), creative brief, objection
-handling, keywords, targets, this_week (5). Code keeps only references to
+do_first (3), channel_plan (>= 3, with posts_per_week), hooks (10-15), creative
+brief, objection handling, keywords, targets, this_week (5) and post briefs (5-8,
+V8; validated in synthesis/posts.py). Code keeps only references to
 items that exist in the verified pack: an action, channel or hook whose
 why_ids are all unknown is dropped ("no channel without evidence"), hooks
 are renumbered and this_week follows them.
@@ -17,6 +18,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from ctxpack.llm.client import load_prompt, structured, untrusted
 from ctxpack.schemas.enums import Level, Platform, TargetKind
+from ctxpack.synthesis import posts
 from ctxpack.synthesis.write import INSIGHT_SECTIONS
 
 DAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
@@ -46,6 +48,7 @@ class ChannelOut(BaseModel):
     formats: list[str] = Field(default_factory=list)
     communities_or_hashtags: list[str] = Field(default_factory=list)
     tone_note: str = ""
+    posts_per_week: int | None = None
 
 
 class HookOut(BaseModel):
@@ -104,6 +107,7 @@ class PlaybookOut(BaseModel):
     keywords: KeywordsOut = Field(default_factory=KeywordsOut)
     targets: list[TargetOut] = Field(default_factory=list)
     this_week: list[PlanPostOut] = Field(default_factory=list)
+    post_briefs: list[posts.PostBriefOut] = Field(default_factory=list)
 
 
 # --------------------------------------------------------------------------
@@ -120,7 +124,8 @@ def _line(it: dict, section: str) -> str:
     return head + flags + f" | {it.get('label') or it.get('name') or ''} {it['claim']}".rstrip()
 
 
-def build_prompt(s: dict, brief: str, brand_voice: str | None, news: list[dict] = ()) -> str:
+def build_prompt(s: dict, brief: str, brand_voice: str | None, news: list[dict] = (),
+                 intake: dict | None = None) -> str:
     lines = [_line(it, name) for name in INSIGHT_SECTIONS if name not in ("lexicon", "phrases") for it in s[name]]
     lines += [f"{o['id']} | opportunity | score {o['score']:.2f} | {o['title']}: {o['description']}"
               for o in s["opportunities"]]
@@ -135,7 +140,9 @@ def build_prompt(s: dict, brief: str, brand_voice: str | None, news: list[dict] 
              + [f"{it['id']}: {it['text']}" for it in s["phrases"]])
     g = s.get("guardrails_draft", {})
     voice = s.get("voice", {})
-    return (f"{brief}\n\nBrand voice: {brand_voice or 'none (stay brand-neutral)'}\n\n"
+    mine = posts.user_channels(intake)
+    return (f"{brief}\n\nBrand voice: {brand_voice or 'none (stay brand-neutral)'}\n"
+            f"The user's own channels: {', '.join(mine) if mine else 'not given (use your channel plan)'}\n\n"
             "Verified items (id | section | confidence | posts | flags | text):\n" + "\n".join(lines)
             + "\n\nAudience words (lexicon and phrases):\n" + untrusted("audience_words", "\n".join(words))
             + f"\n\nVoice: {voice.get('tone', '')}\nCode-switching: {voice.get('code_switching') or 'none'}"
@@ -148,6 +155,7 @@ def _fake(user: str) -> dict:
     mom = next((i for i in ids if i.startswith("MOM")), None)
     nws = next((i for i in ids if i.startswith("NWS")), None)
     obj = [i for i in ids if i.startswith("OBJ")][:2]
+    backed = [i for i in ids if i.split("-")[0] in ("TEN", "PAIN", "OBJ", "THM", "MOT", "SEG", "MOM")] or [ten]
     return {
         "do_first": [{"action": f"Fake action {n}", "why": "Fake.", "why_ids": [ids[n % len(ids)]],
                       "effort": "low", "impact": "high", "owner_hint": "social team"} for n in range(3)],
@@ -163,6 +171,16 @@ def _fake(user: str) -> dict:
                        "angle": "Fake", "moment_id": mom, "news_hook_id": nws if n == 1 else None,
                        "why_now": "Fake."}
                       for n, d in enumerate(DAYS[:5], 1)],
+        "post_briefs": [{"channel": ch, "role": "Fake role", "goal": "Fake goal", "hook": f"Fake brief hook {n}",
+                         "hook_id": f"HOOK-{n:02d}", "angle": "Fake angle",
+                         "key_points": [{"text": f"Fake point {k}", "item_ids": [backed[(n + k) % len(backed)]]}
+                                        for k in range(3)],
+                         "structure": "story -> lesson -> question", "format": fmt,
+                         "their_words_to_use": [i for i in ids if i.startswith("LEX")][:2], "cta": "Fake CTA",
+                         "avoid": [], "news_hook_id": nws if n == 1 else None, "based_on": [ten]}
+                        for n, (ch, fmt) in enumerate([("instagram", "carousel"), ("tiktok", "short_video"),
+                                                       ("web_forum", "text_post"), ("instagram", "text_post"),
+                                                       ("tiktok", "short_video"), ("web_forum", "text_post")], 1)],
     }
 
 
@@ -186,7 +204,8 @@ def known_ids(s: dict) -> set[str]:
     return {it["id"] for name in sections for it in s.get(name, [])}
 
 
-def validate(out: PlaybookOut, s: dict, stats: PlaybookStats, news: list[dict] = ()) -> dict[str, Any]:
+def validate(out: PlaybookOut, s: dict, stats: PlaybookStats, news: list[dict] = (),
+             intake: dict | None = None) -> dict[str, Any]:
     """Playbook parts with ids, every reference pointing at an existing item."""
     known = known_ids(s)
     platforms = set(Platform.__members__)
@@ -207,9 +226,11 @@ def validate(out: PlaybookOut, s: dict, stats: PlaybookStats, news: list[dict] =
         if o.platform not in platforms or not why:
             stats.drop("channel_without_evidence_or_platform")
             continue
+        cadence = o.posts_per_week if o.posts_per_week and 1 <= o.posts_per_week <= 7 else None
         channels.append({"id": f"CHN-{len(channels) + 1:02d}", "priority": len(channels) + 1,
                          "platform": o.platform, "why": o.why, "why_ids": why, "formats": o.formats,
-                         "communities_or_hashtags": o.communities_or_hashtags, "tone_note": o.tone_note})
+                         "communities_or_hashtags": o.communities_or_hashtags, "tone_note": o.tone_note,
+                         "posts_per_week": cadence})
 
     hooks, hook_id_of = [], {}
     for n, o in enumerate(out.hooks, 1):
@@ -244,15 +265,23 @@ def validate(out: PlaybookOut, s: dict, stats: PlaybookStats, news: list[dict] =
                      "format": o.format, "hook_id": hook, "angle": o.angle,
                      "moment_id": moment if moment in moments else None,
                      "news_hook_id": nws if nws in news_ids else None, "why_now": o.why_now})
+    briefs = posts.validate_briefs(out.post_briefs, s, hooks={h["id"]: h for h in hooks}, hook_id_of=hook_id_of,
+                                   channels=channels, intake=intake, news=news, stats=stats)
     return {"do_first": do_first[:3], "channel_plan": channels,
             "playbook": {"hooks": hooks, "creative_brief": cb, "objection_handling": handling,
-                         "keywords": out.keywords.model_dump(), "targets": targets, "this_week": week}}
+                         "keywords": out.keywords.model_dump(), "targets": targets, "this_week": week},
+            "post_briefs": briefs}
 
 
-async def write_playbook(s: dict, brief: str, brand_voice: str | None,
-                         news: list[dict] = ()) -> tuple[dict, PlaybookStats, float]:
-    """(validated playbook parts, stats, cost). Brand voice is used here and nowhere else."""
-    res = await structured("reasoner", load_prompt("playbook"), build_prompt(s, brief, brand_voice, news), PlaybookOut,
-                           "record_playbook", description="Record the playbook.", max_tokens=12000, fake=_fake)
+async def write_playbook(s: dict, brief: str, brand_voice: str | None, news: list[dict] = (),
+                         intake: dict | None = None,
+                         evidence: list[dict] = ()) -> tuple[dict, PlaybookStats, float]:
+    """(validated playbook parts with post briefs and drafts, stats, cost). Brand voice is used in this
+    stage (this call and the drafts call) and nowhere else."""
+    res = await structured("reasoner", load_prompt("playbook"), build_prompt(s, brief, brand_voice, news, intake),
+                           PlaybookOut, "record_playbook", description="Record the playbook.", max_tokens=16000,
+                           fake=_fake)
     stats = PlaybookStats()
-    return validate(res.data, s, stats, news), stats, res.usd
+    parts = validate(res.data, s, stats, news, intake)
+    parts["drafts"], usd = await posts.write_drafts(parts["post_briefs"], s, list(evidence), brand_voice, brief)
+    return parts, stats, res.usd + usd

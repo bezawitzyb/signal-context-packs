@@ -109,6 +109,21 @@ news:
   timing_per_channel_max: 4     # timing chips per channel card
   time_mention_min_posts: 2     # a weekday / season / time of day becomes a chip from this many posts
 
+# Post briefs, drafts and the content calendar (change V8, PRD 6.1e). Written in the playbook stage.
+posts:
+  briefs_min: 5                 # fewer survive the checks -> said in the playbook check, never padded
+  briefs_max: 8
+  key_points_min: 3             # a brief with fewer valid key points is dropped
+  key_points_max: 5
+  evidence_per_key_point: 2     # evidence ids taken from each key point's items (code)
+  drafts: 3                     # full drafts for the first briefs
+  draft_max_tokens: 8000        # the drafts call's answer
+  draft_chars: {text_post: 1300, carousel: 1500, short_video: 900, blog_article: 4000, newsletter: 2500}
+  calendar_weeks: 4
+  posts_per_week_default: 2     # a channel whose plan gives no cadence
+  posts_per_week_max: 7
+  calendar_days: [tuesday, thursday, monday, wednesday, friday, saturday, sunday]  # fallback day order
+
 # Verification (guide Step 3.4, prompt F4-9 claim mode). Same for every mode.
 verification:
   claim_batch_items: 12         # claims per worker call (each with up to 5 evidence excerpts)

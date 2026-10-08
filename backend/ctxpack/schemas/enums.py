@@ -283,6 +283,36 @@ class EvidenceRole(StrEnum):
     unknown = "unknown"
 
 
+class PostChannel(StrEnum):
+    """Where a post brief is published (change V8): the social platforms plus owned channels."""
+
+    reddit = "reddit"
+    tiktok = "tiktok"
+    youtube = "youtube"
+    instagram = "instagram"
+    linkedin = "linkedin"
+    x = "x"
+    web_forum = "web_forum"
+    blog = "blog"
+    newsletter = "newsletter"
+
+
+class PostFormat(StrEnum):
+    text_post = "text_post"
+    carousel = "carousel"
+    short_video = "short_video"
+    blog_article = "blog_article"
+    newsletter = "newsletter"
+
+
+class TimingKind(StrEnum):
+    """Why a calendar entry sits where it does (change V8)."""
+
+    news_hook = "news_hook"
+    channel_timing = "channel_timing"
+    spread = "spread"
+
+
 class RelationKind(StrEnum):
     """How one item connects to an item in another section (change V4)."""
 

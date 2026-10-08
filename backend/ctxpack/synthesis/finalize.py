@@ -18,6 +18,7 @@ from typing import Any
 from ctxpack.config import load_yaml
 from ctxpack.schemas import pack as P
 from ctxpack.synthesis import news as news_mod
+from ctxpack.synthesis import posts as posts_mod
 from ctxpack.synthesis.confidence import LEVELS
 from ctxpack.synthesis.write import INSIGHT_SECTIONS
 
@@ -294,6 +295,8 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
         "channel_plan": news_mod.channel_timing(parts["channel_plan"], s["moments"], evidence,
                                                 (news or {}).get("hooks", []), (news or {}).get("calendar", [])),
         "playbook": parts["playbook"],
+        "post_briefs": parts.get("post_briefs", []),
+        "drafts": parts.get("drafts", []),
         "hypotheses": [_fields(P.Hypothesis, it) for it in s["hypotheses"]],
         "compliance_flags": [_fields(P.ComplianceFlag, f) for f in flags],
         "risks": [_fields(P.Risk, it) for it in s["risks"]],
@@ -321,6 +324,9 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
     perf = {p["id"] for p in s["what_performs"]}
     data["performance_takeaways"] = [{**t, "post_ids": [x for x in t["post_ids"] if x in perf]}
                                      for t in notes.get("takeaways", []) if s["what_performs"]]
+    data["content_calendar"] = posts_mod.build_calendar(
+        data["post_briefs"], data["channel_plan"], parts["playbook"]["this_week"], data["news_hooks"],
+        posts_mod.week_start(data["generated_at"].date()))
     data["sections_meta"] = sections_meta(data, notes.get("meta", {}), alive, interp)
     data["snapshot"] = snapshot(s, draft.get("generic_points", []),
                                 analysis.get("coverage", {}).get("grade", "d"), list(opportunities))
@@ -386,7 +392,8 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
                  + (f"\nWhat the user offers: {intake['offer']} - tailor the objection answers to it"
                     if intake.get("offer") else "\nWhat the user offers: not given - end each objection answer "
                                                   "with how to adapt it to your offer"))
-        parts, stats, usd = await playbook.write_playbook(s, brief, voice, news["hooks"])
+        parts, stats, usd = await playbook.write_playbook(s, brief, voice, news["hooks"], intake,
+                                                          draft["verified"].get("evidence", []))
         out.calls += 1
         out.usd += usd
         out.playbook_dropped, out.hooks_without_tension = stats.dropped, stats.hooks_without_tension

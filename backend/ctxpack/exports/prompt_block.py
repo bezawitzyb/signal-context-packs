@@ -1,7 +1,7 @@
 """Prompt block export (<= 1,800 tokens): paste into any AI tool before asking for content.
 
-do first, lexicon, tensions, guardrails, channel plan, top hooks, this week and a
-usage line. Lists shrink until it fits; the guardrails and the agent rules are
+do first, lexicon, tensions, guardrails, channel plan, top hooks, this week, post
+briefs (V8) and a usage line. Lists shrink until it fits; the guardrails and the agent rules are
 never trimmed.
 """
 
@@ -14,7 +14,8 @@ def to_prompt_block(pack: dict) -> str:
     i = pack["brief"]["interpreted"]
     g = pack["guardrails"]
     pb = pack["playbook"]
-    sizes = {"lexicon": 20, "tensions": 4, "hooks": 8, "channels": 4, "do_first": 3, "week": 5}
+    sizes = {"lexicon": 20, "tensions": 4, "hooks": 8, "channels": 4, "do_first": 3, "week": 5, "posts": 5}
+    words = {x["id"]: x["term"] for x in pack["voice"]["lexicon"]}
 
     def build() -> str:
         L = [f"AUDIENCE CONTEXT ({pack['pack_id']}, {pack['generated_at'][:10]}): {inline(i['audience'])} in "
@@ -43,13 +44,21 @@ def to_prompt_block(pack: dict) -> str:
         L += ["", "THIS WEEK:"]
         L += [f"- {w['day']}: {w['platform']} {inline(w['format'])} - {w['hook_id']} - {inline(w['angle'])}"
               for w in pb["this_week"][:sizes["week"]]]
+        if pack.get("post_briefs"):
+            L += ["", "POST BRIEFS (write these; facts only from the key points):"]
+            for b in pack["post_briefs"][:sizes["posts"]]:
+                L.append(f"- [{b['id']}] {b['channel']} {b['format']} for {inline(b['role'])}: hook \"{inline(b['hook'])}\"; "
+                         f"angle {inline(b['angle'])}; points: {inline('; '.join(k['text'] for k in b['key_points']))}; "
+                         f"CTA {inline(b['cta'])}"
+                         + (f"; use: {inline(', '.join(words.get(w, w) for w in b['their_words_to_use']))}"
+                            if b["their_words_to_use"] else ""))
         L += ["", "RULES FOR AI TOOLS:"] + [f"- {r}" for r in pack["instructions_for_agents"]]
         L += ["", DISCLAIMER]
         return "\n".join(L) + "\n"
 
     text = build()
     limit = cfg()["prompt_block_max_tokens"]
-    for key in ("lexicon", "hooks", "channels", "tensions", "week") * 20:
+    for key in ("posts", "lexicon", "hooks", "channels", "tensions", "week") * 20:
         if tokens(text) <= limit:
             break
         sizes[key] = max(1, sizes[key] - 1)

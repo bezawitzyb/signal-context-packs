@@ -143,8 +143,9 @@ export const searchEvidence = (packId: string, q: string, opts: { platform?: str
   const params = new URLSearchParams({ q, ...opts });
   return request<EvidenceResult>(`/packs/${encodeURIComponent(packId)}/evidence?${params}`);
 };
-const MIRROR_FILES = { json: "context_pack.json", md: "brief.md", prompt: "prompt_block.txt", skill: "skill.zip" };
-export const exportUrl = (packId: string, kind: "json" | "md" | "prompt" | "skill") => MIRROR
+const MIRROR_FILES = { json: "context_pack.json", md: "brief.md", prompt: "prompt_block.txt", skill: "skill.zip",
+  calendar: "content_calendar.csv" };
+export const exportUrl = (packId: string, kind: keyof typeof MIRROR_FILES) => MIRROR
   ? `${DATA}/packs/${encodeURIComponent(packId)}/${MIRROR_FILES[kind]}`
   : `${BASE}/packs/${encodeURIComponent(packId)}/export/${kind}`;
 

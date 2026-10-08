@@ -10,6 +10,7 @@ idempotent and also run on packs saved as 1.1 before a later step existed:
   V5  white_space[] and the scored opportunities -> one opportunities[] (status "signal", confidence at
       most emerging, "not checked" for existing solutions); WSP-xx renamed to the new OPP ids.
   V7  news_hooks[] starts empty (no search was made); channel timing chips come from the moments.
+  V8  post_briefs[], drafts[] and content_calendar[] start empty (model defaults; nothing to convert).
 Packs are never written back in an older version.
 """
 

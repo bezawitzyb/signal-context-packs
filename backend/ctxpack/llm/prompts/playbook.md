@@ -16,7 +16,8 @@ Return:
 - channel_plan: at least 3 channels in priority order: platform (reddit,
   tiktok, youtube, instagram, linkedin, x, web_forum, web_review,
   web_editorial), why,
-  why_ids, formats, communities_or_hashtags, tone_note. Never a channel
+  why_ids, formats, communities_or_hashtags, tone_note, posts_per_week
+  (1-7: how often to post there; fewer for long formats). Never a channel
   without evidence: why_ids must name items that justify it. If the
   evidence comes from one platform only, say in why that the others are
   a test.
@@ -38,6 +39,20 @@ Return:
   hook_id (one of your hooks), angle, moment_id (a MOM-.. id or null),
   news_hook_id (an NWS-.. id when the post rides that news, else null),
   why_now. Use a news hook only when it truly fits; never invent news.
+
+- post_briefs: 5-8 posts to make, built from pain points (PAIN-..),
+  objections (OBJ-..), your hooks, opportunities (OPP-..) and news hooks
+  (NWS-..). Use the user's own channels first when they are given;
+  otherwise a channel from your channel plan. Each: channel (reddit,
+  tiktok, youtube, instagram, linkedin, x, web_forum, blog,
+  newsletter), role (who in the audience it is for), goal, hook (text)
+  and hook_id (one of your hooks, or null), angle, key_points (3-5,
+  each with text and item_ids: the pack items that back it), structure
+  (e.g. "story -> lesson -> question"), format (text_post | carousel |
+  short_video | blog_article | newsletter), their_words_to_use (LEX-..
+  ids), cta, avoid (exact phrases from "Not this" that this post could
+  slip into), news_hook_id (or null), based_on (item ids). Order them
+  by priority: the first ones get full drafts.
 
 Rules: use only items and ids given; never invent facts, numbers,
 prices, health benefits or product claims; frame anything that is not

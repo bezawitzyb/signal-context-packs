@@ -8,6 +8,7 @@ quote-reuse note is repeated next to them.
 from __future__ import annotations
 
 from ctxpack.exports.common import DISCLAIMER, HOOKS_NOTE, badge, cell, inline, privacy_line
+from ctxpack.exports.calendar_csv import CHANNEL_NAMES, FORMAT_NAMES
 
 
 
@@ -135,6 +136,9 @@ def to_markdown(pack: dict) -> str:
         add(f"| {w['day']} | {w['platform']} | {cell(w['format'])} | {cell(hooks[w['hook_id']]['text'])} "
             f"[{w['hook_id']}] | {cell(w['angle'])} | {cell(w['why_now'])}"
             + (f" (rides {w['news_hook_id']})" if w.get("news_hook_id") else "") + " |")
+
+    if pack.get("post_briefs"):
+        L.extend(posts_section(pack))
 
     add("\n## Voice\n")
     v = pack["voice"]
@@ -301,3 +305,43 @@ def to_markdown(pack: dict) -> str:
         f"observed and confirmed by the claim check. Evidence ids (EV-...) point to the posts in context_pack.json.")
     add(f"\n*{DISCLAIMER}*")
     return "\n".join(L) + "\n"
+
+
+def posts_section(pack: dict) -> list[str]:
+    """V8: the calendar as a table (pastes into Notion as a database), then each brief and its draft."""
+    briefs = {b["id"]: b for b in pack["post_briefs"]}
+    drafts = {d["post_brief_id"]: d for d in pack.get("drafts", [])}
+    words = {x["id"]: x["term"] for x in pack["voice"]["lexicon"]}
+    out = ["\n## Post briefs and content calendar\n", HOOKS_NOTE, ""]
+    if pack.get("content_calendar"):
+        out += ["| Week | Day | Channel | Post | Why then | Status |", "|---|---|---|---|---|---|"]
+        for e in pack["content_calendar"]:
+            b = briefs[e["post_brief_id"]]
+            out.append(f"| {e['week']} | {e['suggested_day'].capitalize()} | {CHANNEL_NAMES.get(e['channel'], e['channel'])} "
+                       f"| {cell(b['angle'] or b['hook'])} [{b['id']}] | {cell(e['timing_reason'])} | idea |")
+        out.append("")
+    for b in pack["post_briefs"]:
+        out.append(f"### {b['id']}: {inline(b['angle'] or b['hook'])}")
+        out.append(f"*{CHANNEL_NAMES.get(b['channel'], b['channel'])}, {FORMAT_NAMES.get(b['format'], b['format'])}; "
+                   f"for {inline(b['role'])}; confidence {b['confidence']}"
+                   + (f"; rides {b['news_hook_id']}" if b.get("news_hook_id") else "") + "*  ")
+        out.append(f"**Goal:** {inline(b['goal'])}  ")
+        out.append(f"**Hook:** {inline(b['hook'])}" + (f" [{b['hook_id']}]" if b.get("hook_id") else "") + "  ")
+        out.append(f"**Structure:** {inline(b['structure'].replace('->', '→'))}  ")
+        out += [f"- {inline(k['text'])} *[{', '.join(k['item_ids'])}; posts {', '.join(k['evidence_ids'])}]*"
+                for k in b["key_points"]]
+        if b["their_words_to_use"]:
+            out.append(f"**Their words:** {', '.join(inline(words.get(w, w)) for w in b['their_words_to_use'])}  ")
+        out.append(f"**Call to action:** {inline(b['cta'])}  ")
+        if b["avoid"]:
+            out.append(f"**Avoid:** {inline('; '.join(b['avoid']))}  ")
+        d = drafts.get(b["id"])
+        if d:
+            out += ["", f"**{d['label']}** ({d['voice']} voice"
+                    + (f"; {d['removed_sentences']} unsupported sentence(s) removed" if d["removed_sentences"] else "")
+                    + ")", ""]
+            if d.get("title"):
+                out.append(f"> **{inline(d['title'])}**  ")
+            out += [f"> {line}" if line.strip() else ">" for line in d["body"].splitlines()]
+        out.append("")
+    return out

@@ -37,6 +37,9 @@ from ctxpack.schemas.enums import (
     MotivationKind,
     ObjectionKind,
     Platform,
+    PostChannel,
+    PostFormat,
+    TimingKind,
     TargetKind,
     Trend,
 )
@@ -68,6 +71,9 @@ ID_PREFIXES: dict[str, str] = {
     "CHN": "channel",
     "HOOK": "hook",
     "PLN": "this-week post",
+    "PST": "post brief",
+    "DRF": "post draft",
+    "CAL": "calendar entry",
     "HYP": "hypothesis",
     "CMP": "compliance flag",
     "RSK": "risk",
@@ -500,6 +506,8 @@ class Channel(Strict):
     communities_or_hashtags: list[str] = Field(default_factory=list, description="Where exactly to post.")
     tone_note: str = Field(default="", description="How to sound there.")
     timing: list[TimingItem] = Field(default_factory=list, description="When to show up there (V7).")
+    posts_per_week: int | None = Field(default=None, ge=1, le=7, description="Recommended posts a week (V8); "
+                                       "the content calendar never schedules more.")
 
 
 class Hook(Strict):
@@ -561,6 +569,66 @@ class Playbook(Strict):
     keywords: Keywords = Field(default_factory=Keywords, description="SEO, paid, negative keywords and hashtags.")
     targets: list[Target] = Field(default_factory=list, description="Public communities and creators.")
     this_week: list[PlanPost] = Field(default_factory=list, max_length=5, description="Exactly 5 posts.")
+
+
+class KeyPoint(Strict):
+    text: str = Field(description="One point the post makes.")
+    item_ids: list[str] = Field(min_length=1, description="Pack items it is built on.")
+    evidence_ids: list[str] = Field(min_length=1, description="Receipts, taken in code from those items.")
+
+
+class PostBrief(Strict):
+    """A post to make (V8), built from pain points, objections, hooks, opportunities and news hooks."""
+
+    id: str = id_field("PST")
+    type: Literal["post_brief"] = type_field("post_brief")
+    channel: PostChannel = Field(description="Where to publish (the user's own channels first).")
+    role: str = Field(description="Who in the audience it is for.", examples=["plant managers who sign off budgets"])
+    goal: str = Field(description="What the post should achieve.")
+    hook: str = Field(description="The opening line.")
+    hook_id: str | None = Field(default=None, pattern=item_id("HOOK"), description="The playbook hook it uses.")
+    angle: str = Field(description="The angle of the post.")
+    key_points: list[KeyPoint] = Field(min_length=1, max_length=5, description="3-5 points, each with receipts.")
+    structure: str = Field(description="How the post is built.", examples=["story -> lesson -> question"])
+    format: PostFormat = Field(description="text_post, carousel, short_video, blog_article or newsletter.")
+    their_words_to_use: list[str] = Field(default_factory=list, description="Lexicon ids (LEX-..) to use.")
+    cta: str = Field(description="Call to action.")
+    avoid: list[str] = Field(default_factory=list, description="Guardrail phrases (not this / never claim) to avoid.")
+    news_hook_id: str | None = Field(default=None, pattern=item_id("NWS"), description="News hook it rides.")
+    based_on: list[str] = Field(min_length=1, description="Items the brief is built from.")
+    confidence: ConfidenceLabel = Field(description="The weakest label among the items it uses (code).")
+
+
+DRAFT_LABEL = "Draft - review before posting"
+
+
+class PostDraft(Strict):
+    """A full draft of a post brief (V8): brand voice if given; unsupported claims removed in code."""
+
+    id: str = id_field("DRF")
+    type: Literal["post_draft"] = type_field("post_draft")
+    post_brief_id: str = Field(pattern=item_id("PST"), description="The brief it drafts.")
+    channel: PostChannel = Field(description="Where to publish.")
+    format: PostFormat = Field(description="The format.")
+    title: str | None = Field(default=None, description="Title or subject line, where the format has one.")
+    body: str = Field(min_length=1, description="The post, ready to edit.")
+    voice: Literal["brand", "neutral"] = Field(description="brand voice or neutral-professional.")
+    evidence_ids: list[str] = Field(default_factory=list, description="The brief's receipts.")
+    removed_sentences: int = Field(default=0, ge=0, description="Sentences removed by the claim and guardrail "
+                                   "checks (code).")
+    label: Literal["Draft - review before posting"] = Field(default=DRAFT_LABEL, description="Always shown.")
+
+
+class CalendarEntry(Strict):
+    id: str = id_field("CAL")
+    type: Literal["calendar_entry"] = type_field("calendar_entry")
+    week: int = Field(ge=1, description="Week number, 1 = the first week.")
+    suggested_day: str = Field(description="Day of the week.", examples=["tuesday"])
+    channel: PostChannel = Field(description="Where to publish.")
+    post_brief_id: str = Field(pattern=item_id("PST"), description="The brief to post.")
+    timing_reason: str = Field(description="Why this week and day.")
+    timing_kind: TimingKind = Field(description="news_hook, channel_timing or spread.")
+    status: Literal["idea"] = Field(default="idea", description="Always idea: nothing is scheduled for you.")
 
 
 class Hypothesis(Strict):
@@ -757,6 +825,9 @@ class ContextPack(Strict):
                                              "(1.1; replaces white_space and the scored opportunities).")
     channel_plan: list[Channel] = Field(default_factory=list, description="Where to show up, in priority order.")
     playbook: Playbook = Field(default_factory=Playbook, description="Hooks, creative brief, keywords, this week.")
+    post_briefs: list[PostBrief] = Field(default_factory=list, description="Posts to make (V8), with receipts.")
+    drafts: list[PostDraft] = Field(default_factory=list, description="Full drafts of the first briefs (V8).")
+    content_calendar: list[CalendarEntry] = Field(default_factory=list, description="4 weeks of post ideas (V8).")
     hypotheses: list[Hypothesis] = Field(default_factory=list, description="The plan's hypotheses and their verdicts.")
     compliance_flags: list[ComplianceFlag] = Field(default_factory=list,
                                                    description="Hooks or claims to check with legal.")
@@ -794,6 +865,9 @@ class ContextPack(Strict):
         yield from self.channel_plan
         yield from self.playbook.hooks
         yield from self.playbook.this_week
+        yield from self.post_briefs
+        yield from self.drafts
+        yield from self.content_calendar
         yield from self.hypotheses
         yield from self.compliance_flags
         yield from self.risks
@@ -828,12 +902,19 @@ class ContextPack(Strict):
                 need_ev(item.want.evidence_ids + item.but.evidence_ids)
             if isinstance(item, PerformingPost):
                 need_ev([item.evidence_id])
-            for ref_field in ("why_ids", "builds_on", "item_ids", "post_ids"):
+            for ref_field in ("why_ids", "builds_on", "item_ids", "post_ids", "based_on"):
                 need_items(getattr(item, ref_field, []))
             if isinstance(item, PlanPost):
                 need_items([item.hook_id] + [i for i in (item.moment_id, item.news_hook_id) if i])
             if isinstance(item, NewsHook):
                 need_items(item.related_ids)
+            if isinstance(item, PostBrief):
+                need_items(item.their_words_to_use + [i for i in (item.hook_id, item.news_hook_id) if i])
+                for point in item.key_points:
+                    need_items(point.item_ids)
+                    need_ev(point.evidence_ids)
+            if isinstance(item, (PostDraft, CalendarEntry)):
+                need_items([item.post_brief_id])
             if isinstance(item, Channel):
                 for t in item.timing:
                     need_ev(t.evidence_ids)

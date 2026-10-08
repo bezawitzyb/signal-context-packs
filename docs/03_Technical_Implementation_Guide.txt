@@ -1182,6 +1182,18 @@ WHAT  synthesis/playbook.py: ONE reasoner call (F4-11) from verified
       hooks all tied to a tension; test hooks flagged food_nutrition and
       energy_environmental; thin evidence (tensions from one source, no
       engagement data for what performs); USD 0.35 for both.
+      Change V8 (PRD 6.1e): the playbook call also returns post_briefs
+      (5-8) and posts_per_week per channel; synthesis/posts.py validates
+      the briefs (key points keep only real item ids; evidence ids come
+      from those items in code), writes drafts for the first 3 briefs in
+      ONE extra call (brand voice; drafts.md prompt) and checks them in
+      code (not_this / never_claim phrases and unsupported numbers ->
+      sentence removed), then builds content_calendar (4 weeks) in code.
+      Drafts are saved with the playbook parts per brand voice and go
+      through the compliance review. Exports: exports/calendar_csv.py
+      (Notion CSV, BOM, exports/safe_cells.py), brief.md, prompt block,
+      skill references/posts.md; API post-briefs, calendar and export
+      kind "calendar"; MCP get_post_briefs, get_calendar.
 PROMPT
   Read CLAUDE.md, Step 3.5, F4-11, F4-12 and PRD 11.4. Implement and run
   on the verified NL pack twice: without a brand voice and with "dry

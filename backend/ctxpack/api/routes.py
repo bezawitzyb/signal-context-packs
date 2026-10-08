@@ -118,9 +118,22 @@ async def get_pack_inputs(pack_id: str) -> Any:
     return await _call(asyncio.to_thread, service.pack_inputs, pack_id)
 
 
+@router.get("/packs/{pack_id}/post-briefs")
+async def get_post_briefs(pack_id: str) -> Any:
+    """Post briefs and drafts (V8), with the guardrails that apply to every post."""
+    return await _call(asyncio.to_thread, service.post_briefs, pack_id)
+
+
+@router.get("/packs/{pack_id}/calendar")
+async def get_calendar(pack_id: str) -> Any:
+    """The 4-week content calendar (V8): post ideas by week, day and channel."""
+    return await _call(asyncio.to_thread, service.calendar, pack_id)
+
+
 @router.get("/packs/{pack_id}/export/{kind}")
-async def get_export(pack_id: str, kind: Literal["json", "md", "prompt", "skill"]) -> Response:
-    """Download: json (context_pack.json), md (brief.md), prompt (prompt_block.txt) or skill (zip)."""
+async def get_export(pack_id: str, kind: Literal["json", "md", "prompt", "skill", "calendar"]) -> Response:
+    """Download: json (context_pack.json), md (brief.md), prompt (prompt_block.txt), skill (zip) or calendar
+    (content_calendar.csv, Notion import)."""
     data, media, name = await _call(asyncio.to_thread, service.export, pack_id, kind)
     return Response(content=data, media_type=media, headers={"Content-Disposition": f'attachment; filename="{name}"'})
 

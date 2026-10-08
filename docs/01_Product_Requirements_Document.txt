@@ -399,6 +399,44 @@ Definition:
     now" in the summary; chips on channel cards; "Rides the news" in
     the this-week plan.
 
+6.1e Post briefs, drafts and a content calendar (change V8, schema 1.1)
+  - post_briefs[] (modes.yaml posts.briefs_min-briefs_max, 5-8), written
+    in the playbook call from pain points, objections, hooks,
+    opportunities and news hooks: {id PST-xx, channel (the user's
+    channels_in_use first, else the channel plan), role, goal, hook,
+    hook_id, angle, key_points[3-5] {text, item_ids, evidence_ids},
+    structure ("story -> lesson -> question"), format (text_post |
+    carousel | short_video | blog_article | newsletter),
+    their_words_to_use[] (LEX ids), cta, avoid[] (exact guardrail
+    phrases from not_this / never_claim), news_hook_id, based_on[],
+    confidence}. Code keeps a key point only when its items exist; its
+    evidence_ids come from those items (never from the model); a brief
+    with fewer than 3 key points, or on a channel with no evidence, is
+    dropped. Confidence = the weakest label among the items it uses.
+  - drafts[] (posts.drafts, 3): full posts for the first briefs, in the
+    brand voice if given, else neutral-professional, sized per format
+    (posts.draft_chars). ONE extra call in the playbook stage (brand
+    voice is still used nowhere else). Code removes any sentence that
+    uses a not_this / never_claim phrase, and any sentence with a
+    number, percentage or price that does not appear in the brief's
+    cited evidence; removed_sentences counts them. Every draft carries
+    the label "Draft - review before posting" and goes through the
+    compliance review with the hooks.
+  - content_calendar[] (posts.calendar_weeks, 4): {id CAL-xx, week,
+    suggested_day, channel, post_brief_id, timing_reason, timing_kind
+    (news_hook | channel_timing | spread), status "idea"}. Built in
+    code: a brief that rides a dated news hook goes in that week; days
+    come from the channel's timing chips that name a weekday, else from
+    this week's plan; never more posts per week on a channel than its
+    posts_per_week in the channel plan.
+  - Exports: the calendar as a Notion-importable CSV (Title, Week, Day,
+    Channel, Audience, Hook, Angle, Key points, Call to action, Status,
+    Pack link, Source links; UTF-8 with BOM; formula-safe cells, DH11)
+    and as a table in brief.md ("Copy for Notion"); briefs and drafts in
+    brief.md, the prompt block and the skill (references/posts.md). API:
+    GET /packs/{id}/post-briefs, /packs/{id}/calendar, export kind
+    "calendar"; MCP: get_post_briefs(pack_id), get_calendar(pack_id).
+
 6.2 Top-level JSON sections
   schema_version, pack_id, generated_at, mode (quick | standard)
   brief              raw text + interpreted {topic, markets[] (1.1; market
@@ -647,9 +685,10 @@ EPIC D - SYNTHESIS, VERIFICATION, PLAYBOOK
        overflows); each item names a
        cluster_id and cites evidence from that cluster; writers never
        output counts or strength.
- FR-D3 [P0] Playbook call: do first, channel plan, hooks, creative brief,
-       objection handling, keywords, targets, this week. Brand voice is
-       passed ONLY to this call.
+ FR-D3 [P0] Playbook call: do first, channel plan (with posts_per_week),
+       hooks, creative brief, objection handling, keywords, targets, this
+       week and post briefs (V8). Brand voice is passed ONLY to the
+       playbook stage: this call and the drafts call (6.1e).
  FR-D4 [P0] Compliance by category: food_nutrition (e.g. EU Reg. (EC)
        No 1924/2006), health_supplements, alcohol, children (e.g.
        national food-advertising codes), energy_environmental

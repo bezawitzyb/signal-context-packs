@@ -103,19 +103,40 @@ def search_evidence(pack_id: str, query: str = "", platform: str | None = None, 
 
 
 EXPORTS = {"json": ("application/json", "context_pack.json"), "md": ("text/markdown; charset=utf-8", "brief.md"),
-           "prompt": ("text/plain; charset=utf-8", "prompt_block.txt"), "skill": ("application/zip", None)}
+           "prompt": ("text/plain; charset=utf-8", "prompt_block.txt"), "skill": ("application/zip", None),
+           "calendar": ("text/csv; charset=utf-8", "content_calendar.csv")}
+
+
+def post_briefs(pack_id: str) -> dict[str, Any]:
+    """V8: the pack's post briefs and drafts, with the guardrails that apply to every post."""
+    p = pack(pack_id)
+    return {"pack_id": pack_id, "post_briefs": p.get("post_briefs", []), "drafts": p.get("drafts", []),
+            "guardrails": p["guardrails"],
+            "note": "Drafts are AI-written from the research: review before posting. Key points cite evidence ids."}
+
+
+def calendar(pack_id: str) -> dict[str, Any]:
+    """V8: the 4-week content calendar (status idea), each entry with its post brief's hook and angle."""
+    p = pack(pack_id)
+    briefs = {b["id"]: b for b in p.get("post_briefs", [])}
+    entries = [{**e, "hook": briefs[e["post_brief_id"]]["hook"], "angle": briefs[e["post_brief_id"]]["angle"]}
+               for e in p.get("content_calendar", []) if e["post_brief_id"] in briefs]
+    return {"pack_id": pack_id, "calendar": entries,
+            "note": "Ideas, not a schedule: nothing is posted for you. Download it for Notion with export kind "
+                    "'calendar'."}
 
 
 def export(pack_id: str, kind: str) -> tuple[bytes, str, str]:
-    """(content, media type, file name) for json | md | prompt | skill."""
+    """(content, media type, file name) for json | md | prompt | skill | calendar."""
     import json
 
+    from ctxpack.exports.calendar_csv import to_calendar_csv
     from ctxpack.exports.markdown import to_markdown
     from ctxpack.exports.prompt_block import to_prompt_block
     from ctxpack.exports.skill import skill_zip
 
     if kind not in EXPORTS:
-        raise ValueError("export must be json, md, prompt or skill")
+        raise ValueError("export must be json, md, prompt, skill or calendar")
     p = pack(pack_id)
     media, name = EXPORTS[kind]
     if kind == "json":
@@ -124,6 +145,8 @@ def export(pack_id: str, kind: str) -> tuple[bytes, str, str]:
         return to_markdown(p).encode("utf-8"), media, name
     if kind == "prompt":
         return to_prompt_block(p).encode("utf-8"), media, name
+    if kind == "calendar":
+        return to_calendar_csv(p), media, name
     name, data = skill_zip(p)
     return data, media, name
 

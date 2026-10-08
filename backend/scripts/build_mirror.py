@@ -4,7 +4,7 @@ Builds the same web app in read-only mode (VITE_MIRROR=1) and writes the data it
 
   mirror/data/packs.json                         the featured list (same shape as GET /api/v1/packs)
   mirror/data/packs/<id>/context_pack.json      the pack (as published in featured/)
-  mirror/data/packs/<id>/brief.md, prompt_block.txt, digest.json, skill.zip
+  mirror/data/packs/<id>/brief.md, prompt_block.txt, digest.json, content_calendar.csv, skill.zip
   mirror/data/evals.json                         eval results + human ratings (as GET /api/v1/evals)
   mirror/404.html                                the app again, so deep links work on GitHub Pages
 

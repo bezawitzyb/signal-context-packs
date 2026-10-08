@@ -14,6 +14,7 @@ import io
 import json
 import zipfile
 
+from ctxpack.exports.markdown import posts_section
 from ctxpack.exports.common import DISCLAIMER, HOOKS_NOTE, badge, cfg, inline, slug, tokens
 
 REFERENCES = {
@@ -22,6 +23,7 @@ REFERENCES = {
     "tensions.md": "what they want and what holds them back, with quotes - open when choosing an angle",
     "objections.md": "objections, myths and how to answer them - open when handling doubts or comparisons",
     "channels.md": "where to show up, how each platform sounds, public communities - open when planning channels",
+    "posts.md": "post briefs, drafts and the 4-week content calendar - open when writing or scheduling posts",
     "evidence.json": "the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim",
 }
 
@@ -161,6 +163,9 @@ def references(pack: dict) -> dict[str, str]:
     return {"lexicon.md": "\n".join(lex) + "\n", "hooks.md": "\n".join(hooks) + "\n",
             "tensions.md": "\n".join(tensions) + "\n", "objections.md": "\n".join(objections) + "\n",
             "channels.md": "\n".join(channels) + "\n",
+            "posts.md": "\n".join(["# Post briefs, drafts and content calendar", note, ""]
+                                  + (posts_section(pack)[1:] if pack.get("post_briefs") else ["No post briefs."]))
+            + "\n",
             "evidence.json": json.dumps(evidence, ensure_ascii=False, indent=1, default=str)}
 
 

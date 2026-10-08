@@ -73,6 +73,78 @@
       "title": "Brief",
       "type": "object"
     },
+    "CalendarEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Stable calendar entry id (CAL-NN).",
+          "examples": [
+            "CAL-01"
+          ],
+          "pattern": "^CAL-\\d{2,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "calendar_entry",
+          "default": "calendar_entry",
+          "description": "Item type, always \"calendar_entry\".",
+          "title": "Type",
+          "type": "string"
+        },
+        "week": {
+          "description": "Week number, 1 = the first week.",
+          "minimum": 1,
+          "title": "Week",
+          "type": "integer"
+        },
+        "suggested_day": {
+          "description": "Day of the week.",
+          "examples": [
+            "tuesday"
+          ],
+          "title": "Suggested Day",
+          "type": "string"
+        },
+        "channel": {
+          "$ref": "#/$defs/PostChannel",
+          "description": "Where to publish."
+        },
+        "post_brief_id": {
+          "description": "The brief to post.",
+          "pattern": "^PST-\\d{2,}$",
+          "title": "Post Brief Id",
+          "type": "string"
+        },
+        "timing_reason": {
+          "description": "Why this week and day.",
+          "title": "Timing Reason",
+          "type": "string"
+        },
+        "timing_kind": {
+          "$ref": "#/$defs/TimingKind",
+          "description": "news_hook, channel_timing or spread."
+        },
+        "status": {
+          "const": "idea",
+          "default": "idea",
+          "description": "Always idea: nothing is scheduled for you.",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "week",
+        "suggested_day",
+        "channel",
+        "post_brief_id",
+        "timing_reason",
+        "timing_kind"
+      ],
+      "title": "CalendarEntry",
+      "type": "object"
+    },
     "Channel": {
       "additionalProperties": false,
       "properties": {
@@ -145,6 +217,21 @@
           },
           "title": "Timing",
           "type": "array"
+        },
+        "posts_per_week": {
+          "anyOf": [
+            {
+              "maximum": 7,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Recommended posts a week (V8); the content calendar never schedules more.",
+          "title": "Posts Per Week"
         }
       },
       "required": [
@@ -343,7 +430,7 @@
         },
         "item_id": {
           "description": "The hook or claim flagged.",
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|PST|DRF|CAL|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -1812,6 +1899,41 @@
       ],
       "title": "InterpretationField",
       "type": "string"
+    },
+    "KeyPoint": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "description": "One point the post makes.",
+          "title": "Text",
+          "type": "string"
+        },
+        "item_ids": {
+          "description": "Pack items it is built on.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Item Ids",
+          "type": "array"
+        },
+        "evidence_ids": {
+          "description": "Receipts, taken in code from those items.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "text",
+        "item_ids",
+        "evidence_ids"
+      ],
+      "title": "KeyPoint",
+      "type": "object"
     },
     "Keywords": {
       "additionalProperties": false,
@@ -3601,7 +3723,7 @@
           "examples": [
             "OPP-01"
           ],
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|PST|DRF|CAL|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -3862,6 +3984,278 @@
       },
       "title": "Playbook",
       "type": "object"
+    },
+    "PostBrief": {
+      "additionalProperties": false,
+      "description": "A post to make (V8), built from pain points, objections, hooks, opportunities and news hooks.",
+      "properties": {
+        "id": {
+          "description": "Stable post brief id (PST-NN).",
+          "examples": [
+            "PST-01"
+          ],
+          "pattern": "^PST-\\d{2,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "post_brief",
+          "default": "post_brief",
+          "description": "Item type, always \"post_brief\".",
+          "title": "Type",
+          "type": "string"
+        },
+        "channel": {
+          "$ref": "#/$defs/PostChannel",
+          "description": "Where to publish (the user's own channels first)."
+        },
+        "role": {
+          "description": "Who in the audience it is for.",
+          "examples": [
+            "plant managers who sign off budgets"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "goal": {
+          "description": "What the post should achieve.",
+          "title": "Goal",
+          "type": "string"
+        },
+        "hook": {
+          "description": "The opening line.",
+          "title": "Hook",
+          "type": "string"
+        },
+        "hook_id": {
+          "anyOf": [
+            {
+              "pattern": "^HOOK-\\d{2,}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The playbook hook it uses.",
+          "title": "Hook Id"
+        },
+        "angle": {
+          "description": "The angle of the post.",
+          "title": "Angle",
+          "type": "string"
+        },
+        "key_points": {
+          "description": "3-5 points, each with receipts.",
+          "items": {
+            "$ref": "#/$defs/KeyPoint"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Key Points",
+          "type": "array"
+        },
+        "structure": {
+          "description": "How the post is built.",
+          "examples": [
+            "story -> lesson -> question"
+          ],
+          "title": "Structure",
+          "type": "string"
+        },
+        "format": {
+          "$ref": "#/$defs/PostFormat",
+          "description": "text_post, carousel, short_video, blog_article or newsletter."
+        },
+        "their_words_to_use": {
+          "description": "Lexicon ids (LEX-..) to use.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Their Words To Use",
+          "type": "array"
+        },
+        "cta": {
+          "description": "Call to action.",
+          "title": "Cta",
+          "type": "string"
+        },
+        "avoid": {
+          "description": "Guardrail phrases (not this / never claim) to avoid.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Avoid",
+          "type": "array"
+        },
+        "news_hook_id": {
+          "anyOf": [
+            {
+              "pattern": "^NWS-\\d{2,}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "News hook it rides.",
+          "title": "News Hook Id"
+        },
+        "based_on": {
+          "description": "Items the brief is built from.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Based On",
+          "type": "array"
+        },
+        "confidence": {
+          "$ref": "#/$defs/ConfidenceLabel",
+          "description": "The weakest label among the items it uses (code)."
+        }
+      },
+      "required": [
+        "id",
+        "channel",
+        "role",
+        "goal",
+        "hook",
+        "angle",
+        "key_points",
+        "structure",
+        "format",
+        "cta",
+        "based_on",
+        "confidence"
+      ],
+      "title": "PostBrief",
+      "type": "object"
+    },
+    "PostChannel": {
+      "description": "Where a post brief is published (change V8): the social platforms plus owned channels.",
+      "enum": [
+        "reddit",
+        "tiktok",
+        "youtube",
+        "instagram",
+        "linkedin",
+        "x",
+        "web_forum",
+        "blog",
+        "newsletter"
+      ],
+      "title": "PostChannel",
+      "type": "string"
+    },
+    "PostDraft": {
+      "additionalProperties": false,
+      "description": "A full draft of a post brief (V8): brand voice if given; unsupported claims removed in code.",
+      "properties": {
+        "id": {
+          "description": "Stable post draft id (DRF-NN).",
+          "examples": [
+            "DRF-01"
+          ],
+          "pattern": "^DRF-\\d{2,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "post_draft",
+          "default": "post_draft",
+          "description": "Item type, always \"post_draft\".",
+          "title": "Type",
+          "type": "string"
+        },
+        "post_brief_id": {
+          "description": "The brief it drafts.",
+          "pattern": "^PST-\\d{2,}$",
+          "title": "Post Brief Id",
+          "type": "string"
+        },
+        "channel": {
+          "$ref": "#/$defs/PostChannel",
+          "description": "Where to publish."
+        },
+        "format": {
+          "$ref": "#/$defs/PostFormat",
+          "description": "The format."
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Title or subject line, where the format has one.",
+          "title": "Title"
+        },
+        "body": {
+          "description": "The post, ready to edit.",
+          "minLength": 1,
+          "title": "Body",
+          "type": "string"
+        },
+        "voice": {
+          "description": "brand voice or neutral-professional.",
+          "enum": [
+            "brand",
+            "neutral"
+          ],
+          "title": "Voice",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "description": "The brief's receipts.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "removed_sentences": {
+          "default": 0,
+          "description": "Sentences removed by the claim and guardrail checks (code).",
+          "minimum": 0,
+          "title": "Removed Sentences",
+          "type": "integer"
+        },
+        "label": {
+          "const": "Draft - review before posting",
+          "default": "Draft - review before posting",
+          "description": "Always shown.",
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "post_brief_id",
+        "channel",
+        "format",
+        "body",
+        "voice"
+      ],
+      "title": "PostDraft",
+      "type": "object"
+    },
+    "PostFormat": {
+      "enum": [
+        "text_post",
+        "carousel",
+        "short_video",
+        "blog_article",
+        "newsletter"
+      ],
+      "title": "PostFormat",
+      "type": "string"
     },
     "QAnswer": {
       "additionalProperties": false,
@@ -5025,6 +5419,16 @@
       "title": "TimingItem",
       "type": "object"
     },
+    "TimingKind": {
+      "description": "Why a calendar entry sits where it does (change V8).",
+      "enum": [
+        "news_hook",
+        "channel_timing",
+        "spread"
+      ],
+      "title": "TimingKind",
+      "type": "string"
+    },
     "Trend": {
       "enum": [
         "rising",
@@ -5474,6 +5878,30 @@
     "playbook": {
       "$ref": "#/$defs/Playbook",
       "description": "Hooks, creative brief, keywords, this week."
+    },
+    "post_briefs": {
+      "description": "Posts to make (V8), with receipts.",
+      "items": {
+        "$ref": "#/$defs/PostBrief"
+      },
+      "title": "Post Briefs",
+      "type": "array"
+    },
+    "drafts": {
+      "description": "Full drafts of the first briefs (V8).",
+      "items": {
+        "$ref": "#/$defs/PostDraft"
+      },
+      "title": "Drafts",
+      "type": "array"
+    },
+    "content_calendar": {
+      "description": "4 weeks of post ideas (V8).",
+      "items": {
+        "$ref": "#/$defs/CalendarEntry"
+      },
+      "title": "Content Calendar",
+      "type": "array"
     },
     "hypotheses": {
       "description": "The plan's hypotheses and their verdicts.",

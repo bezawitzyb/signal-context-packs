@@ -35,6 +35,8 @@ def review_items(parts: dict, opportunities: list[dict]) -> dict[str, str]:
     items |= {d["id"]: d["action"] for d in parts["do_first"]}
     items |= {p["id"]: f"{p['format']}: {p['angle']}" for p in parts["playbook"]["this_week"]}
     items |= {o["id"]: f"{o['title']}: {o['description']}" for o in opportunities}
+    items |= {b["id"]: f"{b['hook']} / {b['angle']} / {b['cta']}" for b in parts.get("post_briefs", [])}
+    items |= {d["id"]: " ".join(f"{d.get('title') or ''} {d['body']}".split()) for d in parts.get("drafts", [])}
     return items
 
 

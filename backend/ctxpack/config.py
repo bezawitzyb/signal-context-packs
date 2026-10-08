@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     synth_model_role: str = "synth"
     log_level: str = "INFO"
     worker_mode: str = "inprocess"
+    public_url: str = "https://signal-l2w5.onrender.com"   # pack links in exports (not a secret)
 
     def is_set(self, name: str) -> bool:
         """True if the secret has a non-empty value. Never returns the value."""

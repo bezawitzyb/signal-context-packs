@@ -5,7 +5,7 @@ import pytest
 from ctxpack import db, worker
 from ctxpack.schemas.enums import EventType, RunStatus
 from ctxpack.schemas.pack import ContextPack
-from ctxpack.synthesis import compliance, finalize, playbook
+from ctxpack.synthesis import compliance, finalize, playbook, posts
 from ctxpack.synthesis import verify as vf
 from ctxpack.synthesis import write as wr
 from tests.test_cluster import CTX, fake  # noqa: F401  (fixture)
@@ -94,7 +94,7 @@ async def test_brand_voice_reaches_only_the_playbook_call(offline, monkeypatch):
 
     voice = "VOICE-MARKER dry Dutch humour"
     seen: list[tuple[str, str]] = []
-    for module in (relevance, extract, cluster, baseline, wr, vf, playbook, compliance):
+    for module in (relevance, extract, cluster, baseline, wr, vf, playbook, posts, compliance):
         real = module.structured
 
         def spy(*a, _real=real, **k):
@@ -106,7 +106,7 @@ async def test_brand_voice_reaches_only_the_playbook_call(offline, monkeypatch):
     assert await worker.run_next() == run_id
     assert db.get_run(run_id).status == RunStatus.complete
     with_voice = {tool for tool, text in seen if "VOICE-MARKER" in text}
-    assert with_voice == {"record_playbook"} and len({t for t, _ in seen}) > 5
+    assert with_voice == {"record_playbook", "record_drafts"} and len({t for t, _ in seen}) > 5  # V8: one stage
     pack = db.get_pack(db.get_run(run_id).pack_id)
     assert pack["brief"]["brand_voice"] == voice
 

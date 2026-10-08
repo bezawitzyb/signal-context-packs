@@ -6,7 +6,7 @@ One JSON object (`context_pack.json`) is behind every view of a pack: the web pa
 
 **Changelog**
 
-- **1.1** (changes V1-V10, in progress): `brief.interpreted.markets[]` {code, countries, weight, assumed} replaces the single market (V2); `market` is now a short label made in code; `languages_excluded[]` lists left-out languages with the reason. V3: `brief.intake` (what the user told us before planning: audience roles, goal, offer, channels, competitors, timeframe, other answers, the questions asked) and `evidence[].role` (buyer, influencer, user, consumer, other, unknown). 1.0 packs are migrated when read (`schemas/migrate.py`).
+- **1.1** (changes V1-V10, in progress): `brief.interpreted.markets[]` {code, countries, weight, assumed} replaces the single market (V2); `market` is now a short label made in code; `languages_excluded[]` lists left-out languages with the reason. V3: `brief.intake` (what the user told us before planning: audience roles, goal, offer, channels, competitors, timeframe, other answers, the questions asked) and `evidence[].role` (buyer, influencer, user, consumer, other, unknown). V4: `pain_points[]`, typed `relations[]`, `sections_meta` and `performance_takeaways[]`. V5: one `opportunities[]` (status, existing solutions, score) replaces `white_space[]`. V6: `evidence[].requires_login` (LinkedIn). V7: `news_hooks[]` and `channel_plan[].timing[]`. V8: `post_briefs[]` (key points with receipts), `drafts[]` ("Draft - review before posting"), `content_calendar[]` and `channel_plan[].posts_per_week`. 1.0 packs are migrated when read (`schemas/migrate.py`).
 - **1.0**: first version.
 
 **Rules for every pack**
@@ -42,6 +42,9 @@ One JSON object (`context_pack.json`) is behind every view of a pack: the web pa
 | `CHN` | channel | `CHN-01` |
 | `HOOK` | hook | `HOOK-01` |
 | `PLN` | this-week post | `PLN-01` |
+| `PST` | post brief | `PST-01` |
+| `DRF` | post draft | `DRF-01` |
+| `CAL` | calendar entry | `CAL-01` |
 | `HYP` | hypothesis | `HYP-01` |
 | `CMP` | compliance flag | `CMP-01` |
 | `RSK` | risk | `RSK-01` |
@@ -107,6 +110,9 @@ Used at: `(top level)`
 | `opportunities` | list of [Opportunity](#opportunity) | no | Opportunities you can trust (1.1; replaces white_space and the scored opportunities). |  |
 | `channel_plan` | list of [Channel](#channel) | no | Where to show up, in priority order. |  |
 | `playbook` | [Playbook](#playbook) | no | Hooks, creative brief, keywords, this week. |  |
+| `post_briefs` | list of [PostBrief](#postbrief) | no | Posts to make (V8), with receipts. |  |
+| `drafts` | list of [PostDraft](#postdraft) | no | Full drafts of the first briefs (V8). |  |
+| `content_calendar` | list of [CalendarEntry](#calendarentry) | no | 4 weeks of post ideas (V8). |  |
 | `hypotheses` | list of [Hypothesis](#hypothesis) | no | The plan's hypotheses and their verdicts. |  |
 | `compliance_flags` | list of [ComplianceFlag](#complianceflag) | no | Hooks or claims to check with legal. |  |
 | `risks` | list of [Risk](#risk) | no | What could go wrong. |  |
@@ -370,6 +376,7 @@ Used at: `channel_plan[]`
 | `communities_or_hashtags` | list of text | no | Where exactly to post. |  |
 | `tone_note` | text | no | How to sound there. |  |
 | `timing` | list of [TimingItem](#timingitem) | no | When to show up there (V7). |  |
+| `posts_per_week` | integer or null | no | Recommended posts a week (V8); the content calendar never schedules more. |  |
 
 ### Playbook
 
@@ -383,6 +390,64 @@ Used at: `playbook`
 | `keywords` | [Keywords](#keywords) | no | SEO, paid, negative keywords and hashtags. |  |
 | `targets` | list of [Target](#target) | no | Public communities and creators. |  |
 | `this_week` | list of [PlanPost](#planpost) | no | Exactly 5 posts. |  |
+
+### PostBrief
+
+Used at: `post_briefs[]` - A post to make (V8), built from pain points, objections, hooks, opportunities and news hooks.
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `id` | text | yes | Stable post brief id (PST-NN). | `"PST-01"` |
+| `type` | "post_brief" | no | Item type, always "post_brief". |  |
+| `channel` | enum [PostChannel](#enum-postchannel) | yes | Where to publish (the user's own channels first). |  |
+| `role` | text | yes | Who in the audience it is for. | `"plant managers who sign off budgets"` |
+| `goal` | text | yes | What the post should achieve. |  |
+| `hook` | text | yes | The opening line. |  |
+| `hook_id` | text or null | no | The playbook hook it uses. |  |
+| `angle` | text | yes | The angle of the post. |  |
+| `key_points` | list of [KeyPoint](#keypoint) | yes | 3-5 points, each with receipts. |  |
+| `structure` | text | yes | How the post is built. | `"story -> lesson -> question"` |
+| `format` | enum [PostFormat](#enum-postformat) | yes | text_post, carousel, short_video, blog_article or newsletter. |  |
+| `their_words_to_use` | list of text | no | Lexicon ids (LEX-..) to use. |  |
+| `cta` | text | yes | Call to action. |  |
+| `avoid` | list of text | no | Guardrail phrases (not this / never claim) to avoid. |  |
+| `news_hook_id` | text or null | no | News hook it rides. |  |
+| `based_on` | list of text | yes | Items the brief is built from. |  |
+| `confidence` | enum [ConfidenceLabel](#enum-confidencelabel) | yes | The weakest label among the items it uses (code). |  |
+
+### PostDraft
+
+Used at: `drafts[]` - A full draft of a post brief (V8): brand voice if given; unsupported claims removed in code.
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `id` | text | yes | Stable post draft id (DRF-NN). | `"DRF-01"` |
+| `type` | "post_draft" | no | Item type, always "post_draft". |  |
+| `post_brief_id` | text | yes | The brief it drafts. |  |
+| `channel` | enum [PostChannel](#enum-postchannel) | yes | Where to publish. |  |
+| `format` | enum [PostFormat](#enum-postformat) | yes | The format. |  |
+| `title` | text or null | no | Title or subject line, where the format has one. |  |
+| `body` | text | yes | The post, ready to edit. |  |
+| `voice` | "brand" | "neutral" | yes | brand voice or neutral-professional. |  |
+| `evidence_ids` | list of text | no | The brief's receipts. |  |
+| `removed_sentences` | integer | no | Sentences removed by the claim and guardrail checks (code). |  |
+| `label` | "Draft - review before posting" | no | Always shown. |  |
+
+### CalendarEntry
+
+Used at: `content_calendar[]`
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `id` | text | yes | Stable calendar entry id (CAL-NN). | `"CAL-01"` |
+| `type` | "calendar_entry" | no | Item type, always "calendar_entry". |  |
+| `week` | integer | yes | Week number, 1 = the first week. |  |
+| `suggested_day` | text | yes | Day of the week. | `"tuesday"` |
+| `channel` | enum [PostChannel](#enum-postchannel) | yes | Where to publish. |  |
+| `post_brief_id` | text | yes | The brief to post. |  |
+| `timing_reason` | text | yes | Why this week and day. |  |
+| `timing_kind` | enum [TimingKind](#enum-timingkind) | yes | news_hook, channel_timing or spread. |  |
+| `status` | "idea" | no | Always idea: nothing is scheduled for you. |  |
 
 ### Hypothesis
 
@@ -804,6 +869,16 @@ Used at: `playbook.this_week[]`
 | `news_hook_id` | text or null | no | News hook it rides on (V7). |  |
 | `why_now` | text | yes | Why this week. |  |
 
+### KeyPoint
+
+Used at: `post_briefs[].key_points[]`
+
+| Field | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `text` | text | yes | One point the post makes. |  |
+| `item_ids` | list of text | yes | Pack items it is built on. |  |
+| `evidence_ids` | list of text | yes | Receipts, taken in code from those items. |  |
+
 ### DecisionLogEntry
 
 Used at: `coverage.decision_log[]`
@@ -1048,6 +1123,16 @@ Source family. All forum domains together are ONE platform (web_forum).
 
 `reddit`, `tiktok`, `youtube`, `instagram`, `linkedin`, `x`, `web_forum`, `web_review`, `web_editorial`
 
+### Enum PostChannel
+
+Where a post brief is published (change V8): the social platforms plus owned channels.
+
+`reddit`, `tiktok`, `youtube`, `instagram`, `linkedin`, `x`, `web_forum`, `blog`, `newsletter`
+
+### Enum PostFormat
+
+`text_post`, `carousel`, `short_video`, `blog_article`, `newsletter`
+
 ### Enum RelationKind
 
 How one item connects to an item in another section (change V4).
@@ -1057,6 +1142,12 @@ How one item connects to an item in another section (change V4).
 ### Enum TargetKind
 
 `community`, `creator`
+
+### Enum TimingKind
+
+Why a calendar entry sits where it does (change V8).
+
+`news_hook`, `channel_timing`, `spread`
 
 ### Enum Trend
 

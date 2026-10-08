@@ -119,6 +119,11 @@ CHANGELOG = [
     "`languages_excluded[]` lists left-out languages with the reason. V3: `brief.intake` (what the user "
     "told us before planning: audience roles, goal, offer, channels, competitors, timeframe, other answers, "
     "the questions asked) and `evidence[].role` (buyer, influencer, user, consumer, other, unknown). "
+    "V4: `pain_points[]`, typed `relations[]`, `sections_meta` and `performance_takeaways[]`. "
+    "V5: one `opportunities[]` (status, existing solutions, score) replaces `white_space[]`. "
+    "V6: `evidence[].requires_login` (LinkedIn). V7: `news_hooks[]` and `channel_plan[].timing[]`. "
+    "V8: `post_briefs[]` (key points with receipts), `drafts[]` (\"Draft - review before posting\"), "
+    "`content_calendar[]` and `channel_plan[].posts_per_week`. "
     "1.0 packs are migrated when read (`schemas/migrate.py`).",
     "- **1.0**: first version.",
 ]
