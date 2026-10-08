@@ -40,3 +40,7 @@ playwright-report/
 
 # --- Static mirror build output (published by .github/workflows/mirror.yml) ---
 mirror/
+
+# --- Local research reports and notes (deep research; kept off the public repo) ---
+/reports/
+/research_notes/
