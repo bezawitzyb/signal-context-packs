@@ -28,6 +28,9 @@ HOW TO WORK
   work unless the audience really lives there - say why in the reason.
 - LinkedIn: keyword queries only (search_linkedin); never a person,
   profile, group or company page.
+- X: keywords or a #hashtag only (search_x); never a person, @handle,
+  profile or list. Good for real-time reactions, complaints aimed at
+  brands, news and fandom talk; expect bots and giveaways.
 - Prefer first-person discussion (people describing their own
   experience, questions, complaints) over brand, retailer or news
   content. News and trends are context only.

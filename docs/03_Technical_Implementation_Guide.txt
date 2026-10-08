@@ -1866,15 +1866,22 @@ F2. CLAUDE.md (copy exactly into the project root)
 
 F3. Sources (verify in Step 1.4; actor IDs and inputs change)
  Apify (social)
- Source          Candidate actor ID                  Notes
+ The live list (main actor, fallback, comment actors, prices, smoke
+ status) is backend/ctxpack/config/catalog.yaml - it wins over this
+ table. Main actors as of 2026-10-07 (fallbacks replaced that day after
+ an actor review: reports/Apify actor comparison.md):
+ Source          Main actor                          Notes
  --------------  ----------------------------------  ---------------------------
- reddit          trudax/reddit-scraper-lite          posts + comments
+ reddit          harshmaur/reddit-scraper            posts + inline comments
  tiktok          clockworks/tiktok-scraper           search / hashtag posts
                  clockworks/tiktok-comments-scraper  comments (chained)
  youtube         streamers/youtube-scraper           search, metadata
                  streamers/youtube-comments-scraper  comments (chained)
  google_trends   apify/google-trends-scraper         external signal, any geo
- instagram       apify/instagram-hashtag-scraper     only if it verifies
+ instagram       apify/instagram-hashtag-scraper     + comment scraper
+ linkedin        harvestapi/linkedin-post-search     keyword search (V6)
+ x               xquik/x-tweet-scraper               keyword / #hashtag search
+                                                     + replies (2026-10-07)
  Checklist: exists and public; updated recently; healthy usage; pricing
  understood; supports item limits and language/country; output has
  text, date, url (comment permalink if possible), engagement.

@@ -265,7 +265,7 @@ def _drafts_from_raw(platform: Platform, unit: str, raw: list[dict], fetched_at:
 # Apify collection tools
 # --------------------------------------------------------------------------
 
-_TREND_FIELDS = ("keyword", "date", "value", "geo", "type", "is_partial", "searchTerms", "searchTerm",
+_TREND_FIELDS = ("keyword", "geo", "timeRange", "interestOverTime", "searchTerms", "searchTerm",
                  "inputUrlOrTerm", "interestOverTime_timelineData")
 
 
@@ -285,7 +285,7 @@ def _record(ctx: RunContext, result: apify.ActorResult) -> None:
     path.write_text(json.dumps(items, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
-async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int], dict], limit: int,
+async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int], dict | None], limit: int,
                       timeout: int | None = None,
                       limit_for: Callable[[dict], int] | None = None) -> apify.ActorResult:
     src = _catalog()["sources"][source]
@@ -293,7 +293,8 @@ async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int]
     for spec in (src["actor"], src.get("fallback")):
         if spec:
             n = limit_for(spec) if limit_for else limit
-            attempts.append((spec, inputs(spec, n), n))
+            if (run_input := inputs(spec, n)) is not None:  # None: this actor cannot take this unit
+                attempts.append((spec, run_input, n))
     result = await apify.run_with_fallback(attempts, limit, timeout, deadline=ctx.deadline())
     if not limit_for:
         result.items = result.items[:limit]
@@ -316,14 +317,24 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
     per_post = max(1, math.ceil(total / len(urls)))
 
     def inputs(spec: dict, limit: int) -> dict:
+        n = max(per_post, spec.get("min_items", 0))
         return {
-            "clockworks/tiktok-comments-scraper": {"postURLs": urls, "commentsPerPost": per_post},
-            "apidojo/tiktok-comments-scraper": {"startUrls": urls, "maxItems": limit},
-            "streamers/youtube-comments-scraper": {"startUrls": [{"url": u} for u in urls], "maxComments": per_post},
-            "apidojo/youtube-comments-scraper": {"startUrls": urls, "maxItems": limit},
-            "apify/instagram-comment-scraper": {"directUrls": urls, "resultsLimit": per_post},
-            "harvestapi/linkedin-post-comments": {"posts": urls, "maxItems": per_post, "scrapeReplies": False,
+            "clockworks/tiktok-comments-scraper": {"postURLs": urls, "commentsPerPost": n},
+            "scrapeforge/tiktok-comments-extractor": {"postURLs": urls, "commentsPerPost": n,  # 0 would mean ALL
+                                                      "maxRepliesPerComment": 0},
+            "streamers/youtube-comments-scraper": {"startUrls": [{"url": u} for u in urls], "maxComments": n},
+            "solidcode/youtube-comments-scraper": {"startUrls": urls, "maxResults": n, "sortBy": "top",
+                                                   "includeReplies": False},
+            "apify/instagram-comment-scraper": {"directUrls": urls, "resultsLimit": n},
+            "supreme_coder/instagram-comments-scraper": {"urls": urls, "limitPerSource": n,
+                                                         "scrapeReplies": False},  # default is true
+            "harvestapi/linkedin-post-comments": {"posts": urls, "maxItems": n, "scrapeReplies": False,
                                                   "profileScraperMode": "short"},
+            "datadoping/linkedin-post-comments-scraper": {"posts": urls, "max_comments": n,
+                                                          "sort_by": "Most relevant"},
+            "xquik/x-tweet-scraper": {"mode": "replies", "replyTweetIds": [x_post_id(u) for u in urls],
+                                      "maxItemsPerTarget": n, "maxItems": limit},
+            "scraper_one/x-post-replies-scraper": {"postUrls": urls, "resultsLimit": n},
         }[spec["id"]]
 
     attempts = [(spec, inputs(spec, total)) for spec in (src["actor"], src.get("fallback")) if spec]
@@ -338,7 +349,7 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
 
 
 async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platform, unit: str, target: str,
-                      limit: int, reason: str, search_inputs: Callable[[dict, int], dict],
+                      limit: int, reason: str, search_inputs: Callable[[dict, int], dict | None],
                       with_comments: bool) -> dict[str, Any]:
     if why := _general_limit(ctx) or _apify_limit(ctx) or _time_limit(ctx, tool):
         return _limit_reached(ctx, why)
@@ -378,7 +389,7 @@ def _apify_limit(ctx: RunContext) -> str | None:
 
 
 async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Platform, unit: str, target: str,
-                         limit: int, search_inputs: Callable[[dict, int], dict],
+                         limit: int, search_inputs: Callable[[dict, int], dict | None],
                          with_comments: bool) -> tuple[list[Draft], dict[str, Any]]:
     language = ",".join(ctx.brief.languages)
 
@@ -442,6 +453,11 @@ def linkedin_unit(query: str) -> str:
     return f"linkedin:search:{query.strip().casefold()}"
 
 
+def x_unit(target: str) -> str:
+    t = target.strip()
+    return f"x:#{t.lstrip('#').casefold()}" if t.startswith("#") else f"x:search:{t.casefold()}"
+
+
 def web_unit(url: str) -> str:
     return "web:" + (web.urlparse(url).netloc.removeprefix("www.") or "?")
 
@@ -453,6 +469,7 @@ def unit_for(tool: str, args: dict[str, Any]) -> str | None:
             "search_youtube": lambda: youtube_unit(args.get("query", "")),
             "search_instagram": lambda: instagram_unit(args.get("hashtag", "")),
             "search_linkedin": lambda: linkedin_unit(args.get("query", "")),
+            "search_x": lambda: x_unit(args.get("target", "")),
             }.get(tool, lambda: None)()
 
 
@@ -475,13 +492,15 @@ async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: st
                 return {**base, "searchTerms": [query], "withinCommunity": sub, "searchSort": "relevance"}
             return {**base, "subredditUrls": [f"r/{sub}"]} if sub else \
                    {**base, "searchTerms": [target], "searchSort": "relevance"}
-        base = {"maxItems": max(n, spec.get("min_items", 0)), "maxPostCount": posts, "maxComments": per_post,
-                "skipComments": False, "skipUserPosts": True, "skipCommunity": True, "searchCommunities": False,
-                "searchUsers": False, "includeNSFW": False, "proxy": {"useApifyProxy": True}}
-        if sub and query:
-            return {**base, "searches": [query], "searchCommunityName": sub, "sort": "relevance"}
-        return {**base, "startUrls": [{"url": f"https://www.reddit.com/r/{sub}/"}]} if sub else \
-               {**base, "searches": [target], "sort": "relevance"}
+        # fatihtahta: maxPosts per query, maxComments per post; extra analysis options stay off (billed)
+        frame = "month" if ctx.window_days <= 31 else "year"
+        base = {"maxPosts": posts, "scrapeComments": True, "maxComments": per_post, "dateFrom": _cutoff(ctx),
+                "includeNsfw": False, "sentiment_analysis": False, "content_analysis": False,
+                "maximize_coverage": False}
+        if sub:
+            return {**base, "subredditName": sub, "subredditKeywords": [query] if query else [],
+                    "subredditSort": "relevance" if query else "new", "subredditTimeframe": frame}
+        return {**base, "queries": [target], "sort": "relevance", "timeframe": frame}
 
     call_target = f"{target.strip()} {query}" if query else target   # call key, cache key, seen words
     return await _apify_tool(ctx, "search_reddit", "reddit", Platform.reddit, unit, call_target, limit, reason,
@@ -500,8 +519,10 @@ async def search_tiktok(ctx: RunContext, target: str, limit: int = 0, reason: st
                       else "LAST_6_MONTHS")
             return {"searchQueries": [f"#{tag}" if tag else target], "resultsPerPage": n,
                     "searchSection": "/video", "videoSearchDateFilter": period}
-        return {"startUrls": [f"https://www.tiktok.com/tag/{tag}"], "maxItems": n} if tag else \
-               {"keywords": [target], "maxItems": n}
+        # novi: video search for hashtags too, so publishTime applies; limit is soft (code counts items)
+        period = ("MONTH" if ctx.window_days <= 30 else "THREE_MONTH" if ctx.window_days <= 90 else "SIX_MONTH")
+        return {"type": "SEARCH", "keyword": f"#{tag}" if tag else target, "limit": n, "publishTime": period,
+                "sortType": 0}
 
     return await _apify_tool(ctx, "search_tiktok", "tiktok", Platform.tiktok, unit, target, limit, reason,
                              inputs, with_comments=True)
@@ -511,7 +532,7 @@ async def search_youtube(ctx: RunContext, query: str, limit: int = 0, reason: st
     channel = query.strip() if query.strip().startswith(("@", "https://www.youtube.com/")) else None
     unit = youtube_unit(query)
 
-    def inputs(spec: dict, n: int) -> dict:
+    def inputs(spec: dict, n: int) -> dict | None:
         if spec["id"] == "streamers/youtube-scraper":
             base = {"maxResults": n, "maxResultsShorts": 0, "maxResultStreams": 0}
             url = channel if channel and channel.startswith("http") else f"https://www.youtube.com/{channel}"
@@ -519,7 +540,10 @@ async def search_youtube(ctx: RunContext, query: str, limit: int = 0, reason: st
                 return {**base, "startUrls": [{"url": url}]}
             # Search mixes in videos from 2022-2025 (2026-10-04 test): use the upload-date filter.
             return {**base, "searchQueries": [query], "dateFilter": "month" if ctx.window_days <= 30 else "year"}
-        return {"youtubeHandles": [channel], "maxItems": n} if channel else {"keywords": [query], "maxItems": n}
+        if channel:  # grow_media searches only: a channel unit has no fallback
+            return None
+        return {"q": query, "maxResults": n, "useFilters": True, "order": "relevance",
+                "publishedAfter": f"{_cutoff(ctx)}T00:00:00Z"}
 
     return await _apify_tool(ctx, "search_youtube", "youtube", Platform.youtube, unit, query, limit, reason,
                              inputs, with_comments=True)
@@ -532,7 +556,8 @@ async def search_instagram(ctx: RunContext, hashtag: str, limit: int = 0, reason
     def inputs(spec: dict, n: int) -> dict:
         if spec["id"] == "apify/instagram-hashtag-scraper":
             return {"hashtags": [tag], "resultsLimit": n, "resultsType": "posts"}
-        return {"search": tag, "searchType": "hashtag", "resultsType": "posts", "resultsLimit": n, "searchLimit": 1}
+        # top posts: they have comments to chain (the primary's newest posts often have none)
+        return {"hashtags": [tag], "feed_type": "top", "resultsLimit": n}
 
     return await _apify_tool(ctx, "search_instagram", "instagram", Platform.instagram, unit, f"#{tag}", limit,
                              reason, inputs, with_comments=True)
@@ -575,12 +600,42 @@ async def search_linkedin(ctx: RunContext, query: str, limit: int = 0, reason: s
                              inputs, with_comments=True)
 
 
+# Keywords or a hashtag only: never a person, profile, list, community or a search scoped to an account.
+_X_PRIVATE = re.compile(r"(?:twitter|x)\.com/|^\s*(?:https?://|www\.)|(?<![\w])@\w|"
+                        r"\b(?:from|to|list|filter:follows|conversation_id):", re.I)
+_X_ID = re.compile(r"/status(?:es)?/(\d+)")
+
+
+def x_post_id(url: str) -> str:
+    m = _X_ID.search(url or "")
+    return m.group(1) if m else ""
+
+
+async def search_x(ctx: RunContext, target: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
+    """Public X (Twitter) posts for keywords or a '#hashtag', plus replies to posts that have some."""
+    if _X_PRIVATE.search(target) or not target.strip():
+        return {"status": "refused", "error": "search_x takes keywords or a #hashtag only - never a person, "
+                "@handle, profile, list or community link", **ctx.left()}
+    unit = x_unit(target)
+    query = target.strip()
+
+    def inputs(spec: dict, n: int) -> dict:
+        if spec["id"] == "xquik/x-tweet-scraper":
+            lang = ctx.brief.languages[0] if len(ctx.brief.languages) == 1 else None
+            return {"searchTerms": [query], "maxItems": n, "queryType": "Top", "since": _cutoff(ctx),
+                    **({"lang": lang} if lang else {})}
+        return {"query": query, "searchType": "latest", "resultsCount": n, "timeWindow": ctx.window_days}
+
+    return await _apify_tool(ctx, "search_x", "x", Platform.x, unit, query, limit, reason, inputs,
+                             with_comments=True)
+
+
 # --------------------------------------------------------------------------
 # Google Trends (external signal, never Documents)
 # --------------------------------------------------------------------------
 
 def _timeframe(window_days: int) -> tuple[str, str]:
-    """(khadinakbar timeframe, apify timeRange) for the brief's window."""
+    """(label, timeRange) for the brief's window; both trend actors take the same timeRange values."""
     if window_days <= 30:
         return "today 1-m", "today 1-m"
     if window_days <= 90:
@@ -592,8 +647,9 @@ def trend_series(items: list[dict]) -> dict[str, list[float]]:
     """keyword -> values over time, from either actor's output."""
     series: dict[str, list[float]] = {}
     for it in items:
-        if "keyword" in it and isinstance(it.get("value"), (int, float)):     # khadinakbar (flat)
-            series.setdefault(it["keyword"], []).append(float(it["value"]))
+        for point in it.get("interestOverTime") or []:                        # scrapesage (one item per term)
+            if isinstance(point.get("value"), (int, float)) and it.get("keyword"):
+                series.setdefault(it["keyword"], []).append(float(point["value"]))
         for point in it.get("interestOverTime_timelineData") or []:          # apify
             values = point.get("value") or []
             for i, term in enumerate(it.get("searchTerms") or [it.get("searchTerm") or it.get("inputUrlOrTerm", "term")]):
@@ -635,9 +691,9 @@ async def get_trends(ctx: RunContext, terms: list[str], geo: str = "", reason: s
     tf, tr = _timeframe(ctx.window_days)
 
     def inputs(spec: dict, n: int) -> dict:
-        if spec["id"] == "khadinakbar/google-trends-scraper":
-            return {"keywords": terms, "geo": geo.upper(), "timeframe": tf,
-                    "dataTypes": ["interest_over_time"], "maxResults": n}
+        if spec["id"] == "scrapesage/google-trends-scraper":  # interest over time only: fewer types = cheaper
+            return {"mode": "keywords", "searchTerms": terms, "geo": geo.upper(), "timeRange": tr,
+                    "dataTypes": ["interestOverTime"], "maxItems": n}
         return {"searchTerms": terms, "geo": geo.upper(), "timeRange": tr, "isMultiple": len(terms) > 1,
                 "maxItems": n}
 
@@ -864,6 +920,13 @@ def tool_definitions() -> list[dict[str, Any]]:
               "query": {"type": "string"}}, "required": ["source_unit", "query"]}}},
          ["summary", "source_verdicts", "gaps"]),
     ]
+    if "x" in _catalog()["sources"]:
+        defs.insert(3, ("search_x", f"X (Twitter) posts for keywords or a '#hashtag' (real-time reactions, "
+                                    f"complaints aimed at brands, news and fandom talk), plus replies to posts "
+                                    f"that have some. Keywords only - never a person, @handle or profile. "
+                                    f"Latency {_latency('search_x')}.",
+                        {"target": {"type": "string"}, "limit": limit, "reason": _reason()},
+                        ["target", "reason"]))
     if "linkedin" in _catalog()["sources"]:
         defs.insert(3, ("search_linkedin", f"LinkedIn posts for a keyword query (professional and B2B "
                                            f"discussion), plus comments on posts that have some. Keywords only - "
@@ -881,7 +944,7 @@ def tool_definitions() -> list[dict[str, Any]]:
 
 TOOLS: dict[str, Callable[..., Awaitable[dict[str, Any]]]] = {
     "search_reddit": search_reddit, "search_tiktok": search_tiktok, "search_youtube": search_youtube,
-    "search_instagram": search_instagram, "search_linkedin": search_linkedin, "web_search": web_search, "fetch_and_segment": fetch_and_segment,
+    "search_instagram": search_instagram, "search_linkedin": search_linkedin, "search_x": search_x, "web_search": web_search, "fetch_and_segment": fetch_and_segment,
     "get_trends": get_trends, "coverage_report": coverage_report, "finish": finish,
 }
 

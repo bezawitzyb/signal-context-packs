@@ -834,8 +834,9 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
  9. DATA HANDLING, PRIVACY, AND COMPLIANCE
 ================================================================================
 
- DH1  Public content, plus content visible to ANY logged-in user (change
-      V6: LinkedIn posts and comments); never private groups, DMs, closed
+ DH1  Public content (X posts and replies included), plus content
+      visible to ANY logged-in user (change V6: LinkedIn posts and
+      comments); never private groups, DMs, closed
       profiles or membership-approved content. Maintained Apify actors
       that need no session of ours (no cookies); no circumvention.
       Evidence from such sources carries requires_login = true.
@@ -857,7 +858,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
       excluded from trends and recency.
  DH8  Creator targets: public accounts only, by topical relevance.
       LinkedIn is searched by keyword only - never by person or profile,
-      never to build a profile of an individual.
+      never to build a profile of an individual. The same holds for X
+      (keywords or a #hashtag; never an @handle, profile or list).
  DH9  Prompt-injection defence: scraped text only inside
       <untrusted_user_content> tags; trust field on evidence; agents told
       never to follow instructions in evidence; collector has no

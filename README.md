@@ -43,7 +43,7 @@ guardrails and instructions for agents.
 - One planning call reads the brief and proposes hypotheses, research questions and 3-6 starting
   sources with reasons and queries per language. A vague brief gets one clarifying question.
 - The **agent loop** (Claude Sonnet, plain tool use) then picks the next call itself, with a reason:
-  Reddit, TikTok, YouTube, Instagram and LinkedIn (keyword search only, no login of ours) through Apify, the open web through web search and fetch,
+  Reddit, TikTok, YouTube, Instagram, LinkedIn and X (keyword search only, no login of ours) through Apify, the open web through web search and fetch,
   and Google Trends. It sees only short summaries ("collected 50, kept 43, 84% relevant"), never raw posts.
 - **Tools own the data and the limits.** Every limit lives in
   [`backend/ctxpack/config/modes.yaml`](backend/ctxpack/config/modes.yaml) and is enforced in code, never

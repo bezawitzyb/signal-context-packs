@@ -122,10 +122,11 @@ def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short
 
 
 _PLATFORM_NAME = {"linkedin": "LinkedIn", "reddit": "Reddit", "tiktok": "TikTok", "youtube": "YouTube",
-                  "instagram": "Instagram"}
+                  "instagram": "Instagram", "x": "X"}
 _FAILED_IMPACT = {"linkedin": "professional and B2B voices (buyers, installers, managers) are under-represented",
                   "tiktok": "younger, trend-driven voices are under-represented",
-                  "instagram": "lifestyle and visual-brand voices are under-represented"}
+                  "instagram": "lifestyle and visual-brand voices are under-represented",
+                  "x": "real-time reactions and complaints aimed at brands are under-represented"}
 
 
 def _rank_key(it: dict) -> tuple:

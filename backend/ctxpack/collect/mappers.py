@@ -8,9 +8,11 @@ the author name is hashed and discarded. Nothing here stores or logs it.
 from __future__ import annotations
 
 import copy
+import re
+from datetime import datetime
 from typing import Any, Callable, TypedDict
 
-from ctxpack.collect.cleaning import linkedin_url, redact, scrub_url
+from ctxpack.collect.cleaning import linkedin_url, redact, scrub_url, x_url
 
 
 class RawPost(TypedDict, total=False):
@@ -27,6 +29,8 @@ class RawPost(TypedDict, total=False):
 
 
 def get(item: dict, path: str) -> Any:
+    if path in item:  # some actors use flat keys with dots in them ("caption.text")
+        return item[path]
     cur: Any = item
     for part in path.split("."):
         cur = cur.get(part) if isinstance(cur, dict) else None
@@ -58,15 +62,19 @@ def reddit_harshmaur(item: dict, ctx: dict) -> RawPost | None:
     return None
 
 
-def reddit_trudax(item: dict, ctx: dict) -> RawPost | None:
-    kind = item.get("dataType")
-    if kind not in ("post", "comment"):
-        return None
-    return RawPost(kind=kind, text=_join(item.get("title"), item.get("body")), author=item.get("username"),
-                   date=item.get("createdAt"), url=item.get("url") or "", permalink=item.get("url"),
-                   thread_id=item.get("postId") or item.get("id"), community=item.get("communityName"),
-                   engagement=_eng(item, "upVotes", "numberOfComments", "numberOfReplies"),
-                   comments=item.get("numberOfComments") or 0)
+def reddit_fatihtahta(item: dict, ctx: dict) -> RawPost | None:
+    # score and num_comments were 0 on every item in the 2026-10-07 smoke test: engagement unknown, never 0.
+    kind = item.get("kind")
+    if kind == "comment":
+        return RawPost(kind="comment", text=_join(item.get("body")), author=item.get("author"),
+                       date=item.get("created_utc"), url=item.get("postUrl") or item.get("url") or "",
+                       permalink=item.get("url"), thread_id=item.get("postId"), community=item.get("subreddit"),
+                       engagement={})
+    if kind == "post":
+        return RawPost(kind="post", text=_join(item.get("title"), item.get("body")), author=item.get("author"),
+                       date=item.get("created_utc"), url=item.get("url") or "", permalink=item.get("url"),
+                       thread_id=item.get("id"), community=item.get("subreddit"), engagement={})
+    return None
 
 
 # --- tiktok -----------------------------------------------------------------
@@ -80,12 +88,16 @@ def tiktok_clockworks(item: dict, ctx: dict) -> RawPost | None:
                    comments=item.get("commentCount") or 0)
 
 
-def tiktok_apidojo(item: dict, ctx: dict) -> RawPost | None:
-    if not item.get("postPage"):
+def tiktok_novi(item: dict, ctx: dict) -> RawPost | None:
+    video = item.get("aweme_info") or {}
+    vid = str(video.get("aweme_id") or "")
+    if not vid:
         return None
-    return RawPost(kind="post", text=_join(item.get("title")), author=get(item, "channel.username"),
-                   date=item.get("uploadedAt"), url=item["postPage"], thread_id=str(item.get("id") or ""),
-                   engagement=_eng(item, "likes", "comments", "shares", "views"), comments=item.get("comments") or 0)
+    return RawPost(kind="post", text=_join(video.get("desc")), author=get(video, "author.unique_id"),
+                   date=video.get("create_time"), url=f"https://www.tiktok.com/@/video/{vid}", thread_id=vid,
+                   engagement=_eng(video, "statistics.digg_count", "statistics.comment_count",
+                                   "statistics.share_count", "statistics.play_count"),
+                   comments=get(video, "statistics.comment_count") or 0)
 
 
 def tiktok_comments_clockworks(item: dict, ctx: dict) -> RawPost | None:
@@ -96,13 +108,13 @@ def tiktok_comments_clockworks(item: dict, ctx: dict) -> RawPost | None:
                    thread_id=item.get("videoWebUrl"), engagement=_eng(item, "diggCount", "replyCommentTotal"))
 
 
-def tiktok_comments_apidojo(item: dict, ctx: dict) -> RawPost | None:
+def tiktok_comments_scrapeforge(item: dict, ctx: dict) -> RawPost | None:
     if not item.get("text"):
         return None
-    url = ctx.get("parent_by_id", {}).get(str(item.get("awemeId")), "")
-    return RawPost(kind="comment", text=_join(item.get("text")), author=get(item, "user.username"),
-                   date=item.get("createdAt"), url=url, thread_id=url or None,
-                   engagement=_eng(item, "likeCount", "replyCount"))
+    url = item.get("videoUrl") or ctx.get("parent_by_id", {}).get(str(item.get("videoId")), "")
+    return RawPost(kind="comment", text=_join(item.get("text")), author=get(item, "user.uniqueId"),
+                   date=item.get("createTimeISO"), url=url, permalink=item.get("commentUrl"), thread_id=url or None,
+                   engagement=_eng(item, "diggCount", "replyCount"))
 
 
 # --- youtube ----------------------------------------------------------------
@@ -115,14 +127,6 @@ def youtube_streamers(item: dict, ctx: dict) -> RawPost | None:
                    engagement=_eng(item, "likes", "commentsCount", "viewCount"), comments=item.get("commentsCount") or 0)
 
 
-def youtube_apidojo(item: dict, ctx: dict) -> RawPost | None:
-    if not item.get("url"):
-        return None
-    return RawPost(kind="post", text=_join(item.get("title"), item.get("description")),
-                   author=get(item, "channel.name"), date=item.get("uploadDate") or item.get("publishDate"),
-                   url=item["url"], thread_id=item.get("id"), engagement=_eng(item, "likes", "views"), comments=1)
-
-
 def youtube_comments_streamers(item: dict, ctx: dict) -> RawPost | None:
     if not item.get("comment"):
         return None
@@ -133,13 +137,13 @@ def youtube_comments_streamers(item: dict, ctx: dict) -> RawPost | None:
                    engagement=_eng(item, "voteCount", "replyCount"))
 
 
-def youtube_comments_apidojo(item: dict, ctx: dict) -> RawPost | None:
-    if not item.get("text"):
+def youtube_comments_solidcode(item: dict, ctx: dict) -> RawPost | None:
+    if not item.get("text") or item.get("recordType", "comment") != "comment" or not item.get("videoId"):
         return None
-    parents = ctx.get("parent_urls", [])
-    url = parents[0] if len(parents) == 1 else ""  # items carry no video id
-    return RawPost(kind="comment", text=_join(item.get("text")), author=get(item, "author.name"),
-                   date=item.get("publishedTime"), url=url, thread_id=url or None,
+    page, cid = f"https://www.youtube.com/watch?v={item['videoId']}", item.get("commentId")
+    return RawPost(kind="comment", text=_join(item.get("text")), author=item.get("author"),
+                   date=item.get("publishedAt") or item.get("publishedAtRaw"), url=page,
+                   permalink=f"{page}&lc={cid}" if cid else None, thread_id=page,
                    engagement=_eng(item, "likeCount", "replyCount"))
 
 
@@ -153,12 +157,27 @@ def instagram_post(item: dict, ctx: dict) -> RawPost | None:
                    engagement=_eng(item, "likesCount", "commentsCount"), comments=item.get("commentsCount") or 0)
 
 
+def instagram_post_scrapingsolutions(item: dict, ctx: dict) -> RawPost | None:
+    if not item.get("link_post"):
+        return None
+    return RawPost(kind="post", text=_join(get(item, "caption.text")), author=get(item, "user.username"),
+                   date=item.get("taken_at_date"), url=item["link_post"], thread_id=item.get("code"),
+                   engagement=_eng(item, "like_count", "comment_count", "play_count"),
+                   comments=item.get("comment_count") or 0)
+
+
 def instagram_comment(item: dict, ctx: dict) -> RawPost | None:
     if not item.get("text") or item.get("error"):
         return None
     return RawPost(kind="comment", text=_join(item.get("text")), author=item.get("ownerUsername"),
                    date=item.get("timestamp"), url=item.get("postUrl") or "", permalink=item.get("commentUrl"),
                    thread_id=item.get("postUrl"), engagement=_eng(item, "likesCount", "repliesCount"))
+
+
+def instagram_comment_supreme(item: dict, ctx: dict) -> RawPost | None:
+    if not item.get("id") or not item.get("commentUrl"):  # a post without comments gives a placeholder row
+        return None
+    return instagram_comment(item, ctx)
 
 
 # --- linkedin (V6) -------------------------------------------------------------
@@ -200,6 +219,61 @@ def linkedin_comment(item: dict, ctx: dict) -> RawPost | None:
                    engagement=_eng(item, "engagement.likes", "engagement.comments"))
 
 
+def linkedin_comment_datadoping(item: dict, ctx: dict) -> RawPost | None:
+    act = _activity(item.get("input"))  # the post link we asked for (author.profile_url is never read)
+    if not item.get("text") or not act:
+        return None
+    link = item.get("comment_url") or ""
+    return RawPost(kind="comment", text=_join(item.get("text")), author=get(item, "author.name"),
+                   date=get(item, "posted_at.date"), url=linkedin_url(act),
+                   permalink=link if "/feed/update/" in link else None, thread_id=act,
+                   engagement=_eng(item, "total_reactions", "total_replies"))
+
+
+# --- x (2026-10-07) ----------------------------------------------------------------
+# Links are rebuilt from the post id: x.com/<handle>/status/<id> names the author.
+
+def _x_date(value: Any) -> Any:
+    """'Wed Oct 07 16:01:05 +0000 2026' (X's own format) -> ISO; other forms pass through."""
+    if isinstance(value, str) and re.fullmatch(r"\w{3} \w{3} \d{2} \d{2}:\d{2}:\d{2} [+-]\d{4} \d{4}", value):
+        return datetime.strptime(value, "%a %b %d %H:%M:%S %z %Y").isoformat()
+    return value
+
+
+def x_xquik(item: dict, ctx: dict) -> RawPost | None:
+    pid = str(item.get("id") or "")
+    if not pid.isdigit() or not item.get("text") or item.get("isRetweet"):
+        return None
+    if item.get("rootTweetId") or item.get("sourceTweetId"):  # replies mode
+        root = str(item.get("rootTweetId") or item.get("sourceTweetId"))
+        return RawPost(kind="comment", text=_join(item.get("text")), author=get(item, "author.username"),
+                       date=_x_date(item.get("createdAt")), url=x_url(root), permalink=x_url(pid), thread_id=root,
+                       engagement=_eng(item, "likeCount", "replyCount", "retweetCount"))
+    return RawPost(kind="post", text=_join(item.get("text")), author=get(item, "author.username"),
+                   date=_x_date(item.get("createdAt")), url=x_url(pid), thread_id=str(item.get("conversationId") or pid),
+                   engagement=_eng(item, "likeCount", "replyCount", "retweetCount", "quoteCount", "viewCount"),
+                   comments=item.get("replyCount") or 0)
+
+
+def x_scraperone_post(item: dict, ctx: dict) -> RawPost | None:
+    pid = str(item.get("postId") or "")
+    if not pid.isdigit() or not item.get("postText"):
+        return None
+    return RawPost(kind="post", text=_join(item.get("postText")), author=get(item, "author.screenName"),
+                   date=item.get("timestamp"), url=x_url(pid), thread_id=str(item.get("conversationId") or pid),
+                   engagement=_eng(item, "favouriteCount", "replyCount", "repostCount", "quoteCount"),
+                   comments=item.get("replyCount") or 0)
+
+
+def x_scraperone_reply(item: dict, ctx: dict) -> RawPost | None:
+    rid, root = str(item.get("replyId") or ""), str(item.get("inReplyTo") or "")
+    if not rid.isdigit() or not item.get("replyText"):
+        return None
+    return RawPost(kind="comment", text=_join(item.get("replyText")), author=get(item, "author.screenName"),
+                   date=item.get("timestamp"), url=x_url(root) if root.isdigit() else "", permalink=x_url(rid),
+                   thread_id=root or None, engagement=_eng(item, "favouriteCount", "replyCount", "repostCount"))
+
+
 Mapper = Callable[[dict, dict], RawPost | None]
 
 # actor id -> (mapper, fields kept in fixtures, author fields, free-text fields)
@@ -208,40 +282,46 @@ MAPPERS: dict[str, tuple[Mapper, list[str], list[str], list[str]]] = {
         "dataType", "title", "body", "createdAt", "commentCreatedAt", "postUrl", "url", "id", "postId",
         "parentId", "score", "upVotes", "commentUpVotes", "commentsCount", "authorName", "communityName"],
         ["authorName"], ["title", "body"]),
-    "trudax/reddit-scraper-lite": (reddit_trudax, [
-        "dataType", "title", "body", "createdAt", "url", "id", "postId", "upVotes", "numberOfComments",
-        "numberOfReplies", "username", "communityName"], ["username"], ["title", "body"]),
+    "fatihtahta/reddit-scraper-search-fast": (reddit_fatihtahta, [
+        "kind", "id", "postId", "title", "body", "created_utc", "url", "postUrl", "subreddit", "author"],
+        ["author"], ["title", "body"]),
     "clockworks/tiktok-scraper": (tiktok_clockworks, [
         "text", "createTimeISO", "webVideoUrl", "id", "diggCount", "commentCount", "shareCount", "playCount",
         "authorMeta.name"], ["authorMeta.name"], ["text"]),
-    "apidojo/tiktok-scraper": (tiktok_apidojo, [
-        "title", "uploadedAt", "postPage", "id", "likes", "comments", "shares", "views", "channel.username"],
-        ["channel.username"], ["title"]),
+    "novi/fast-tiktok-api": (tiktok_novi, [
+        "aweme_info.aweme_id", "aweme_info.desc", "aweme_info.create_time", "aweme_info.statistics.digg_count",
+        "aweme_info.statistics.comment_count", "aweme_info.statistics.share_count",
+        "aweme_info.statistics.play_count", "aweme_info.author.unique_id"],
+        ["aweme_info.author.unique_id"], ["aweme_info.desc"]),
     "clockworks/tiktok-comments-scraper": (tiktok_comments_clockworks, [
         "text", "createTimeISO", "videoWebUrl", "cid", "diggCount", "replyCommentTotal", "uniqueId"],
         ["uniqueId"], ["text"]),
-    "apidojo/tiktok-comments-scraper": (tiktok_comments_apidojo, [
-        "text", "createdAt", "awemeId", "id", "likeCount", "replyCount", "user.username"],
-        ["user.username"], ["text"]),
+    "scrapeforge/tiktok-comments-extractor": (tiktok_comments_scrapeforge, [
+        "commentId", "videoId", "videoUrl", "commentUrl", "text", "createTimeISO", "diggCount", "replyCount",
+        "user.uniqueId"], ["user.uniqueId"], ["text"]),
     "streamers/youtube-scraper": (youtube_streamers, [
         "title", "text", "date", "url", "id", "likes", "commentsCount", "viewCount", "channelName"],
         ["channelName"], ["title", "text"]),
-    "apidojo/youtube-scraper": (youtube_apidojo, [
-        "title", "description", "uploadDate", "publishDate", "url", "id", "likes", "views", "channel.name"],
-        ["channel.name"], ["title", "description"]),
+    "grow_media/youtube-search-api": (youtube_streamers, [   # same field names as the primary
+        "title", "text", "date", "url", "id", "likes", "commentsCount", "viewCount", "channelName"],
+        ["channelName"], ["title", "text"]),
     "streamers/youtube-comments-scraper": (youtube_comments_streamers, [
         "comment", "publishedTimeText", "pageUrl", "cid", "voteCount", "replyCount", "author"],
         ["author"], ["comment"]),
-    "apidojo/youtube-comments-scraper": (youtube_comments_apidojo, [
-        "text", "publishedTime", "id", "likeCount", "replyCount", "author.name"], ["author.name"], ["text"]),
+    "solidcode/youtube-comments-scraper": (youtube_comments_solidcode, [
+        "commentId", "videoId", "text", "publishedAt", "publishedAtRaw", "likeCount", "replyCount", "recordType",
+        "author"], ["author"], ["text"]),
     "apify/instagram-hashtag-scraper": (instagram_post, [
         "caption", "timestamp", "url", "id", "shortCode", "likesCount", "commentsCount", "ownerUsername", "error"],
         ["ownerUsername"], ["caption"]),
-    "apify/instagram-scraper": (instagram_post, [
-        "caption", "timestamp", "url", "id", "shortCode", "likesCount", "commentsCount", "ownerUsername", "error"],
-        ["ownerUsername"], ["caption"]),
+    "scraping_solutions/instagram-hashtag-scraper-pro-no-cookies": (instagram_post_scrapingsolutions, [
+        "code", "caption.text", "taken_at_date", "link_post", "like_count", "comment_count", "play_count",
+        "user.username"], ["user.username"], ["caption.text"]),
     "apify/instagram-comment-scraper": (instagram_comment, [
         "text", "timestamp", "postUrl", "commentUrl", "id", "likesCount", "repliesCount", "ownerUsername", "error"],
+        ["ownerUsername"], ["text"]),
+    "supreme_coder/instagram-comments-scraper": (instagram_comment_supreme, [
+        "text", "timestamp", "postUrl", "commentUrl", "id", "likesCount", "repliesCount", "ownerUsername"],
         ["ownerUsername"], ["text"]),
     "harvestapi/linkedin-post-search": (linkedin_harvest, [
         "type", "id", "entityId", "content", "postedAt.date", "engagement.likes", "engagement.comments",
@@ -252,6 +332,19 @@ MAPPERS: dict[str, tuple[Mapper, list[str], list[str], list[str]]] = {
     "harvestapi/linkedin-post-comments": (linkedin_comment, [
         "id", "postId", "commentary", "createdAt", "linkedinUrl", "engagement.likes", "engagement.comments",
         "actor.name"], ["actor.name"], ["commentary"]),
+    "datadoping/linkedin-post-comments-scraper": (linkedin_comment_datadoping, [
+        "comment_id", "input", "comment_url", "text", "posted_at.date", "total_reactions", "total_replies",
+        "author.name"], ["author.name"], ["text"]),
+    "xquik/x-tweet-scraper": (x_xquik, [
+        "id", "conversationId", "rootTweetId", "sourceTweetId", "isRetweet", "text", "createdAt", "likeCount",
+        "replyCount", "retweetCount", "quoteCount", "viewCount", "lang", "author.username"],
+        ["author.username"], ["text"]),
+    "scraper_one/x-posts-search": (x_scraperone_post, [
+        "postId", "conversationId", "postText", "timestamp", "favouriteCount", "replyCount", "repostCount",
+        "quoteCount", "author.screenName"], ["author.screenName"], ["postText"]),
+    "scraper_one/x-post-replies-scraper": (x_scraperone_reply, [
+        "replyId", "inReplyTo", "replyText", "timestamp", "favouriteCount", "replyCount", "repostCount",
+        "author.screenName"], ["author.screenName"], ["replyText"]),
 }
 
 

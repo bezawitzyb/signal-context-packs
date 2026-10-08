@@ -14,7 +14,8 @@ Return:
   highest confidence. Each with why (one sentence), why_ids (item ids
   from the pack), effort and impact (low | medium | high), owner_hint.
 - channel_plan: at least 3 channels in priority order: platform (reddit,
-  tiktok, youtube, instagram, web_forum, web_review, web_editorial), why,
+  tiktok, youtube, instagram, linkedin, x, web_forum, web_review,
+  web_editorial), why,
   why_ids, formats, communities_or_hashtags, tone_note. Never a channel
   without evidence: why_ids must name items that justify it. If the
   evidence comes from one platform only, say in why that the others are

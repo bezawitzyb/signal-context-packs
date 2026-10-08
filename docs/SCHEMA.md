@@ -1046,7 +1046,7 @@ supported: enough authors across communities; signal: an early signal - check be
 
 Source family. All forum domains together are ONE platform (web_forum).
 
-`reddit`, `tiktok`, `youtube`, `instagram`, `linkedin`, `web_forum`, `web_review`, `web_editorial`
+`reddit`, `tiktok`, `youtube`, `instagram`, `linkedin`, `x`, `web_forum`, `web_review`, `web_editorial`
 
 ### Enum RelationKind
 

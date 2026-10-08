@@ -1,5 +1,5 @@
 # Source catalogue (guide Step 1.4, Appendix F3).
-# Actors verified live on 2026-10-04 against the public Apify API:
+# Actors verified live on 2026-10-04 (fallbacks, LinkedIn and X on 2026-10-07) against the public Apify API:
 # public, not deprecated, recent build, 30-day run success, price, input
 # fields and output fields. Re-verify before relying on them - actor IDs,
 # inputs and prices change.
@@ -24,6 +24,7 @@ tool_latency:
   search_tiktok: "usually 50-120 s"
   search_instagram: "usually 25-60 s"
   search_linkedin: "usually 5-30 s"
+  search_x: "usually 5-30 s"
   get_trends: "usually 20-60 s"
   coverage_report: "instant"
 
@@ -59,23 +60,25 @@ sources:
         permalink: {comment: url}
         engagement: [score, upVotes, commentUpVotes, commentsCount]
         author: authorName
-    fallback:
-      id: trudax/reddit-scraper-lite
-      memory_mbytes: 2048   # actor default; bills 0.02 per GB at start (0.04)
-      smoke: ok 2026-10-04, BUT no vote/score fields in the output (engagement empty)
-      min_items: 10            # fails 'Invalid input' below 10
-      price_usd: {result: 0.004, actor_start_per_gb: 0.02}
-      success_30d: 0.86
-      limit_inputs: [maxItems, maxPostCount, maxComments]
-      date_inputs: [postDateLimit, commentDateLimit, time]
-      unit_inputs: {query: searches, subreddit: searchCommunityName}
+    fallback:                   # 2026-10-07: replaces trudax/reddit-scraper-lite (0.86 success, 2.7x the price)
+      id: fatihtahta/reddit-scraper-search-fast
+      memory_mbytes: 1024   # actor default
+      smoke: ok 2026-10-07 (12/12 posts + inline comments, text, ISO date, url, comment permalink; 97 s;
+        BUT score and num_comments came back 0 on every item, also on posts with comments)
+      price_usd: {result: 0.00149}   # no start fee
+      success_30d: 0.986
+      limit_inputs: [maxPosts, maxComments]   # per query / per post
+      date_inputs: [timeframe, dateFrom, subredditTimeframe, commentDateFrom]
+      unit_inputs: {query: queries, subreddit: subredditName (+ subredditKeywords)}
+      comments: inline (scrapeComments true, maxComments per post)
+      notes: keep sentiment_analysis, content_analysis, maximize_coverage and mcpConnectors OFF
       fields:
         text: [title, body]
-        date: createdAt
-        url: url
+        date: created_utc       # ISO
+        url: {post: url, comment: postUrl}
         permalink: url
-        engagement: []
-        author: username
+        engagement: []          # score / num_comments always 0 in the smoke test: unknown, never 0
+        author: author
 
   tiktok:
     kind: apify
@@ -107,21 +110,22 @@ sources:
         url: webVideoUrl
         engagement: [diggCount, commentCount, shareCount, playCount]
         author: authorMeta.name
-    fallback:
-      id: apidojo/tiktok-scraper
-      memory_mbytes: 256   # actor default
-      smoke: not run (metadata verified only)
-      price_usd: {dataset_item: 0.0003}
-      success_30d: 0.96
-      limit_inputs: [maxItems]
-      date_inputs: [dateRange]
-      unit_inputs: {query: keywords, hashtag: startUrls}
+    fallback:                   # 2026-10-07: replaces apidojo/tiktok-scraper (Free plan = Demo Mode, 10 items)
+      id: novi/fast-tiktok-api
+      memory_mbytes: 512   # actor default
+      smoke: ok 2026-10-07 (8/8 SEARCH with publishTime MONTH, text, unix date, url, likes; 5 s, 0.004 USD;
+        no trial or subscription gate)
+      price_usd: {result: 0.0004, start: 0.00023}
+      success_30d: 0.992
+      limit_inputs: [limit]     # a SOFT limit: code counts items
+      date_inputs: [publishTime]  # YESTERDAY | WEEK | MONTH | THREE_MONTH | SIX_MONTH (search only)
+      unit_inputs: {query: keyword (type SEARCH), hashtag: keyword '#tag' (type SEARCH so the date filter applies)}
       fields:
-        text: [title]
-        date: uploadedAt
-        url: postPage
-        engagement: [likes, comments, shares, views]
-        author: channel.username
+        text: [aweme_info.desc]
+        date: aweme_info.create_time   # unix seconds
+        url: aweme_info.share_url -> https://www.tiktok.com/@/video/<aweme_id> (no handle)
+        engagement: [statistics.digg_count, statistics.comment_count, statistics.share_count, statistics.play_count]
+        author: aweme_info.author.unique_id
     comments:
       actor:
         id: clockworks/tiktok-comments-scraper
@@ -138,14 +142,22 @@ sources:
           permalink: null       # no comment permalink; cid kept as id
           engagement: [diggCount, replyCommentTotal]
           author: uniqueId
-      fallback:
-        id: apidojo/tiktok-comments-scraper
-        memory_mbytes: 256   # actor default
-        smoke: not run (metadata verified only)
-        price_usd: {dataset_item: 0.0003}
-        success_30d: 1.00
-        limit_inputs: [maxItems]
-        input_from_parent: startUrls
+      fallback:                 # 2026-10-07: replaces apidojo/tiktok-comments-scraper (Free plan = Demo Mode)
+        id: scrapeforge/tiktok-comments-extractor
+        memory_mbytes: 2048   # actor default
+        smoke: ok 2026-10-07 (8/8 text, ISO date, video url, comment permalink with cid, likes; 20 s)
+        price_usd: {result: 0.0005, actor_start: 0.00005}
+        success_30d: 0.994
+        limit_inputs: [commentsPerPost]   # 0 means ALL comments: always pass a cap
+        input_from_parent: postURLs
+        notes: maxRepliesPerComment 0 (replies off)
+        fields:
+          text: [text]
+          date: createTimeISO
+          url: videoUrl
+          permalink: commentUrl
+          engagement: [diggCount, replyCount]
+          author: user.uniqueId
 
   youtube:
     kind: apify
@@ -173,16 +185,23 @@ sources:
         url: url
         engagement: [likes, commentsCount, viewCount]
         author: channelName
-    fallback:
-      id: apidojo/youtube-scraper
-      memory_mbytes: 256   # actor default
-      smoke: not run (metadata verified only)
-      price_usd: {dataset_item: 0.0005}
-      success_30d: 0.82
-      limit_inputs: [maxItems]
-      date_inputs: [uploadDate]
-      unit_inputs: {query: keywords, channel: youtubeHandles}
-      language_country_inputs: gl, hl
+    fallback:                   # 2026-10-07: replaces apidojo/youtube-scraper (0.82 success, Free plan = Demo Mode)
+      id: grow_media/youtube-search-api
+      memory_mbytes: 512   # actor default
+      smoke: ok 2026-10-07 (8/8 text, ISO date, url, likes, comments, views; 6 s)
+      price_usd: {result: 0.001, actor_start: 0.00005}
+      success_30d: 0.9985
+      limit_inputs: [maxResults]
+      date_inputs: [publishedAfter, publishedBefore]   # exact dates (useFilters true)
+      unit_inputs: {query: q}   # search only: channel units have no fallback
+      language_country_inputs: regionCode, relevanceLanguage
+      notes: says it uses the YouTube Data API, so it may depend on the author's quota
+      fields:                   # same names as the primary
+        text: [title, text]
+        date: date
+        url: url
+        engagement: [likes, commentsCount, viewCount]
+        author: channelName
     comments:
       actor:
         id: streamers/youtube-comments-scraper
@@ -201,14 +220,22 @@ sources:
           permalink: pageUrl + "&lc=" + cid
           engagement: [voteCount, replyCount]
           author: author
-      fallback:
-        id: apidojo/youtube-comments-scraper
-        memory_mbytes: 256   # actor default
-        smoke: not run (metadata verified only)
-        price_usd: {dataset_item: 0.0005, query: 0.001}
-        success_30d: 1.00
-        limit_inputs: [maxItems]
+      fallback:                 # 2026-10-07: replaces apidojo/youtube-comments-scraper (Free plan = Demo Mode)
+        id: solidcode/youtube-comments-scraper
+        memory_mbytes: 1024   # actor default
+        smoke: ok 2026-10-07 (8/8 text, ISO date, video id, likes, replies; 7 s)
+        price_usd: {result: 0.00035, actor_start: 0.00005}
+        success_30d: 0.992
+        limit_inputs: [maxResults]   # per video
         input_from_parent: startUrls
+        notes: includeReplies false; ISO publishedAt is worked out from the relative label (English runs)
+        fields:
+          text: [text]
+          date: publishedAt
+          url: watch?v=<videoId>
+          permalink: watch?v=<videoId>&lc=<commentId>
+          engagement: [likeCount, replyCount]
+          author: author
 
   google_trends:
     kind: apify
@@ -223,30 +250,28 @@ sources:
       bills_per: term           # one item per search term, whole series inside
       smoke: ok 2026-10-04 at 4096 MB (31 points, 38 s, 0.009 USD); the earlier
         timeout ran at 1024 MB
-      price_usd: {dataset_item: 0.003}
-      success_30d: 0.60         # 23% of runs time out; short timeout, keep partial items
+      price_usd: {dataset_item: 0.003}   # PLUS the 4 GB compute, paid by us (~0.009 per term in the smoke)
+      success_30d: 0.576        # 2026-10-07: 23% of runs time out; short timeout, then the fallback
       limit_inputs: [maxItems]
       date_inputs: [timeRange]
       unit_inputs: {query: searchTerms}
       fields:
         series: interestOverTime_timelineData
         averages: interestOverTime_averages
-    fallback:
-      id: khadinakbar/google-trends-scraper
-      memory_mbytes: 1024   # actor default
-      bills_per: point          # one item per data point
-      smoke: ok 2026-10-04 (geo NL honoured; 5/5 date + value)
-      price_usd: {result_item: 0.005, actor_start: 0.00005}
-      success_30d: 0.91
-      limit_inputs: [maxResults]  # ALWAYS set: default 500 items = USD 2.50
-      cost_note: bills per data point - 30 points = 0.18 USD (2026-10-04); ~20x the primary
-      date_inputs: [timeframe]
-      unit_inputs: {query: keywords}
-      required_inputs: {dataTypes: [interest_over_time]}
+    fallback:                   # 2026-10-07: replaces khadinakbar (per data point, ~0.26 USD a term)
+      id: scrapesage/google-trends-scraper
+      memory_mbytes: 512   # actor default; reads Google's data API, no browser
+      bills_per: term           # one item per keyword, whole series inside
+      smoke: ok 2026-10-07 (2/2 keywords, geo NL honoured, 93 points each, 8 s, under 0.01 USD)
+      price_usd: {result: 0.004}   # "keywordResult"; compute included, no start fee
+      success_30d: 1.00         # 1,960 runs; few users (71) and no reviews yet
+      limit_inputs: [maxItems]
+      date_inputs: [timeRange]
+      unit_inputs: {query: searchTerms}
+      required_inputs: {mode: keywords, dataTypes: [interestOverTime]}   # fewer data types = cheaper
       fields:
-        date: date              # e.g. "Jul 4, 2026"
-        value: value
-        partial: is_partial
+        series: interestOverTime[].value
+        keyword: keyword
 
   instagram:
     kind: apify
@@ -272,15 +297,23 @@ sources:
         url: url
         engagement: [likesCount, commentsCount]
         author: ownerUsername
-    fallback:
-      id: apify/instagram-scraper
+    fallback:                   # 2026-10-07: replaces apify/instagram-scraper (never smoke-tested, 2x the price)
+      id: scraping_solutions/instagram-hashtag-scraper-pro-no-cookies
       memory_mbytes: 1024   # actor default
-      smoke: not run (metadata verified only)
-      price_usd: {result: 0.0027}
-      success_30d: 1.00
-      limit_inputs: [resultsLimit, searchLimit]
-      date_inputs: [onlyPostsNewerThan]
-      unit_inputs: {hashtag: search, query: search}
+      smoke: ok 2026-10-07 (8/8 feed_type top, caption, ISO date, post url, likes, comment counts > 0; 14 s)
+      price_usd: {result: 0.00125}
+      success_30d: 0.997
+      limit_inputs: [resultsLimit]   # per hashtag
+      date_inputs: []           # top posts can be old: cleaning drops them
+      unit_inputs: {hashtag: hashtags, query: hashtags (spaces removed)}
+      notes: feed_type top returns posts that HAVE comments (the primary's newest posts often have none);
+        Free plan - one hashtag per run, up to 5 runs a day
+      fields:                   # flat keys with dots in their names
+        text: ["caption.text"]
+        date: taken_at_date
+        url: link_post
+        engagement: [like_count, comment_count, play_count]
+        author: "user.username"
     comments:
       actor:
         id: apify/instagram-comment-scraper
@@ -297,7 +330,23 @@ sources:
           permalink: commentUrl
           engagement: [likesCount, repliesCount]
           author: ownerUsername
-      fallback: null            # none verified; on failure keep posts, skip comments
+      fallback:                 # 2026-10-07: no-login backup (the slot was empty)
+        id: supreme_coder/instagram-comments-scraper
+        memory_mbytes: 512   # actor default
+        smoke: ok 2026-10-07 (4/4 on 2 photo posts, text, ISO date, comment permalink, likes; 146 s - slow;
+          0 comments on a Reel)
+        price_usd: {result: 0.001, actor_start: 0.0005}
+        success_30d: 0.998
+        limit_inputs: [limitPerSource]   # per post
+        input_from_parent: urls
+        notes: scrapeReplies defaults to TRUE - always pass false; a post without comments gives a placeholder row
+        fields:
+          text: [text]
+          date: timestamp
+          url: postUrl
+          permalink: commentUrl
+          engagement: [likesCount, repliesCount]
+          author: ownerUsername
 
   linkedin:                     # change V6 (PRD DH1): visible to any logged-in user; never private
     kind: apify
@@ -362,7 +411,104 @@ sources:
           permalink: linkedinUrl  # feed/update/...?commentUrn=... (no name)
           engagement: [engagement.likes, engagement.comments]
           author: actor.name
-      fallback: null              # none verified; on failure keep posts, skip comments
+      fallback:                   # 2026-10-07: no-login backup from another vendor (the slot was empty)
+        id: datadoping/linkedin-post-comments-scraper
+        needs_session: false
+        memory_mbytes: 128        # actor default
+        smoke: ok 2026-10-07 (10/10 text, date, comment link without names, reactions; 4 s)
+        min_items: 10             # 'Minimum is 10 comments' per post
+        price_usd: {result: 0.00155}
+        success_30d: 0.999
+        limit_inputs: [max_comments]   # per post
+        input_from_parent: posts
+        notes: no date filter (cleaning keeps the window); author.profile_url names the person - never read it
+        fields:
+          text: [text]
+          date: posted_at.date
+          url: input (the post we asked for)
+          permalink: comment_url  # feed/update/urn:li:ugcPost:...?commentUrn=... (no name)
+          engagement: [total_reactions, total_replies]
+          author: author.name
+
+  x:                            # X (Twitter), added 2026-10-07: public posts, keyword search only
+    kind: apify
+    platform: x
+    tool: search_x
+    unit_types: [query, hashtag]  # keywords or '#tag' - never a person, profile, list or community
+    audience: >-
+      Real-time reactions, news, tech, politics, sport and fandoms; strong
+      for complaints aimed at brands and for professional chatter. Posts are
+      short; replies (chained) carry the argument. Many posts are bots,
+      giveaways or link spam - the relevance step removes them.
+    language_country_inputs: lang (2-letter code on the primary)
+    verified_on: "2026-10-07"
+    actor:
+      id: xquik/x-tweet-scraper
+      needs_session: false        # no X login, API key or cookies of ours
+      memory_mbytes: 512
+      smoke: ok 2026-10-07 (8/8 search with since + lang, text, date, url, likes, replies, views; 6 s;
+        replies mode 6/6, 3 s; about 0.0014 USD per 8 posts)
+      price_usd: {result: 0.00015}   # plus a little compute paid by us (counted by the settled run cost)
+      success_30d: 0.999
+      limit_inputs: [maxItems]
+      date_inputs: [since, until]   # YYYY-MM-DD
+      unit_inputs: {query: searchTerms, hashtag: searchTerms ('#tag')}
+      notes: queryType Top; native retweets are excluded by default
+      fields:
+        text: [text]
+        date: createdAt          # "Wed Oct 07 16:01:05 +0000 2026"
+        url: id -> https://x.com/i/status/<id> (the actor's own url names the author)
+        engagement: [likeCount, replyCount, retweetCount, quoteCount, viewCount]
+        author: author.username
+    fallback:
+      id: scraper_one/x-posts-search
+      needs_session: false
+      memory_mbytes: 512
+      smoke: ok 2026-10-07 (8/8 latest + timeWindow 30, text, unix ms date, url, likes, replies; 8 s)
+      price_usd: {result: 0.00025, init: 0.0025}
+      success_30d: 0.976
+      limit_inputs: [resultsCount]  # Free plan: at most 100 posts per query
+      date_inputs: [timeWindow]     # days; works with searchType latest only
+      unit_inputs: {query: query, hashtag: query ('#tag')}
+      fields:
+        text: [postText]
+        date: timestamp
+        url: postId -> https://x.com/i/status/<id>
+        engagement: [favouriteCount, replyCount, repostCount, quoteCount]
+        author: author.screenName
+    comments:                   # replies to the posts that have some
+      actor:
+        id: xquik/x-tweet-scraper   # same actor, mode replies
+        needs_session: false
+        memory_mbytes: 512
+        smoke: ok 2026-10-07 (6/6 direct replies, text, date, url, likes; 3 s)
+        price_usd: {result: 0.00015}
+        success_30d: 0.999
+        limit_inputs: [maxItemsPerTarget, maxItems]
+        input_from_parent: replyTweetIds
+        fields:
+          text: [text]
+          date: createdAt
+          url: rootTweetId -> https://x.com/i/status/<id>
+          permalink: id -> https://x.com/i/status/<id>
+          engagement: [likeCount, replyCount, retweetCount]
+          author: author.username
+      fallback:
+        id: scraper_one/x-post-replies-scraper
+        needs_session: false
+        memory_mbytes: 512
+        smoke: ok 2026-10-07 (6/6 text, unix ms date, reply url, likes; 16 s)
+        price_usd: {result: 0.00025, init: 0.0025}
+        success_30d: 0.999
+        limit_inputs: [resultsLimit]   # per post; Free plan: 5 posts per run, 100 replies per post
+        input_from_parent: postUrls
+        fields:
+          text: [replyText]
+          date: timestamp
+          url: inReplyTo -> https://x.com/i/status/<id>
+          permalink: replyId -> https://x.com/i/status/<id>
+          engagement: [favouriteCount, replyCount, repostCount]
+          author: author.screenName
 
   web_forums:
     kind: web
@@ -427,3 +573,19 @@ rejected:
   data_xplorer/google-trends-fast-scraper: smoke 2026-10-04 ignored keyword and geo; returns the US trending-now list
   agenscrape/google-trends-scraper: 0.025 per item
   (LinkedIn, 2026-10-07) actors that need our cookies or a session: not used (needs_session; PRD DH1)
+  # 2026-10-07 actor review (reports/Apify actor comparison.md) - replaced as fallbacks:
+  trudax/reddit-scraper-lite: 0.863 success, 2.7x the price of fatihtahta, no vote fields
+  apidojo/tiktok-scraper: Free plan = Demo Mode (5 runs a month, 10 items each)
+  apidojo/tiktok-comments-scraper: Free plan = Demo Mode
+  apidojo/youtube-scraper: Free plan = Demo Mode; 0.821 success
+  apidojo/youtube-comments-scraper: Free plan = Demo Mode
+  apify/instagram-scraper: never smoke-tested; 2x the price of scraping_solutions, no top-posts feed
+  khadinakbar/google-trends-scraper: bills per data point (~0.26 USD a 12-month term) plus compute
+  (fatihtahta/reddit-scraper-search-fast): rejected 2026-10-04, now the Reddit fallback
+  # X (2026-10-07):
+  apidojo/tweet-scraper: Free plan = Demo Mode
+  apidojo/twitter-scraper-lite: Free plan = Demo Mode
+  kaitoeasyapi/twitter-x-data-tweet-scraper-pay-per-result-cheapest: free users capped (amount not stated)
+  danek/twitter-scraper: Free plan = 20 results per run
+  api-ninja/x-twitter-advanced-search: 0.015 per result on the Free plan, 0.10 minimum per run
+  altimis/scweet: needs X cookies (needs_session)

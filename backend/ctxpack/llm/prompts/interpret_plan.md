@@ -81,7 +81,8 @@ Otherwise give the plan:
 - starting_units: 3-6 places to start. Each is a platform plus ONE unit:
   reddit (subreddit or query), tiktok (hashtag or query), youtube
   (channel or query), instagram (hashtag or query), linkedin (query
-  only - keywords, never a person, profile or group), web (domain or
+  only - keywords, never a person, profile or group), x (query or
+  hashtag - never a person, @handle or profile), web (domain or
   query: forums, Q&A, review sites; articles are context only).
   Targets: "r/name" for subreddits, "#tag" for hashtags, a bare domain
   for sites (forum.example.com), plain words for queries. Pick only

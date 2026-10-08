@@ -137,7 +137,7 @@ def catalog() -> None:
 
 @app.command()
 def tool(
-    name: str = typer.Argument(..., help="search_reddit, search_tiktok, search_youtube, search_instagram, search_linkedin, "
+    name: str = typer.Argument(..., help="search_reddit, search_tiktok, search_youtube, search_instagram, search_linkedin, search_x, "
                                          "web_search, fetch_and_segment or get_trends"),
     targets: list[str] = typer.Argument(..., help="Target(s): r/name, #tag, query, URL(s) or trend terms"),
     topic: str = typer.Option("", help="Brief topic for the relevance check (default: the target)"),
@@ -169,7 +169,7 @@ def tool(
                        brief=BriefContext(topic=topic or " ".join(targets), market=market, languages=[language]),
                        store=lambda docs, replaced: stored.extend(docs))
     args: dict = {"reason": "manual CLI test"}
-    if name in ("search_reddit", "search_tiktok"):
+    if name in ("search_reddit", "search_tiktok", "search_x"):
         args |= {"target": targets[0], "limit": limit}
     elif name in ("search_youtube", "search_linkedin"):
         args |= {"query": targets[0], "limit": limit}

@@ -406,7 +406,8 @@ async def test_reddit_query_searches_inside_the_subreddit(offline, monkeypatch):
     main, backup = inputs                                          # nothing came back: backup tried too
     assert main[1]["searchTerms"] == ["Wärmepumpe Erfahrungen"] and main[1]["withinCommunity"] == "de"
     assert "subredditUrls" not in main[1]
-    assert backup[1]["searches"] == ["Wärmepumpe Erfahrungen"] and backup[1]["searchCommunityName"] == "de"
+    assert backup[1]["subredditName"] == "de" and backup[1]["subredditKeywords"] == ["Wärmepumpe Erfahrungen"]
+    assert "queries" not in backup[1]                              # inside r/de, never Reddit-wide
     # browsing the same subreddit is a different call, not a duplicate
     assert (await tools.search_reddit(ctx, "r/de", 20, "browse"))["status"] != "duplicate_call"
     assert "subredditUrls" in inputs[2][1]

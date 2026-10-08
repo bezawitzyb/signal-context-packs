@@ -19,6 +19,7 @@ class Platform(StrEnum):
     youtube = "youtube"
     instagram = "instagram"
     linkedin = "linkedin"
+    x = "x"
     web_forum = "web_forum"
     web_review = "web_review"
     web_editorial = "web_editorial"
@@ -32,6 +33,7 @@ class CollectionPlatform(StrEnum):
     youtube = "youtube"
     instagram = "instagram"
     linkedin = "linkedin"
+    x = "x"
     web = "web"
 
 

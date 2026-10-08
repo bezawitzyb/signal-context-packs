@@ -200,10 +200,18 @@ def scrub_url(url: str | None) -> str | None:
     # TODO(step 1.6): confirm on a real item that tiktok.com/@/video/<id> still opens the video.
     if (m := _LINKEDIN_POST.search(url)):  # /posts/<first-last>_..-<activity id>-xxxx names the author
         return linkedin_url(m.group(1))
+    if (m := _X_STATUS.search(url)):  # x.com/<handle>/status/<id> names the author
+        return x_url(m.group(1))
     return _TIKTOK_HANDLE_IN_URL.sub(r"\1@/", url)
 
 
 _LINKEDIN_POST = re.compile(r"linkedin\.com/posts/[^?#\s]*?(\d{16,22})")
+_X_STATUS = re.compile(r"(?:twitter|x)\.com/(?:[^/?#\s]+|i/web)/status(?:es)?/(\d{5,25})", re.I)
+
+
+def x_url(post_id: str) -> str:
+    """An X post link without the author's handle in it (X opens /i/status/<id>)."""
+    return f"https://x.com/i/status/{post_id}"
 
 
 def linkedin_url(activity_id: str) -> str:

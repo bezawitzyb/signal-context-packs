@@ -1,0 +1,56 @@
+[
+ {
+  "keyword": "meal prep",
+  "geo": "NL",
+  "timeRange": "today 3-m",
+  "interestOverTime": [
+   {
+    "date": "Jul 7, 2026",
+    "value": 42
+   },
+   {
+    "date": "Jul 8, 2026",
+    "value": 50
+   },
+   {
+    "date": "Jul 9, 2026",
+    "value": 32
+   },
+   {
+    "date": "Jul 10, 2026",
+    "value": 27
+   },
+   {
+    "date": "Jul 11, 2026",
+    "value": 44
+   }
+  ]
+ },
+ {
+  "keyword": "hellofresh",
+  "geo": "NL",
+  "timeRange": "today 3-m",
+  "interestOverTime": [
+   {
+    "date": "Jul 7, 2026",
+    "value": 29
+   },
+   {
+    "date": "Jul 8, 2026",
+    "value": 38
+   },
+   {
+    "date": "Jul 9, 2026",
+    "value": 31
+   },
+   {
+    "date": "Jul 10, 2026",
+    "value": 33
+   },
+   {
+    "date": "Jul 11, 2026",
+    "value": 34
+   }
+  ]
+ }
+]

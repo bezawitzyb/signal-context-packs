@@ -65,6 +65,10 @@ def starting_call(unit: StartingSourceUnit, interp: Interpretation) -> tuple[str
     if platform == "linkedin":
         args = {"query": unit.queries[0].query if unit.queries else unit.target, "reason": reason}
         return "search_linkedin", args, tools.unit_for("search_linkedin", args)
+    if platform == "x":
+        args = {"target": unit.queries[0].query if unit.queries and unit.kind.value == "query" else unit.target,
+                "reason": reason}
+        return "search_x", args, tools.unit_for("search_x", args)
     if platform == "web":
         country = primary_country([m.model_dump() for m in interp.markets])  # V2: first country of the top market
         language = (unit.queries[0].language if unit.queries else interp.languages[0])
@@ -174,6 +178,8 @@ def _follow_up_call(unit: str, query: str, interp: Interpretation) -> tuple[str,
         return "search_instagram", {"hashtag": query.replace(" ", ""), "reason": reason}
     if family == "linkedin":
         return "search_linkedin", {"query": query, "reason": reason}
+    if family == "x":
+        return "search_x", {"target": query, "reason": reason}
     if family == "web":
         country = primary_country([m.model_dump() for m in interp.markets])  # V2: first country of the top market
         return "web_search", {"query": f"site:{rest} {query}", "country": country,
