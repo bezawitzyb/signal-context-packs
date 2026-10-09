@@ -32,6 +32,356 @@
       "title": "BlindSpot",
       "type": "object"
     },
+    "BrandFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Stable brand-perception finding id (BRP-NN).",
+          "examples": [
+            "BRP-01"
+          ],
+          "pattern": "^BRP-\\d{2,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "claim": {
+          "description": "One sentence a person could say out loud.",
+          "examples": [
+            "Students want to eat healthy but refuse to give up Sunday."
+          ],
+          "minLength": 1,
+          "title": "Claim",
+          "type": "string"
+        },
+        "summary_for_humans": {
+          "default": "",
+          "description": "A short plain-English explanation.",
+          "title": "Summary For Humans",
+          "type": "string"
+        },
+        "cluster_id": {
+          "anyOf": [
+            {
+              "pattern": "^CL-\\d{2,}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The verified cluster this claim summarises.",
+          "examples": [
+            "CL-07"
+          ],
+          "title": "Cluster Id"
+        },
+        "counts": {
+          "$ref": "#/$defs/Counts",
+          "description": "Verified members of total relevant posts."
+        },
+        "confidence": {
+          "$ref": "#/$defs/Confidence",
+          "description": "Score and label (PRD 5.4)."
+        },
+        "claim_type": {
+          "$ref": "#/$defs/ClaimType",
+          "description": "observed, inferred or external."
+        },
+        "safe_to_assert": {
+          "description": "True ONLY if strong AND observed AND verified.",
+          "title": "Safe To Assert",
+          "type": "boolean"
+        },
+        "non_obvious": {
+          "description": "True if not covered by the generic AI answer.",
+          "title": "Non Obvious",
+          "type": "boolean"
+        },
+        "strength": {
+          "$ref": "#/$defs/Strength",
+          "description": "Evidence strength, computed in code."
+        },
+        "emotion": {
+          "description": "Emotions expressed, where relevant.",
+          "items": {
+            "$ref": "#/$defs/Emotion"
+          },
+          "title": "Emotion",
+          "type": "array"
+        },
+        "trend": {
+          "$ref": "#/$defs/Trend",
+          "default": "insufficient_data",
+          "description": "Momentum over the time window."
+        },
+        "recency": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}(-\\d{2})?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Median date of dated evidence (YYYY-MM).",
+          "examples": [
+            "2026-08"
+          ],
+          "title": "Recency"
+        },
+        "evidence_ids": {
+          "description": "Receipts: up to 5 evidence ids from the cluster.",
+          "examples": [
+            [
+              "EV-0112",
+              "EV-0187"
+            ]
+          ],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "quotes": {
+          "description": "Verbatim quotes from the cited evidence.",
+          "items": {
+            "$ref": "#/$defs/Quote"
+          },
+          "title": "Quotes",
+          "type": "array"
+        },
+        "segment_ids": {
+          "description": "Segments this applies to.",
+          "examples": [
+            [
+              "SEG-01"
+            ]
+          ],
+          "items": {
+            "type": "string"
+          },
+          "title": "Segment Ids",
+          "type": "array"
+        },
+        "related_ids": {
+          "description": "Related item ids.",
+          "examples": [
+            [
+              "HOOK-04",
+              "LEX-09"
+            ]
+          ],
+          "items": {
+            "type": "string"
+          },
+          "title": "Related Ids",
+          "type": "array"
+        },
+        "relations": {
+          "description": "Typed links to items in other sections (1.1, V4), from shared evidence.",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
+          "type": "array"
+        },
+        "type": {
+          "const": "brand_finding",
+          "default": "brand_finding",
+          "description": "Item type, always \"brand_finding\".",
+          "title": "Type",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/BrandFindingKind",
+          "description": "perception, praise, criticism, differentiation or awareness."
+        },
+        "brand": {
+          "description": "The brand it is about.",
+          "title": "Brand",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "claim",
+        "counts",
+        "confidence",
+        "claim_type",
+        "safe_to_assert",
+        "non_obvious",
+        "strength",
+        "evidence_ids",
+        "kind",
+        "brand"
+      ],
+      "title": "BrandFinding",
+      "type": "object"
+    },
+    "BrandFindingKind": {
+      "description": "What a brand-perception finding is about (change V12).",
+      "enum": [
+        "perception",
+        "praise",
+        "criticism",
+        "differentiation",
+        "awareness"
+      ],
+      "title": "BrandFindingKind",
+      "type": "string"
+    },
+    "BrandPerception": {
+      "additionalProperties": false,
+      "description": "How people see the user's brand (V12, schema 1.3; only for the brand_perception goal). Online mentions\nfrom vocal people, not a survey.",
+      "properties": {
+        "brands": {
+          "description": "The user's brand first, then its parent.",
+          "items": {
+            "$ref": "#/$defs/BrandStats"
+          },
+          "title": "Brands",
+          "type": "array"
+        },
+        "findings": {
+          "description": "2-5 verified findings (BRP-xx).",
+          "items": {
+            "$ref": "#/$defs/BrandFinding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "note": {
+          "default": "",
+          "description": "Plain words: what the numbers can and cannot tell, or why there are no findings (too few mentions).",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "title": "BrandPerception",
+      "type": "object"
+    },
+    "BrandRelation": {
+      "description": "How a post treats the user's brand next to its parent brand (change V12).",
+      "enum": [
+        "same_as_parent",
+        "part_of_parent",
+        "distinct",
+        "unclear"
+      ],
+      "title": "BrandRelation",
+      "type": "string"
+    },
+    "BrandStats": {
+      "additionalProperties": false,
+      "description": "Numbers for one brand, all computed in code from extracted mentions (V12).",
+      "properties": {
+        "name": {
+          "description": "The brand as the user named it.",
+          "title": "Name",
+          "type": "string"
+        },
+        "is_parent": {
+          "default": false,
+          "description": "True for the parent brand.",
+          "title": "Is Parent",
+          "type": "boolean"
+        },
+        "mentions": {
+          "description": "Relevant posts naming it.",
+          "minimum": 0,
+          "title": "Mentions",
+          "type": "integer"
+        },
+        "unprompted": {
+          "description": "Of those, posts found by a search that did not name it: people bringing it up unasked (the awareness signal).",
+          "minimum": 0,
+          "title": "Unprompted",
+          "type": "integer"
+        },
+        "share_of_voice": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Of unprompted posts naming any brand, the share naming this one; null when there are none.",
+          "title": "Share Of Voice"
+        },
+        "distinct_authors": {
+          "description": "Distinct author hashes among its posts.",
+          "minimum": 0,
+          "title": "Distinct Authors",
+          "type": "integer"
+        },
+        "platforms": {
+          "description": "Where its posts come from.",
+          "items": {
+            "$ref": "#/$defs/Platform"
+          },
+          "title": "Platforms",
+          "type": "array"
+        },
+        "stance_mix": {
+          "description": "How people feel about it.",
+          "items": {
+            "$ref": "#/$defs/StanceShare"
+          },
+          "title": "Stance Mix",
+          "type": "array"
+        },
+        "relation_mix": {
+          "description": "For the user's brand: how posts that also name the parent treat the two.",
+          "items": {
+            "$ref": "#/$defs/RelationShare"
+          },
+          "title": "Relation Mix",
+          "type": "array"
+        },
+        "with_parent": {
+          "default": 0,
+          "description": "Posts naming both this brand and the parent.",
+          "minimum": 0,
+          "title": "With Parent",
+          "type": "integer"
+        },
+        "aspects_praised": {
+          "description": "What gets praised, most mentioned first.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Aspects Praised",
+          "type": "array"
+        },
+        "aspects_criticised": {
+          "description": "What gets criticised.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Aspects Criticised",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "mentions",
+        "unprompted",
+        "distinct_authors"
+      ],
+      "title": "BrandStats",
+      "type": "object"
+    },
     "Brief": {
       "additionalProperties": false,
       "properties": {
@@ -290,12 +640,11 @@
           "description": "Which intake field the answer fills."
         },
         "options": {
-          "description": "3-5 answer chips written for THIS brief (the goal and offer chips are set in code).",
+          "description": "3-5 answer chips written for THIS brief (the goal and offer chips are set in code; the brand question has none).",
           "items": {
             "type": "string"
           },
           "maxItems": 8,
-          "minItems": 3,
           "title": "Options",
           "type": "array"
         },
@@ -326,8 +675,7 @@
         }
       },
       "required": [
-        "question",
-        "options"
+        "question"
       ],
       "title": "ClarifyingQuestion",
       "type": "object"
@@ -478,7 +826,7 @@
         },
         "item_id": {
           "description": "The hook or claim flagged.",
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|PST|DRF|CAL|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|BRP|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|PST|DRF|CAL|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -1212,6 +1560,18 @@
           ],
           "title": "Success Measure",
           "type": "string"
+        },
+        "goal": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Goal"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The goal this action serves (V12)."
         }
       },
       "required": [
@@ -1676,6 +2036,69 @@
       "title": "Goal",
       "type": "string"
     },
+    "GoalBlock": {
+      "additionalProperties": false,
+      "description": "What the pack means for one of the user's goals (V12, schema 1.3): shown first on the page, main goal first.",
+      "properties": {
+        "goal": {
+          "$ref": "#/$defs/Goal",
+          "description": "The goal (config/goals.yaml)."
+        },
+        "headline": {
+          "description": "What the evidence means for this goal, in one sentence.",
+          "title": "Headline",
+          "type": "string"
+        },
+        "first_moves": {
+          "description": "The do-first actions (DO ids) that serve it.",
+          "items": {
+            "type": "string"
+          },
+          "title": "First Moves",
+          "type": "array"
+        },
+        "success_measure": {
+          "default": "",
+          "description": "How you will know it worked.",
+          "title": "Success Measure",
+          "type": "string"
+        },
+        "item_ids": {
+          "description": "The pack items it rests on.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Item Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "goal",
+        "headline"
+      ],
+      "title": "GoalBlock",
+      "type": "object"
+    },
+    "GoalLeftOut": {
+      "additionalProperties": false,
+      "properties": {
+        "goal": {
+          "$ref": "#/$defs/Goal",
+          "description": "The goal left out."
+        },
+        "reason": {
+          "description": "Why, in plain words.",
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "goal",
+        "reason"
+      ],
+      "title": "GoalLeftOut",
+      "type": "object"
+    },
     "Guardrails": {
       "additionalProperties": false,
       "description": "Never trimmed from any view.",
@@ -1922,6 +2345,42 @@
           "description": "The decision or question the research must help with, in the user's words.",
           "title": "Key Question"
         },
+        "brand": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The user's brand as people write it (V12; required with the brand_perception goal). Aliases separated by commas.",
+          "title": "Brand"
+        },
+        "parent_brand": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The parent brand, if any (V12).",
+          "title": "Parent Brand"
+        },
+        "goals_left_out": {
+          "description": "Goals beyond the cap, with the reason (V12; filled in code).",
+          "items": {
+            "$ref": "#/$defs/GoalLeftOut"
+          },
+          "title": "Goals Left Out",
+          "type": "array"
+        },
         "channels_in_use": {
           "description": "Channels the user already uses.",
           "items": {
@@ -1982,6 +2441,7 @@
         "competitors",
         "timeframe",
         "key_question",
+        "brand",
         "other"
       ],
       "title": "IntakeFill",
@@ -3961,7 +4421,7 @@
           "examples": [
             "OPP-01"
           ],
-          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|PST|DRF|CAL|HYP|CMP|RSK|BLS)-\\d{2,}$",
+          "pattern": "^(THM|PLT|NEW|LEX|PHR|SEG|TEN|MOT|PAIN|OBJ|BRD|BRP|CUL|PERF|TKW|MOM|NWS|OPP|DO|CHN|HOOK|PLN|PST|DRF|CAL|HYP|CMP|RSK|BLS)-\\d{2,}$",
           "title": "Item Id",
           "type": "string"
         },
@@ -4626,6 +5086,28 @@
       "title": "RelationKind",
       "type": "string"
     },
+    "RelationShare": {
+      "additionalProperties": false,
+      "properties": {
+        "relation": {
+          "$ref": "#/$defs/BrandRelation",
+          "description": "same_as_parent, part_of_parent, distinct or unclear."
+        },
+        "share": {
+          "description": "Share of the brand's posts that also name the parent (code).",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Share",
+          "type": "number"
+        }
+      },
+      "required": [
+        "relation",
+        "share"
+      ],
+      "title": "RelationShare",
+      "type": "object"
+    },
     "Risk": {
       "additionalProperties": false,
       "properties": {
@@ -4975,6 +5457,14 @@
         "generic_vs_found": {
           "$ref": "#/$defs/GenericVsFound",
           "description": "Generic answer next to what we found."
+        },
+        "for_goals": {
+          "description": "One block per confirmed goal, main first (V12, schema 1.3).",
+          "items": {
+            "$ref": "#/$defs/GoalBlock"
+          },
+          "title": "For Goals",
+          "type": "array"
         }
       },
       "required": [
@@ -5049,6 +5539,39 @@
         "relevant_share"
       ],
       "title": "SourceUsed",
+      "type": "object"
+    },
+    "Stance": {
+      "description": "A document's stance toward the topic or a brand (extraction, F4-6; PRD 5.5 uses it).",
+      "enum": [
+        "positive",
+        "negative",
+        "mixed",
+        "neutral"
+      ],
+      "title": "Stance",
+      "type": "string"
+    },
+    "StanceShare": {
+      "additionalProperties": false,
+      "properties": {
+        "stance": {
+          "$ref": "#/$defs/Stance",
+          "description": "positive, negative, mixed or neutral."
+        },
+        "share": {
+          "description": "Share of the brand's posts with this stance (code).",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Share",
+          "type": "number"
+        }
+      },
+      "required": [
+        "stance",
+        "share"
+      ],
+      "title": "StanceShare",
       "type": "object"
     },
     "Strength": {
@@ -5827,6 +6350,10 @@
         "key_question": {
           "$ref": "#/$defs/UnderstoodInput",
           "description": "The decision or question the research must help with, and by when."
+        },
+        "brand": {
+          "$ref": "#/$defs/UnderstoodInput",
+          "description": "The user's own brand name, as people write it (V12; only matters for the brand_perception goal)."
         }
       },
       "title": "Understanding",
@@ -6095,12 +6622,12 @@
     }
   },
   "additionalProperties": false,
-  "description": "Context Pack 1.2 - the canonical object (context_pack.json). Older packs are migrated when read.",
+  "description": "Context Pack 1.3 - the canonical object (context_pack.json). Older packs are migrated when read.",
   "properties": {
     "schema_version": {
-      "const": "1.2",
-      "default": "1.2",
-      "description": "Always 1.2 (1.0 and 1.1 packs are migrated).",
+      "const": "1.3",
+      "default": "1.3",
+      "description": "Always 1.3 (older packs are migrated).",
       "title": "Schema Version",
       "type": "string"
     },
@@ -6129,6 +6656,14 @@
     "brief": {
       "$ref": "#/$defs/Brief",
       "description": "The brief as submitted and as understood."
+    },
+    "section_order": {
+      "description": "Pack sections in the order the user's goals need them (V12; ids from config/goals.yaml default_order).",
+      "items": {
+        "type": "string"
+      },
+      "title": "Section Order",
+      "type": "array"
     },
     "digest": {
       "description": "<= 500-token view, generated last from verified content.",
@@ -6205,6 +6740,18 @@
       },
       "title": "Competitors",
       "type": "array"
+    },
+    "brand_perception": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BrandPerception"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "How people see the user's brand (V12; only with the brand_perception goal)."
     },
     "culture": {
       "$ref": "#/$defs/Culture",
@@ -6378,7 +6925,7 @@
     "instructions_for_agents",
     "coverage"
   ],
-  "title": "Context Pack 1.2",
+  "title": "Context Pack 1.3",
   "type": "object",
   "$schema": "https://json-schema.org/draft/2020-12/schema"
 }

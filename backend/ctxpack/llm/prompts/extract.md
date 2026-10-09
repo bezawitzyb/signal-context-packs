@@ -23,7 +23,14 @@ For EVERY item, by its id, return:
   item itself does not answer; null if none.
 - brand_mentions: each brand, shop or product named, with the person's
   stance toward it (positive | negative | mixed | neutral). Use the name
-  as written. Empty if none.
+  as written. Empty if none. Only when the brief names the user's own
+  brand, and only for that brand or its parent brand, also give aspect
+  (what about it the item talks about, 1-3 English words: price,
+  service, app, quality, ...) and, for the user's own brand when the
+  item also names or asks about the parent brand, relation:
+  same_as_parent (treats them as one), part_of_parent (knows it belongs
+  to the parent), distinct (treats it as separate) or unclear. Leave
+  aspect and relation null for every other brand.
 - verbatim_phrases: 1-6 short phrases (2-12 words) copied EXACTLY from
   the item's text, in its original language, character for character:
   the most vivid, typical or slangy ways they say things. Never translate,

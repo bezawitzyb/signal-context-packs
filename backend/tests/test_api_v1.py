@@ -211,12 +211,18 @@ async def test_a_goal_given_upfront_still_asks_the_offer_and_keeps_the_goal(api)
 
 async def test_editing_goals_offer_key_question_and_topic_replans(api):
     run = await service.create_run("Gen Z and meal prep", intake=TOLD)
+    with pytest.raises(ValueError, match="needs your brand name"):         # V12: brand perception needs the brand
+        await service.replan(run["run_id"], {"goals": ["brand_perception", "positioning"]})
     edited = await service.replan(run["run_id"], {"goals": ["brand_perception", "positioning"], "offer": "meal kits",
                                                   "offer_stage": "selling", "key_question": "why do they quit?",
-                                                  "topic": "batch cooking"})
+                                                  "topic": "batch cooking", "brand": "PrepBox",
+                                                  "parent_brand": "FoodCo"})
     i, interp = edited["intake"], edited["interpretation"]
     assert i["goals"] == ["brand_perception", "positioning"] and (i["offer"], i["offer_stage"]) == ("meal kits", "selling")
     assert interp["topic"] == "batch cooking" and interp["understanding"]["key_question"]["value"] == "why do they quit?"
+    assert (i["brand"], i["parent_brand"]) == ("PrepBox", "FoodCo")
+    assert interp["understanding"]["brand"] == {"value": "PrepBox (parent: FoodCo)", "brief_quote": "",
+                                                "status": "stated", "source": "answer"}
     with pytest.raises(ValueError, match="at least one goal"):
         await service.replan(run["run_id"], {"goals": []})
     with pytest.raises(ValueError, match="unknown goal"):

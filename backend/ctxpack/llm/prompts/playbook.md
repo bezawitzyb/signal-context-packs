@@ -13,7 +13,15 @@ Return:
   statement (a few words, in plain language), for_whom (the group in
   their terms), against_doubt (the doubt or objection it answers) and
   item_ids (the tensions, pains or objections it is built on).
-- do_first: exactly 3 actions. Specific and imperative ("Post a ... in
+- for_goals: one block per goal id you are given, in that order (main
+  goal first): goal (the id), headline (what the evidence means for
+  that goal, one sentence), first_moves (the do_first actions that
+  serve it, as DO-01, DO-02, DO-03 in the order you write do_first),
+  success_measure (one observable sign it worked) and item_ids (the
+  items it rests on; for brand_perception, the BRP findings). None if
+  no goal ids are given.
+- do_first: exactly 3 actions, leaning to the main goal; give each the
+  goal id it serves (goal). Specific and imperative ("Post a ... in
   ... about ..."), not generic advice. Prefer non-obvious items with the
   highest confidence. Each with why (one sentence), why_ids (item ids
   from the pack), effort and impact (low | medium | high), owner_hint,

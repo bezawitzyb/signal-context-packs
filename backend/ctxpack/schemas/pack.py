@@ -1,4 +1,4 @@
-"""Context Pack schema 1.2 (PRD Section 6; 1.0 and 1.1 packs are migrated, schemas/migrate.py).
+"""Context Pack schema 1.3 (PRD Section 6; 1.0-1.2 packs are migrated, schemas/migrate.py).
 
 One object behind every deliverable (web page, JSON, MCP, skill, Markdown).
 Every field has a description; docs/SCHEMA.md is generated from them by
@@ -18,7 +18,11 @@ from typing import Any, Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from ctxpack.schemas.enums import (
+    BrandFindingKind,
+    BrandRelation,
     EvidenceRole,
+    Goal,
+    Stance,
     OpportunityKind,
     OpportunityStatus,
     RelationKind,
@@ -45,8 +49,8 @@ from ctxpack.schemas.enums import (
 )
 from ctxpack.schemas.plan import Intake, Interpretation
 
-SCHEMA_VERSION = "1.2"
-OLDER_VERSIONS = ("1.0", "1.1")  # read and migrated (schemas/migrate.py); never written
+SCHEMA_VERSION = "1.3"
+OLDER_VERSIONS = ("1.0", "1.1", "1.2")  # read and migrated (schemas/migrate.py); never written
 
 # PRD 6.5 - same IDs in JSON, UI and every export.
 ID_PREFIXES: dict[str, str] = {
@@ -61,6 +65,7 @@ ID_PREFIXES: dict[str, str] = {
     "PAIN": "pain point",
     "OBJ": "objection",
     "BRD": "competitor",
+    "BRP": "brand-perception finding",
     "CUL": "culture item",
     "PERF": "performing post",
     "TKW": "what-performs takeaway",
@@ -261,6 +266,16 @@ class Position(Strict):
     item_ids: list[str] = Field(min_length=1, description="Items it is built on.")
 
 
+class GoalBlock(Strict):
+    """What the pack means for one of the user's goals (V12, schema 1.3): shown first on the page, main goal first."""
+
+    goal: Goal = Field(description="The goal (config/goals.yaml).")
+    headline: str = Field(description="What the evidence means for this goal, in one sentence.")
+    first_moves: list[str] = Field(default_factory=list, description="The do-first actions (DO ids) that serve it.")
+    success_measure: str = Field(default="", description="How you will know it worked.")
+    item_ids: list[str] = Field(default_factory=list, description="The pack items it rests on.")
+
+
 class Snapshot(Strict):
     five_truths: list[Truth] = Field(max_length=5, description="Up to five most important findings (kept for "
                                      "agents; the page shows findings[]).")
@@ -274,6 +289,8 @@ class Snapshot(Strict):
                                           "at most c in a thin-evidence pack (V9).")
     grade_note: str = Field(default="", description="Why the grade was capped, if it was (V9).")
     generic_vs_found: GenericVsFound = Field(description="Generic answer next to what we found.")
+    for_goals: list[GoalBlock] = Field(default_factory=list, description="One block per confirmed goal, main "
+                                       "first (V12, schema 1.3).")
 
 
 class DoFirst(Strict):
@@ -287,6 +304,7 @@ class DoFirst(Strict):
     owner_hint: str = Field(default="", description="Who would usually own it.", examples=["social team"])
     success_measure: str = Field(default="", description="How you will know it worked (V9).",
                                  examples=["replies asking for the full figures table"])
+    goal: Goal | None = Field(default=None, description="The goal this action serves (V12).")
 
 
 # --------------------------------------------------------------------------
@@ -481,6 +499,53 @@ class OpportunityComponents(Strict):
 class ExistingSolution(Strict):
     name: str = Field(description="Product, service or content that already addresses it.")
     url: str = Field(description="Where the search found it.")
+
+
+class StanceShare(Strict):
+    stance: Stance = Field(description="positive, negative, mixed or neutral.")
+    share: float = Field(ge=0, le=1, description="Share of the brand's posts with this stance (code).")
+
+
+class RelationShare(Strict):
+    relation: BrandRelation = Field(description="same_as_parent, part_of_parent, distinct or unclear.")
+    share: float = Field(ge=0, le=1, description="Share of the brand's posts that also name the parent (code).")
+
+
+class BrandStats(Strict):
+    """Numbers for one brand, all computed in code from extracted mentions (V12)."""
+
+    name: str = Field(description="The brand as the user named it.")
+    is_parent: bool = Field(default=False, description="True for the parent brand.")
+    mentions: int = Field(ge=0, description="Relevant posts naming it.")
+    unprompted: int = Field(ge=0, description="Of those, posts found by a search that did not name it: people "
+                            "bringing it up unasked (the awareness signal).")
+    share_of_voice: float | None = Field(default=None, ge=0, le=1, description="Of unprompted posts naming any "
+                                         "brand, the share naming this one; null when there are none.")
+    distinct_authors: int = Field(ge=0, description="Distinct author hashes among its posts.")
+    platforms: list[Platform] = Field(default_factory=list, description="Where its posts come from.")
+    stance_mix: list[StanceShare] = Field(default_factory=list, description="How people feel about it.")
+    relation_mix: list[RelationShare] = Field(default_factory=list, description="For the user's brand: how posts "
+                                              "that also name the parent treat the two.")
+    with_parent: int = Field(default=0, ge=0, description="Posts naming both this brand and the parent.")
+    aspects_praised: list[str] = Field(default_factory=list, description="What gets praised, most mentioned first.")
+    aspects_criticised: list[str] = Field(default_factory=list, description="What gets criticised.")
+
+
+class BrandFinding(InsightItem):
+    id: str = id_field("BRP")
+    type: Literal["brand_finding"] = type_field("brand_finding")
+    kind: BrandFindingKind = Field(description="perception, praise, criticism, differentiation or awareness.")
+    brand: str = Field(description="The brand it is about.")
+
+
+class BrandPerception(Strict):
+    """How people see the user's brand (V12, schema 1.3; only for the brand_perception goal). Online mentions
+    from vocal people, not a survey."""
+
+    brands: list[BrandStats] = Field(default_factory=list, description="The user's brand first, then its parent.")
+    findings: list[BrandFinding] = Field(default_factory=list, description="2-5 verified findings (BRP-xx).")
+    note: str = Field(default="", description="Plain words: what the numbers can and cannot tell, or why there "
+                      "are no findings (too few mentions).")
 
 
 class Opportunity(Strict):
@@ -830,9 +895,9 @@ class Evidence(Strict):
 
 
 class ContextPack(Strict):
-    """Context Pack 1.2 - the canonical object (context_pack.json). Older packs are migrated when read."""
+    """Context Pack 1.3 - the canonical object (context_pack.json). Older packs are migrated when read."""
 
-    schema_version: Literal["1.2"] = Field(default=SCHEMA_VERSION, description="Always 1.2 (1.0 and 1.1 packs are migrated).")
+    schema_version: Literal["1.3"] = Field(default=SCHEMA_VERSION, description="Always 1.3 (older packs are migrated).")
 
     @model_validator(mode="before")
     @classmethod
@@ -846,6 +911,8 @@ class ContextPack(Strict):
                                    examples=["2026-10-04T12:00:00Z"])
     mode: Mode = Field(description="quick or standard (limits in modes.yaml).")
     brief: Brief = Field(description="The brief as submitted and as understood.")
+    section_order: list[str] = Field(default_factory=list, description="Pack sections in the order the user's goals "
+                                     "need them (V12; ids from config/goals.yaml default_order).")
     digest: str = Field(max_length=3000, description="<= 500-token view, generated last from verified content.")
     snapshot: Snapshot = Field(description="The one-screen summary.")
     do_first: list[DoFirst] = Field(max_length=3, description="Exactly 3 actions (fewer only in a thin-evidence pack).")
@@ -858,6 +925,8 @@ class ContextPack(Strict):
                                           "(needs and jobs; pains are in pain_points since 1.1).")
     objections: list[Objection] = Field(default_factory=list, description="Layer 4: objections, myths, trust markers.")
     competitors: list[Competitor] = Field(default_factory=list, description="Layer 4: competitors.")
+    brand_perception: BrandPerception | None = Field(default=None, description="How people see the user's brand "
+                                                     "(V12; only with the brand_perception goal).")
     culture: Culture = Field(default_factory=Culture, description="Layer 5: culture and codes.")
     what_performs: list[PerformingPost] = Field(default_factory=list, description="Top posts by engagement.")
     performance_takeaways: list[Takeaway] = Field(default_factory=list, max_length=3,
@@ -901,6 +970,8 @@ class ContextPack(Strict):
         yield from self.motivations
         yield from self.objections
         yield from self.competitors
+        if self.brand_perception:
+            yield from self.brand_perception.findings
         for part in (self.culture.formats, self.culture.communities, self.culture.creators, self.culture.codes):
             yield from part
         yield from self.what_performs
@@ -969,6 +1040,8 @@ class ContextPack(Strict):
                 need_items([item.item_id])
         for truth in self.snapshot.five_truths + self.snapshot.findings:
             need_items(truth.item_ids)
+        for block in self.snapshot.for_goals:
+            need_items(block.first_moves + block.item_ids)
         for f in self.snapshot.findings:
             if f.quote:
                 need_ev([f.quote.evidence_id])

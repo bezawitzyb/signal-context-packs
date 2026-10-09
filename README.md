@@ -51,7 +51,7 @@ do first, channel plan, opportunities, post briefs, drafts, content calendar, pl
 risks, guardrails and instructions for agents. Each finding appears once, in the section where it fits
 best, with links to related findings elsewhere.
 
-## What is new (changes V1-V11)
+## What is new (changes V1-V12)
 
 | Change | What you get |
 |---|---|
@@ -65,6 +65,7 @@ best, with links to related findings elsewhere.
 | **V8 Post briefs, drafts, calendar** | 5-8 post briefs whose key points cite real posts; full drafts for the first 3 (labelled "Draft - review before posting"; unsupported numbers and guardrail phrases are removed in code); a 4-week calendar as a Notion CSV. |
 | **V9 Revised pack page and hand-off** | Summary / Understand your audience / Act on it / The research; plain-language strength labels ("good enough to: test a post / brief creative / commit budget"); a generic AI answer checked point by point against the posts; hand-off options described by purpose and length. |
 | **V10 Ask this pack** | A read-only chat over one pack: answers cite real posts, invented references are removed, and "no evidence" is said plainly. Limited per pack per day without a run key. |
+| **V12 A pack that follows your goals** | Up to 3 goals, main first: the pack's sections, Summary and first moves follow them ("For your goal" blocks; each action says which goal it serves). **Brand perception** gets its own analysis: your brand and its parent are searched by name, and code counts mentions, mentions made unasked (an awareness signal), share of voice, how people feel, what they praise and criticise, and whether they tell your brand apart from the parent - with 2-5 verified findings and an honest "online mentions, not a survey" label. |
 | **V11 Understand the brief** | The agent reads the brief for the five things only you know (goals, offer, who, markets, key question), each tied to your own words. It never guesses your goal or offer: when the brief does not say them, it asks (goals ranked, main first; "no offer of my own" is an answer), then only the other gaps that would change the research. One editable "Here's what I understood" box shows where each item came from. A "How to write a brief" guide and template sit next to the brief box. |
 
 ## How the agent chooses sources and stays within limits

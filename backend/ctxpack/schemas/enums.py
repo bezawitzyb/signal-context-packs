@@ -270,6 +270,7 @@ class IntakeFill(StrEnum):
     competitors = "competitors"
     timeframe = "timeframe"
     key_question = "key_question"
+    brand = "brand"
     other = "other"
 
 
@@ -293,6 +294,25 @@ class OfferStage(StrEnum):
     launching = "launching"
     selling = "selling"
     no_offer = "no_offer"
+
+
+class BrandRelation(StrEnum):
+    """How a post treats the user's brand next to its parent brand (change V12)."""
+
+    same_as_parent = "same_as_parent"
+    part_of_parent = "part_of_parent"
+    distinct = "distinct"
+    unclear = "unclear"
+
+
+class BrandFindingKind(StrEnum):
+    """What a brand-perception finding is about (change V12)."""
+
+    perception = "perception"
+    praise = "praise"
+    criticism = "criticism"
+    differentiation = "differentiation"
+    awareness = "awareness"
 
 
 class InputStatus(StrEnum):

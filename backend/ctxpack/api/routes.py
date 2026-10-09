@@ -206,8 +206,9 @@ class RunRequest(BaseModel):
     brand_voice: str | None = Field(default=None, max_length=200)
     auto_approve: bool = False
     intake: dict[str, Any] | None = Field(default=None, description="What you already know (V3, V11): goals "
-                                          "(list, main first; REQUIRED with auto_approve), goal_note, offer, "
-                                          "offer_stage, key_question, audience_roles, channels_in_use, "
+                                          "(list, main first, at most 3; REQUIRED with auto_approve), goal_note, "
+                                          "offer, offer_stage, key_question, brand and parent_brand (brand "
+                                          "required with brand_perception), audience_roles, channels_in_use, "
                                           "competitors_user, timeframe. Goals and offer given -> no questions "
                                           "about them.")
 
@@ -218,6 +219,9 @@ class OneAnswer(BaseModel):
                               "in priority order).")
     text: str | None = Field(default=None, max_length=300, description="Your own words.")
     skipped: bool = Field(default=False, description="Skip - let the agent decide (not for goal and offer).")
+    brand: str | None = Field(default=None, max_length=120, description="Your brand (goal card or brand question; "
+                              "V12 brand perception).")
+    parent_brand: str | None = Field(default=None, max_length=120, description="Its parent brand, if any.")
 
 
 class AnswerRequest(BaseModel):
@@ -234,6 +238,8 @@ class EditsRequest(BaseModel):
     offer_stage: str | None = Field(default=None, description="idea, launching, selling or no_offer.")
     key_question: str | None = Field(default=None, max_length=300, description="The decision or question, by when.")
     topic: str | None = Field(default=None, max_length=200, description="What the conversation is about.")
+    brand: str | None = Field(default=None, max_length=120, description="Your brand (V12 brand perception).")
+    parent_brand: str | None = Field(default=None, max_length=120, description="Its parent brand, if any.")
     markets: list[str] | None = Field(default=None, max_length=10, description="Country codes or regions.")
     languages: list[str] | None = Field(default=None, max_length=12, description="ISO 639-1 codes.")
     audience: str | None = Field(default=None, max_length=300)

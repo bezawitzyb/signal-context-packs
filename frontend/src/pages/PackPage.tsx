@@ -1,12 +1,13 @@
 // S3 PACK PAGE (PRD 10.2, change V9): three parts - Summary, Understand your audience, Act on it - plus The research
 // (collapsed). Sticky part nav (a menu on phones), progressive disclosure, evidence drawer, View as agent, Hand off.
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { Braces, History, Menu, MessageCircleQuestion, RotateCcw, Share2 } from "lucide-react";
 import { friendlyError, getPack, getPackInputs, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
 import { ConfidenceBadge, IdTag, ModeBadge } from "../components/badges";
+import { BrandPart } from "../components/brand";
 import { CoverageStrip, LimitationCallout } from "../components/callouts";
 import { HookCard, PackContext, SourceCard, TensionCard, usePack } from "../components/cards";
 import { applyFilter, EmptyNote, type Filter, ItemSection, SectionLead, type SectionNotes, ShowMore, TableSection } from "../components/blocks";
@@ -22,9 +23,12 @@ import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
 import { rerunUrl } from "../lib/rerun";
 
+const DEFAULT_ORDER = ["their-words", "want-stops", "segments", "generic", "landscape", "brand", "plan", "channels",
+  "performs", "opportunities", "guardrails"];
+
 const PARTS: { id: string; title: string; sections: [string, string][] }[] = [
   { id: "summary", title: "Summary", sections: [] },
-  { id: "understand", title: "Understand your audience", sections: [["their-words", "Their words"],
+  { id: "understand", title: "Understand your audience", sections: [["brand", "Your brand"], ["their-words", "Their words"],
     ["want-stops", "Want / what stops them"], ["segments", "Segments"], ["generic", "Generic AI vs. people"],
     ["landscape", "Landscape"]] },
   { id: "act", title: "Act on it", sections: [["plan", "Your plan"], ["channels", "Channels"], ["performs", "What performs"],
@@ -466,13 +470,15 @@ function Method({ pack }: { pack: ContextPack }) {
 
 // --- the page ----------------------------------------------------------------------------------
 
-function PartNav() {
+function PartNav({ order, hasBrand }: { order: string[]; hasBrand: boolean }) {
+  const rank = (id: string) => (order.indexOf(id) < 0 ? order.length : order.indexOf(id));
   const links = PARTS.map((part) => (
     <li key={part.id}>
       <a href={`#${part.id}`} className="block rounded px-2 py-1 font-medium text-ink hover:bg-wash">{part.title}</a>
       {part.sections.length > 0 && (
         <ul className="mb-1 ml-2 border-l border-line pl-2">
-          {part.sections.map(([id, label]) => (
+          {part.sections.filter(([id]) => id !== "brand" || hasBrand)
+            .sort((a, b) => rank(a[0]) - rank(b[0])).map(([id, label]) => (
             <li key={id}><a href={`#${id}`} className="block rounded px-2 py-0.5 text-ink-2 hover:bg-wash hover:text-ink">{label}</a></li>
           ))}
         </ul>
@@ -520,6 +526,10 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   const v = pack.schema_version;
   const sec = (id: string, title: string, name: string, data: unknown, children: React.ReactNode, note?: React.ReactNode) =>
     <Section id={id} title={title} agent={agent} agentData={data} name={name} version={v} note={note}>{children}</Section>;
+  const order = pack.section_order?.length ? pack.section_order : DEFAULT_ORDER;   // V12: the user's goals decide it
+  const rank = (id: string) => (order.indexOf(id) < 0 ? order.length : order.indexOf(id));
+  const ordered = (items: [string, React.ReactNode][]) =>
+    [...items].sort((a, b) => rank(a[0]) - rank(b[0])).map(([id, node]) => <Fragment key={id}>{node}</Fragment>);
   useEffect(() => {   // printing / Save as PDF shows everything that is folded away on screen
     const open = () => document.querySelectorAll("main details").forEach((d) => d.setAttribute("open", ""));
     window.addEventListener("beforeprint", open);
@@ -530,7 +540,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
     <GuideContext.Provider value={guide}>
     <PackContext.Provider value={{ evidence: index.evidence, onOpen: setDrawer, claims }}>
       <div className="pack-layout lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
-        <PartNav />
+        <PartNav order={pack.section_order?.length ? pack.section_order : DEFAULT_ORDER} hasBrand={!!pack.brand_perception} />
         <div className="min-w-0 max-w-[760px] xl:max-w-[920px]">
           <header className="mb-4 space-y-2">
             <p className="flex flex-wrap items-center gap-2 font-mono text-xs text-ink-3">
@@ -609,25 +619,30 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                 ))}
               </div>
             </div>
-            {sec("their-words", "Their words", "voice", pack.voice, <Voice pack={pack} filter={filter} />)}
-            {sec("want-stops", "What they want and what stops them", "motivations",
+            {ordered([
+              ["brand", pack.brand_perception ? sec("brand", "How people see your brand", "brand_perception",
+                pack.brand_perception, <BrandPart bp={pack.brand_perception} />) : null],
+              ["their-words", sec("their-words", "Their words", "voice", pack.voice, <Voice pack={pack} filter={filter} />)],
+              ["want-stops", sec("want-stops", "What they want and what stops them", "motivations",
               { motivations: pack.motivations, pain_points: pack.pain_points, objections: pack.objections, tensions: pack.tensions },
-              <WantStops pack={pack} filter={filter} meta={meta} />)}
-            {sec("segments", "Segments", "segments", pack.segments,
+              <WantStops pack={pack} filter={filter} meta={meta} />)],
+              ["segments", sec("segments", "Segments", "segments", pack.segments,
               <ItemSection level={3} title="Who they are" items={asItems(pack.segments)} filter={filter} titleKey={"name" as keyof InsightLike}
-                           meta={meta("segments")} />)}
-            {sec("generic", "A generic AI answer vs. what people actually say", "generic_vs_found",
-              pack.snapshot.generic_vs_found, <Generic pack={pack} />)}
-            {sec("landscape", "Landscape: by platform and over time", "landscape", { landscape: pack.landscape, culture: pack.culture },
-              <Landscape pack={pack} filter={filter} />)}
+                           meta={meta("segments")} />)],
+              ["generic", sec("generic", "A generic AI answer vs. what people actually say", "generic_vs_found",
+              pack.snapshot.generic_vs_found, <Generic pack={pack} />)],
+              ["landscape", sec("landscape", "Landscape: by platform and over time", "landscape", { landscape: pack.landscape, culture: pack.culture },
+              <Landscape pack={pack} filter={filter} />)],
+            ])}
           </Part>
 
           <Part id="act" title="Act on it" lead="One plan: post briefs and a 4-week calendar, where to show up, and what to avoid.">
-            {sec("plan", "Your plan", "post_briefs",
+            {ordered([
+              ["plan", sec("plan", "Your plan", "post_briefs",
               { post_briefs: pack.post_briefs, drafts: pack.drafts, content_calendar: pack.content_calendar, this_week: pack.playbook.this_week },
-              <PlanPart pack={pack} fallback={<ThisWeek pack={pack} />} />)}
-            {sec("channels", "Channels", "channel_plan", pack.channel_plan, <Channels pack={pack} />)}
-            {sec("performs", "What performs", "what_performs", pack.what_performs,
+              <PlanPart pack={pack} fallback={<ThisWeek pack={pack} />} />)],
+              ["channels", sec("channels", "Channels", "channel_plan", pack.channel_plan, <Channels pack={pack} />)],
+              ["performs", sec("performs", "What performs", "what_performs", pack.what_performs,
               pack.what_performs.length ? (
                 <>
                 <SectionLead meta={meta("what_performs")} />
@@ -659,8 +674,8 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                 </ul>
                 </details>
                 </>
-              ) : <EmptyNote meta={meta("what_performs")} fallback="No engagement data in this pack, so nothing can be ranked by what performs." />)}
-            {sec("opportunities", "Opportunities", "opportunities", pack.opportunities,
+              ) : <EmptyNote meta={meta("what_performs")} fallback="No engagement data in this pack, so nothing can be ranked by what performs." />)],
+              ["opportunities", sec("opportunities", "Opportunities", "opportunities", pack.opportunities,
               pack.opportunities.length ? (
                 <>
                   <SectionLead meta={meta("opportunities")} />
@@ -695,15 +710,16 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                   </ul>
                   )} />
                 </>
-              ) : <EmptyNote meta={meta("opportunities")} fallback="No opportunities stood out in this evidence." />)}
-            {sec("guardrails", "Guardrails", "guardrails", { guardrails: pack.guardrails, compliance_flags: pack.compliance_flags },
+              ) : <EmptyNote meta={meta("opportunities")} fallback="No opportunities stood out in this evidence." />)],
+              ["guardrails", sec("guardrails", "Guardrails", "guardrails", { guardrails: pack.guardrails, compliance_flags: pack.compliance_flags },
               <>
                 <Guardrails pack={pack} />
                 <details className="mt-6 rounded-lg border border-line p-3">
                   <summary className="cursor-pointer text-sm text-ink-2">More from the playbook: hooks, creative brief, keywords, communities</summary>
                   <div className="mt-4"><Playbook pack={pack} /></div>
                 </details>
-              </>)}
+              </>)],
+            ])}
           </Part>
 
           <section aria-labelledby="research" className="pack-part mb-16">

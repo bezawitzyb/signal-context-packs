@@ -1,5 +1,5 @@
 {
- "schema_version": "1.2",
+ "schema_version": "1.3",
  "pack_id": "pk_FSdLk4CH1zZO",
  "generated_at": "2026-10-06T13:12:08.327416Z",
  "mode": "standard",
@@ -72,6 +72,12 @@
      "brief_quote": "",
      "status": "missing",
      "source": "none"
+    },
+    "brand": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
     }
    }
   },
@@ -83,6 +89,9 @@
    "offer": null,
    "offer_stage": null,
    "key_question": null,
+   "brand": null,
+   "parent_brand": null,
+   "goals_left_out": [],
    "channels_in_use": [],
    "competitors_user": [],
    "timeframe": null,
@@ -90,6 +99,18 @@
    "questions_asked": []
   }
  },
+ "section_order": [
+  "their-words",
+  "want-stops",
+  "segments",
+  "generic",
+  "landscape",
+  "plan",
+  "channels",
+  "performs",
+  "opportunities",
+  "guardrails"
+ ],
  "digest": "Context Pack: meal prep habits, motivations and barriers among Gen Z (global, Gen Z adults aged 18-27, students and early-career, cooking for themselves on a budget). Coverage grade c; 76 relevant posts. Thin evidence.\nFive truths: [MOT-06] I find cooking for one challenging and need simple meals that suit just me. [SEG-01] I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating. [SEG-03] I prep components, not whole meals, so I keep room to change things. [THM-09] I prep ingredients and components, not whole meals, so I can still switch things around. [MOM-03] I start work early and need breakfast I don't have to buy each day.\nDo first: [DO-01] Publish a freeze-and-reheat cheat sheet for enchiladas and fajitas (can it be frozen, how to reheat, how long reheating takes), and post it in a Reddit meal-prep or college-cooking community as a reply-friendly guide. [DO-02] Post a 'College student mealprep for the week' on Reddit that lists every dish, the recipes and the total spent, built on pantry staples such as rice, pasta, eggs, beans and potatoes. [DO-03] Post a short make-ahead breakfast reply or post (freezer breakfast sandwiches and overnight oats) in a thread where someone wants to stop buying breakfast, with a simple how-to.\nTensions: [TEN-01] I want to save money by cooking at home, but prepping takes hours of my time. [TEN-02] I want meals prepped for the week, but some of us get tired of eating the same leftovers. [TEN-03] I want easy meal kits, but one reviewer finds them too expensive for what they get.\nTheir words: Sunday (ingredient) prep day (a weekly session to prep ingredients and components rather than whole meals), macro-friendly (a meal that fits protein, carb and fat targets), Meal Prep for Weight Loss (a post label for fat-loss-oriented meal prep), decision fatigue (tiredness from having to choose what to eat), Food is fuel (eating to power performance), Pb and J (peanut butter and jelly…",
  "snapshot": {
   "five_truths": [
@@ -234,7 +255,8 @@
     }
    ],
    "comparison": []
-  }
+  },
+  "for_goals": []
  },
  "do_first": [
   {
@@ -251,7 +273,8 @@
    "effort": "low",
    "impact": "high",
    "owner_hint": "Content lead with a home cook for testing",
-   "success_measure": ""
+   "success_measure": "",
+   "goal": null
   },
   {
    "id": "DO-02",
@@ -267,7 +290,8 @@
    "effort": "medium",
    "impact": "high",
    "owner_hint": "Community manager or a student creator",
-   "success_measure": ""
+   "success_measure": "",
+   "goal": null
   },
   {
    "id": "DO-03",
@@ -283,7 +307,8 @@
    "effort": "low",
    "impact": "medium",
    "owner_hint": "Community manager",
-   "success_measure": ""
+   "success_measure": "",
+   "goal": null
   }
  ],
  "landscape": {
@@ -2494,6 +2519,7 @@
    ]
   }
  ],
+ "brand_perception": null,
  "culture": {
   "formats": [
    {

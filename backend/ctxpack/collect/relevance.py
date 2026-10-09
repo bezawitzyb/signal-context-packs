@@ -35,6 +35,11 @@ class BriefContext:
     languages: list[str] = field(default_factory=lambda: ["en"])
     audience: str = ""
     research_questions: dict[str, str] = field(default_factory=dict)  # id -> question
+    goals: str = ""                                                     # V12: confirmed goals in plain words
+    offer: str = ""                                                     # V12: the user's offer and its stage
+    key_question: str = ""                                              # V12
+    brands: list[str] = field(default_factory=list)                     # V12: the user's brand (aliases)
+    parent_brands: list[str] = field(default_factory=list)              # V12
 
 
 @dataclass
@@ -45,8 +50,15 @@ class RelevanceOutcome:
 
 def brief_block(ctx: BriefContext) -> str:
     rqs = "\n".join(f"- {rid}: {q}" for rid, q in ctx.research_questions.items()) or "- (none yet)"
+    extra = "".join([
+        f"\nThe user's goals (main first; they decide emphasis, never what is on-topic): {ctx.goals}" if ctx.goals
+        else "",
+        f"\nWhat the user offers: {ctx.offer}" if ctx.offer else "",
+        f"\nTheir key question: {ctx.key_question}" if ctx.key_question else "",
+        f"\nThe user's own brand: {', '.join(ctx.brands)}" if ctx.brands else "",
+        f" (parent brand: {', '.join(ctx.parent_brands)})" if ctx.brands and ctx.parent_brands else ""])
     return (f"Topic: {ctx.topic}\nMarket: {ctx.market}\nLanguages: {', '.join(ctx.languages)}\n"
-            f"Audience: {ctx.audience or 'not specified'}\nResearch questions:\n{rqs}")
+            f"Audience: {ctx.audience or 'not specified'}{extra}\nResearch questions:\n{rqs}")
 
 
 def _fake_answer(ctx: BriefContext):

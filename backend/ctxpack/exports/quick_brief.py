@@ -21,6 +21,9 @@ def to_quick_brief(pack: dict) -> str:
     def build() -> str:
         L = [f"WHO: {inline(i['audience'])} in {i['market']}, about {inline(i['topic'])}."
              + (f" GOAL: {inline(goal)}." if goal else "")]
+        main = (snap.get("for_goals") or [None])[0]  # V12: what the pack means for the main goal
+        if main:
+            L.append(f"FOR YOUR MAIN GOAL: {inline(main['headline'])}")
         if snap.get("position"):
             p = snap["position"]
             L.append(f"POSITION: {inline(p['statement'])} - for {inline(p['for_whom'])}, answering "

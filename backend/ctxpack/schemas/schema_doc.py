@@ -114,6 +114,13 @@ def _field_rows(model: type[BaseModel], names: list[str]) -> list[str]:
 
 # Hand-written per version (this file generates SCHEMA.md; never edit SCHEMA.md itself).
 CHANGELOG = [
+    "- **1.3** (change V12): `section_order[]` - pack sections in the order the user's ranked goals need them "
+    "(config/goals.yaml); `snapshot.for_goals[]` - one block per goal (headline, first moves, success measure, "
+    "items); `do_first[].goal`; `brand_perception` (only with the brand_perception goal) - per brand: mentions, "
+    "unprompted mentions, share of voice, stance and relation mixes, praised and criticised aspects (all computed "
+    "in code), plus verified `BRP-xx` findings and a plain note; `brief.intake.brand`, `parent_brand` and "
+    "`goals_left_out[]` (at most 3 goals); `brief.interpreted.understanding.brand`. 1.2 packs are migrated "
+    "when read.",
     "- **1.2** (change V11): `brief.interpreted.understanding` - the five inputs only the user knows (goal, "
     "offer, who, markets, key question), each with its value, the brief's own words, a status (stated, "
     "unclear, missing) and where it came from (brief, answer, assumed, none), plus ranked `goals[]` and "

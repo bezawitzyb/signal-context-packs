@@ -178,7 +178,11 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
 
 // --- the clarifying questions (V3) -------------------------------------------------------------
 
-type Draft = { chosen: string[]; text: string; skipped: boolean };
+type Draft = { chosen: string[]; text: string; skipped: boolean; brand?: string; parent_brand?: string };
+
+const BRAND_CHIP = "Brand perception";
+/** V12: the brand fields show on the goal card once "Brand perception" is picked, and on the brand question. */
+const asksBrand = (q: Question, d: Draft) => q.fills === "brand" || (q.fills === "goal" && d.chosen.includes(BRAND_CHIP));
 
 function QuestionBox({ q, value, onChange, disabled }: {
   q: Question; value: Draft; onChange: (d: Draft) => void; disabled: boolean;
@@ -197,7 +201,7 @@ function QuestionBox({ q, value, onChange, disabled }: {
       </legend>
       {q.why_it_helps && <p className="text-sm text-ink-3">{q.why_it_helps}</p>}
       {ranked && <p className="mt-1 text-xs text-ink-3">Pick one or more - the first one you pick is your main goal.</p>}
-      <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={q.multi_select ? "Pick one or more" : "Pick one"}>
+      {q.options.length > 0 && <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={q.multi_select ? "Pick one or more" : "Pick one"}>
         {q.options.map((o) => {
           const rank = value.chosen.indexOf(o) + 1;
           return (
@@ -209,9 +213,25 @@ function QuestionBox({ q, value, onChange, disabled }: {
             </button>
           );
         })}
-      </div>
+      </div>}
+      {asksBrand(q, value) && (
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div>
+            <label htmlFor={`brand-${q.id}`} className="text-xs font-medium text-ink-2">Your brand (required for brand perception)</label>
+            <input id={`brand-${q.id}`} value={value.brand ?? ""} placeholder="Your brand, as people write it"
+                   onChange={(e) => onChange({ ...value, brand: e.target.value, skipped: false })}
+                   className="mt-1 w-full rounded-lg border border-line px-3 py-1.5 text-sm" />
+          </div>
+          <div>
+            <label htmlFor={`parent-${q.id}`} className="text-xs font-medium text-ink-2">Parent brand (optional)</label>
+            <input id={`parent-${q.id}`} value={value.parent_brand ?? ""} placeholder="e.g. the company brand it belongs to"
+                   onChange={(e) => onChange({ ...value, parent_brand: e.target.value, skipped: false })}
+                   className="mt-1 w-full rounded-lg border border-line px-3 py-1.5 text-sm" />
+          </div>
+        </div>
+      )}
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        {q.allow_free_text !== false && (
+        {q.allow_free_text !== false && q.fills !== "brand" && (
           <>
             <label htmlFor={`own-${q.id}`} className="sr-only">{q.placeholder || "Or in your own words"}</label>
             <input id={`own-${q.id}`} value={value.text} placeholder={q.placeholder || "Or in your own words"}
@@ -238,17 +258,22 @@ export function QuestionCards({ run, onPlanned }: { run: RunStatus; onPlanned: (
   const [error, setError] = useState<string | null>(null);
   const optional = qs.some((q) => !q.required);
   const send = async (skipAll: boolean) => {
-    const missing = qs.filter((q) => q.required && !drafts[q.id].chosen.length);
+    const missing = qs.filter((q) => q.required && q.options.length > 0 && !drafts[q.id].chosen.length);
     if (missing.length) {
       return setError(`Please pick an answer for: ${missing.map((q) => q.question).join(" / ")}. ` +
                       "These decide what the pack focuses on, so they cannot be skipped.");
     }
+    const briefBrand = run.interpretation?.understanding?.brand?.status === "stated";
+    const noBrand = qs.find((q) => asksBrand(q, drafts[q.id]) && !drafts[q.id].brand?.trim()
+                               && (q.fills === "brand" || !briefBrand));
+    if (noBrand) return setError("Please type your brand name: brand perception needs it.");
     setBusy(true);
     setError(null);
     const answers: QuestionAnswer[] = qs.map((q) => {
       const d = drafts[q.id];
       const empty = !d.chosen.length && !d.text.trim();
-      return { id: q.id, chosen: d.chosen, text: d.text.trim() || undefined, skipped: !q.required && (d.skipped || empty) };
+      return { id: q.id, chosen: d.chosen, text: d.text.trim() || undefined, skipped: !q.required && (d.skipped || empty),
+               brand: d.brand?.trim() || undefined, parent_brand: d.parent_brand?.trim() || undefined };
     });
     try {
       onPlanned(await answerQuestions(readRunKey(), run.run_id, { answers, skip_all: skipAll }));
@@ -353,6 +378,7 @@ function Understood({ run, onReplanned }: { run: RunStatus; onReplanned: (run: R
     offer_stage: told.offer_stage ?? u?.offer_stage ?? "",
     key_question: told.key_question ?? (u?.key_question?.source === "brief" ? u.key_question.value ?? "" : ""),
     topic: interp.topic,
+    brand: told.brand ?? (u?.brand?.source === "brief" ? u.brand.value ?? "" : ""), parent_brand: told.parent_brand ?? "",
     markets: interp.markets.map((m) => m.code), languages: interp.languages, audience: interp.audience,
     audience_roles: told.audience_roles ?? [], competitors: interp.competitors ?? [],
   };
@@ -398,8 +424,25 @@ function Understood({ run, onReplanned }: { run: RunStatus; onReplanned: (run: R
           <ChipList label="Goals" hint="Main goal first" items={edits.goals.map((g, n) => ({ key: g, text: `${n + 1}. ${goalName(g)}` }))}
                     onRemove={(k) => set("goals", edits.goals.filter((x) => x !== k))}
                     onAdd={(v) => set("goals", [...edits.goals, v])} addLabel="Add a goal" options={goalOptions} />
-          <div className="px-4 pb-3"><Source inp={u?.goal} never_assumed /></div>
+          <div className="px-4 pb-3">
+            <Source inp={u?.goal} never_assumed />
+            {(told.goals_left_out ?? []).length > 0 && (
+              <p className="mt-1 text-xs text-ink-2">Left out: {told.goals_left_out!.map((g) => goalName(g.goal)).join(", ")} -
+                {" "}{told.goals_left_out![0].reason}</p>
+            )}
+          </div>
         </div>
+        {(edits.goals.includes("brand_perception") || edits.brand) && (
+          <div className="bg-paper px-4 py-3">
+            <label htmlFor="edit-brand" className={cellLabel}>Brand</label>
+            <input id="edit-brand" value={edits.brand} onChange={(e) => set("brand", e.target.value)}
+                   placeholder="Your brand, as people write it" className={textInput} />
+            <label htmlFor="edit-parent" className="sr-only">Parent brand</label>
+            <input id="edit-parent" value={edits.parent_brand} onChange={(e) => set("parent_brand", e.target.value)}
+                   placeholder="Parent brand (optional)" className={textInput} />
+            <Source inp={u?.brand} never_assumed />
+          </div>
+        )}
         <div className="bg-paper px-4 py-3">
           <label htmlFor="edit-offer" className={cellLabel}>Offer</label>
           <input id="edit-offer" value={edits.offer} onChange={(e) => set("offer", e.target.value)}

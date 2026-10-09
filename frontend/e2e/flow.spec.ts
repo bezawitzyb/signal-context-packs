@@ -75,7 +75,7 @@ test("a featured pack: summary, drawer with real posts, agent view, handoff, rep
   await page.keyboard.press("Escape");
 
   await page.getByRole("button", { name: "View as agent" }).click();
-  await expect(page.getByText(/context_pack\.json · schema 1\.2/).first()).toBeVisible();
+  await expect(page.getByText(/context_pack\.json · schema 1\.3/).first()).toBeVisible();
   await page.getByRole("button", { name: "View as agent" }).click();
 
   await page.getByRole("button", { name: "Strong only" }).click();
@@ -152,4 +152,29 @@ test("the brief guide opens from the info button and the template fills an empty
   await page.getByRole("button", { name: "Use the template" }).click();
   await expect(brief).toHaveValue(/^GOALS \(main first\): /);
   await expect(page.getByRole("button", { name: "Use the template" })).toBeDisabled();  // never overwrites a brief
+});
+
+test("brand perception: the goal card asks the brand, and the pack opens with the brand section (V12)", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Your brief").fill("Gen Z and meal prep");
+  await page.getByLabel("Run key").fill(KEY);
+  await page.getByRole("button", { name: "Plan the research" }).click();
+  const cards = page.locator("section[aria-labelledby=clarify] fieldset");
+  await cards.nth(0).getByRole("button", { name: "Brand perception" }).click();
+  await cards.nth(0).getByRole("button", { name: "Content plan" }).click();
+  await cards.nth(1).getByRole("button", { name: /No offer of my own/ }).click();
+  await page.getByRole("button", { name: "Plan with my answers" }).click();
+  await expect(page.getByRole("alert")).toContainText("type your brand name");          // required with the goal
+  await cards.nth(0).getByLabel(/Your brand/).fill("chicken");                         // a word in the recorded posts
+  await cards.nth(0).getByLabel(/Parent brand/).fill("rice");
+  await noSeriousA11yIssues(page, "Goal card with brand fields");
+  await page.getByRole("button", { name: "Plan with my answers" }).click();
+  await expect(page.getByLabel("Brand", { exact: true })).toHaveValue("chicken");
+  await page.getByRole("button", { name: "Start research" }).click();
+  await page.getByRole("link", { name: "Open the pack" }).click({ timeout: 90_000 });
+  await expect(page.getByText(/For your main goal - Brand perception/)).toBeVisible();
+  const understand = page.locator("section[aria-labelledby=understand]");
+  await expect(understand.locator("h2").nth(1)).toHaveText(/How people see your brand/);   // after the part title
+  await expect(page.getByText(/not a survey/).first()).toBeVisible();
+  await noSeriousA11yIssues(page, "Pack with brand perception");
 });

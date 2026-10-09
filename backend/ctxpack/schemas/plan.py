@@ -1,5 +1,6 @@
 """Brief input, interpretation and research plan (PRD FR-A1..A4, prompt F4-1)."""
 
+import re
 from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -94,11 +95,34 @@ def confirmed_goal(intake: dict | None) -> str:
     return goals_text(i.get("goals") or [], i.get("goal_note"))
 
 
+def section_order(goals: list, has_brand: bool = False) -> list[str]:
+    """Pack sections in the order the ranked goals need them (V12): the main goal's lead sections, then the next
+    goal's, then the rest in config/goals.yaml default_order. "brand" only when the pack has brand perception."""
+    cfg = load_yaml("goals")
+    order: list[str] = []
+    for g in goals:
+        order += [x for x in cfg["goals"][getattr(g, "value", g)].get("lead", []) if x not in order]
+    order += [x for x in cfg["default_order"] if x not in order]
+    return [x for x in order if x != "brand" or has_brand]
+
+
 def offer_text(intake: dict | None) -> str:
     """The user's offer and its stage in plain words, from brief.intake (V11); "" when not given."""
     i = intake or {}
     stage = load_yaml("goals")["offer_stages"].get(i.get("offer_stage") or "", {}).get("chip", "")
     return "; ".join(x for x in (i.get("offer") or "", stage) if x)
+
+
+def brand_names(intake: dict | None, interpretation: dict | None = None) -> tuple[list[str], list[str]]:
+    """(brand aliases, parent aliases) for brand perception (V12): the user's answer, else the brand the brief
+    states (quote checked). Aliases are split on commas and slashes; empty lists when not given."""
+    i = intake or {}
+    u = ((interpretation or {}).get("understanding") or {}).get("brand") or {}
+    brand = i.get("brand") or (u.get("value") if u.get("status") == "stated" else "") or ""
+
+    def split(text: str) -> list[str]:
+        return list(dict.fromkeys(p.strip() for p in re.split(r"[,/]", text or "") if p.strip()))
+    return split(brand), split(i.get("parent_brand") or "")
 
 
 class UnderstoodInput(Strict):
@@ -129,6 +153,8 @@ class Understanding(Strict):
     markets: UnderstoodInput = Field(default_factory=UnderstoodInput, description="Where these people are.")
     key_question: UnderstoodInput = Field(default_factory=UnderstoodInput, description="The decision or question "
                                           "the research must help with, and by when.")
+    brand: UnderstoodInput = Field(default_factory=UnderstoodInput, description="The user's own brand name, as "
+                                   "people write it (V12; only matters for the brand_perception goal).")
 
     @model_validator(mode="before")
     @classmethod
@@ -194,14 +220,19 @@ class ClarifyingQuestion(Strict):
     why_it_helps: str = Field(default="", description="One short line shown to the user: how the answer changes "
                               "the research.", examples=["Buyers and shop-floor users talk in different places."])
     fills: IntakeFill = Field(default=IntakeFill.other, description="Which intake field the answer fills.")
-    options: list[str] = Field(min_length=3, max_length=8, description="3-5 answer chips written for THIS brief "
-                               "(the goal and offer chips are set in code).")
+    options: list[str] = Field(default_factory=list, max_length=8, description="3-5 answer chips written for THIS "
+                               "brief (the goal and offer chips are set in code; the brand question has none).")
     multi_select: bool = Field(default=False, description="True if more than one chip may be chosen.")
     allow_free_text: bool = Field(default=True, description="True if the user may answer in their own words.")
     placeholder: str = Field(default="", max_length=120, description="A short example answer for the own-words box, "
                              "written for THIS brief (e.g. 'e.g. booking software for venues').")
     required: bool = Field(default=False, description="Set in code: the goal and offer questions cannot be "
                            "skipped. Leave it false.")
+
+
+class GoalLeftOut(Strict):
+    goal: Goal = Field(description="The goal left out.")
+    reason: str = Field(description="Why, in plain words.")
 
 
 class QAnswer(Strict):
@@ -221,6 +252,11 @@ class Intake(Strict):
     offer_stage: OfferStage | None = Field(default=None, description="idea, launching, selling or no_offer.")
     key_question: str | None = Field(default=None, description="The decision or question the research must help "
                                      "with, in the user's words.")
+    brand: str | None = Field(default=None, max_length=120, description="The user's brand as people write it "
+                              "(V12; required with the brand_perception goal). Aliases separated by commas.")
+    parent_brand: str | None = Field(default=None, max_length=120, description="The parent brand, if any (V12).")
+    goals_left_out: list[GoalLeftOut] = Field(default_factory=list, description="Goals beyond the cap, with the "
+                                              "reason (V12; filled in code).")
     channels_in_use: list[str] = Field(default_factory=list, description="Channels the user already uses.")
     competitors_user: list[str] = Field(default_factory=list, description="Competitors the user named; always "
                                         "searched.")
@@ -251,6 +287,11 @@ class Intake(Strict):
                     raise ValueError(f"unknown goal {g!r}: use one of {', '.join(load_yaml('goals')['goals'])}")
                 goals.append(found)
             data = {**data, "goals": list(dict.fromkeys(goals))}
+            most = load_yaml("modes")["goals"]["max"]
+            if len(data["goals"]) > most:  # V12: the first ones are kept, the rest listed with the reason
+                data["goals_left_out"] = [{"goal": g, "reason": f"at most {most} goals per pack - this one came "
+                                           f"after the first {most}"} for g in data["goals"][most:]]
+                data["goals"] = data["goals"][:most]
         if isinstance(data, dict) and data.get("offer_stage") and not isinstance(data["offer_stage"], OfferStage):
             stage = stage_from_text(data["offer_stage"])
             if stage is None:
@@ -261,8 +302,8 @@ class Intake(Strict):
 
     def empty(self) -> bool:
         return not (self.audience_roles or self.goals or self.goal_note or self.offer or self.offer_stage
-                    or self.key_question or self.channels_in_use or self.competitors_user or self.timeframe
-                    or self.other_answers)
+                    or self.key_question or self.brand or self.channels_in_use or self.competitors_user
+                    or self.timeframe or self.other_answers)
 
 
 class PlanHypothesis(Strict):

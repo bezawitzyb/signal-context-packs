@@ -108,7 +108,8 @@ Read the relevant step before working. Do only that step.
   demo-check [--no-paid], version)
 - Research run: ... research "<brief>" --mode quick|standard [--fixtures]
   [--auto-approve] [--goal ID ...] [--offer TEXT] [--offer-stage STAGE]
-  [--no-apify] [--apify-max USD] [--record] (--auto-approve needs --goal)
+  [--brand NAME] [--parent-brand NAME] [--no-apify] [--apify-max USD] [--record]
+  (--auto-approve needs --goal; the brand_perception goal needs --brand)
 - Analysis on a saved corpus: ... extract --from-run RUN_ID, then
   ... cluster --from-run RUN_ID [--redo], then write, verify and pack --from-run RUN_ID
   [--redo] (estimate shown first); pack [--brand-voice] [--test-hook] writes

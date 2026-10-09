@@ -696,6 +696,28 @@ EPIC A - BRIEF AND PLAN
        assumed - never for goals or offer). Agents (API with
        auto_approve, MCP) must pass goals; the CLI takes --goal. Later
        stages use only confirmed goals, never a guessed intent.
+ FR-A2e [P0] A goal-driven pack and brand perception (change V12,
+       schema 1.3). At most 3 goals (modes.yaml goals.max); more are
+       listed as left out with the reason. config/goals.yaml gives each
+       goal its lead sections; code builds section_order from the
+       ranked goals (main goal first; sections are ordered, never
+       dropped; post briefs, drafts and the calendar stay in every
+       pack). Goals, offer, key question and (for brand perception) the
+       brand reach relevance, extraction, clustering and writing, but
+       never change what counts as on-topic. The playbook call writes
+       one block per goal (headline, first moves, success measure,
+       items; references checked in code) and tags each do-first action
+       with its goal. Brand perception (the brand_perception goal): the
+       brand is required (goal card, brand question, --brand, agents'
+       intake.brand); brand and parent are searched by name; extraction
+       adds aspect and relation-to-parent to brand mentions; code
+       computes mentions, unprompted mentions (found by a search that
+       did not name the brand), share of voice, stance and relation
+       mixes and praised / criticised aspects; one writer call gives
+       2-5 BRP findings, each resting on a basis whose counts come from
+       code, with exact quotes and the claim check; below
+       scoring.yaml brand.min_mentions there are no findings and the
+       note says so. Always labelled "online mentions, not a survey".
  FR-A3 [P0] Starting plan: 3-5 hypotheses, 5-8 research questions,
        starting source units (platform + subreddit / hashtag / channel /
        domain / query) each with a one-line reason.

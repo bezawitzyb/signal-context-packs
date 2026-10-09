@@ -1,5 +1,5 @@
 {
- "schema_version": "1.2",
+ "schema_version": "1.3",
  "pack_id": "pk_WPKWWfPABYxN",
  "generated_at": "2026-10-06T09:24:45.191502Z",
  "mode": "standard",
@@ -79,6 +79,12 @@
      "brief_quote": "",
      "status": "missing",
      "source": "none"
+    },
+    "brand": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
     }
    }
   },
@@ -90,6 +96,9 @@
    "offer": null,
    "offer_stage": null,
    "key_question": null,
+   "brand": null,
+   "parent_brand": null,
+   "goals_left_out": [],
    "channels_in_use": [],
    "competitors_user": [],
    "timeframe": null,
@@ -97,6 +106,18 @@
    "questions_asked": []
   }
  },
+ "section_order": [
+  "their-words",
+  "want-stops",
+  "segments",
+  "generic",
+  "landscape",
+  "plan",
+  "channels",
+  "performs",
+  "opportunities",
+  "guardrails"
+ ],
  "digest": "Context Pack: Wärmepumpen: Kauf, Kosten, Förderung, Installation und Erfahrungen bei Hausbesitzern (DE, Hausbesitzer in Deutschland (ca. 35-65 Jahre), Eigentümer von Ein- und Zweifamilienhäusern, die Heizungstausch oder Neubau erwägen oder bereits eine Wärmepumpe betreiben). Coverage grade a; 101 relevant posts. Thin evidence.\nFive truths: [THM-01] I wonder whether PV and storage really help a heat pump, since solar is weakest in winter when heat is needed. [MOT-02] I want help setting the heating curve and flow temperature correctly. [MOT-01] I want honest numbers on what the heat pump really uses and costs compared to my old heating. [TEN-02] People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most. [MOM-01] After a year we look at the first annual electricity bill and compare it with gas.\nDo first: [DO-01] Publish a YouTube video titled along the lines of 'Wärmepumpe nach 1 Jahr: meine echte Rechnung gegen die Gas-Abrechnung'. Show annual kWh and euro for the heat pump next to the baseline gas year, including the unflattering lines, and state house type and Vorlauftemperatur. [DO-02] Post a Reddit thread in a German heat pump or home-owner community that follows the house-data format: year built, current heating, windows, insulation, radiators vs FBH, Heizlast estimate, real consumption. Ask 'Reicht eine WP hier, und bei welcher VL Temperatur?' and answer every reply with numbers. [DO-03] Film a short TikTok that shows how to check and adjust Heizkurve and Vorlauftemperatur after commissioning, using a handover checklist for the Heizungsbauer as the on-screen prop. Name one common fault and its cause in a few lines.\nTensions: [TEN-01] Owners of old houses want to replace the old heating with a heat pump, but poor insulation and radiators leave efficiency and cost uncertain. [TEN-02] People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most.\nTheir…",
  "snapshot": {
   "five_truths": [
@@ -241,7 +262,8 @@
     }
    ],
    "comparison": []
-  }
+  },
+  "for_goals": []
  },
  "do_first": [
   {
@@ -259,7 +281,8 @@
    "effort": "high",
    "impact": "high",
    "owner_hint": "Video producer with a real operator, or a customer who shares their bills",
-   "success_measure": ""
+   "success_measure": "",
+   "goal": null
   },
   {
    "id": "DO-02",
@@ -276,7 +299,8 @@
    "effort": "low",
    "impact": "high",
    "owner_hint": "Community manager with an installer or energy consultant as technical backup",
-   "success_measure": ""
+   "success_measure": "",
+   "goal": null
   },
   {
    "id": "DO-03",
@@ -293,7 +317,8 @@
    "effort": "medium",
    "impact": "high",
    "owner_hint": "Technical expert or installer on camera, social editor",
-   "success_measure": ""
+   "success_measure": "",
+   "goal": null
   }
  ],
  "landscape": {
@@ -3299,6 +3324,7 @@
    ]
   }
  ],
+ "brand_perception": null,
  "culture": {
   "formats": [
    {

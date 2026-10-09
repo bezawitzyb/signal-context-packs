@@ -30,7 +30,7 @@ from ctxpack.config import load_yaml, mode_limits
 from ctxpack.guards import BudgetExceeded, StopRequested
 from ctxpack.llm.client import tracking
 from ctxpack.schemas.enums import EventType, FinishReason, RunStage, RunStatus
-from ctxpack.schemas.plan import Interpretation, Plan, confirmed_goal, offer_text
+from ctxpack.schemas.plan import Interpretation, Plan, brand_names, confirmed_goal, offer_text
 
 log = logging.getLogger(__name__)
 
@@ -157,9 +157,14 @@ def brief_context(run: db.Run) -> Any:
 
     interp = Interpretation.model_validate(run.interpretation)
     plan = Plan.model_validate(run.plan)
+    known = run.intake or {}
+    brands, parents = brand_names(known, run.interpretation) if "brand_perception" in (known.get("goals") or []) \
+        else ([], [])
     return BriefContext(topic=interp.topic, market=interp.market, languages=interp.languages,
                         audience=interp.audience,
-                        research_questions={q.id: q.text for q in plan.research_questions})
+                        research_questions={q.id: q.text for q in plan.research_questions},
+                        goals=confirmed_goal(known), offer=offer_text(known),            # V12: every step sees them
+                        key_question=known.get("key_question") or "", brands=brands, parent_brands=parents)
 
 
 def loop_state(run_id: str, record: bool = False, no_apify: bool = False,
@@ -177,6 +182,8 @@ def loop_state(run_id: str, record: bool = False, no_apify: bool = False,
     ctx.llm_usd = run.cost_llm_usd
     ctx.apify_unavailable, ctx.apify_usd_cap = no_apify, apify_usd_cap
     ctx.must_search = list((run.intake or {}).get("competitors_user") or [])  # V3: always searched
+    ctx.must_search += [b for b in ctx.brief.brands[:1] + ctx.brief.parent_brands[:1]   # V12: the user's brand
+                        if b.casefold() not in {c.casefold() for c in ctx.must_search}]
     known = run.intake or {}                                            # V6, V11: the user's goals, offer, key
     ctx.intake = {k: v for k, v in {"goals": confirmed_goal(known),      # question, roles and channels guide where
                                     "offer": offer_text(known), "key_question": known.get("key_question"),

@@ -70,7 +70,8 @@ STATUS_WORDS = {"confirmed": "Confirmed by the posts", "contradicted": "Contradi
 
 
 def to_markdown(pack: dict) -> str:
-    """Same parts and order as the pack page (V9): Summary, Understand your audience, Act on it, The research."""
+    """Same parts and order as the pack page (V9): Summary, Understand your audience, Act on it, The research.
+    Inside a part, sections follow the pack's section_order (V12: the user's goals decide it)."""
     _INDEX.clear()
     for name in ("pain_points", "tensions", "motivations", "objections", "segments", "moments"):
         _INDEX.update({it["id"]: inline(it["claim"])[:90] for it in pack.get(name, [])})
@@ -92,7 +93,7 @@ def to_markdown(pack: dict) -> str:
     add("")
     add(f"*Brief:* {inline(b['text'])}  ")
     goal = confirmed_goal(b.get("intake"))
-    add(f"*Audience:* {inline(i['audience'])}{' | *Goal:* ' + inline(goal) if goal else ''} | *Languages:* "
+    add(f"*Audience:* {inline(i['audience'])}{' | *Goals:* ' + inline(goal) if goal else ''} | *Languages:* "
         f"{', '.join(i['languages'])} | *Mode:* {pack['mode']} | *Window:* {i['time_window_days']} days"
         f"{' | *Brand voice:* ' + inline(b['brand_voice']) if b.get('brand_voice') else ''}")
     add(f"*Pack:* {pack['pack_id']} | *Generated:* {pack['generated_at']} | *Coverage grade:* "
@@ -107,6 +108,14 @@ def to_markdown(pack: dict) -> str:
     add("\n## Summary\n")
     if snap.get("represents"):
         add(f"*Who this represents:* {inline(snap['represents'])}")
+    chips = load_yaml("goals")["goals"]
+    for blk in snap.get("for_goals") or []:  # V12: what the pack means for each goal, main goal first
+        add(f"\n### For your goal: {chips[blk['goal']]['chip']}")
+        add(f"**{inline(blk['headline'])}**" + (f" *[{', '.join(blk['item_ids'])}]*" if blk["item_ids"] else ""))
+        if blk["first_moves"]:
+            add(f"- First moves: {', '.join(blk['first_moves'])} (below)")
+        if blk.get("success_measure"):
+            add(f"- How you'll know it worked: {inline(blk['success_measure'])}")
     add("\n### What we heard most clearly")
     for f in snap.get("findings") or []:
         add(f"- **{inline(f['text'])}** *[{', '.join(f['item_ids'])}; {f['strength_text']}; good enough to: "
@@ -125,7 +134,8 @@ def to_markdown(pack: dict) -> str:
     add("\n### Your plan: do this first")
     for d in pack["do_first"]:
         add(f"1. **{inline(d['action'])}** - {inline(d['why'])} *[{d['id']}; effort {d['effort']}, impact "
-            f"{d['impact']}; {inline(d['owner_hint'])}; based on {', '.join(d['why_ids'])}]*")
+            f"{d['impact']}; {inline(d['owner_hint'])}; based on {', '.join(d['why_ids'])}"
+            + (f"; for: {chips[d['goal']]['chip']}" if d.get("goal") else "") + "]*")
         if d.get("success_measure"):
             add(f"   - How you'll know it worked: {inline(d['success_measure'])}")
     if pack.get("news_hooks"):
@@ -140,6 +150,13 @@ def to_markdown(pack: dict) -> str:
 
     # ---- UNDERSTAND YOUR AUDIENCE -----------------------------------------------------------
     add("\n## Understand your audience\n")
+    main, blocks = L, {}
+
+    def section(sid: str):  # V12: each page section collects its own lines; parts emit them in section_order
+        blocks[sid] = []
+        return blocks[sid], blocks[sid].append
+
+    L, add = section("their-words")
     add("### Their words")
     v = pack["voice"]
     add(f"**Tone:** {inline(v['tone'])}  ")
@@ -158,6 +175,7 @@ def to_markdown(pack: dict) -> str:
     add("\n**Not this:**")
     L += [f"- {inline(s)}" for s in g["not_this"]] or ["- -"]
 
+    L, add = section("want-stops")
     add("\n### What they want")
     L += _meta(pack, "motivations")
     for kind in ("need", "pain", "job"):  # pains: pain_points since 1.1 (kept here for older packs)
@@ -192,11 +210,13 @@ def to_markdown(pack: dict) -> str:
     if not pack["tensions"]:
         add("- None found.")
 
+    L, add = section("segments")
     add("\n### Segments")
     L += _meta(pack, "segments")
     if pack["segments"] or not (pack.get("sections_meta") or {}).get("segments", {}).get("empty_reason"):
         L += _claims(pack["segments"], "name")
 
+    L, add = section("generic")
     add("\n### A generic AI answer vs. what people actually say")
     gvf = snap["generic_vs_found"]
     if gvf.get("comparison"):
@@ -217,6 +237,7 @@ def to_markdown(pack: dict) -> str:
             right = f"{cell(found[n]['text'])} [{', '.join(found[n]['item_ids'])}]" if n < len(found) else ""
             add(f"| {left} | {right} |")
 
+    L, add = section("landscape")
     add("\n### Landscape")
     L += _meta(pack, "themes")
     L += _claims(pack["landscape"]["themes"], "label")
@@ -240,8 +261,18 @@ def to_markdown(pack: dict) -> str:
             add(f"| {cell(c['name'])} | {c['mentions']} | {c['share_of_mentions']:.0%} | {cell(c['tone'])} | "
                 f"{cell(', '.join(c['praised']))} | {cell(', '.join(c['mocked']))} |")
 
+    if pack.get("brand_perception"):
+        L, add = section("brand")
+        L += brand_section(pack["brand_perception"])
+    order = pack.get("section_order") or list(blocks)
+    L, add = main, main.append
+    for sid in sorted(blocks, key=lambda x: order.index(x) if x in order else len(order)):
+        L += blocks[sid]
+
     # ---- ACT ON IT --------------------------------------------------------------------------
     add("\n## Act on it\n")
+    blocks = {}
+    L, add = section("plan")
     if pack.get("post_briefs"):
         L.extend(posts_section(pack))
     else:
@@ -254,6 +285,7 @@ def to_markdown(pack: dict) -> str:
                 f"[{w['hook_id']}] | {cell(w['angle'])} | {cell(w['why_now'])}"
                 + (f" (rides {w['news_hook_id']})" if w.get("news_hook_id") else "") + " |")
 
+    L, add = section("channels")
     add("\n### Channels")
     for c in pack["channel_plan"]:
         add(f"{c['priority']}. **{c['platform']}** - {inline(c['why'])} *[{c['id']}; based on {', '.join(c['why_ids'])}]*  ")
@@ -265,6 +297,7 @@ def to_markdown(pack: dict) -> str:
                 + (f"seen in posts {', '.join(t['evidence_ids'])})" if t["claim_type"] == "observed"
                    else f"external, [source]({t['source_url']}))") for t in c["timing"]))
 
+    L, add = section("performs")
     add("\n### What performs")
     L += _meta(pack, "what_performs")
     for t in pack.get("performance_takeaways", []):
@@ -276,6 +309,7 @@ def to_markdown(pack: dict) -> str:
           f"{inline(p['why_it_worked'])} *(inferred)* [{p['id']}, {p['evidence_id']}]" for p in pack["what_performs"]] \
         or ["- No engagement data in this pack."]
 
+    L, add = section("opportunities")
     add("\n### Opportunities")
     L += _meta(pack, "opportunities")
     for o in pack["opportunities"]:
@@ -290,6 +324,7 @@ def to_markdown(pack: dict) -> str:
     if not pack["opportunities"] and not (pack.get("sections_meta") or {}).get("opportunities"):
         add("- None found.")
 
+    L, add = section("guardrails")
     add("\n### Guardrails")
     add(f"- **Never claim:** {inline('; '.join(g['never_claim'])) or '-'}")
     add(f"- **Sensitivities:** {inline('; '.join(g['sensitivities'])) or '-'}")
@@ -321,6 +356,10 @@ def to_markdown(pack: dict) -> str:
         add("\n**Public communities and creators**")
         L += [f"- {inline(t['name'])} ({t['kind']}, {t['platform']}){' ' + t['url'] if t.get('url') else ''}"
               for t in pb["targets"]]
+
+    L, add = main, main.append
+    for sid in sorted(blocks, key=lambda x: order.index(x) if x in order else len(order)):
+        L += blocks[sid]
 
     # ---- THE RESEARCH -----------------------------------------------------------------------
     add("\n## The research\n")
@@ -355,6 +394,28 @@ def to_markdown(pack: dict) -> str:
         + " Evidence ids (EV-...) point to the posts in context_pack.json.")
     add(f"\n*{DISCLAIMER}*")
     return "\n".join(L) + "\n"
+
+
+def brand_section(bp: dict) -> list[str]:
+    """V12: how people see the user's brand - numbers from code, then the verified findings."""
+    out = ["\n### How people see your brand", f"*{inline(bp['note'])}*" if bp.get("note") else ""]
+    if bp["brands"]:
+        out += ["", "| Brand | Posts | Unasked | Share of voice (unasked) | Feeling | Praised | Criticised |",
+                "|---|---|---|---|---|---|---|"]
+        for r in bp["brands"]:
+            mix = ", ".join(f"{x['stance']} {x['share']:.0%}" for x in r["stance_mix"]) or "-"
+            sov = f"{r['share_of_voice']:.0%}" if r.get("share_of_voice") is not None else "-"
+            out.append(f"| {cell(r['name'])}{' (parent)' if r['is_parent'] else ''} | {r['mentions']} | "
+                       f"{r['unprompted']} | {sov} | {cell(mix)} | {cell(', '.join(r['aspects_praised'])) or '-'} | "
+                       f"{cell(', '.join(r['aspects_criticised'])) or '-'} |")
+        own = bp["brands"][0]
+        if own.get("relation_mix"):
+            out.append("\n**Next to the parent brand** (" + f"{own['with_parent']} posts name both): " + ", ".join(
+                f"{x['relation'].replace('_', ' ')} {x['share']:.0%}" for x in own["relation_mix"]))
+    if bp["findings"]:
+        out.append("")
+        out += _claims(bp["findings"])
+    return out
 
 
 def posts_section(pack: dict) -> list[str]:

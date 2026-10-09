@@ -1,5 +1,5 @@
 {
- "schema_version": "1.2",
+ "schema_version": "1.3",
  "pack_id": "pk_i4iFso1HnLWR",
  "generated_at": "2026-10-06T13:15:20.478111Z",
  "mode": "standard",
@@ -79,6 +79,12 @@
      "brief_quote": "",
      "status": "missing",
      "source": "none"
+    },
+    "brand": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
     }
    }
   },
@@ -90,6 +96,9 @@
    "offer": null,
    "offer_stage": null,
    "key_question": null,
+   "brand": null,
+   "parent_brand": null,
+   "goals_left_out": [],
    "channels_in_use": [],
    "competitors_user": [],
    "timeframe": null,
@@ -97,6 +106,18 @@
    "questions_asked": []
   }
  },
+ "section_order": [
+  "their-words",
+  "want-stops",
+  "segments",
+  "generic",
+  "landscape",
+  "plan",
+  "channels",
+  "performs",
+  "opportunities",
+  "guardrails"
+ ],
  "digest": "Context Pack: snacking habits, preferences and attitudes toward new snack brands (NL, Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers). Coverage grade a; 233 relevant posts. Thin evidence.\nFive truths: [PAIN-01] I can't find the product I want in my local shops. [THM-01] We still miss snacks that got discontinued, like the Winner taco and the Yes bar. [THM-09] Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands. [THM-02] Posters question snacks sold as healthy by pointing to calories and sugar. [OPP-06] I want to know why a favourite snack disappeared from the shops.\nDo first: [DO-01] Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name. [DO-02] Pitch a product sample and a timestamped slot to supermarket-test YouTubers (like the PROEFWERK series), and prepare your own 'zodat jij dat niet hoeft te doen' test video with a dated title and a product list, putting your snack next to familiar chips and snack-bar snacks. [DO-03] Film a TikTok label-reading short in Dutch (and an English cut) that shows the real kcal, sugar and protein per 100 g of your snack on screen, including the unflattering numbers, with the ingredient list readable in frame.\nTensions: [TEN-01] I want healthier snacks, but a snack called healthy can still be judged unhealthy or taste bad.\nTheir words: frikandelbroodje (sausage roll with frikandel), kaassoufflé (fried cheese pastry snack), bamischijf (fried bami noodle slice), ribbelchips (ridged chips), eierbal (fried egg-and-meat ball snack), snackbar (Dutch fast-food snack shop), borrelnootjes (party nuts served with drinks), bittergarnituur (assorted fried bar snacks served on a platter)\nSay: Name the exact flavour or item (paprika,…",
  "snapshot": {
   "five_truths": [
@@ -241,7 +262,8 @@
     }
    ],
    "comparison": []
-  }
+  },
+  "for_goals": []
  },
  "do_first": [
   {
@@ -258,7 +280,8 @@
    "effort": "low",
    "impact": "high",
    "owner_hint": "Community manager",
-   "success_measure": ""
+   "success_measure": "",
+   "goal": null
   },
   {
    "id": "DO-02",
@@ -275,7 +298,8 @@
    "effort": "medium",
    "impact": "high",
    "owner_hint": "Partnerships / influencer lead",
-   "success_measure": ""
+   "success_measure": "",
+   "goal": null
   },
   {
    "id": "DO-03",
@@ -292,7 +316,8 @@
    "effort": "medium",
    "impact": "high",
    "owner_hint": "Social video producer + product/QA team",
-   "success_measure": ""
+   "success_measure": "",
+   "goal": null
   }
  ],
  "landscape": {
@@ -3166,6 +3191,7 @@
    ]
   }
  ],
+ "brand_perception": null,
  "culture": {
   "formats": [
    {

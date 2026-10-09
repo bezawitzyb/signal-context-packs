@@ -50,6 +50,14 @@ briefs:
     answers: {goals: [positioning, content_plan], offer_stage: selling}
     note: Change V2 - several markets and languages; B2B. Not run yet (needs a paid Standard run; cost shown first).
 
+  - id: uk_brand_range
+    brief: How do UK shoppers see Lidl's Deluxe range?
+    mode: quick
+    expect: {questions_fill: [goal, offer], brand_section: true}
+    answers: {goals: [brand_perception], offer_stage: selling, brand: "Lidl Deluxe, Deluxe", parent_brand: Lidl}
+    note: Change V12 - brand perception on a public own-label range with a parent brand. Needs a paid Quick run
+      (Anthropic up to 2.80 USD, Apify up to 1.80 USD; cost shown first).
+
 # PRD 14.3 targets (the numbers the /evals page shows pass / fail against).
 targets:
   quote_groundedness: 1.0

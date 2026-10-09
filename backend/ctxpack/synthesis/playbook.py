@@ -37,6 +37,7 @@ class DoFirstOut(BaseModel):
     impact: str = "medium"
     owner_hint: str = ""
     success_measure: str = ""
+    goal: str | None = None
 
     _effort = field_validator("effort", mode="before")(_level)
     _impact = field_validator("impact", mode="before")(_level)
@@ -106,8 +107,17 @@ class PlanPostOut(BaseModel):
     why_now: str = ""
 
 
+class GoalBlockOut(BaseModel):
+    goal: str
+    headline: str = ""
+    first_moves: list[str] = Field(default_factory=list)
+    success_measure: str = ""
+    item_ids: list[str] = Field(default_factory=list)
+
+
 class PlaybookOut(BaseModel):
     position: PositionOut | None = None
+    for_goals: list[GoalBlockOut] = Field(default_factory=list)
     do_first: list[DoFirstOut] = Field(default_factory=list)
     channel_plan: list[ChannelOut] = Field(default_factory=list)
     hooks: list[HookOut] = Field(default_factory=list)
@@ -144,14 +154,17 @@ def build_prompt(s: dict, brief: str, brand_voice: str | None, news: list[dict] 
     lines += [f"{p['id']} | what_performs | {p['platform']} {p['format']}: {p['why_it_worked']}"
               for p in s["what_performs"]]
     lines += [f"{h['id']} | hypothesis | {h['status']} | {h['statement']}" for h in s["hypotheses"]]
+    lines += [_line(it, "brand_perception") for it in s.get("brand_findings", [])]
     lines += [f"{h['id']} | news_hook | {h['date']} | {h['headline']}: {h['why_it_matters']}" for h in news]
     words = ([f"{it['id']}: {it['term']} = {it['meaning']}" for it in s["lexicon"]]
              + [f"{it['id']}: {it['text']}" for it in s["phrases"]])
     g = s.get("guardrails_draft", {})
     voice = s.get("voice", {})
     mine = posts.user_channels(intake)
+    goals = [str(g) for g in (intake or {}).get("goals") or []]
     return (f"{brief}\n\nBrand voice: {brand_voice or 'none (stay brand-neutral)'}\n"
-            f"The user's own channels: {', '.join(mine) if mine else 'not given (use your channel plan)'}\n\n"
+            f"The user's own channels: {', '.join(mine) if mine else 'not given (use your channel plan)'}\n"
+            f"Goal ids for the goal blocks, main first: {', '.join(goals) if goals else 'none given'}\n\n"
             "Verified items (id | section | confidence | posts | flags | text):\n" + "\n".join(lines)
             + "\n\nAudience words (lexicon and phrases):\n" + untrusted("audience_words", "\n".join(words))
             + f"\n\nVoice: {voice.get('tone', '')}\nCode-switching: {voice.get('code_switching') or 'none'}"
@@ -165,12 +178,20 @@ def _fake(user: str) -> dict:
     nws = next((i for i in ids if i.startswith("NWS")), None)
     obj = [i for i in ids if i.startswith("OBJ")][:2]
     backed = [i for i in ids if i.split("-")[0] in ("TEN", "PAIN", "OBJ", "THM", "MOT", "SEG", "MOM")] or [ten]
+    goals = re.search(r"^Goal ids for the goal blocks, main first: (.+)$", user, flags=re.M)
+    goal_ids = [] if not goals or goals.group(1) == "none given" else [g.strip() for g in goals.group(1).split(",")]
+    brp = [i for i in ids if i.startswith("BRP")]
     return {
         "position": {"statement": "Fake position", "for_whom": "Fake audience", "against_doubt": "Fake doubt",
                      "item_ids": [ten]},
+        "for_goals": [{"goal": g, "headline": f"Fake headline for {g}", "first_moves": [f"DO-0{n % 3 + 1}"],
+                       "success_measure": "Fake goal measure",
+                       "item_ids": brp[:1] if g == "brand_perception" and brp else [ten]}
+                      for n, g in enumerate(goal_ids)],
         "do_first": [{"action": f"Fake action {n}", "why": "Fake.", "why_ids": [ids[n % len(ids)]],
                       "effort": "low", "impact": "high", "owner_hint": "social team",
-                      "success_measure": "Fake measure"} for n in range(3)],
+                      "success_measure": "Fake measure", "goal": goal_ids[0] if goal_ids else None}
+                     for n in range(3)],
         "channel_plan": [{"platform": p, "why": "Fake.", "why_ids": [ten], "formats": ["post"]}
                          for p in ("web_forum", "instagram", "tiktok")],
         "hooks": [{"text": f"Fake hook {n} lekker", "why_ids": [ten]} for n in range(1, 11)],
@@ -213,7 +234,7 @@ class PlaybookStats:
 
 def known_ids(s: dict) -> set[str]:
     sections = INSIGHT_SECTIONS + ["opportunities", "competitors", "platform_lens", "what_performs", "hypotheses",
-                                   "risks"]
+                                   "risks", "brand_findings"]
     return {it["id"] for name in sections for it in s.get(name, [])}
 
 
@@ -226,14 +247,30 @@ def validate(out: PlaybookOut, s: dict, stats: PlaybookStats, news: list[dict] =
     def refs(ids: list[str]) -> list[str]:
         return list(dict.fromkeys(i.strip().upper() for i in ids if i.strip().upper() in known))
 
-    do_first = []
-    for o in out.do_first:
-        if why := refs(o.why_ids):
+    goals = [str(g) for g in (intake or {}).get("goals") or []]
+    do_first, do_id_of = [], {}
+    for n, o in enumerate(out.do_first, 1):
+        if (why := refs(o.why_ids)) and len(do_first) >= 3:
+            continue
+        if why:
+            do_id_of[f"DO-{n:02d}"] = f"DO-{len(do_first) + 1:02d}"
+            goal = (o.goal or "").strip().lower()
             do_first.append({"id": f"DO-{len(do_first) + 1:02d}", "action": o.action, "why": o.why, "why_ids": why,
                              "effort": o.effort, "impact": o.impact, "owner_hint": o.owner_hint,
-                             "success_measure": o.success_measure.strip()})
+                             "success_measure": o.success_measure.strip(), "goal": goal if goal in goals else None})
         else:
             stats.drop("do_first_without_evidence")
+    blocks = {}
+    for o in out.for_goals:  # V12: one block per confirmed goal, in the user's order; references checked
+        goal = o.goal.strip().lower()
+        if goal not in goals or goal in blocks or not o.headline.strip():
+            stats.drop("goal_block_invalid")
+            continue
+        blocks[goal] = {"goal": goal, "headline": o.headline.strip(), "success_measure": o.success_measure.strip(),
+                        "first_moves": list(dict.fromkeys(do_id_of[m.strip().upper()] for m in o.first_moves
+                                                          if m.strip().upper() in do_id_of)),
+                        "item_ids": refs(o.item_ids)}
+    for_goals = [blocks[g] for g in goals if g in blocks]
     channels = []
     for o in out.channel_plan:
         why = refs(o.why_ids)
@@ -288,7 +325,7 @@ def validate(out: PlaybookOut, s: dict, stats: PlaybookStats, news: list[dict] =
                         "against_doubt": out.position.against_doubt.strip(), "item_ids": pos_ids}
         else:
             stats.drop("position_without_evidence")
-    return {"position": position, "do_first": do_first[:3], "channel_plan": channels,
+    return {"position": position, "do_first": do_first[:3], "for_goals": for_goals, "channel_plan": channels,
             "playbook": {"hooks": hooks, "creative_brief": cb, "objection_handling": handling,
                          "keywords": out.keywords.model_dump(), "targets": targets, "this_week": week},
             "post_briefs": briefs}

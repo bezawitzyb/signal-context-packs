@@ -344,6 +344,18 @@ def expectations(pack: dict, expect: dict, min_share: float, clarifying: dict | 
         for p, most in expect.get("platform_share_max", {}).items():
             out.append({"check": f"{p} at most {_pct(most)} of the plan",
                         "pass": mix.get(p, 0.0) <= most if plan else None, "detail": shown})
+    if expect.get("brand_section"):  # V12: brand perception for the brand_perception goal
+        bp = pack.get("brand_perception") or {}
+        own = (bp.get("brands") or [{}])[0]
+        brands = [b.strip().casefold() for b in ((pack["brief"].get("intake") or {}).get("brand") or "").split(",")]
+        units = [u["source_unit"].casefold() for u in pack["coverage"].get("sources_used", [])]
+        out.append({"check": "brand perception section", "pass": bool(bp),
+                    "detail": f"{own.get('mentions', 0)} posts, {own.get('unprompted', 0)} unasked, "
+                              f"{len(bp.get('findings', []))} finding(s)" if bp else "missing"})
+        out.append({"check": "brand searched by name", "pass": any(b and b in u for b in brands for u in units),
+                    "detail": ", ".join(u for u in units if any(b and b in u for b in brands))[:160] or "not searched"})
+        out.append({"check": "brand first in the pack", "pass": (pack.get("section_order") or [""])[0] == "brand",
+                    "detail": ", ".join((pack.get("section_order") or [])[:3])})
     asks = [k for k in ("questions_max", "questions_fill") if k in expect]
     if asks:  # V3: brief-specific clarifying questions
         qs = (clarifying or {}).get("questions")

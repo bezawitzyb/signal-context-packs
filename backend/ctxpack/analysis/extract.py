@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field, field_validator
 from ctxpack.collect.relevance import BriefContext, brief_block
 from ctxpack.config import load_yaml
 from ctxpack.llm.client import LLMError, batched, load_prompt, structured, untrusted
-from ctxpack.schemas.enums import EvidenceRole, Emotion, Stance
+from ctxpack.schemas.enums import BrandRelation, EvidenceRole, Emotion, Stance
 
 log = logging.getLogger(__name__)
 
@@ -33,8 +33,19 @@ def _stance(value: object) -> object:
 class BrandMention(BaseModel):
     name: str = Field(description="Brand, shop or product as written.")
     stance: Stance = Field(default=Stance.neutral, description="The person's stance toward it.")
+    aspect: str | None = Field(default=None, description="V12, only for the user's own brand or its parent: what "
+                               "about it the item talks about (price, service, app, quality...), 1-3 English "
+                               "words. Null otherwise.")
+    relation: BrandRelation | None = Field(default=None, description="V12, only for the user's own brand when the "
+                                           "item also names or asks about its parent brand: same_as_parent, "
+                                           "part_of_parent, distinct or unclear. Null otherwise.")
 
     _known_stance = field_validator("stance", mode="before")(_stance)
+
+    @field_validator("relation", mode="before")
+    @classmethod
+    def _known_relation(cls, value: object) -> object:
+        return value if value in BrandRelation.__members__.values() or value is None else "unclear"
 
 
 class ExtractionItem(BaseModel):
@@ -148,6 +159,21 @@ def clean_item(item: ExtractionItem, doc: Doc, phrases_max: int) -> tuple[dict, 
 _NEGATIVE = {"niet", "not", "geen", "duur", "expensive", "hate", "jammer", "vies", "nooit", "never", "teuer"}
 
 
+def _fake_brands(user: str, body: str, negative: bool) -> list[dict]:
+    """LLM_FAKE (V12): the user's brand and its parent when the item names them (from the brief block)."""
+    own = re.search(r"^The user's own brand: (.+?)(?: \(parent brand: (.+)\))?$", user, flags=re.M)
+    if not own:
+        return []
+    low = body.lower()
+    brand = next((b.strip() for b in own.group(1).split(",") if b.strip().lower() in low), None)
+    parent = next((p.strip() for p in (own.group(2) or "").split(",") if p.strip() and p.strip().lower() in
+                   low.replace((brand or "\0").lower(), "")), None)
+    stance = "negative" if negative else "positive"
+    out = [{"name": brand, "stance": stance, "aspect": "price" if "price" in low or "prijs" in low else "quality",
+            "relation": ("part_of_parent" if parent else None)}] if brand else []
+    return out + ([{"name": parent, "stance": "neutral", "aspect": None, "relation": None}] if parent else [])
+
+
 def _fake_answer(user: str) -> dict:
     """LLM_FAKE: deterministic fields from the text itself. No network."""
     items = []
@@ -160,7 +186,7 @@ def _fake_answer(user: str) -> dict:
             "id": item_id,
             "needs": [], "pains": ["fake pain"] if negative else [], "objections": [],
             "questions": [body.strip()] if body.strip().endswith("?") else [],
-            "unanswered_question": None, "brand_mentions": [],
+            "unanswered_question": None, "brand_mentions": _fake_brands(user, body, negative),
             "verbatim_phrases": [first.group(0)] if first else [],
             "stance": "negative" if negative else "neutral",
             "emotion": ["frustration"] if negative else [],

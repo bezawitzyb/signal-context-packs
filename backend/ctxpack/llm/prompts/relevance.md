@@ -24,6 +24,10 @@ For EVERY item, by its id, return:
   (empty list if none).
 - reason: one code from the tool schema.
 
+If the brief lists the user's goals, they only tell you what matters most;
+they never make an on-topic item irrelevant. If it names the user's own
+brand, audience discussion of that brand (or its parent brand) is on-topic.
+
 Judge only from the item's own words. If you cannot tell, give a low
 relevance and reason "insufficient_evidence" rather than guess. Answer
 only by calling the tool.

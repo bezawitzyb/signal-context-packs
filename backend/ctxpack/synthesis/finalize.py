@@ -17,7 +17,7 @@ from typing import Any
 
 from ctxpack.config import load_yaml
 from ctxpack.schemas import pack as P
-from ctxpack.schemas.plan import confirmed_goal, offer_text
+from ctxpack.schemas.plan import confirmed_goal, offer_text, section_order
 from ctxpack.synthesis import news as news_mod
 from ctxpack.synthesis import posts as posts_mod
 from ctxpack.synthesis.confidence import LEVELS
@@ -316,14 +316,15 @@ def coverage(run: Any, docs: list[Any], evidence: list[dict], thin: bool) -> dic
 def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict], clusters: dict[str, Any],
              docs: list[Any], brand_voice: str | None, extra_spots: list[str] = (),
              opportunities: list[dict] = (), id_map: dict[str, str] | None = None,
-             news: dict | None = None) -> tuple[P.ContextPack, list[str]]:
+             news: dict | None = None, brand: dict | None = None) -> tuple[P.ContextPack, list[str]]:
     """(validated ContextPack, content-bar shortfalls). Raises if the pack is invalid."""
     from ctxpack import db
 
     from ctxpack.schemas.migrate import rename_ids as _rename
 
     s = _rename(draft["verified"]["sections"], id_map or {})
-    evidence = draft["verified"]["evidence"]
+    evidence = draft["verified"]["evidence"] + list((brand or {}).get("evidence") or [])  # V12: brand posts too
+    section = (brand or {}).get("section")
     analysis = run.analysis or {}
     sections = {**s, "_evidence": evidence}
     bar_short = content_bar(sections, parts, str(run.mode))
@@ -362,6 +363,10 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
         "motivations": [insight(P.Motivation, it) for it in s["motivations"]],
         "objections": [insight(P.Objection, it) for it in s["objections"]],
         "competitors": [_fields(P.Competitor, it) for it in s["competitors"]],
+        "brand_perception": {"brands": section["brands"], "note": section["note"],
+                             "findings": [insight(P.BrandFinding, it) for it in section["findings"]]}
+        if section else None,
+        "section_order": section_order((run.intake or {}).get("goals") or [], bool(section)),
         "culture": culture,
         "what_performs": [_fields(P.PerformingPost, it) for it in s["what_performs"]],
         "moments": [insight(P.Moment, it) for it in s["moments"]],
@@ -408,6 +413,9 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
                                 analysis.get("coverage", {}).get("grade", "d"), list(opportunities),
                                 evidence=data["evidence"], thin=data["coverage"]["thin_evidence"],
                                 position=parts.get("position"), who=represents(docs))
+    brp = {f["id"] for f in (section or {}).get("findings", [])}   # a saved playbook may predate a brand rebuild
+    data["snapshot"]["for_goals"] = [{**b, "item_ids": [i for i in b["item_ids"] if not i.startswith("BRP-") or i in brp]}
+                                     for b in parts.get("for_goals", [])]
     data["digest"] = digest(_jsonable(data), load_yaml("modes")["content_bar"]["digest_max_chars"])
     return P.ContextPack.model_validate(data), bar_short
 
@@ -457,6 +465,18 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
         draft["news_v7"] = {"hooks": hooks, "calendar": calendar}
         db.update_run(run_id, draft=draft)
     news = draft["news_v7"]
+    # V12: brand perception before the playbook, so the goal blocks can rest on its findings (saved: paid once)
+    from ctxpack.synthesis import brand as brand_mod
+
+    if brand_mod.wanted(run.intake) and ("brand_v12" not in draft or redo):
+        section, new_ev, usd = await brand_mod.build(run, interp, db.get_documents(run_id),
+                                                    draft["verified"].get("evidence", []))
+        out.usd += usd
+        out.calls += 1 if section and section["findings"] else 0
+        draft["brand_v12"] = {"section": section, "evidence": new_ev}
+        db.update_run(run_id, draft=draft)
+    brand = draft.get("brand_v12") if brand_mod.wanted(run.intake) else None
+    s_play = {**s, "brand_findings": ((brand or {}).get("section") or {}).get("findings", [])}
     key = voice or "_neutral"
     saved = {} if redo else (draft.get("playbooks") or {}).get(key) or {}
     if saved.get("parts"):
@@ -473,7 +493,7 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
                     if offer and intake.get("offer_stage") != "no_offer" else
                     "\nWhat the user offers: not given - end each objection answer with how to adapt it to "
                     "your offer"))
-        parts, stats, usd = await playbook.write_playbook(s, brief, voice, news["hooks"], intake,
+        parts, stats, usd = await playbook.write_playbook(s_play, brief, voice, news["hooks"], intake,
                                                           draft["verified"].get("evidence", []))
         out.calls += 1
         out.usd += usd
@@ -504,7 +524,8 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
     mapping = draft["opportunities_v5"]["mapping"]
     parts, flags = rename_ids(parts, mapping), rename_ids(flags, mapping)
     pack, out.bar_short = assemble(run, interp, draft, parts, flags, clusters, docs, voice,
-                                   opportunities=draft["opportunities_v5"]["items"], id_map=mapping, news=news)
+                                   opportunities=draft["opportunities_v5"]["items"], id_map=mapping, news=news,
+                                   brand=brand)
     out.pack_id = db.save_pack(pack, run_id=run_id)
     log.info("run %s packaged %s (thin: %s)", run_id, out.pack_id, out.bar_short)
     return out

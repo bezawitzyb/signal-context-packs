@@ -20,7 +20,8 @@ from pydantic import Field, ValidationError, model_validator
 
 from ctxpack.config import load_yaml, mode_limits
 from ctxpack.llm.client import load_prompt, structured
-from ctxpack.schemas.enums import CollectionPlatform, InputSource, InputStatus, IntakeFill, InterpretationField, Mode
+from ctxpack.schemas.enums import (CollectionPlatform, Goal, InputSource, InputStatus, IntakeFill,
+                                   InterpretationField, Mode)
 from ctxpack.schemas.plan import (
     ClarifyingQuestion,
     Intake,
@@ -67,7 +68,8 @@ def _check(interp: Interpretation, plan: Plan | None, questions: list[Clarifying
     if len(questions) > most:
         errors.append(f"ask at most {most} clarifying questions, not {len(questions)}")
     errors += [f"{q.id}: give {clar['options_min']}-{clar['options_max']} answer chips, not {len(q.options)}"
-               for q in questions if q.fills not in REQUIRED and len(q.options) > clar["options_max"]]
+               for q in questions if q.fills not in REQUIRED + (IntakeFill.brand,)
+               and not clar["options_min"] <= len(q.options) <= clar["options_max"]]
     ids = [q.id for q in questions]
     if len(set(ids)) != len(ids):
         errors.append(f"duplicate question ids: {ids}")
@@ -259,7 +261,8 @@ async def interpret(brief: str, *, mode: Mode | str = Mode.quick, window_days: i
     none is left, one plan-only call follows. Edits (markets, languages, audience, competitors) win.
     """
     window = window_days or load_yaml("modes")["default_time_window_days"]
-    told_required = intake is not None and bool(intake.goals) and bool(intake.offer or intake.offer_stage)
+    told_required = (intake is not None and bool(intake.goals) and bool(intake.offer or intake.offer_stage)
+                     and (Goal.brand_perception not in intake.goals or bool(intake.brand)))
     ask = allow_question and not edits and (intake is None or intake.empty() or not told_required)
     usd = 0.0
     for attempt in ((True, False) if ask else (False,)):
@@ -321,7 +324,8 @@ def drop_answered(questions: list[ClarifyingQuestion], brief: str,
     stated = {IntakeFill.goal: bool(u.goals) and u.goal.status == InputStatus.stated,
               IntakeFill.offer: u.offer.status == InputStatus.stated,
               IntakeFill.key_question: u.key_question.status == InputStatus.stated,
-              IntakeFill.timeframe: u.key_question.status == InputStatus.stated}
+              IntakeFill.timeframe: u.key_question.status == InputStatus.stated,
+              IntakeFill.brand: u.brand.status == InputStatus.stated}
     kept = [q for q in questions if not ((q.fills == IntakeFill.market and named) or stated.get(q.fills))]
     for n, q in enumerate(kept, 1):
         q.id = f"Q{n}"
@@ -329,12 +333,15 @@ def drop_answered(questions: list[ClarifyingQuestion], brief: str,
 
 
 def missing_required(u: Understanding) -> list[IntakeFill]:
-    """The goal and offer when neither the brief (stated, quote checked) nor the user gave them (V11)."""
+    """The goal and offer when neither the brief (stated, quote checked) nor the user gave them (V11); the brand
+    when brand perception is a known goal and no brand is known (V12; the web goal card asks it too)."""
     out = []
     if not u.goals or u.goal.status != InputStatus.stated:
         out.append(IntakeFill.goal)
     if u.offer.status != InputStatus.stated:
         out.append(IntakeFill.offer)
+    if Goal.brand_perception in u.goals and u.brand.status != InputStatus.stated:
+        out.append(IntakeFill.brand)
     return out
 
 
@@ -347,6 +354,9 @@ def fixed_question(fill: IntakeFill, model_q: ClarifyingQuestion | None = None) 
                                   options=[g["chip"] for g in cfg["goals"].values()], multi_select=True,
                                   allow_free_text=True, required=True,
                                   placeholder="Optional: the goal in your own words")
+    if fill == IntakeFill.brand:
+        return ClarifyingQuestion(question=text["question"], why_it_helps=text["why_it_helps"], fills=fill,
+                                  options=[], allow_free_text=True, required=True, placeholder=text["placeholder"])
     placeholder = (model_q.placeholder if model_q and model_q.placeholder else "") or text["placeholder"]
     return ClarifyingQuestion(question=text["question"], why_it_helps=text["why_it_helps"], fills=fill,
                               options=[st["chip"] for st in cfg["offer_stages"].values()], multi_select=False,
@@ -362,7 +372,7 @@ def ensure_required(questions: list[ClarifyingQuestion], u: Understanding) -> li
         own = next((q for q in rest if q.fills == fill), None)
         rest = [q for q in rest if q.fills != fill]
         first.append(fixed_question(fill, own))
-    rest = [q for q in rest if q.fills not in REQUIRED]  # already stated: never asked again
+    rest = [q for q in rest if q.fills not in REQUIRED + (IntakeFill.brand,)]  # stated: never asked again
     out = (first + rest)[:load_yaml("modes")["clarifying"]["max_questions"]]
     for n, q in enumerate(out, 1):
         q.id = f"Q{n}"
@@ -379,7 +389,7 @@ def settle_understanding(interp: Interpretation, brief: str, intake: Intake | No
     edits win; who and markets may show the model's assumption, goals and offer never. Idempotent."""
     u = interp.understanding
     text = _norm(brief)
-    for name in ("goal", "offer", "who", "markets", "key_question"):
+    for name in ("goal", "offer", "who", "markets", "key_question", "brand"):
         inp: UnderstoodInput = getattr(u, name)
         quote = _norm(inp.brief_quote)
         if inp.status != InputStatus.missing and quote and quote in text:
@@ -404,6 +414,9 @@ def settle_understanding(interp: Interpretation, brief: str, intake: Intake | No
         if intake.audience_roles:
             u.who = UnderstoodInput(value="; ".join(intake.audience_roles), status=InputStatus.stated,
                                     source=InputSource.answer)
+        if intake.brand:
+            words = intake.brand + (f" (parent: {intake.parent_brand})" if intake.parent_brand else "")
+            u.brand = UnderstoodInput(value=words, status=InputStatus.stated, source=InputSource.answer)
         if intake.key_question or intake.timeframe:
             words = "; ".join(x for x in (intake.key_question, f"by {intake.timeframe}" if intake.timeframe else "")
                               if x)

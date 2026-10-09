@@ -24,7 +24,7 @@ def example() -> dict:
 def test_example_pack_is_valid(example):
     assert example["schema_version"] == "1.0"                    # the fixture stays 1.0: it tests the migration
     pack = ContextPack.model_validate(example)
-    assert pack.schema_version == "1.2"
+    assert pack.schema_version == "1.3"
     assert pack.brief.interpreted.markets[0].code == example["brief"]["interpreted"]["market"]
     assert len(pack.do_first) == 3
     assert len(pack.playbook.this_week) == 5
@@ -142,7 +142,7 @@ def test_a_1_1_pack_is_migrated_to_1_2_without_a_guessed_goal():
     old["brief"]["intake"] = {"goal": "Positioning", "offer": "oat bars", "audience_roles": ["parents"]}
     new = ContextPack.model_validate(migrate(old)).model_dump(mode="json")
     b = new["brief"]
-    assert new["schema_version"] == "1.2" and b["intake"]["goals"] == ["positioning"]
+    assert new["schema_version"] == "1.3" and b["intake"]["goals"] == ["positioning"]
     assert b["interpreted"]["intent"] == "Positioning"
     u = b["interpreted"]["understanding"]
     assert (u["goal"]["source"], u["offer"]["source"], u["who"]["source"]) == ("answer", "answer", "answer")

@@ -141,9 +141,10 @@ async def create_context_pack(brief: str, goals: list[str], ctx: Context,
     complete or partial, then read the pack. Quick takes ~7 minutes. Needs the run key (X-API-Key).
     goals (required, main goal first): what the research is for - content_plan, campaign_launch,
     positioning, product_validation, market_entry, brand_perception, sales_enablement or
-    understand_audience. Agents are never asked questions; pass what else you know in intake
-    (optional): offer, offer_stage (idea, launching, selling, no_offer), key_question, audience_roles,
-    channels_in_use, competitors_user, timeframe."""
+    understand_audience (at most 3 are used). Agents are never asked questions; pass what else you know
+    in intake (optional): offer, offer_stage (idea, launching, selling, no_offer), key_question, brand and
+    parent_brand (brand REQUIRED with brand_perception), audience_roles, channels_in_use,
+    competitors_user, timeframe."""
     _key(ctx)
     known = {**(intake or {}), "goals": goals}
     return await _run(service.create_run, brief, mode, None, None, True, Requester.mcp, known)

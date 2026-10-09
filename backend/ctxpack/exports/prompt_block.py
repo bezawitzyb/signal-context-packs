@@ -26,7 +26,10 @@ def to_prompt_block(pack: dict) -> str:
              f"posts{' (thin evidence: treat as early signals)' if pack['coverage']['thin_evidence'] else ''}.",
              "USE: write in their words, build on the tensions, follow the guardrails. Only claims marked "
              "SAFE may be stated as fact; say \"people say...\" for the rest. Cite ids (e.g. TEN-01) when you "
-             "explain a choice.", "", "DO FIRST:"]
+             "explain a choice."]
+        L += [f"GOAL ({blk['goal'].replace('_', ' ')}): {inline(blk['headline'])}"
+              for blk in pack["snapshot"].get("for_goals") or []]   # V12: main goal first
+        L += ["", "DO FIRST:"]
         L += [f"- {inline(d['action'])} [{d['id']}]" for d in pack["do_first"][:sizes["do_first"]]]
         L += ["", "THEIR WORDS (term = meaning):"]
         L += [f"- {inline(x['term'])} = {inline(x['meaning'])}" for x in pack["voice"]["lexicon"][:sizes["lexicon"]]]

@@ -308,6 +308,9 @@ async def create_run(brief: str, mode: str = "quick", time_window_days: int | No
     if auto_approve and not (known or {}).get("goals"):  # V11: an agent is never asked, so it must say why
         raise ValueError("goals are required when the plan is approved automatically: pass intake.goals, main "
                          "goal first, from: " + ", ".join(load_yaml("goals")["goals"]))
+    if auto_approve and "brand_perception" in (known or {}).get("goals", []) and not known.get("brand"):
+        raise ValueError("the brand_perception goal needs intake.brand (your brand as people write it; "
+                         "intake.parent_brand optional)")
     run = db.create_run(brief.strip(), mode=Mode(mode), requester=requester)
     fields: dict[str, Any] = {}
     if brand_voice and brand_voice.strip():
@@ -323,11 +326,12 @@ async def create_run(brief: str, mode: str = "quick", time_window_days: int | No
 
 
 def intake_from_answers(questions: list[dict], answers: list[dict], skip_all: bool,
-                        before: dict | None = None) -> tuple[dict, dict]:
+                        before: dict | None = None, brand_known: bool = False) -> tuple[dict, dict]:
     """(intake, edits) from the answers, on top of what the user told us before. Chips and free text fill
     the question's intake field; goal chips become ranked goals (click order); offer chips the stage; a
     market answer becomes edited markets when it names a place. Skipped questions stay unanswered; the
-    goal and offer questions cannot be skipped (V11) - ValueError with a plain message."""
+    goal and offer questions cannot be skipped (V11); brand perception needs the brand, from the goal card,
+    the brand question, an earlier answer or the brief (brand_known) (V12) - ValueError with a plain message."""
     from ctxpack.agent.markets import places_in
     from ctxpack.schemas.plan import goal_from_text, stage_from_text
 
@@ -352,6 +356,12 @@ def intake_from_answers(questions: list[dict], answers: list[dict], skip_all: bo
                 continue
             intake["goals"] = list(dict.fromkeys(goals))
             intake["goal_note"] = text or None
+            _brand_from(a, intake)
+            continue
+        if fills == "brand" and q.get("required"):
+            _brand_from({**a, "brand": a.get("brand") or text}, intake)
+            if not intake.get("brand"):
+                unanswered.append("which brand to listen for")
             continue
         if fills == "offer" and q.get("required"):
             stage = next((st.value for st in (stage_from_text(c) for c in chosen) if st is not None), None)
@@ -381,9 +391,18 @@ def intake_from_answers(questions: list[dict], answers: list[dict], skip_all: bo
                 intake["other_answers"].append({"question": q["question"], "answer": "; ".join(values)})
         else:
             intake["other_answers"].append({"question": q["question"], "answer": "; ".join(values)})
+    if "brand_perception" in (intake.get("goals") or []) and not (intake.get("brand") or brand_known):
+        unanswered.append("which brand to listen for (Brand perception needs your brand name)")
     if unanswered:
         raise ValueError("Please answer " + " and ".join(unanswered) + " - these cannot be skipped.")
     return intake, edits
+
+
+def _brand_from(answer: dict, intake: dict) -> None:
+    """The brand and parent brand typed on the goal card or the brand question (V12), when given."""
+    for name in ("brand", "parent_brand"):
+        if str(answer.get(name) or "").strip():
+            intake[name] = str(answer[name]).strip()[:120]
 
 
 async def answer_questions(run_id: str, answers: list[dict] | None = None, skip_all: bool = False,
@@ -398,7 +417,9 @@ async def answer_questions(run_id: str, answers: list[dict] | None = None, skip_
     guards.check_can_queue()
     if answer and not answers:
         answers = [{"id": questions[0]["id"], "text": answer}]
-    intake, edits = intake_from_answers(questions, answers or [], skip_all, before=run.intake)
+    understood = ((run.interpretation or {}).get("understanding") or {}).get("brand") or {}
+    intake, edits = intake_from_answers(questions, answers or [], skip_all, before=run.intake,
+                                        brand_known=understood.get("status") == "stated")
     return await _plan(run_id, allow_question=False, intake=intake, edits=edits or None)
 
 
@@ -445,7 +466,7 @@ async def replan(run_id: str, edits: dict[str, Any]) -> dict[str, Any]:
     if "goals" in edits:  # an empty list is refused below, never silently ignored
         clean.pop("goals", None)
         intake["goals"] = edits["goals"] or []
-    for name in ("goal_note", "offer", "offer_stage", "key_question"):
+    for name in ("goal_note", "offer", "offer_stage", "key_question", "brand", "parent_brand"):
         if name in edits:  # an empty value clears it
             clean.pop(name, None)
             intake[name] = (str(edits[name]).strip() or None) if edits[name] is not None else None
@@ -454,6 +475,10 @@ async def replan(run_id: str, edits: dict[str, Any]) -> dict[str, Any]:
     intake = Intake.model_validate(intake).model_dump(mode="json")  # unknown goals or stages: a plain error
     if "goals" in edits and not intake.get("goals"):
         raise ValueError("keep at least one goal: it decides what the pack focuses on")
+    understood = ((run.interpretation or {}).get("understanding") or {}).get("brand") or {}
+    if "brand_perception" in intake.get("goals", []) and not intake.get("brand") \
+            and understood.get("status") != "stated":
+        raise ValueError("Brand perception needs your brand name: add it under Brand")
     return await _plan(run_id, allow_question=False, intake=intake, edits=clean)
 
 

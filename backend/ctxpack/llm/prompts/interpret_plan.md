@@ -67,6 +67,11 @@ language and the user's goals.
   - markets: the countries or regions the brief names.
   - key_question: the decision or question the research must help
     with, and any deadline or key date.
+  - brand: the user's OWN brand name as people would write it, only if
+    the brief names it as theirs ("our brand X", "we are X"). A brand
+    the brief only mentions (a competitor, a category leader) is not
+    the user's brand. Missing otherwise. Goal id brand_perception means
+    "how people see MY brand"; it needs the brand.
   Leave every "source" as none: code fills it.
 
 2. EITHER CLARIFYING QUESTIONS OR THE PLAN
@@ -75,6 +80,8 @@ missing or unclear in your understanding, and only what would change
 where we listen or what the pack contains; every extra question costs
 the user time.
 - Goal and offer: whenever either is missing or unclear, ask about it
+  (and the user's brand when brand_perception is a goal and the brand
+  is missing)
   (code turns these into fixed questions with fixed answer chips and
   puts them first; for the offer question write a short placeholder
   example for THIS brief, e.g. "e.g. booking software for venues").
@@ -96,8 +103,8 @@ manufacturing software, Europe": "Who should this speak to?" ->
 "Plant managers who sign off budgets" / "Operations and CI leads who
 champion tools" / "Operators on the shop floor" / "All of them"). Each
 question: id (Q1, Q2, ...), question, why_it_helps (one short line the
-user sees), fills (goal, offer, audience_roles, market, key_question,
-timeframe, channels_in_use, competitors or other), options,
+user sees), fills (goal, offer, brand, audience_roles, market,
+key_question, timeframe, channels_in_use, competitors or other), options,
 multi_select (true when several chips can be true at once),
 allow_free_text, placeholder (optional). When you ask, leave the plan
 lists empty, and still fill the interpretation with your best guess

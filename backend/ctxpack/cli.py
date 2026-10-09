@@ -285,21 +285,28 @@ def _intake_from(questions, answers, before=None):
     return Intake.model_validate(raw), edits or None
 
 
-def _given_intake(goals: list[str], offer: str, offer_stage: str):
-    """--goal / --offer / --offer-stage as an intake (None when nothing was given); a plain error otherwise."""
+def _given_intake(goals: list[str], offer: str, offer_stage: str, brand: str = "", parent_brand: str = ""):
+    """--goal / --offer / --offer-stage / --brand / --parent-brand as an intake (None when nothing was given);
+    a plain error otherwise."""
     from ctxpack.schemas.plan import Intake
 
-    if not (goals or offer or offer_stage):
+    if not (goals or offer or offer_stage or brand):
         return None
     try:
-        return Intake.model_validate({"goals": goals, "offer": offer or None, "offer_stage": offer_stage or None})
+        return Intake.model_validate({"goals": goals, "offer": offer or None, "offer_stage": offer_stage or None,
+                                      "brand": brand or None, "parent_brand": parent_brand or None})
     except ValueError as exc:
         console.print(f"{BAD} {exc}", highlight=False)
         raise typer.Exit(1) from None
 
 
 def _ask_cli(q) -> dict:
-    """One answer typed in the terminal; the goal and offer questions are asked again until answered (V11)."""
+    """One answer typed in the terminal; the goal, offer and brand questions are asked again until answered."""
+    if q.fills.value == "brand":
+        while not (name := typer.prompt(f"{q.id}: your brand", default="", show_default=False).strip()):
+            console.print("  this one cannot be skipped: type the brand name", highlight=False)
+        parent = typer.prompt("   parent brand (Enter if none)", default="", show_default=False).strip()
+        return {"id": q.id, "brand": name, "parent_brand": parent or None}
     hint = ("number(s) in priority order like 3,1" if q.multi_select else "a number") + ", plus your own words"
     while True:
         raw = typer.prompt(f"{q.id}: {hint}" + ("" if q.required else ", or Enter to skip"), default="",
@@ -307,7 +314,13 @@ def _ask_cli(q) -> dict:
         head, _, rest = raw.partition(" ")
         picks = [int(x) for x in head.split(",") if x.isdigit()]
         if picks and all(1 <= n <= len(q.options) for n in picks):
-            return {"id": q.id, "chosen": [q.options[n - 1] for n in picks], "text": rest.strip() or None}
+            chosen = [q.options[n - 1] for n in picks]
+            if q.fills.value == "goal" and "Brand perception" in chosen:
+                brand = typer.prompt("   your brand (for Brand perception)", default="", show_default=False).strip()
+                parent = typer.prompt("   parent brand (Enter if none)", default="", show_default=False).strip()
+                return {"id": q.id, "chosen": chosen, "text": rest.strip() or None, "brand": brand or None,
+                        "parent_brand": parent or None}
+            return {"id": q.id, "chosen": chosen, "text": rest.strip() or None}
         if q.required:
             console.print("  this one cannot be skipped: pick at least one number first", highlight=False)
             continue
@@ -485,6 +498,8 @@ def research(
                                    "brand_perception, sales_enablement, understand_audience"),
     offer: str = typer.Option("", "--offer", help="What you offer, in a few words"),
     offer_stage: str = typer.Option("", "--offer-stage", help="idea, launching, selling or no_offer"),
+    brand: str = typer.Option("", "--brand", help="Your brand as people write it (needed for brand_perception)"),
+    parent_brand: str = typer.Option("", "--parent-brand", help="Its parent brand, if any"),
 ) -> None:
     """Plan -> show it and wait for Enter -> the agent loop, printed live -> counters, sources, cost."""
     import asyncio
@@ -500,10 +515,13 @@ def research(
         raise typer.Exit(1)
     from ctxpack.config import load_yaml
 
-    given = _given_intake(goal, offer, offer_stage)
+    given = _given_intake(goal, offer, offer_stage, brand, parent_brand)
     if auto_approve and not (given and given.goals):  # V11: nobody is asked, so the goal must be given
         console.print(f"{BAD} --auto-approve needs --goal (main goal first): "
                       + ", ".join(load_yaml("goals")["goals"]), highlight=False)
+        raise typer.Exit(1)
+    if auto_approve and given and "brand_perception" in given.goals and not given.brand:
+        console.print(f"{BAD} the brand_perception goal needs --brand", highlight=False)
         raise typer.Exit(1)
     if fixtures:
         os.environ["USE_FIXTURES"] = "true"
@@ -911,7 +929,9 @@ def pack(
         show("TEST HOOKS (not in the pack)", [
             f"{h} -> " + (f"[{flagged[h]['category']}] {flagged[h]['rule_area']}: {flagged[h]['safer_wording']}"
                           if h in flagged else "no flag") for h in test_hook])
-    console.print(f"\n[bold]PACK[/bold] {out.pack_id} | valid schema 1.2 | thin evidence "
+    from ctxpack.schemas.pack import SCHEMA_VERSION
+
+    console.print(f"\n[bold]PACK[/bold] {out.pack_id} | valid schema {SCHEMA_VERSION} | thin evidence "
                   f"{p['coverage']['thin_evidence']}{': ' + ', '.join(out.bar_short) if out.bar_short else ''}",
                   highlight=False)
     console.print(f"[bold]PLAYBOOK CHECK[/bold] hooks {len(p['playbook']['hooks'])} | hooks without a tension "
@@ -1058,7 +1078,10 @@ def _eval_answer(q, given: dict) -> dict:
 
     cfg = load_yaml("goals")
     if q.fills.value == "goal" and given.get("goals"):
-        return {"id": q.id, "chosen": [cfg["goals"][g]["chip"] for g in given["goals"]]}
+        return {"id": q.id, "chosen": [cfg["goals"][g]["chip"] for g in given["goals"]],
+                "brand": given.get("brand"), "parent_brand": given.get("parent_brand")}
+    if q.fills.value == "brand":
+        return {"id": q.id, "brand": given.get("brand") or "", "parent_brand": given.get("parent_brand")}
     if q.fills.value == "offer" and given.get("offer_stage"):
         return {"id": q.id, "chosen": [cfg["offer_stages"][given["offer_stage"]]["chip"]], "text": given.get("offer")}
     return {"id": q.id, "chosen": [q.options[0]]}

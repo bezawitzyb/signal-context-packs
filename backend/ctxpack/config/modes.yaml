@@ -31,6 +31,10 @@ modes:
 
 default_mode: quick
 
+# Goals per pack (change V12, PRD FR-A2e): more are listed as left out with the reason. Same for both modes.
+goals:
+  max: 3
+
 # Clarifying questions (change V3, PRD FR-A2c; V11 FR-A2d): asked before planning, never of agents.
 # Goals and offer count towards max_questions; options_max is for the model's own questions
 # (the fixed goal chips come from goals.yaml).

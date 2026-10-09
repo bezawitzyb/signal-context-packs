@@ -89,9 +89,9 @@ def test_1_0_packs_migrate_to_1_1_and_are_never_written_back():
     before = copy.deepcopy(old)
     new = current(old)
     assert old == before                                                    # the input is not changed
-    assert new["schema_version"] == "1.2" and new["brief"]["interpreted"]["markets"][0]["code"]
+    assert new["schema_version"] == "1.3" and new["brief"]["interpreted"]["markets"][0]["code"]
     assert new["brief"]["interpreted"]["market"] == old["brief"]["interpreted"]["market"]
-    assert ContextPack.model_validate(new).schema_version == "1.2"
+    assert ContextPack.model_validate(new).schema_version == "1.3"
     assert migrate(new) is new                                              # already current: untouched
 
 
@@ -100,7 +100,7 @@ def test_every_featured_and_example_pack_validates():
     files = [p for p in (root / "featured").glob("pk_*.json")] + list((root / "examples").glob("*.json"))
     assert files
     for path in files:
-        assert ContextPack.model_validate_json(path.read_text(encoding="utf-8")).schema_version == "1.2", path
+        assert ContextPack.model_validate_json(path.read_text(encoding="utf-8")).schema_version == "1.3", path
 
 
 def test_old_runs_still_read(temp_db):

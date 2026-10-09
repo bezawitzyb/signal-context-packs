@@ -228,7 +228,8 @@ def first_message(ctx: RunContext, interp: Interpretation, plan: Plan) -> str:
         *(["WHAT THE USER TOLD US (use it to decide where this audience talks)\n"
            + "\n".join(f"- {k.replace('_', ' ')}: {', '.join(v) if isinstance(v, list) else v}"
                        for k, v in ctx.intake.items())] if ctx.intake else []),
-        *(["COMPETITORS THE USER NAMED (search each at least once by name; finish is refused until you do)\n"
+        *(["BRANDS THE USER NAMED - competitors, and their own brand and parent brand for brand perception "
+           "(search each at least once by name; finish is refused until you do)\n"
            + "\n".join(f"- {c}" for c in ctx.must_search)] if ctx.must_search else []),
         "LIMITS (enforced by the tools)\n"
         f"- tool calls: {lim['max_tool_calls']} (coverage_report and finish do not count)\n"

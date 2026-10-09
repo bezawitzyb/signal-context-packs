@@ -19,6 +19,9 @@ idempotent and also run on packs saved as 1.1 before a later step existed:
       (Intake's own validator); brief.interpreted.understanding built in code from what the pack holds
       (goals and offer only from the user's answers, who and markets as "assumed"); intent is replaced by
       the confirmed goals (a guessed intent is dropped).
+1.2 -> 1.3 (change V12):
+  V12 section_order from the pack's confirmed goals (config/goals.yaml); snapshot.for_goals, do_first[].goal
+      and brand_perception start empty (they need the model); intake brand fields start empty.
 Packs are never written back in an older version.
 """
 
@@ -34,7 +37,8 @@ def needs_migration(pack: dict[str, Any]) -> bool:
 
     return (pack.get("schema_version") != SCHEMA_VERSION or "pain_points" not in pack or "white_space" in pack
             or "news_hooks" not in pack or "findings" not in (pack.get("snapshot") or {})
-            or "understanding" not in ((pack.get("brief") or {}).get("interpreted") or {}))
+            or "understanding" not in ((pack.get("brief") or {}).get("interpreted") or {})
+            or "section_order" not in pack)
 
 
 def migrate(pack: dict[str, Any]) -> dict[str, Any]:
@@ -60,6 +64,11 @@ def migrate(pack: dict[str, Any]) -> dict[str, Any]:
         out = _summary_v9(out)
     if "understanding" not in ((out.get("brief") or {}).get("interpreted") or {}):
         out = _understanding_v11(out)
+    if "section_order" not in out:
+        from ctxpack.schemas.plan import section_order
+
+        goals = ((out.get("brief") or {}).get("intake") or {}).get("goals") or []
+        out = {**out, "section_order": section_order(goals, bool(out.get("brand_perception")))}
     return out
 
 

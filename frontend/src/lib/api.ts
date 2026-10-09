@@ -2,7 +2,7 @@
 // this file never stores, logs or shows it.
 import type {
   ConfidenceLabel,
-  ContextPack12,
+  ContextPack13,
   Evidence1,
   Interpretation,
 } from "./types";
@@ -12,7 +12,7 @@ import type { RunInputs } from "./rerun";
 type DeepRequired<T> = T extends (infer U)[] ? DeepRequired<U>[]
   : T extends object ? { [K in keyof T]-?: DeepRequired<T[K]> } : T;
 
-export type ContextPack = DeepRequired<ContextPack12>;
+export type ContextPack = DeepRequired<ContextPack13>;
 export type Evidence = DeepRequired<Evidence1>;
 export type Label = ConfidenceLabel;
 
@@ -71,13 +71,16 @@ export interface Question {
 /** What the user told us before planning (brief.intake). */
 export interface IntakeData {
   audience_roles?: string[]; goals?: string[]; goal_note?: string | null; offer?: string | null;
-  offer_stage?: string | null; key_question?: string | null; channels_in_use?: string[];
+  offer_stage?: string | null; key_question?: string | null; brand?: string | null; parent_brand?: string | null;
+  goals_left_out?: { goal: string; reason: string }[]; channels_in_use?: string[];
   competitors_user?: string[]; timeframe?: string | null; other_answers?: { question: string; answer: string }[];
   questions_asked?: Question[];
 }
-export interface QuestionAnswer { id: string; chosen?: string[]; text?: string; skipped?: boolean }
+export interface QuestionAnswer { id: string; chosen?: string[]; text?: string; skipped?: boolean;
+  brand?: string; parent_brand?: string }
 export interface PlanEdits {
   goals?: string[]; goal_note?: string; offer?: string; offer_stage?: string; key_question?: string; topic?: string;
+  brand?: string; parent_brand?: string;
   markets?: string[]; languages?: string[]; audience?: string; audience_roles?: string[]; competitors?: string[];
 }
 

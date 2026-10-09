@@ -35,6 +35,15 @@ def compact_guardrails(g: dict) -> dict:
     return {**g, "sensitivities": [_first_sentence(x) for x in g.get("sensitivities", [])]}
 
 
+def brand_digest(bp: dict) -> dict[str, Any]:
+    """V12: the brand numbers and only the safe-to-assert findings (the rest: get_insight by id)."""
+    return {"brands": [{k: r[k] for k in ("name", "is_parent", "mentions", "unprompted", "share_of_voice")}
+                       for r in bp["brands"]],
+            "safe_findings": [{"id": f["id"], "claim": _first_sentence(f["claim"], 140)}
+                              for f in bp["findings"] if f["safe_to_assert"]],
+            "finding_ids": [f["id"] for f in bp["findings"]], "note": _first_sentence(bp["note"], 160)}
+
+
 def digest_view(pack: dict) -> dict[str, Any]:
     """~1,100 tokens (modes.yaml digest_view_max_tokens): five truths, do first, top tensions, top lexicon,
     guardrails, agent instructions.
@@ -47,6 +56,9 @@ def digest_view(pack: dict) -> dict[str, Any]:
             "schema_version": pack["schema_version"], "pack_id": pack["pack_id"],
             "generated_at": pack["generated_at"],
             "brief": {k: interp[k] for k in ("topic", "market", "languages", "audience")},
+            "goals": [{"goal": blk["goal"], "headline": _first_sentence(blk["headline"], 140),
+                       "first_moves": blk["first_moves"]} for blk in pack["snapshot"].get("for_goals") or []],
+            **({"brand_perception": brand_digest(pack["brand_perception"])} if pack.get("brand_perception") else {}),
             "coverage_grade": pack["snapshot"]["coverage_grade"],
             "thin_evidence": pack["coverage"]["thin_evidence"],
             "five_truths": [{"text": _first_sentence(t["text"], 140), "item_ids": t["item_ids"]}

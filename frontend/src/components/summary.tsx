@@ -46,6 +46,9 @@ function Clamp({ text, lines = 2, className = "" }: { text: string; lines?: 1 | 
   );
 }
 
+/** "brand_perception" -> "Brand perception" (the mirror has no API, so no config lookup here). */
+const goalWords = (g: string) => (g.charAt(0).toUpperCase() + g.slice(1)).replace(/_/g, " ");
+
 export function SummaryPart({ pack }: { pack: ContextPack }) {
   const s = pack.snapshot;
   const { onOpen } = usePack();
@@ -61,6 +64,19 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
         {s.represents && <p className="text-ink-2">{s.represents}</p>}
         <HowToRead />
       </div>
+
+      {(s.for_goals ?? []).length > 0 && (
+        <ul className="space-y-1.5" aria-label="For your goals">
+          {s.for_goals.map((g, n) => (
+            <li key={g.goal} className={`rounded-lg border px-3 py-2 text-sm ${n === 0 ? "border-ink" : "border-line"}`}>
+              <p className="line-clamp-2 text-ink" title={g.headline}>
+                <span className="font-semibold">For your {n === 0 ? "main " : ""}goal - {goalWords(g.goal)}:</span> {g.headline}
+                {g.first_moves.length > 0 && <span className="text-ink-3"> · first moves {g.first_moves.map((m) => Number(m.slice(3))).join(", ")}</span>}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-[1.1fr_1fr]">
         <div>
@@ -104,6 +120,7 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                   <span className="shrink-0 font-mono text-ink-3">{n + 1}.</span>
                   <div className="min-w-0 flex-1">
                     <Clamp text={d.action} className="text-ink" />
+                    {d.goal && <p className="text-xs text-ink-3">for: {goalWords(d.goal)}</p>}
                     {d.success_measure && <p className="mt-0.5 line-clamp-1 text-xs text-ink-2" title={d.success_measure}>
                       <span className="font-medium text-ink">How you'll know:</span> {d.success_measure}</p>}
                   </div>

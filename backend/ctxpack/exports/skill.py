@@ -14,7 +14,7 @@ import io
 import json
 import zipfile
 
-from ctxpack.exports.markdown import posts_section
+from ctxpack.exports.markdown import brand_section, posts_section
 from ctxpack.exports.common import DISCLAIMER, HOOKS_NOTE, badge, cfg, inline, slug, tokens
 
 REFERENCES = {
@@ -26,6 +26,8 @@ REFERENCES = {
     "posts.md": "post briefs, drafts and the 4-week content calendar - open when writing or scheduling posts",
     "evidence.json": "the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim",
 }
+BRAND_REFERENCE = ("brand.md", "how people see the brand: numbers and verified findings - open when writing about "
+                   "the brand or comparing it with its parent")
 
 
 def skill_name(pack: dict) -> str:
@@ -59,7 +61,10 @@ def skill_body(pack: dict) -> str:
              f"Built from {pack['coverage']['counts']['relevant']} real public posts (coverage grade "
              f"{pack['snapshot']['coverage_grade']}"
              f"{'; thin evidence - treat findings as early signals' if pack['coverage']['thin_evidence'] else ''}).",
-             "", "## Do first"]
+             ""]
+        goals = [f"Goal ({blk['goal'].replace('_', ' ')}): {inline(blk['headline'])}"   # V12: main goal first
+                 for blk in pack["snapshot"].get("for_goals") or []]
+        L += goals + ([""] if goals else []) + ["## Do first"]
         L += [f"- {inline(d['action'])} ({d['id']})" for d in pack["do_first"][:sizes["do_first"]]]
         L += ["", "## Five truths"]
         L += [f"- {inline(t['text'])} ({', '.join(t['item_ids'])})"
@@ -78,7 +83,8 @@ def skill_body(pack: dict) -> str:
         L += ["- Confidence labels: strong > moderate > emerging > speculative. Only items with "
               "safe_to_assert true may be stated as fact."]
         L += ["", "## Reference files (open only when needed)"]
-        L += [f"- references/{name}: {why}" for name, why in REFERENCES.items()]
+        refs = {**REFERENCES, **(dict([BRAND_REFERENCE]) if pack.get("brand_perception") else {})}
+        L += [f"- references/{name}: {why}" for name, why in refs.items()]
         L += ["", f"Pack {pack['pack_id']}, generated {pack['generated_at']}. {DISCLAIMER}"]
         return "\n".join(L) + "\n"
 
@@ -166,7 +172,10 @@ def references(pack: dict) -> dict[str, str]:
             "posts.md": "\n".join(["# Post briefs, drafts and content calendar", note, ""]
                                   + (posts_section(pack)[1:] if pack.get("post_briefs") else ["No post briefs."]))
             + "\n",
-            "evidence.json": json.dumps(evidence, ensure_ascii=False, indent=1, default=str)}
+            "evidence.json": json.dumps(evidence, ensure_ascii=False, indent=1, default=str),
+            **({"brand.md": "\n".join(["# How people see the brand", note]
+                                       + brand_section(pack["brand_perception"])[1:]) + "\n"}
+               if pack.get("brand_perception") else {})}
 
 
 def skill_zip(pack: dict) -> tuple[str, bytes]:
