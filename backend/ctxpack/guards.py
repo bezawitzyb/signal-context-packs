@@ -61,8 +61,9 @@ def _matches(given: str, expected) -> bool:
     return bool(value) and secrets.compare_digest(given.encode(), value.encode())
 
 
-def check_run_key(given: str | None) -> None:
-    """The run key must match RUN_KEY, or GUEST_RUN_KEY while that is set (constant-time).
+def key_kind(given: str | None) -> str:
+    """Which key was given: "run_key" (RUN_KEY) or "guest" (GUEST_RUN_KEY while set), compared in constant time.
+    Raises GuardError otherwise. The keyless local demo (offline, no RUN_KEY) counts as "run_key".
 
     GUEST_RUN_KEY is temporary access for a tester: deleting it in Render revokes it without touching
     RUN_KEY. If RUN_KEY is not set, nobody can start runs (a guest key alone opens nothing).
@@ -70,17 +71,22 @@ def check_run_key(given: str | None) -> None:
     settings = get_settings()
     if not settings.is_set("RUN_KEY"):
         if settings.offline:  # keyless local demo: recorded data and the fake model, nothing is paid
-            return
+            return "run_key"
         raise GuardError(503, "starting runs is switched off on this server")
     key = (given or "").strip()
     if key and _matches(key, settings.run_key):
-        return
+        return "run_key"
     guest = settings.guest_run_key
     if key and guest is not None and len(guest.get_secret_value().strip()) >= GUEST_KEY_MIN_CHARS \
             and _matches(key, guest):
-        log.info("run started with the guest key")
-        return
+        return "guest"
     raise GuardError(401, "a valid run key is needed to start runs (header X-API-Key)")
+
+
+def check_run_key(given: str | None) -> None:
+    """The run key must match RUN_KEY, or GUEST_RUN_KEY while that is set (see key_kind)."""
+    if key_kind(given) == "guest":
+        log.info("run started with the guest key")
 
 
 def check_owner_key(given: str | None) -> None:

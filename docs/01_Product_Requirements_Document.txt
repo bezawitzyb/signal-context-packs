@@ -480,9 +480,13 @@ Definition:
     (others are stripped) and turns them into numbered citations that
     open the source post (a finding opens its first post). No evidence
     -> the answer says so plainly; no outside facts (prompts/ask.md).
-  - Cost: every call counts against DAILY_SPEND_CAP_USD; without a run
-    key each pack takes ask.questions_per_pack_per_day questions per UTC
-    day (table ask_counts), then a friendly message. Costs are never
+  - Access and cost (owner's decision, 2026-10-09): asking needs a key;
+    without one the panel says "Asking needs a run key: add it on the
+    start page" (users never hear about the guest key). The run key has
+    no question limit; the guest key gets ask.guest_questions_per_pack
+    (5) per pack and ask.guest_questions_per_visitor (15) per visitor
+    (a salted hash of the address, kept in memory only) per UTC day.
+    Every call counts against DAILY_SPEND_CAP_USD. Costs are never
     returned.
   - Pack page: "Ask this pack" side panel with 4 suggested questions
     built from the pack in code. MCP: ask_pack(pack_id, question), run

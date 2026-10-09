@@ -1,6 +1,7 @@
 // V10 "Ask this pack": a side panel. Answers come from this pack only; citations show as small numbered
 // links that open the source post. Suggested questions are built from the pack in code (no extra call).
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 import { ArrowUp, Loader2, MessageCircleQuestion, X } from "lucide-react";
 import { askPack, friendlyError, MIRROR, type AskAnswer, type AskTurn, type ContextPack } from "../lib/api";
 import { readRunKey } from "../lib/runKey";
@@ -91,6 +92,7 @@ export function AskPanel({ pack, open, onClose }: { pack: ContextPack; open: boo
     } finally { setBusy(false); }
   };
   const last = [...turns].reverse().find((t) => t.a)?.a;
+  const keyed = MIRROR || readRunKey() !== "";   // asking needs a key (2026-10-09); users only hear "run key"
 
   return (
     <aside aria-label="Ask this pack"
@@ -104,7 +106,13 @@ export function AskPanel({ pack, open, onClose }: { pack: ContextPack; open: boo
       <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
         <p className="text-xs text-ink-3">Answers use only this pack's research. Numbers open the real posts.</p>
         {MIRROR && <p className="rounded-lg border border-line bg-wash p-3 text-sm text-ink-2">Asking works on the live app; this read-only copy has no server.</p>}
-        {turns.length === 0 && !MIRROR && (
+        {!keyed && (
+          <div role="status" className="rounded-lg border border-line-strong bg-wash p-3 text-sm text-ink">
+            <p>Asking needs a run key: add it on the start page.</p>
+            <Link to="/" onClick={onClose} className="mt-2 inline-block font-medium underline">Go to the start page</Link>
+          </div>
+        )}
+        {turns.length === 0 && !MIRROR && keyed && (
           <ul className="space-y-2" aria-label="Suggested questions">
             {suggestedQuestions(pack).map((q) => (
               <li key={q}><button type="button" onClick={() => send(q)}
@@ -122,7 +130,7 @@ export function AskPanel({ pack, open, onClose }: { pack: ContextPack; open: boo
         ))}
         <div ref={end} />
       </div>
-      {!MIRROR && (
+      {!MIRROR && keyed && (
         <form className="border-t border-line p-3" onSubmit={(e) => { e.preventDefault(); send(input.current?.value ?? ""); }}>
           <label htmlFor="ask-input" className="sr-only">Your question about this pack</label>
           <div className="flex items-end gap-2">
@@ -133,7 +141,7 @@ export function AskPanel({ pack, open, onClose }: { pack: ContextPack; open: boo
                     className="rounded-lg bg-ink p-2.5 text-paper disabled:opacity-50"><ArrowUp aria-hidden="true" size={16} /></button>
           </div>
           {last?.questions_left_today != null && (
-            <p className="mt-1 text-xs text-ink-3">{last.questions_left_today} questions left today for this pack.</p>
+            <p className="mt-1 text-xs text-ink-3">{last.questions_left_today} questions left today.</p>
           )}
         </form>
       )}

@@ -39,25 +39,25 @@ async def _call(fn, *args, **kwargs) -> Any:
         result = fn(*args, **kwargs)
         return await result if asyncio.iscoroutine(result) else result
     except service.NotFound as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from None
     except guards.GuardError as exc:
-        raise HTTPException(status_code=exc.status, detail=exc.message)
+        raise HTTPException(status_code=exc.status, detail=exc.message) from None
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from None
 
 
 def _key(x_api_key: str | None) -> None:
     try:
         guards.check_run_key(x_api_key)
     except guards.GuardError as exc:
-        raise HTTPException(status_code=exc.status, detail=exc.message)
+        raise HTTPException(status_code=exc.status, detail=exc.message) from None
 
 
 def _owner(x_api_key: str | None) -> None:
     try:
         guards.check_owner_key(x_api_key)
     except guards.GuardError as exc:
-        raise HTTPException(status_code=exc.status, detail=exc.message)
+        raise HTTPException(status_code=exc.status, detail=exc.message) from None
 
 
 # --------------------------------------------------------------------------
@@ -136,10 +136,15 @@ class AskRequest(BaseModel):
 
 
 @router.post("/packs/{pack_id}/ask")
-async def ask_pack(pack_id: str, body: AskRequest, x_api_key: str | None = Header(default=None)) -> Any:
+async def ask_pack(pack_id: str, body: AskRequest, request: Request,
+                   x_api_key: str | None = Header(default=None)) -> Any:
     """Ask this pack (V10): an answer from this pack only, with numbered citations that open the posts.
-    Without a run key each pack takes a limited number of questions a day."""
-    return await _call(service.ask_pack, pack_id, body.question, body.history, x_api_key)
+    Without a run key each pack, and each visitor, takes a limited number of questions a day."""
+    # Render's proxy appends the real client address LAST; earlier entries can be set by the caller.
+    forwarded = [a.strip() for a in request.headers.get("x-forwarded-for", "").split(",") if a.strip()]
+    address = forwarded[-1] if forwarded else (request.client.host if request.client else None)
+    return await _call(service.ask_pack, pack_id, body.question, body.history, x_api_key,
+                       service.visitor_key(address))
 
 
 @router.get("/packs/{pack_id}/handoff")

@@ -131,11 +131,13 @@ posts:
   calendar_days: [tuesday, thursday, monday, wednesday, friday, saturday, sunday]  # fallback day order
 
 # "Ask this pack" (change V10, PRD 6.1g): a read-only chat over one pack. Every answer counts against
-# DAILY_SPEND_CAP_USD; without a run key each pack takes at most questions_per_pack_per_day.
+# DAILY_SPEND_CAP_USD. Asking needs a key (owner's decision, 2026-10-09): the run key has no question limit;
+# the guest key has these per UTC day (counted in memory; a visitor is a salted hash of the address).
 ask:
   max_tool_calls: 6             # reads of the pack per answer (get_pack_view, get_insight, search_evidence)
   max_usd: 0.10                 # per answer: no new model turn starts once this is spent
-  questions_per_pack_per_day: 20  # without a run key (UTC day)
+  guest_questions_per_pack: 5     # guest key: questions per pack per day
+  guest_questions_per_visitor: 15  # guest key: questions per visitor per day, across all packs
   max_tokens: 1500              # one model turn
   history_max: 6                # earlier turns sent with a follow-up question
   question_max_chars: 500

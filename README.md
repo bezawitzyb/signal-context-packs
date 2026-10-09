@@ -24,7 +24,7 @@ skill, MCP) - and you can ask it questions.
    your first moves. Open any finding to see the real posts behind it.
 2. **Ask this pack** (side panel): "How do they describe their biggest pain point?" or "Turn the first
    post brief into a LinkedIn carousel outline". Answers come only from the pack, with numbered links
-   to the real posts.
+   to the real posts. Asking needs the run key, typed once on the start page.
 3. **Hand off** the pack: a half-page quick brief for ChatGPT or Claude, a brief for your AI writer, the
    full report for Notion or Docs, the content calendar as a CSV for Notion, or a Claude skill.
    **View as agent** shows the JSON an agent reads; **Watch how this pack was made** replays the
@@ -64,7 +64,7 @@ best, with links to related findings elsewhere.
 | **V7 News hooks and timing** | "Ride this now": dated news and events, each with its source link; timing chips on channels (from posts or a cited source, never from memory). |
 | **V8 Post briefs, drafts, calendar** | 5-8 post briefs whose key points cite real posts; full drafts for the first 3 (labelled "Draft - review before posting"; unsupported numbers and guardrail phrases are removed in code); a 4-week calendar as a Notion CSV. |
 | **V9 Revised pack page and hand-off** | Summary / Understand your audience / Act on it / The research; plain-language strength labels ("good enough to: test a post / brief creative / commit budget"); a generic AI answer checked point by point against the posts; hand-off options described by purpose and length. |
-| **V10 Ask this pack** | A read-only chat over one pack: answers cite real posts, invented references are removed, and "no evidence" is said plainly. Limited per pack per day without a run key. |
+| **V10 Ask this pack** | A read-only chat over one pack: answers cite real posts, invented references are removed, and "no evidence" is said plainly. Asking needs the run key (typed once on the start page; kept only in that browser tab). |
 | **V12 A pack that follows your goals** | Up to 3 goals, main first: the pack's sections, Summary and first moves follow them ("For your goal" blocks; each action says which goal it serves). **Brand perception** gets its own analysis: your brand and its parent are searched by name, and code counts mentions, mentions made unasked (an awareness signal), share of voice, how people feel, what they praise and criticise, and whether they tell your brand apart from the parent - with 2-5 verified findings and an honest "online mentions, not a survey" label. |
 | **V11 Understand the brief** | The agent reads the brief for the five things only you know (goals, offer, who, markets, key question), each tied to your own words. It never guesses your goal or offer: when the brief does not say them, it asks (goals ranked, main first; "no offer of my own" is an answer), then only the other gaps that would change the research. One editable "Here's what I understood" box shows where each item came from. A "How to write a brief" guide and template sit next to the brief box. |
 

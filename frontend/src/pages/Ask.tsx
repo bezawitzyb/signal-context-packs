@@ -147,10 +147,10 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
             <KeyRound aria-hidden="true" size={13} /> Run key
           </label>
           <input id="runkey" ref={keyRef} type="password" autoComplete="off" spellCheck={false}
-                 aria-describedby="runkey-help"
+                 aria-describedby="runkey-help" onChange={(e) => saveRunKey(e.currentTarget.value.trim())}
                  className="w-full rounded-lg border border-line bg-paper px-3 py-2 font-mono text-sm text-ink md:max-w-sm" />
           <p id="runkey-help" className="mt-1 text-xs text-ink-3">
-            Your key stays in this browser tab only.
+            Your key stays in this browser tab only. It also lets you ask questions about any pack.
           </p>
         </div>
         <button type="submit" disabled={busy}

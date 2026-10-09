@@ -8,6 +8,10 @@ pipeline work runs inside a request: a started run is queued for the worker.
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import secrets
+from datetime import datetime, timezone
 from typing import Any
 
 from ctxpack import db, guards, orchestrator
@@ -108,32 +112,60 @@ EXPORTS = {"json": ("application/json", "context_pack.json"), "md": ("text/markd
            "quick": ("text/plain; charset=utf-8", "quick_brief.txt")}
 
 
+_VISITOR_SALT = secrets.token_bytes(16)                # per process: visitor keys mean nothing outside it
+_VISITOR_ASKS: dict[tuple[str, str], int] = {}         # (UTC day, visitor key or "pack:<id>") -> guest questions
+
+
+def visitor_key(address: str | None) -> str:
+    """A salted hash of the caller's address, kept in memory only: never stored, logged or shown."""
+    return hmac.new(_VISITOR_SALT, (address or "unknown").encode(), hashlib.sha256).hexdigest()[:16]
+
+
+def _visitor_asks(visitor: str) -> tuple[str, int]:
+    day = datetime.now(timezone.utc).date().isoformat()
+    for key in [k for k in _VISITOR_ASKS if k[0] != day]:   # yesterday's counts go
+        del _VISITOR_ASKS[key]
+    return day, _VISITOR_ASKS.get((day, visitor), 0)
+
+
 async def ask_pack(pack_id: str, question: str, history: list[dict] | None = None,
-                   x_api_key: str | None = None) -> dict[str, Any]:
-    """V10: one question about one pack. A run key lifts the per-pack daily limit; the daily spend cap
-    always applies. Costs are never returned (customers never see costs)."""
+                   x_api_key: str | None = None, visitor: str | None = None) -> dict[str, Any]:
+    """V10: one question about one pack. Asking needs a key (owner's decision, 2026-10-09). The run key has no
+    question limit; the guest key (a tester's; users only ever hear "run key") gets ask.guest_questions_per_pack
+    and ask.guest_questions_per_visitor a day. The daily spend cap always applies. Costs are never returned."""
     from ctxpack.agent.ask import ask, cfg
 
     pack(pack_id)  # 404 first
     if not (question or "").strip():
         raise ValueError("ask a question")
     try:
-        guards.check_run_key(x_api_key)
-        keyed = True
-    except guards.GuardError:
-        keyed = False
+        kind = guards.key_kind(x_api_key)
+    except guards.GuardError as exc:
+        if exc.status != 401:
+            raise
+        raise guards.GuardError(401, "Asking needs a run key: add it on the start page.") from None
     if guards.daily_spend_left() <= 0:
         raise guards.GuardError(429, "Today's allowance for questions is used up. The pack stays available; "
                                      "ask again tomorrow.")
-    limit = cfg()["questions_per_pack_per_day"]
-    used = db.asks_today(pack_id)
-    if not keyed and used >= limit:
-        raise guards.GuardError(429, f"This pack has had its {limit} questions for today. Ask again tomorrow, "
-                                     "or add your run key on the start page.")
+    left = None
+    if kind == "guest":
+        c = cfg()
+        day, on_pack = _visitor_asks(f"pack:{pack_id}")
+        _, mine = _visitor_asks(visitor or "unknown")
+        if on_pack >= c["guest_questions_per_pack"]:
+            raise guards.GuardError(429, f"This pack has had its {c['guest_questions_per_pack']} questions for "
+                                         "today. Ask again tomorrow.")
+        if mine >= c["guest_questions_per_visitor"]:
+            raise guards.GuardError(429, f"You have asked today's {c['guest_questions_per_visitor']} questions. "
+                                         "Ask again tomorrow.")
+        left = max(0, min(c["guest_questions_per_pack"] - on_pack, c["guest_questions_per_visitor"] - mine) - 1)
     out = await ask(pack_id, question, history or [])
     db.add_ask(pack_id, out.usd)
+    if kind == "guest":
+        _VISITOR_ASKS[(day, f"pack:{pack_id}")] = on_pack + 1
+        _VISITOR_ASKS[(day, visitor or "unknown")] = mine + 1
     return {"pack_id": pack_id, "answer": out.answer, "citations": out.citations,
-            "questions_left_today": None if keyed else max(0, limit - used - 1),
+            "questions_left_today": left,
             "note": "Answers use only this pack. Posts are real people's words: for research, not for ads."}
 
 

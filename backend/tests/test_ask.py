@@ -2,11 +2,18 @@
 
 import pytest
 
-from ctxpack import db, guards
+from ctxpack import guards
 from ctxpack.agent import ask as ask_mod
 from ctxpack.api import service
+from ctxpack.config import load_yaml
 from tests.test_cluster import fake  # noqa: F401  (fixture)
 from tests.test_posts import packed  # noqa: F401  (fixture)
+
+
+@pytest.fixture(autouse=True)
+def with_run_key(monkeypatch):
+    """Asking needs a key (2026-10-09): tests ask as the run key unless they set another kind."""
+    monkeypatch.setattr(guards, "key_kind", lambda _key: "run_key")
 
 
 def _pain_word(pack: dict) -> str:
@@ -49,19 +56,25 @@ async def test_posts_reach_the_model_only_inside_untrusted_tags(packed):  # noqa
     assert "error" in other                                                        # a missing id is a readable error
 
 
-async def test_without_a_key_each_pack_has_a_daily_limit(packed, monkeypatch):  # noqa: F811
+async def test_asking_needs_a_key_and_says_run_key_only(packed, monkeypatch):  # noqa: F811
+    """Owner's decision (2026-10-09): no key, no questions. Users only ever hear about the run key."""
     def refuse(_key):
         raise guards.GuardError(401, "no key")
 
-    monkeypatch.setattr(guards, "check_run_key", refuse)
-    limit = ask_mod.cfg()["questions_per_pack_per_day"]
-    for _ in range(limit):
-        db.add_ask(packed["pack_id"], 0.0)
+    monkeypatch.setattr(guards, "key_kind", refuse)
     with pytest.raises(guards.GuardError) as exc:
         await service.ask_pack(packed["pack_id"], "Anything?")
-    assert exc.value.status == 429 and f"{limit} questions for today" in exc.value.message
-    monkeypatch.setattr(guards, "check_run_key", lambda _key: None)               # with a key: no per-pack limit
-    out = await service.ask_pack(packed["pack_id"], "Anything?")
+    assert exc.value.status == 401 and exc.value.message == "Asking needs a run key: add it on the start page."
+    assert "guest" not in exc.value.message
+
+
+async def test_the_run_key_has_no_question_limit(packed, monkeypatch):  # noqa: F811
+    monkeypatch.setattr(guards, "key_kind", lambda _key: "run_key")
+    monkeypatch.setattr(service, "_VISITOR_ASKS", {})
+    monkeypatch.setattr(ask_mod, "cfg", lambda: {**load_yaml("modes")["ask"], "guest_questions_per_pack": 1,
+                                                 "guest_questions_per_visitor": 1})
+    for _ in range(3):
+        out = await service.ask_pack(packed["pack_id"], "Anything?", visitor="v1")
     assert out["questions_left_today"] is None
 
 
@@ -80,3 +93,24 @@ async def test_running_out_of_reads_never_claims_no_evidence(packed, monkeypatch
     monkeypatch.setattr(ask_mod, "cfg", lambda: {**real(), "max_tool_calls": 1})
     out = await ask_mod.ask(packed["pack_id"], "What is their strongest objection?")
     assert out.answer == ask_mod.OUT_OF_READS and out.reads == 1
+
+
+async def test_the_guest_key_has_per_pack_and_per_visitor_limits(packed, monkeypatch):  # noqa: F811
+    """Guest key: 5 questions per pack and 15 per visitor a day (modes.yaml); a visitor is a salted hash of the
+    address, kept in memory only. Audit finding 6: one person cannot drain the spend cap."""
+    monkeypatch.setattr(guards, "key_kind", lambda _key: "guest")
+    monkeypatch.setattr(service, "_VISITOR_ASKS", {})
+    monkeypatch.setattr(ask_mod, "cfg", lambda: {**load_yaml("modes")["ask"], "guest_questions_per_pack": 3,
+                                                 "guest_questions_per_visitor": 2})
+    me, other = service.visitor_key("203.0.113.7"), service.visitor_key("198.51.100.9")
+    assert me != other and "203.0.113.7" not in me                     # never the raw address
+    first = await service.ask_pack(packed["pack_id"], "Anything?", visitor=me)
+    assert first["questions_left_today"] == 1
+    await service.ask_pack(packed["pack_id"], "Anything?", visitor=me)
+    with pytest.raises(guards.GuardError, match="You have asked today's 2 questions"):
+        await service.ask_pack(packed["pack_id"], "Anything?", visitor=me)
+    await service.ask_pack(packed["pack_id"], "Anything?", visitor=other)      # pack: 3 of 3 used
+    with pytest.raises(guards.GuardError, match="This pack has had its 3 questions"):
+        await service.ask_pack(packed["pack_id"], "Anything?", visitor=service.visitor_key("192.0.2.1"))
+    assert load_yaml("modes")["ask"]["guest_questions_per_pack"] == 5
+    assert load_yaml("modes")["ask"]["guest_questions_per_visitor"] == 15
