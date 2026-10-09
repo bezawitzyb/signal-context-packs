@@ -1,0 +1,182 @@
+WEB SCRAPING USE CASES FOR MARKETING AND CONTENT TEAMS
+=======================================================
+
+This document combines a general overview of how marketing and content teams use
+web scraping with the use cases that came up in four user interviews. Each use case
+appears once. Use cases that interviewees raised are marked [Interview: #], where:
+
+  1 = Freelance marketer/contractor (digital manufacturing clients)
+  2 = Lifecycle marketer at Booking.com for Business
+  3 = Marketer at a Microsoft-ecosystem company (AI agents)
+  4 = B2B SaaS marketer building an event-venue product (Amsterdam)
+
+
+1. AUDIENCE AND MARKET RESEARCH
+-------------------------------
+- Audience language and terminology: collect the exact words, jargon and phrasing the
+  audience uses so copy and content speak their language. [Interview: 1, 3, 4]
+- Pain points, objections and worries: find what frustrates the audience and what stops
+  them from buying or adopting (e.g. unclear pricing, cost visibility, governance).
+  [Interview: 1, 3, 4]
+- Audience segmentation: distinguish how buyers, influencers and end users each talk
+  about a product, so messaging can be tailored to each. [Interview: 1]
+- Customer journey mapping: understand the steps people take before buying, such as how
+  they search, compare and contact providers. [Interview: 4]
+- Assumption and hypothesis validation: check your own beliefs about the market against
+  real conversations, with direct quotes as evidence. [Interview: 4]
+- Product and business idea validation: test whether there is real demand or an
+  unserved need ("white space") before building. [Interview: 1, 4]
+- Local and cultural nuance: learn how a specific country or region communicates
+  (language, tone, formality, habits) to market there as a non-native.
+  [Interview: 1, 3, 4]
+- Persona development: refine buyer personas using community discussions, job titles
+  and public profiles.
+- Market sizing: count players, products or listings in a category.
+- Product and category trends: track which products, features or categories are rising.
+- Rapid industry onboarding: give contractors and agencies a fast primer on an
+  unfamiliar industry, like a personalized analyst report. [Interview: 1]
+
+
+2. CONTENT STRATEGY AND CREATION
+--------------------------------
+- Topic and trend discovery: mine forums, Q&A sites, Reddit, news and social platforms
+  for what the audience is asking and discussing. [Interview: 1, 3]
+- Topic demand ranking: measure how relevant or popular a topic is, e.g. how many
+  people ask similar questions. [Interview: 3]
+- Hooks, post ideas and first drafts: turn research into engagement hooks, post
+  recommendations and draft content for LinkedIn, blogs and social. [Interview: 1, 3, 4]
+- Content calendar feeding: supply an ongoing, auto-updating content calendar with
+  recommended topics and posts. [Interview: 1]
+- Creative briefs and tone-of-voice guides: generate reusable briefs that capture the
+  audience's tone, messaging and keywords. [Interview: 4]
+- Brand-voice-consistent output: apply a brand's tone, preferred words and banned words
+  to generated content. [Interview: 3]
+- Context packs for AI tools: export research as context for other AI tools (Claude,
+  Notion, etc.) so all generated work uses the same language. [Interview: 1, 3, 4]
+- Content format discovery: learn which formats the audience prefers (video, articles,
+  forums, reports). [Interview: 1]
+- Newsjacking and timing: spot current events and seasonal moments (e.g. Q4 budget
+  cycles) to time content. [Interview: 1]
+- Content curation: aggregate industry news for newsletters, roundups and social posts.
+- Original data studies: gather datasets for reports, infographics and linkable
+  "state of the industry" content.
+- Content briefs from top-ranking pages: extract headings and subtopics from
+  high-performing articles to build outlines.
+- Content inventory and audits: crawl your own site to catalog pages, authors, dates
+  and word counts for refreshing or pruning.
+- Content refresh triggers: detect outdated stats, dead links or old dates in your
+  existing articles.
+- Repurposing: pull published content into structured formats for reuse in other
+  channels.
+- Q&A over research: ask follow-up questions of collected research. [Interview: 4]
+
+
+3. COMPETITIVE INTELLIGENCE
+---------------------------
+- Competitor content tracking: monitor what competitors publish, how often and on
+  which topics. [Interview: 3]
+- Competitor and existing-solution scanning: identify who already serves the market
+  and how well. [Interview: 1, 4]
+- Pricing monitoring: track competitor prices, discounts, bundles and promotions.
+- Product and feature tracking: catch new launches, changed specs and retired products.
+- Messaging and positioning analysis: collect competitors' headlines, value
+  propositions and CTAs to spot shifts.
+- Website change detection: get alerts when competitors edit key pages.
+- Ad intelligence: gather competitor ads from public ad libraries.
+- Hiring signals: read job postings to infer competitor strategy and expansion.
+- Partnership and integration tracking: watch integration directories and partner pages.
+- Promotional calendar mapping: log competitors' sale timing and seasonal campaigns.
+- Stock and availability tracking: spot competitor stock-outs to adjust ads.
+
+
+4. SEO AND AI SEARCH VISIBILITY
+-------------------------------
+- AI search visibility and citations: track how often your brand and competitors are
+  cited in AI answers and authoritative sources on a topic. [Interview: 3, 4]
+- Visibility-driven topic selection: combine scraped signals with search and ads data
+  (e.g. Search Console, Google Ads) to choose topics that raise visibility.
+  [Interview: 3]
+- SERP tracking: record rankings, featured snippets, "People also ask" boxes and AI
+  overview citations.
+- Keyword research: pull autocomplete suggestions, related searches and question lists.
+- Content gap analysis: compare what competitors rank for against your coverage.
+- Technical site audits: crawl your site for broken links, missing metadata, duplicate
+  titles, redirect chains and orphan pages.
+- Backlink prospecting: find resource pages, broken links, guest-post opportunities
+  and unlinked brand mentions.
+- Local SEO: monitor business listings, map results and name/address/phone consistency.
+- Structured data checks: verify schema markup at scale.
+
+
+5. BRAND MONITORING AND REPUTATION
+----------------------------------
+- Brand awareness and recognition: measure how well-known a brand or sub-brand is in a
+  market. [Interview: 2]
+- Brand differentiation perception: check whether people distinguish a sub-brand from
+  its parent brand. [Interview: 2]
+- Sentiment analysis: analyze how people feel about a brand in reviews, forums and
+  social posts. [Interview: 2]
+- Brand mentions: track where the brand, executives or products appear online.
+- Review monitoring: aggregate reviews from marketplaces, app stores and review sites.
+- Crisis detection: get early warnings when negative mentions spike.
+- Brand protection: find counterfeit listings, unauthorized resellers, logo misuse and
+  copied content.
+- MAP compliance: check that retailers respect minimum advertised pricing.
+
+
+6. CHANNELS AND SOCIAL MEDIA
+----------------------------
+- Channel discovery: identify where the audience spends time and where to build
+  presence (e.g. Reddit communities, niche forums, platforms). [Interview: 1, 3, 4]
+- LinkedIn signal tracking: monitor LinkedIn conversations and signals, a known gap
+  in many tools. [Interview: 3]
+- Hashtag and trend monitoring: track volume and themes around hashtags and topics.
+- Influencer discovery: find creators by niche, audience size and engagement.
+- Engagement benchmarking: compare your social performance with competitors'.
+- User-generated content discovery: find customer posts about your brand to reshare
+  with permission.
+- Comment analysis: understand audience reactions to campaigns.
+
+
+7. LEAD GENERATION AND GROWTH
+-----------------------------
+- Prospect lists: build company lists from directories, exhibitor lists and member pages.
+- Account enrichment: add firmographic data (industry, size, locations) to CRM records.
+- Technographic data: detect which tools a company's website uses for ABM targeting.
+- Event mining: collect speakers and sponsors from industry events for outreach.
+- Intent signals: track funding news, hiring and expansions that signal buying intent.
+
+
+8. E-COMMERCE AND PRODUCT MARKETING
+-----------------------------------
+- Catalog enrichment: gather specs, descriptions and images from suppliers and partners.
+- Marketplace listing optimization: analyze top sellers' titles, bullets and keywords.
+
+
+9. PERFORMANCE MARKETING AND ANALYTICS
+--------------------------------------
+- Landing page monitoring: confirm your pages are live, correct and match ad copy.
+- Affiliate and partner compliance: check affiliates use correct links, disclosures
+  and messaging.
+- Ad placement verification: confirm where and how your ads appear.
+- Dashboard feeds: pull data from sources without an API into reporting dashboards.
+
+
+10. PR AND COMMUNICATIONS
+-------------------------
+- Media list building: find journalists covering specific beats.
+- Coverage tracking: compile press mentions for reporting.
+- Award and speaking opportunities: collect calls for entries and speakers.
+
+
+11. INTERNAL OPERATIONS
+-----------------------
+- Website QA: check translations, images and pricing consistency across regional sites.
+- Content governance: verify disclaimers, cookie banners and brand guidelines across
+  microsites.
+- CMS migration: extract content from an old CMS when moving to a new one.
+- Knowledge bases for AI: collect clean source material for internal chatbots and
+  AI-assisted writing.
+
+
+
