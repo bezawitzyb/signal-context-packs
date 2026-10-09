@@ -24,7 +24,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
-from ctxpack.analysis.metrics import author_key
+from ctxpack.analysis.metrics import author_key, undated_share
 from ctxpack.config import load_yaml
 from ctxpack.llm.client import LLMError, batched, load_prompt, structured, untrusted
 from ctxpack.synthesis import confidence as conf
@@ -194,7 +194,9 @@ def score_item(it: dict, verdict: Verdict | None, members: list[str], docs_by_id
         members=it["counts"]["matching"], authors=st["distinct_authors"], platforms=len(st["platforms"]),
         sources=it.get("distinct_sources", 0), engagement_median=st.get("engagement_percentile_median"),
         recency=it.get("recency_share", 0.5), verifier=verdict.verdict if verdict else None,
-        claim_type=it["claim_type"], top_author_share=top_author_share(members, docs_by_id), thin_evidence=thin))
+        claim_type=it["claim_type"], top_author_share=top_author_share(members, docs_by_id), thin_evidence=thin,
+        undated_share=undated_share([docs_by_id[m] for m in members
+                                     if m in docs_by_id and not docs_by_id[m].short_form])))
     it["confidence"] = {"score": result.score, "label": result.label}
     it["confidence_components"] = result.components
     it["claim_type"] = result.claim_type

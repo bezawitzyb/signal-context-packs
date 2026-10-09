@@ -277,8 +277,10 @@ Definition:
     authors        = min(1, distinct_authors / 8)
     cross_platform = min(1, (platforms - 1) / 2)   1 -> 0, 2 -> 0.5, 3+ -> 1
     engagement     = engagement_percentile_median / 100
-    recency        = share of dated members in the newer half of the time
-                     window; 0.5 if no member is dated
+    recency        = (dated members in the newer half of the time window
+                     + 0.5 x undated members) / all members; an undated
+                     member is neutral (0.5 if none is dated, unchanged
+                     when all are dated) - owner's change 2026-10-09
     verifier       = 1 if supported, 0.5 if partially supported
     score = 0.30 volume + 0.25 authors + 0.20 cross_platform
           + 0.10 engagement + 0.10 recency + 0.05 verifier
@@ -289,6 +291,8 @@ Definition:
     emerging     score >= 0.30
     speculative  everything else, and all unverified inferences
   Caps: one author supplies > 50% of members -> at most emerging;
+  more than 50% of members undated -> at most moderate (the time window
+  cannot be shown for most of the evidence; owner's change 2026-10-09);
   thin-evidence run -> at most emerging; "partially supported" -> one
   level down and claim_type inferred.
   Worked examples (also unit tests): 12 members, 8 authors, 3 platforms,
@@ -1238,8 +1242,9 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
 
 14.3 Automated metrics and targets
   Quote groundedness ......... 100%
-  Claim entailment ........... >= 95% (re-checked by Sonnet, not the
-                               pipeline's Haiku verifier)
+  Claim entailment ........... >= 95% (re-checked by Opus - neither the
+                               pipeline's Haiku verifier nor the Sonnet
+                               writer; owner's change 2026-10-09)
   Claims with evidence ....... 100%
   Relevance rate ............. >= 60% of kept docs
   Source diversity ........... >= 3 platforms per pack (brief 4 exempt)
@@ -1400,6 +1405,10 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
  D33  Keep-alive pings /ping (no database) every 10 minutes           FR-H8
  D34  Memory budget: Standard run < 400 MB; else Modal worker         NFR9
  D35  Static mirror of featured packs on GitHub Pages                 FR-H9
+ D36  Undated posts count 0.5 in recency; > 50% undated members      5.4
+      caps a finding at moderate (2026-10-09)
+ D37  Entailment re-check by Opus, not the Sonnet writer             14.3
+      (2026-10-09)
 
 
 ================================================================================

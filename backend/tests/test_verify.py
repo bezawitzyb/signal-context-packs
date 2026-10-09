@@ -160,3 +160,26 @@ def test_verdict_spellings():
 @pytest.mark.parametrize("share,label", [(0.5, "strong"), (0.51, "emerging")])
 def test_single_author_cap_boundary(share, label):
     assert conf.assess(ev(top=share)).label == label
+
+
+def test_undated_posts_count_as_neutral_and_cap_a_mostly_undated_claim_at_moderate():
+    """PRD 5.4, owner's change (2026-10-09): 56% of live posts had no date, so the time window could not be shown
+    for them. Recency counts an undated post as 0.5; more than half undated -> at most moderate."""
+    from datetime import date
+    from types import SimpleNamespace
+
+    from ctxpack.analysis import metrics as met
+
+    today = date(2026, 10, 9)
+    new, old, undated = (SimpleNamespace(posted_at=d) for d in (date(2026, 9, 1), date(2026, 5, 1), None))
+    assert met.recency_share([new, new, undated, undated], today, 180) == 0.75      # (2 + 0.5 x 2) / 4
+    assert met.recency_share([old, undated], today, 180) == 0.25
+    assert met.recency_share([new, old], today, 180) == 0.5                          # all dated: as before
+    assert met.recency_share([undated], today, 180) == 0.5                           # none dated: as before
+    assert met.undated_share([new, undated, undated]) == pytest.approx(0.667, abs=1e-3)
+    strong = ev(12, 8, 3, engagement=60, recency=0.6, verifier="supported")
+    assert conf.assess(strong).label == "strong"                                     # worked example unchanged
+    strong.undated_share = 0.5
+    assert conf.assess(strong).label == "strong"                                     # half undated: allowed
+    strong.undated_share = 0.6
+    assert (conf.assess(strong).label, conf.assess(strong).safe_to_assert) == ("moderate", False)

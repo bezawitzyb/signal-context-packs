@@ -63,12 +63,19 @@ def strength(ms: list[Any]) -> dict[str, Any]:
 
 
 def recency_share(ms: list[Any], today: date, window_days: int) -> float:
-    """PRD 5.4: share of dated members in the newer half of the time window; 0.5 if none is dated."""
-    dated = [d.posted_at for d in ms if d.posted_at]
-    if not dated:
+    """PRD 5.4 (owner's change, 2026-10-09): (dated members in the newer half of the window + 0.5 per undated
+    member) / all members. An undated post is neutral, not left out; all dated -> unchanged; none dated -> 0.5."""
+    if not ms:
         return _scoring()["confidence"]["recency_if_undated"]
     cutoff = today - timedelta(days=window_days / 2)
-    return round(sum(p >= cutoff for p in dated) / len(dated), 3)
+    newer = sum(1 for d in ms if d.posted_at and d.posted_at >= cutoff)
+    undated = sum(1 for d in ms if not d.posted_at)
+    return round((newer + _scoring()["confidence"]["recency_if_undated"] * undated) / len(ms), 3)
+
+
+def undated_share(ms: list[Any]) -> float:
+    """Share of members without a posting date (PRD 5.4 undated cap)."""
+    return round(sum(1 for d in ms if not d.posted_at) / len(ms), 3) if ms else 0.0
 
 
 def recency_month(ms: list[Any]) -> str | None:

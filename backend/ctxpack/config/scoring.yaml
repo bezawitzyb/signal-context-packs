@@ -14,7 +14,7 @@ confidence:
     volume_members: 12          # volume = min(1, members / 12)
     authors: 8                  # authors = min(1, distinct_authors / 8)
     cross_platform_extra: 2     # cross_platform = min(1, (platforms - 1) / 2)
-  recency_if_undated: 0.5
+  recency_if_undated: 0.5       # an undated member counts this much in recency (owner's change 2026-10-09)
   engagement_if_unknown: 0.0    # no engagement data (e.g. forums): no credit. PRD 5.4 is silent (owner to confirm)
   verifier_values:
     supported: 1.0
@@ -38,6 +38,8 @@ confidence:
     single_author_share_max: 0.50   # above this -> at most emerging
     single_author_cap_label: emerging
     thin_evidence_cap_label: emerging
+    undated_share_max: 0.50       # more members undated than this -> at most undated_cap_label (2026-10-09)
+    undated_cap_label: moderate
     partially_supported_levels_down: 1   # and claim_type becomes inferred
 
 opportunity:

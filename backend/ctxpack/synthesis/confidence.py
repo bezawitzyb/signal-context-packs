@@ -4,6 +4,7 @@
           + 0.10 engagement + 0.10 recency + 0.05 verifier
     label = the highest level whose score threshold AND gates all pass
     caps  : one author > 50% of members -> at most emerging
+            more than 50% undated        -> at most moderate (2026-10-09)
             thin-evidence run            -> at most emerging
             partially supported          -> one level down, claim_type inferred
             unverified inference         -> speculative
@@ -33,6 +34,7 @@ class Evidence:
     claim_type: str                   # observed | inferred
     top_author_share: float = 0.0     # share of members from the most frequent author
     thin_evidence: bool = False
+    undated_share: float = 0.0        # share of members without a posting date (2026-10-09)
 
 
 @dataclass
@@ -87,6 +89,8 @@ def assess(e: Evidence) -> Result:
         claim_type = "inferred"
     if e.top_author_share > c["caps"]["single_author_share_max"]:
         label = _cap(label, c["caps"]["single_author_cap_label"])
+    if e.undated_share > c["caps"]["undated_share_max"]:  # the time window cannot be shown for most of them
+        label = _cap(label, c["caps"]["undated_cap_label"])
     if e.thin_evidence:
         label = _cap(label, c["caps"]["thin_evidence_cap_label"])
     if claim_type == "inferred" and e.verifier is None:

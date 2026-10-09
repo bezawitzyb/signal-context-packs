@@ -17,7 +17,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from ctxpack.analysis import brand as an
-from ctxpack.analysis.metrics import author_key, recency_share
+from ctxpack.analysis.metrics import author_key, recency_share, undated_share
 from ctxpack.config import load_yaml
 from ctxpack.llm.client import LLMError, load_prompt, structured, untrusted
 from ctxpack.schemas.plan import brand_names
@@ -186,7 +186,7 @@ async def build(run: Any, interp: Any, docs: list[Any], evidence: list[dict], th
             engagement_median=engaged[len(engaged) // 2] if engaged else None,
             recency=recency_share(group, datetime.now(timezone.utc).date(), interp.time_window_days), verifier=v.verdict if v else None,
             claim_type="observed", top_author_share=top_author_share([d.id for d in group], docs_by_id),
-            thin_evidence=thin))
+            thin_evidence=thin, undated_share=undated_share(group)))
         findings.append({**it, "id": f"BRP-{len(findings) + 1:02d}", "type": "brand_finding",
                          "counts": {"matching": len(group), "of_total": counted},
                          "confidence": {"score": result.score, "label": result.label},

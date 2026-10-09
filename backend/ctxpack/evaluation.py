@@ -2,7 +2,7 @@
 
 Every number is computed in code from a finished pack (and its run row, when the
 database still has it). Only claim entailment uses a model: a sample of claims is
-re-checked by the evaluator role (Sonnet, not the pipeline's Haiku verifier) with
+re-checked by the evaluator role (Opus: neither the pipeline's Haiku verifier nor the Sonnet writer) with
 the same claim-check prompt. Allocation efficiency is SIMULATED: the agent's
 relevant posts vs. an equal split of the same item budget over the same units,
 estimated from each unit's observed yield.

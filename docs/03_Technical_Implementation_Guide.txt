@@ -313,7 +313,7 @@ B7. LLM rules (llm/client.py)
  worker    claude-haiku-4-5-20251001      relevance, web discovery, page
                                           segmenting, extraction, membership
                                           check, claim verification
- evaluator claude-sonnet-5-5              eval-only entailment re-check
+ evaluator claude-opus-5-5                eval-only entailment re-check (not the writer's model; 2026-10-09)
  synth     claude-sonnet-5-5 (switchable  synthesis calls only
            to claude-opus-5-5)
   - Structured output: one forced tool whose input schema comes from a

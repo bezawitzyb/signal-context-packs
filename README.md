@@ -96,7 +96,7 @@ best, with links to related findings elsewhere.
 ## What the output means
 
 - [docs/SCHEMA.md](docs/SCHEMA.md) explains every field. Confidence is **strong / moderate / emerging /
-  speculative** from evidence count, authors, platforms, sources, recency and the verifier. Only strong,
+  speculative** from evidence count, authors, platforms, sources, recency and the verifier; a finding whose posts are mostly undated is at most moderate. Only strong,
   observed claims confirmed by the claim check are `safe_to_assert`.
 - [examples/](examples/) has the three featured packs as JSON and Markdown, each with its exported skill
   folder, and [examples/demo_agent.md](examples/demo_agent.md): an agent writing TikTok scripts with and
@@ -138,7 +138,7 @@ Four test briefs, run on 2026-10-06 before changes V1-V10 (details and reasons o
 | Plan divergence | **4%** of source units shared | < 50% |
 | Allocation efficiency (SIMULATED) | **1.36×** an equal split | ≥ 1× |
 | Peak memory | **196 MB** | < 400 MB |
-| Claim entailment (Sonnet re-check) | **81%** (NL pack 93%) | ≥ 95% - not met |
+| Claim entailment (Sonnet re-check; the next re-check uses Opus) | **81%** (NL pack 93%) | ≥ 95% - not met |
 | Relevance rate | **33-54%** | ≥ 60% - not met |
 
 ## Run locally without keys
