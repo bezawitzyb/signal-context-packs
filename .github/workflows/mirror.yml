@@ -11,6 +11,8 @@ on:
       - "featured/**"
       - "frontend/**"
       - "backend/ctxpack/exports/**"
+      - "backend/ctxpack/api/service.py"   # featured_card and reading_guide build the mirror (2026-10-09)
+      - "backend/ctxpack/schemas/**"       # older packs are upgraded with schemas/migrate.py
       - "backend/ctxpack/evaluation.py"
       - "backend/scripts/build_mirror.py"
       - ".github/workflows/mirror.yml"
