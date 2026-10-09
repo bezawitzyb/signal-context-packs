@@ -36,6 +36,8 @@ class Document(SQLModel):
     text_en: str | None = Field(default=None, description="English translation when not English.")
     language: str | None = Field(default=None, description="ISO 639-1 language code.")
     posted_at: date | None = Field(default=None, description="Normalised posting date.")
+    date_raw: str | None = Field(default=None, description="The date text as found (max 80 chars), kept so a better "
+                                 "parser can date the post later (data audit).")
     date_precision: DatePrecision = Field(default=DatePrecision.unknown)
     engagement_raw: dict = Field(default_factory=dict, sa_type=JSON, description="Platform metrics as collected.")
     engagement_percentile: float | None = Field(

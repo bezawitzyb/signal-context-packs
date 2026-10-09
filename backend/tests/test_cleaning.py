@@ -312,3 +312,34 @@ from ctxpack.collect.cleaning import normalise_text as _normalise  # noqa: E402
 ])
 def test_escaped_emoji_and_image_markup_become_what_the_reader_saw(raw, expected):
     assert _normalise(raw) == expected
+
+
+@pytest.mark.parametrize("raw,expected", [
+    ("zondag 19 juli 2026 om 18:09", date(2026, 7, 19)),        # seen live: 85 of 87 forum dates were dropped
+    ("12 mrt 2024 14:03", date(2024, 3, 12)),
+    ("vr 12-03-2024 14:03", date(2024, 3, 12)),
+    ("12.03.2024, 14:03", date(2024, 3, 12)),
+    ("Geplaatst op 12 maart 2024", date(2024, 3, 12)),
+    ("Beitrag von x » Di 12. Mär 2024, 14:03", date(2024, 3, 12)),
+    ("Posted on March 12, 2024 at 9am", date(2024, 3, 12)),
+    ("Lid sinds 12 maart 2019", None),                           # a join date is not a post date
+    ("Lid sinds maart 2019", None),
+    ("14:03", None),
+    ("versie 1.2.3", None),
+])
+def test_dates_inside_forum_strings_are_found(raw, expected):
+    """Data audit: the model returned a date for 87 of 88 forum posts, but only exact formats parsed."""
+    from datetime import datetime, timezone
+
+    assert parse_date(raw, datetime(2026, 10, 9, tzinfo=timezone.utc))[0] == expected
+
+
+def test_every_recorded_forum_date_parses():
+    import json
+    from datetime import datetime, timezone
+    from pathlib import Path
+
+    pages = json.loads((Path(__file__).parent / "fixtures" / "tools" / "web_pages.json").read_text(encoding="utf-8"))
+    dates = [s["date"] for p in pages.values() for s in p["segments"] if s.get("date")]
+    now = datetime(2026, 10, 9, tzinfo=timezone.utc)
+    assert dates and all(parse_date(d, now)[0] for d in dates)

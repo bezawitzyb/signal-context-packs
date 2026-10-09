@@ -311,7 +311,7 @@ _MONTHS = {
         "styczeń", "januar", "tammikuuta", "tammikuu"],
     2: ["feb", "february", "februari", "februar", "février", "fevrier", "febbraio", "febrero", "fevereiro", "lutego",
         "luty", "helmikuuta", "helmikuu"],
-    3: ["mar", "march", "maart", "mrt", "märz", "maerz", "mrz", "mars", "marzo", "março", "marca", "marzec", "marts",
+    3: ["mär", "mar", "march", "maart", "mrt", "märz", "maerz", "mrz", "mars", "marzo", "março", "marca", "marzec", "marts",
         "maaliskuuta", "maaliskuu"],
     4: ["apr", "april", "avril", "aprile", "abril", "kwietnia", "kwiecień", "huhtikuuta", "huhtikuu"],
     5: ["may", "mei", "mai", "maggio", "mayo", "maio", "maja", "maj", "toukokuuta", "toukokuu"],
@@ -433,7 +433,38 @@ def parse_date(value: str | int | float | None, fetched_at: datetime) -> tuple[d
             return date(int(low), 1, 1), DatePrecision.year
     except (ValueError, OverflowError, OSError):
         return unknown
-    return unknown
+    return _embedded_date(low)
+
+
+# A full day-month-year date INSIDE a longer string: forums show "zondag 19 juli 2026 om 18:09",
+# "Di 12. Mär 2024, 14:03", "Geplaatst op 12 maart 2024", "12.03.2024, 14:03". Seen live: the model returned a
+# date for 87 of 88 forum posts and only 2 parsed, so 56% of posts were "undated". Only day-level dates are
+# searched this way, and never after "member since" words (a join date is not a post date).
+_SINCE = re.compile(r"\b(lid sinds|member since|joined|registriert|mitglied seit|dabei seit|inscrit|iscritto|"
+                    r"miembro desde|membro desde|medlem sedan|medlem siden|jäsen)\b", re.I)
+_EMBEDDED = [
+    ("dmy_num", re.compile(r"(?<![\d.])(\d{1,2})[./-](\d{1,2})[./-](\d{4}|\d{2})(?![\d.]*\d)")),
+    ("mdy_name", re.compile(rf"(?<!\w)({_MONTH_RE})\.?\s+(\d{{1,2}})(?:st|nd|rd|th)?,?\s+(\d{{4}})(?!\d)")),
+    ("dmy_name", re.compile(rf"(?<!\d)(\d{{1,2}})\.?\s+({_MONTH_RE})\.?,?\s+(\d{{4}})(?!\d)")),
+]
+
+
+def _embedded_date(low: str) -> tuple[date | None, DatePrecision]:
+    if _SINCE.search(low):
+        return None, DatePrecision.unknown
+    for kind, rx in _EMBEDDED:
+        for m in rx.finditer(low):
+            try:
+                if kind == "dmy_num":
+                    a, b, y = int(m.group(1)), int(m.group(2)), _year(m.group(3))
+                    day, month = (b, a) if b > 12 >= a else (a, b)
+                    return date(y, month, day), DatePrecision.day
+                if kind == "mdy_name":
+                    return date(int(m.group(3)), _MONTH[m.group(1)], int(m.group(2))), DatePrecision.day
+                return date(int(m.group(3)), _MONTH[m.group(2)], int(m.group(1))), DatePrecision.day
+            except (ValueError, KeyError):
+                continue
+    return None, DatePrecision.unknown
 
 
 def in_window(d: date | None, precision: DatePrecision, fetched_at: datetime, window_days: int) -> bool:
@@ -654,6 +685,7 @@ async def clean(
         stats["undated"] += posted is None
         documents.append(Document(
             id=key, run_id=run_id, platform=d.platform, source_unit=d.source_unit, found_by=d.found_by,
+            date_raw=(d.date_raw or "")[:80] or None,
             url=d.url, permalink=d.permalink, community=d.community, thread_id=d.thread_id,
             text=d.text, language=verdict.language if verdict else None,
             posted_at=posted, date_precision=precision,
