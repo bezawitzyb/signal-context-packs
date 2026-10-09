@@ -127,7 +127,7 @@ export function TableSection<Row>({ caption, columns, rows, rowKey }: {
         <thead className="bg-wash">
           <tr>
             {columns.map((c) => (
-              <th key={c.header} scope="col" className="px-3 py-2 text-xs font-medium uppercase tracking-wide text-ink-3">
+              <th key={c.header} scope="col" className={`px-3 py-2 text-xs font-medium uppercase tracking-wide text-ink-3 ${c.className?.includes("whitespace-nowrap") ? "whitespace-nowrap" : ""}`}>
                 {c.header}
               </th>
             ))}

@@ -58,6 +58,9 @@ function Option({ packId, o, onToast }: { packId: string; o: HandoffOption; onTo
     </>
   );
   const cls = `block w-full rounded-lg border p-3 text-left hover:border-ink ${o.more ? "border-dashed border-line" : "border-line"}`;
+  if (o.length.startsWith("no ")) {  // UX audit: nothing to export (e.g. no post ideas) - shown, but clearly unavailable
+    return <div aria-disabled="true" className="block w-full rounded-lg border border-dashed border-line p-3 text-left opacity-60">{body}</div>;
+  }
   if (o.action === "download") {
     return <a href={exportUrl(packId, o.kind)} download className={cls}
               onClick={() => onToast(`${o.title} downloading`)}>{body}</a>;
@@ -114,7 +117,7 @@ export function Handoff({ packId, open, onClose }: { packId: string; open: boole
               {more.map((o) => <Option key={o.kind} packId={packId} o={o} onToast={say} />)}
               <p className="text-xs text-ink-2">Connect Claude Code (read-only, no key needed):</p>
               <CommandLine text={`claude mcp add --transport http signal ${mcp}`} />
-              <p className="text-xs text-ink-2">To also start research, add your run key:</p>
+              <p className="text-xs text-ink-2">To also start research, add your access key:</p>
               <CommandLine text={`claude mcp add --transport http signal ${mcp} --header "X-API-Key: <YOUR_KEY>"`} />
             </div>
           </details>

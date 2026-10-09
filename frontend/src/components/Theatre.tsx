@@ -4,6 +4,7 @@ import { Check, CornerDownRight, Search, TriangleAlert } from "lucide-react";
 import type { RunStatus } from "../lib/api";
 import { STEPS, toolWords, type Move, type Summary } from "../lib/runSummary";
 import { SourceCard } from "./cards";
+import { unitWords } from "../lib/unitWords";
 
 export function StageStepper({ step, done }: { step: number; done: boolean }) {
   return (
@@ -27,20 +28,28 @@ export function StageStepper({ step, done }: { step: number; done: boolean }) {
   );
 }
 
+// UX audit: plain words, and routine outcomes (an off-topic source dropped) in neutral grey - orange is only for
+// the next action on a screen; a real problem gets an icon.
 function resultLine(m: Move): { text: string; tone: "good" | "weak" | "none" | "limit" } | null {
   const r = m.result;
   if (!r) return null;
-  if (r.status === "limit_reached") return { text: "limit reached - not run", tone: "limit" };
-  if (r.status === "error") return { text: "this source failed - the agent tries elsewhere (see Blind spots)", tone: "limit" };
-  if (r.status === "refused") return { text: "refused - the tools require a fresh coverage check first", tone: "limit" };
-  if (r.status !== "ok") return { text: r.status.replace(/_/g, " "), tone: "limit" };
-  if (m.tool === "coverage_report") return { text: "coverage checked", tone: "none" };
-  if (m.tool === "finish") return { text: "collection finished", tone: "none" };
-  if (m.tool === "web_search" && r.collected === 0) return { text: "pages found for reading", tone: "none" };
-  if (r.collected === 0) return { text: "nothing found", tone: "weak" };
+  if (r.status === "limit_reached") return { text: "Skipped: a limit for this run was reached", tone: "limit" };
+  if (r.status === "error") return { text: "This source failed - the agent tries elsewhere (see Blind spots)", tone: "limit" };
+  if (r.status === "refused") return { text: "Not run yet - the agent checks coverage first", tone: "none" };
+  if (r.status !== "ok") return { text: r.status.replace(/_/g, " "), tone: "none" };
+  if (m.tool === "coverage_report") return { text: "Coverage checked", tone: "none" };
+  if (m.tool === "finish") return { text: "Collection finished", tone: "none" };
+  if (m.tool === "web_search" && r.collected === 0) return { text: "Found pages to read", tone: "none" };
+  if (r.collected === 0) return { text: "Nothing usable here - moving on", tone: "weak" };
   const pct = Math.round(r.relevantShare * 100);
-  return { text: `collected ${r.collected} · kept ${r.kept} · ${pct}% relevant`, tone: pct >= 30 ? "good" : "weak" };
+  const on = Math.round(r.kept * r.relevantShare);
+  return r.kept === 0 || pct === 0
+    ? { text: `Found ${r.collected} posts · none on topic, dropped (normal)`, tone: "weak" }
+    : { text: `Found ${r.collected} posts · ${on} on topic (${pct}%)`, tone: pct >= 30 ? "good" : "weak" };
 }
+
+/** The agent's reason without research-question codes ("RQ-01/02: student budget" -> "student budget"). */
+const plainReason = (reason: string) => reason.replace(/\bRQ-\d+(?:\/\d+)*(?:\s*(?:and|,)\s*RQ-\d+)*:?\s*/g, "").trim();
 
 export function AgentLog({ moves }: { moves: Move[] }) {
   if (!moves.length) return <p className="text-sm text-ink-3">The agent's first moves will appear here.</p>;
@@ -53,23 +62,25 @@ export function AgentLog({ moves }: { moves: Move[] }) {
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
               <span className="font-mono text-xs text-ink-3">#{m.seq}</span>
               <span className="text-sm font-medium text-ink">{toolWords(m.tool)}</span>
-              {m.sourceUnit && <span className="font-mono text-xs text-ink-2 break-all">{m.sourceUnit}</span>}
+              {m.sourceUnit && <span className="text-sm text-ink-2 break-all" title={m.sourceUnit}>
+                {m.sourceUnit.split(", ").map(unitWords).join(", ")}</span>}
               {m.gapFill && (
                 <span className="rounded border border-ink px-1.5 py-px text-[0.7rem] font-medium text-ink">Filling a gap</span>
               )}
             </div>
-            {m.reason && m.reason !== "-" && (
+            {m.reason && m.reason !== "-" && plainReason(m.reason) && (
               <p className="mt-1 flex gap-1.5 text-sm text-ink-2">
-                <Search aria-hidden="true" size={13} className="mt-0.5 shrink-0 text-ink-3" />{m.reason}
+                <Search aria-hidden="true" size={13} className="mt-0.5 shrink-0 text-ink-3" />{plainReason(m.reason)}
               </p>
             )}
             {res ? (
-              <p className={`mt-1 flex flex-wrap items-center gap-x-1.5 font-mono text-xs ${
-                res.tone === "weak" || res.tone === "limit" ? "text-accent-ink" : "text-ink"}`}>
-                <CornerDownRight aria-hidden="true" size={12} className="shrink-0" />
-                <span className="whitespace-nowrap">{res.text}</span>
+              <p className={`mt-1 flex flex-wrap items-center gap-x-1.5 text-xs ${
+                res.tone === "weak" || res.tone === "none" ? "text-ink-3" : "text-ink"}`}>
+                {res.tone === "limit" ? <TriangleAlert aria-hidden="true" size={12} className="shrink-0" />
+                  : <CornerDownRight aria-hidden="true" size={12} className="shrink-0" />}
+                <span>{res.text}</span>
                 {m.result!.newTerms.length > 0 && (
-                  <span className="text-ink-3">· new terms: {m.result!.newTerms.slice(0, 6).join(", ")}</span>
+                  <span className="text-ink-3">· words they use: {m.result!.newTerms.slice(0, 6).join(", ")}</span>
                 )}
               </p>
             ) : (
@@ -119,7 +130,7 @@ export function CoverageBars({ questions }: { questions: Summary["coverage"] }) 
         <li key={q.id}>
           <div className="flex items-baseline justify-between gap-2 text-sm">
             <span className="text-ink-2"><span className="mr-1 font-mono text-xs text-ink-3">{q.id}</span>{q.text}</span>
-            <span className={`shrink-0 font-mono text-xs ${q.docs < 20 ? "text-accent-ink" : "text-ink"}`}>{q.docs} posts</span>
+            <span className={`shrink-0 font-mono text-xs ${q.docs < 20 ? "text-ink-3" : "text-ink"}`}>{q.docs} posts</span>
           </div>
           <div className="mt-1 h-1.5 rounded-full bg-wash" aria-hidden="true">
             <div className="h-1.5 rounded-full bg-ink" style={{ width: `${Math.max(3, (q.docs / max) * 100)}%` }} />
@@ -163,7 +174,8 @@ export function Notices({ summary }: { summary: Summary }) {
         </p>
       ))}
       {summary.errors.map((e, n) => (
-        <p key={n} role="alert" className="rounded-lg border border-accent p-3 text-sm text-ink">{e.message}</p>
+        <p key={n} role="alert" className="flex gap-2 rounded-lg border border-line-strong p-3 text-sm text-ink">
+          <TriangleAlert aria-hidden="true" size={16} className="mt-0.5 shrink-0" />{e.message}</p>
       ))}
     </>
   );

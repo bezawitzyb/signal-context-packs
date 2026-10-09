@@ -25,7 +25,7 @@ test("brief to pack, with the evidence drawer and accessibility checks", async (
   await noSeriousA11yIssues(page, "Ask page");
 
   await page.getByLabel("Your brief").fill("Gen Z and meal prep");   // enough recorded posts for a pack
-  await page.getByLabel("Run key").fill(KEY);
+  await page.getByLabel("Access key").fill(KEY);
   await page.getByRole("button", { name: "Plan the research" }).click();
   await answerGoalAndOffer(page);
   await page.getByRole("button", { name: "Plan with my answers" }).click();
@@ -52,7 +52,7 @@ test("brief to pack, with the evidence drawer and accessibility checks", async (
   await page.keyboard.press("Escape");
   await expect(drawer).toBeHidden();
 
-  await page.getByRole("button", { name: "Hand off" }).click();
+  await page.getByRole("button", { name: "Share & export" }).click();
   await expect(page.getByRole("button", { name: /Quick brief/ })).toBeVisible();
   await page.getByText("More: Claude and developers").click();
   await expect(page.getByRole("link", { name: /Teach Claude this research/ })).toHaveAttribute("href", /\/export\/skill$/);
@@ -74,9 +74,9 @@ test("a featured pack: summary, drawer with real posts, agent view, handoff, rep
   await noSeriousA11yIssues(page, "Drawer with real posts");
   await page.keyboard.press("Escape");
 
-  await page.getByRole("button", { name: "View as agent" }).click();
+  await page.getByRole("button", { name: "Developer view" }).click();
   await expect(page.getByText(/context_pack\.json · schema 1\.3/).first()).toBeVisible();
-  await page.getByRole("button", { name: "View as agent" }).click();
+  await page.getByRole("button", { name: "Developer view" }).click();
 
   await page.getByRole("button", { name: "Strong only" }).click();
   await expect(page.getByText(/shown/).first()).toBeVisible();
@@ -92,7 +92,7 @@ test("a featured pack: summary, drawer with real posts, agent view, handoff, rep
 test("too few posts ends on the thin screen with one-click re-plans (V1)", async ({ page }) => {
   await page.goto("/");
   await page.getByLabel("Your brief").fill("Launching a snack brand in the Netherlands");  // 0 recorded posts
-  await page.getByLabel("Run key").fill(KEY);
+  await page.getByLabel("Access key").fill(KEY);
   await page.getByRole("button", { name: "Plan the research" }).click();
   await answerGoalAndOffer(page);
   await page.getByRole("button", { name: "Plan with my answers" }).click();
@@ -108,7 +108,7 @@ test("too few posts ends on the thin screen with one-click re-plans (V1)", async
 test("a vague brief gets goal, offer and brief-specific questions, then one editable understood box (V3, V11)", async ({ page }) => {
   await page.goto("/");
   await page.getByLabel("Your brief").fill("snacks");
-  await page.getByLabel("Run key").fill(KEY);
+  await page.getByLabel("Access key").fill(KEY);
   await page.getByRole("button", { name: "Plan the research" }).click();
   const cards = page.locator("section[aria-labelledby=clarify] fieldset");
   await expect(cards).toHaveCount(4);
@@ -157,7 +157,7 @@ test("the brief guide opens from the info button and the template fills an empty
 test("brand perception: the goal card asks the brand, and the pack opens with the brand section (V12)", async ({ page }) => {
   await page.goto("/");
   await page.getByLabel("Your brief").fill("Gen Z and meal prep");
-  await page.getByLabel("Run key").fill(KEY);
+  await page.getByLabel("Access key").fill(KEY);
   await page.getByRole("button", { name: "Plan the research" }).click();
   const cards = page.locator("section[aria-labelledby=clarify] fieldset");
   await cards.nth(0).getByRole("button", { name: "Brand perception" }).click();

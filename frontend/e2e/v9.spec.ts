@@ -37,11 +37,13 @@ test("no technical words on screen; every badge has a plain tooltip", async ({ p
 
 test("hand-off options say what they are for, how long, and what is inside", async ({ page }) => {
   await openFeatured(page);
-  await page.getByRole("button", { name: "Hand off" }).click();
+  await page.getByRole("button", { name: "Share & export" }).click();
   const dialog = page.getByRole("dialog");
   for (const name of ["Quick brief", "Brief for your AI writer", "Full report", "Content calendar"]) {
-    await expect(dialog.locator("button, a").filter({ hasText: name }).first()).toBeVisible();
+    await expect(dialog.locator("button, a, [aria-disabled=true]").filter({ hasText: name }).first()).toBeVisible();
   }
+  // UX audit: an option with nothing to export (this pack has no post ideas) is shown as unavailable
+  await expect(dialog.locator("[aria-disabled=true]").filter({ hasText: "Content calendar" })).toBeVisible();
   await expect(dialog.getByText("half a page")).toBeVisible();
   await expect(dialog.getByText(/about \d+ pages?/).first()).toBeVisible();
   await dialog.getByRole("button", { name: /Quick brief/ }).click();

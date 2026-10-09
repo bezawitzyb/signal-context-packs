@@ -6,7 +6,7 @@ import { Braces, History, Menu, MessageCircleQuestion, RotateCcw, Share2 } from 
 import { friendlyError, getPack, getPackInputs, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
-import { ConfidenceBadge, IdTag, ModeBadge } from "../components/badges";
+import { ConfidenceBadge, IdTag } from "../components/badges";
 import { BrandPart } from "../components/brand";
 import { CoverageStrip, LimitationCallout } from "../components/callouts";
 import { HookCard, PackContext, SourceCard, TensionCard, usePack } from "../components/cards";
@@ -144,8 +144,10 @@ function ThisWeek({ pack }: { pack: ContextPack }) {
     <>
       <div className="mb-2 flex justify-end"><CopyButton text={planText} label="Copy plan" /></div>
       <TableSection caption="This week" rowKey={(r) => r.id} rows={pb.this_week} columns={[
-        { header: "Day", cell: (r) => r.day, kind: "data" },
-        { header: "Where", cell: (r) => `${CHANNEL[r.platform] ?? r.platform} · ${r.format}` },
+        // UX audit: "tuesday" wrapped as "tue / sda / y" in the narrow column - short day names, never broken
+        { header: "Day", cell: (r) => r.day.charAt(0).toUpperCase() + r.day.slice(1, 3), kind: "data",
+          className: "whitespace-nowrap" },
+        { header: "Where", cell: (r) => `${CHANNEL[r.platform] ?? r.platform} · ${r.format}`, className: "min-w-[8rem]" },
         { header: "Hook", cell: (r) => <>{hooks[r.hook_id]} <IdButton id={r.hook_id} /></> },
         { header: "Angle and why now", cell: (r) => {
           const n = r.news_hook_id ? news[r.news_hook_id] : undefined;
@@ -243,7 +245,7 @@ function Guardrails({ pack }: { pack: ContextPack }) {
       {flags.length > 0 && (
         <ul className="space-y-2">
           {flags.map((f) => (
-            <li key={f.id} className="rounded-lg border border-accent/40 p-3 text-ink-2">
+            <li key={f.id} className="rounded-lg border border-line-strong p-3 text-ink-2">
               <span className="font-medium text-ink">Check with legal ({f.category.replace("_", " ")}) on <IdButton id={f.item_id} />.</span>{" "}
               {f.why} <span className="text-ink">Safer: {f.safer_wording}</span>
             </li>
@@ -543,17 +545,18 @@ export function PackBody({ pack }: { pack: ContextPack }) {
         <PartNav order={pack.section_order?.length ? pack.section_order : DEFAULT_ORDER} hasBrand={!!pack.brand_perception} />
         <div className="min-w-0 max-w-[760px] xl:max-w-[920px]">
           <header className="mb-4 space-y-2">
-            <p className="flex flex-wrap items-center gap-2 font-mono text-xs text-ink-3">
-              <span>{pack.pack_id}</span><span>{pack.generated_at.slice(0, 10)}</span><ModeBadge mode={pack.mode} />
-            </p>
             <h1 className="text-2xl font-semibold tracking-tight text-ink md:text-3xl">{pack.brief.text}</h1>
+            <p className="text-sm text-ink-3 print:hidden">
+              Made {new Date(pack.generated_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+              {" "}· {pack.mode === "standard" ? "Standard" : "Quick"} research
+            </p>
             <p className="hidden font-mono text-xs text-ink print:block">
               Context Pack {pack.pack_id} · {pack.generated_at.slice(0, 10)} · coverage grade {pack.snapshot.coverage_grade} · {pack.mode}
             </p>
             <div className="flex flex-wrap gap-2 print:hidden">
               <button type="button" onClick={() => setHandoff(true)}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-sm text-paper">
-                <Share2 aria-hidden="true" size={14} /> Hand off
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink hover:brightness-95">
+                <Share2 aria-hidden="true" size={14} /> Share &amp; export
               </button>
               <button type="button" onClick={() => setAsking(true)} aria-expanded={asking}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-ink px-3 py-1.5 text-sm text-ink">
@@ -563,22 +566,22 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                         .then((i) => navigate(rerunUrl(i))).catch(() => navigate(rerunUrl({
                           brief: pack.brief.text, mode: pack.mode, time_window_days: pack.brief.interpreted.time_window_days,
                           brand_voice: pack.brief.brand_voice ?? null, intake: pack.brief.intake ?? null })))}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-sm text-ink-2">
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong px-3 py-1.5 text-sm text-ink">
                 <RotateCcw aria-hidden="true" size={14} /> Run again
               </button>
               <button type="button" onClick={() => setAgent(!agent)} aria-pressed={agent}
-                      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm ${agent ? "border-ink bg-wash text-ink" : "border-line text-ink-2"}`}>
-                <Braces aria-hidden="true" size={14} /> View as agent
+                      className={`ml-auto inline-flex items-center gap-1.5 rounded px-2 py-1.5 text-xs ${agent ? "bg-wash text-ink" : "text-ink-3 hover:text-ink"}`}>
+                <Braces aria-hidden="true" size={13} /> Developer view
               </button>
             </div>
           </header>
 
           {(pack.coverage.thin_evidence || pack.blind_spots[0]?.text.startsWith("Partial pack:")) && (
-            <div className="mb-6 space-y-2">
+            <div className="mb-4 space-y-2">
               {pack.coverage.thin_evidence && (
-                <details className="rounded-lg border border-line-strong bg-wash px-3 py-2 text-sm text-ink-2">
-                  <summary className="cursor-pointer"><span className="font-medium text-ink">Thin evidence: treat these findings as
-                    early signals.</span> <span className="underline">Why, and how to get more</span></summary>
+                <details className="text-sm text-ink-2">
+                  <summary className="cursor-pointer">Early-signal pack: fewer posts than a full pack needs, so treat the findings
+                    as signals. <span className="underline">Why, and how to get more</span></summary>
                   <p className="mt-1">{pack.snapshot.grade_note || "This pack does not meet the minimum content bar."}{" "}
                     <a href="#research" className="underline">What's short</a></p>
                   <span className="mt-2 flex flex-wrap gap-2 print:hidden">

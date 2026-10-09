@@ -1,6 +1,7 @@
 // Cards (PRD 10.3). OUR WORK (claims) in sans, THEIR WORDS (quotes, terms) in serif, ids in mono.
 import { createContext, useContext } from "react";
 import { AlertTriangle, ArrowRight } from "lucide-react";
+import { unitWords } from "../lib/unitWords";
 import type { Evidence, InsightLike } from "../lib/api";
 import { ClaimTypeTag, ConfidenceBadge, IdTag, SafeTag } from "./badges";
 import { CopyButton } from "./CopyButton";
@@ -156,8 +157,8 @@ export function HookCard({ hook, flags = [] }: {
         {hook.why_ids.map((id) => <IdLink key={id} id={id} />)}
       </p>
       {flags.map((f) => (
-        <div key={f.id} className="mt-2 flex gap-2 rounded-md border border-accent/40 bg-paper p-2 text-xs text-ink-2">
-          <AlertTriangle aria-hidden="true" size={14} className="mt-0.5 shrink-0 text-accent-ink" />
+        <div key={f.id} className="mt-2 flex gap-2 rounded-md border border-line-strong bg-paper p-2 text-xs text-ink-2">
+          <AlertTriangle aria-hidden="true" size={14} className="mt-0.5 shrink-0 text-ink" />
           <div>
             <span className="font-medium text-ink">Check with legal ({f.category.replace("_", " ")}).</span>{" "}
             {f.why} <span className="text-ink">Safer: {f.safer_wording}</span>
@@ -177,7 +178,7 @@ export function SourceCard({ source, dropped = false }: {
   return (
     <article className={`rounded-lg border p-3 ${dropped ? "border-dashed border-line-strong" : "border-line"}`}>
       <div className="flex items-baseline justify-between gap-2">
-        <span className="truncate font-mono text-xs text-ink" title={source.source_unit}>{source.source_unit}</span>
+        <span className="truncate text-sm text-ink" title={source.source_unit}>{unitWords(source.source_unit)}</span>
         <span className="shrink-0 text-xs font-medium text-ink-2">{dropped ? "Dropped" : "Kept"}</span>
       </div>
       {!dropped && source.kept !== undefined && (

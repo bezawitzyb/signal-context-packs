@@ -17,9 +17,8 @@ export function Shell() {
             <span className="hidden text-sm text-ink-3 sm:inline">Context Packs</span>
           </Link>
           <nav aria-label="Main" className="flex items-center gap-1">
-            <NavLink to="/" end className={nav}>{MIRROR ? "Home" : "Ask"}</NavLink>
-            <NavLink to="/packs" className={nav}>Packs</NavLink>
-            <a href={MIRROR ? `${LIVE_URL}/docs` : "/docs"} className="rounded px-2 py-1 text-sm text-ink-2 hover:text-ink">API</a>
+            <NavLink to="/" end className={nav}>{MIRROR ? "Home" : "New research"}</NavLink>
+            <NavLink to="/packs" className={nav}>Example packs</NavLink>
           </nav>
         </div>
       </header>
@@ -34,7 +33,7 @@ export function Shell() {
       <footer className="border-t border-line print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 px-4 py-4 text-xs text-ink-3">
           <span>Built from public online conversations. Quoted excerpts are for research use only.</span>
-          <span className="flex gap-3 font-mono"><Link to="/evals" className="hover:text-ink">evals</Link><a href={MIRROR ? `${LIVE_URL}/docs` : "/docs"} className="hover:text-ink">/api/v1</a><span>/mcp</span></span>
+          <span className="flex gap-3"><Link to="/evals" className="hover:text-ink">How we test</Link><a href={MIRROR ? `${LIVE_URL}/docs` : "/docs"} className="hover:text-ink">API for developers</a><span className="font-mono">/mcp</span></span>
         </div>
       </footer>
     </div>

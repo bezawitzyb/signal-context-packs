@@ -73,7 +73,7 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
     const key = keyRef.current?.value.trim() ?? "";
     setError(null);
     if (brief.trim().length < 3) return setError("Please describe what you want to research.");
-    if (!key) return setError("Please enter the run key to start research.");
+    if (!key) return setError("Please enter your access key to start research.");
     saveRunKey(key);
     setBusy(true);
     try {
@@ -144,17 +144,17 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
       <div className="grid items-end gap-4 md:grid-cols-[1fr_auto]">
         <div>
           <label htmlFor="runkey" className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-ink-3">
-            <KeyRound aria-hidden="true" size={13} /> Run key
+            <KeyRound aria-hidden="true" size={13} /> Access key
           </label>
           <input id="runkey" ref={keyRef} type="password" autoComplete="off" spellCheck={false}
                  aria-describedby="runkey-help" onChange={(e) => saveRunKey(e.currentTarget.value.trim())}
                  className="w-full rounded-lg border border-line bg-paper px-3 py-2 font-mono text-sm text-ink md:max-w-sm" />
           <p id="runkey-help" className="mt-1 text-xs text-ink-3">
-            Your key stays in this browser tab only. It also lets you ask questions about any pack.
+            Needed to run research and to ask questions about a pack. It stays in this browser tab only.
           </p>
         </div>
         <button type="submit" disabled={busy}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-ink px-5 py-2.5 text-sm font-medium text-paper hover:bg-ink-2 disabled:opacity-60">
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
           {busy ? <Loader2 aria-hidden="true" size={16} className="animate-spin" /> : <ArrowRight aria-hidden="true" size={16} />}
           {busy ? "Reading your brief…" : "Plan the research"}
         </button>
@@ -294,7 +294,7 @@ export function QuestionCards({ run, onPlanned }: { run: RunStatus; onPlanned: (
       ))}
       <div className="flex flex-wrap items-center gap-3">
         <button type="button" onClick={() => send(false)} disabled={busy}
-                className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-60">
+                className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
           {busy ? <Loader2 aria-hidden="true" size={15} className="animate-spin" /> : <ArrowRight aria-hidden="true" size={15} />}
           Plan with my answers
         </button>
@@ -582,25 +582,35 @@ export function PlanReview({ run, onReplanned }: { run: RunStatus; onReplanned: 
     <div className="space-y-8">
       <Understood run={run} onReplanned={onReplanned} />
 
-      <section aria-labelledby="start-here">
-        <h2 id="start-here" className="mb-1 text-lg font-semibold text-ink">Here's where I'll start</h2>
-        <p className="mb-3 text-sm text-ink-2">
-          Starting points, each with a reason. The agent adapts from here: it digs where people really talk and drops
-          sources that are off-topic. Switch off any you don't want.
-        </p>
-        <div className="grid gap-3 md:grid-cols-2">
-          {plan.starting_units.map((u, n) => (
-            <UnitCard key={n} unit={u} on={!off.has(n)} onToggle={() => toggle(n)} last={onCount <= 1} />
-          ))}
+      {/* UX audit: the technical parts of the plan are folded; open them to check or switch things off */}
+      <details className="group rounded-lg border border-line">
+        <summary className="cursor-pointer px-4 py-3">
+          <h2 id="start-here" className="inline text-base font-semibold text-ink">Where the agent starts</h2>
+          <span className="ml-2 text-sm text-ink-2">{onCount} of {plan.starting_units.length} sources on · open to check or switch off</span>
+        </summary>
+        <div className="px-4 pb-4">
+          <p className="mb-3 text-sm text-ink-2">
+            Starting points, each with a reason. The agent adapts from here: it digs where people really talk and drops
+            sources that are off-topic.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            {plan.starting_units.map((u, n) => (
+              <UnitCard key={n} unit={u} on={!off.has(n)} onToggle={() => toggle(n)} last={onCount <= 1} />
+            ))}
+          </div>
         </div>
-      </section>
+      </details>
 
-      <section aria-labelledby="questions">
-        <h2 id="questions" className="mb-3 text-lg font-semibold text-ink">Questions the research will answer</h2>
+      <details className="group rounded-lg border border-line">
+        <summary className="cursor-pointer px-4 py-3">
+          <h2 id="questions" className="inline text-base font-semibold text-ink">Questions the research will answer</h2>
+          <span className="ml-2 text-sm text-ink-2">{questions.length} questions · open to read or remove</span>
+        </summary>
+        <div className="px-4 pb-4">
         <ul className="space-y-2">
           {questions.map((q) => (
             <li key={q.id} className="flex items-start justify-between gap-3 rounded-lg border border-line px-3 py-2">
-              <span className="text-ink"><span className="mr-2 font-mono text-xs text-ink-3">{q.id}</span>{q.text}</span>
+              <span className="text-ink">{q.text}</span>
               <button type="button" onClick={() => setRemoved((s) => new Set(s).add(q.id))}
                       disabled={questions.length <= 5} aria-label={`Remove ${q.id}`}
                       title={questions.length <= 5 ? "At least 5 questions are needed" : "Remove this question"}
@@ -614,13 +624,14 @@ export function PlanReview({ run, onReplanned }: { run: RunStatus; onReplanned: 
           <details className="mt-3 text-sm text-ink-2">
             <summary className="cursor-pointer text-ink">Hypotheses to test ({plan.hypotheses.length})</summary>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              {plan.hypotheses.map((h) => <li key={h.id}><span className="font-mono text-xs text-ink-3">{h.id}</span> {h.statement}</li>)}
+              {plan.hypotheses.map((h) => <li key={h.id}>{h.statement}</li>)}
             </ul>
           </details>
         )}
-      </section>
+        </div>
+      </details>
 
-      <section className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-line-strong p-4">
+      <section className="sticky bottom-0 z-10 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-line-strong bg-paper p-4 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
         <p className="text-sm text-ink-2">
           <span className="font-medium text-ink">{run.mode === "standard" ? "Standard" : "Quick"}</span>: about{" "}
           {est.typical_minutes} minutes. If someone else's research is running, yours waits in line and starts by
@@ -637,15 +648,54 @@ export function PlanReview({ run, onReplanned }: { run: RunStatus; onReplanned: 
   );
 }
 
+/** UX audit: where the user is in the journey - brief, questions, plan, then research on its own page. */
+function FlowSteps({ step }: { step: number }) {
+  const steps = ["Brief", "Questions", "Plan", "Research"];
+  return (
+    <ol className="flex flex-wrap items-center gap-1 text-sm" aria-label="Steps">
+      {steps.map((s, n) => {
+        const state = n + 1 < step ? "done" : n + 1 === step ? "now" : "next";
+        return (
+          <li key={s} className="flex items-center gap-1" aria-current={state === "now" ? "step" : undefined}>
+            <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 ${
+              state === "done" ? "border-ink bg-ink text-paper" : state === "now" ? "border-ink font-medium text-ink"
+                : "border-line text-ink-3"}`}>
+              <span className="font-mono text-xs">{n + 1}</span>{s}
+            </span>
+            {n < steps.length - 1 && <span aria-hidden="true" className="text-ink-3">›</span>}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/** Once planning starts, the brief folds into one line; "Edit brief" brings the form back (the draft is kept). */
+function BriefSummary({ run, onEdit }: { run: RunStatus; onEdit: () => void }) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line px-4 py-3">
+      <p className="min-w-0 text-sm text-ink-2">
+        <span className="mr-2 text-xs font-medium uppercase tracking-wide text-ink-3">Brief</span>
+        <span className="font-serif text-base text-ink">{run.brief}</span>
+        <span className="ml-2 text-ink-3">· {run.mode === "standard" ? "Standard" : "Quick"}
+          {run.interpretation?.time_window_days ? ` · last ${run.interpretation.time_window_days} days` : ""}</span>
+      </p>
+      <button type="button" onClick={onEdit} className="text-sm text-ink underline">Edit brief</button>
+    </div>
+  );
+}
+
 export function AskFlow() {
   const [run, setRun] = useState<RunStatus | null>(null);
   const result = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (run) result.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [run]);
+  const step = !run ? 1 : run.status === "needs_clarification" ? 2 : 3;
   return (
-    <div className="space-y-8">
-      <AskForm onRun={setRun} />
+    <div className="space-y-6">
+      <FlowSteps step={step} />
+      {run ? <BriefSummary run={run} onEdit={() => setRun(null)} /> : <AskForm onRun={setRun} />}
       <div ref={result} className="scroll-mt-20">
         {run?.status === "needs_clarification" && run.clarifying_questions?.length > 0 && <QuestionCards run={run} onPlanned={setRun} />}
         {run?.status === "awaiting_approval" && run.plan && <PlanReview key={JSON.stringify([run.plan, run.interpretation, run.intake])} run={run} onReplanned={setRun} />}

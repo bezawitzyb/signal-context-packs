@@ -7,6 +7,7 @@ import { explain, readRunKey } from "../lib/runKey";
 import { summarize } from "../lib/runSummary";
 import { useRunEvents } from "../lib/useRunEvents";
 import { AgentLog, Announcer, CoverageBars, Counters, Notices, SourcesVerdict, StageStepper } from "../components/Theatre";
+import { STEPS } from "../lib/runSummary";
 import { ReplayPage } from "./ReplayPage";
 import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
@@ -81,7 +82,9 @@ export function TheatreLayout({ title, status, summary, collection, children, ow
       </div>
       {collection && (
         <section aria-labelledby="verdicts">
-          <h2 id="verdicts" className="mb-3 text-lg font-semibold text-ink">Sources kept and dropped</h2>
+          <h2 id="verdicts" className="mb-1 text-lg font-semibold text-ink">Sources kept and dropped</h2>
+          <p className="mb-3 text-sm text-ink-2">Dropping sources is normal: the agent keeps only places where people
+            really talk about the topic.</p>
           <SourcesVerdict collection={collection} />
         </section>
       )}
@@ -118,7 +121,7 @@ function LiveRun({ runId }: { runId: string }) {
 
   const stop = async () => {
     const key = readRunKey();
-    if (!key) return setError("Stopping needs the run key: enter it on the start page first.");
+    if (!key) return setError("Stopping needs your access key: enter it on the start page first.");
     setStopping(true);
     try { setRun(await stopRun(key, runId)); } catch (e) {
       setError(e instanceof ApiError ? explain(e.status, e.message) : "Could not reach the server.");
@@ -133,7 +136,9 @@ function LiveRun({ runId }: { runId: string }) {
         <p role="alert" className="text-ink">{run.error ?? "The run could not finish."} Your inputs are kept: run it again below.</p>)
     : run.status === "partial" && packId ? <p>Finished with a partial pack: open it to see what is missing and why (first blind spot).</p>
     : finished ? <p>Finished: the pack is ready.</p>
-    : <p>{live ? "Live" : "Reconnecting…"} · {run.mode === "standard" ? "Standard" : "Quick"} · started {new Date(run.created_at).toLocaleTimeString()}</p>;
+    : <p>{live ? "Live" : "Reconnecting…"} · {run.mode === "standard" ? "Standard" : "Quick"} research
+        · about {Math.max(1, Math.round(run.estimate.typical_minutes * (1 - summary.step / STEPS.length)))} min left
+        <span className="text-ink-3"> · you can leave this page: the research keeps going</span></p>;
 
   return (
     <TheatreLayout title={run.brief} status={status} summary={summary} collection={run.collection}

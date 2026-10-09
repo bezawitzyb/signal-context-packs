@@ -72,7 +72,7 @@ function fmtTarget(name: string, t: Metric["target"]): string {
 
 function Verdict({ pass }: { pass: boolean | null }) {
   if (pass === true) return <span className="inline-flex items-center gap-1 font-medium text-ink"><span aria-hidden="true">✓</span>Pass</span>;
-  if (pass === false) return <span className="inline-flex items-center gap-1 font-medium text-accent-ink"><span aria-hidden="true">✗</span>Fail</span>;
+  if (pass === false) return <span className="inline-flex items-center gap-1 font-medium text-ink"><span aria-hidden="true">✗</span>Fail</span>;
   return <span className="inline-flex items-center gap-1 text-ink-3"><span aria-hidden="true">–</span>n/a</span>;
 }
 

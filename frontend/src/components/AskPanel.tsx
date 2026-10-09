@@ -1,10 +1,9 @@
 // V10 "Ask this pack": a side panel. Answers come from this pack only; citations show as small numbered
 // links that open the source post. Suggested questions are built from the pack in code (no extra call).
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
 import { ArrowUp, Loader2, MessageCircleQuestion, X } from "lucide-react";
 import { askPack, friendlyError, MIRROR, type AskAnswer, type AskTurn, type ContextPack } from "../lib/api";
-import { readRunKey } from "../lib/runKey";
+import { readRunKey, saveRunKey } from "../lib/runKey";
 import { safeUrl } from "../lib/safe";
 import { CHANNEL } from "./plan";
 
@@ -64,6 +63,8 @@ function AnswerText({ a }: { a: AskAnswer }) {
 export function AskPanel({ pack, open, onClose }: { pack: ContextPack; open: boolean; onClose: () => void }) {
   const [turns, setTurns] = useState<{ q: string; a?: AskAnswer; error?: string }[]>([]);
   const [busy, setBusy] = useState(false);
+  const [hasKey, setHasKey] = useState(() => readRunKey() !== "");
+  const keyInput = useRef<HTMLInputElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -92,7 +93,7 @@ export function AskPanel({ pack, open, onClose }: { pack: ContextPack; open: boo
     } finally { setBusy(false); }
   };
   const last = [...turns].reverse().find((t) => t.a)?.a;
-  const keyed = MIRROR || readRunKey() !== "";   // asking needs a key (2026-10-09); users only hear "run key"
+  const keyed = MIRROR || hasKey;   // asking needs a key (2026-10-09); users only ever hear "access key"
 
   return (
     <aside aria-label="Ask this pack"
@@ -107,10 +108,19 @@ export function AskPanel({ pack, open, onClose }: { pack: ContextPack; open: boo
         <p className="text-xs text-ink-3">Answers use only this pack's research. Numbers open the real posts.</p>
         {MIRROR && <p className="rounded-lg border border-line bg-wash p-3 text-sm text-ink-2">Asking works on the live app; this read-only copy has no server.</p>}
         {!keyed && (
-          <div role="status" className="rounded-lg border border-line-strong bg-wash p-3 text-sm text-ink">
-            <p>Asking needs a run key: add it on the start page.</p>
-            <Link to="/" onClick={onClose} className="mt-2 inline-block font-medium underline">Go to the start page</Link>
-          </div>
+          <form className="space-y-2 rounded-lg border border-line-strong bg-wash p-3 text-sm text-ink"
+                onSubmit={(e) => { e.preventDefault(); const k = keyInput.current?.value.trim() ?? "";
+                                   if (k) { saveRunKey(k); setHasKey(true); } }}>
+            <p role="status">Asking needs an access key.</p>
+            <label htmlFor="ask-key" className="sr-only">Access key</label>
+            <div className="flex gap-2">
+              <input id="ask-key" ref={keyInput} type="password" autoComplete="off" spellCheck={false}
+                     placeholder="Access key" className="min-w-0 flex-1 rounded-lg border border-line bg-paper px-3 py-1.5 font-mono text-sm" />
+              <button type="submit" className="rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink hover:brightness-95">Use key</button>
+            </div>
+            <p className="text-xs text-ink-2">It stays in this browser tab only. No key? Everything in this pack stays
+              open to read.</p>
+          </form>
         )}
         {turns.length === 0 && !MIRROR && keyed && (
           <ul className="space-y-2" aria-label="Suggested questions">
@@ -124,7 +134,7 @@ export function AskPanel({ pack, open, onClose }: { pack: ContextPack; open: boo
           <div key={i} className="space-y-2">
             <p className="ml-8 rounded-lg bg-wash px-3 py-2 text-sm text-ink">{t.q}</p>
             {t.a ? <AnswerText a={t.a} />
-              : t.error ? <p role="alert" className="rounded-lg border border-accent/50 p-3 text-sm text-ink">{t.error}</p>
+              : t.error ? <p role="alert" className="rounded-lg border border-line-strong p-3 text-sm text-ink">{t.error}</p>
               : <p className="flex items-center gap-2 text-sm text-ink-3"><Loader2 aria-hidden="true" size={14} className="animate-spin" /> Reading the pack…</p>}
           </div>
         ))}

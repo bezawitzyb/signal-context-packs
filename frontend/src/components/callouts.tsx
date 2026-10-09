@@ -39,7 +39,7 @@ export function CoverageStrip({ pack }: { pack: ContextPack }) {
           <dt className="sr-only">Mode and evidence</dt>
           <dd className="flex items-center gap-2">
             <ModeBadge mode={pack.mode} />
-            {c.thin_evidence && <span className="rounded border border-accent px-1.5 py-0.5 text-xs text-accent-ink">Thin evidence</span>}
+            {c.thin_evidence && <span className="rounded border border-line-strong px-1.5 py-0.5 text-xs text-ink">Early-signal pack</span>}
           </dd>
         </div>
       </dl>

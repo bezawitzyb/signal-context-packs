@@ -38,14 +38,6 @@ export function HowToRead() {
   );
 }
 
-function Clamp({ text, lines = 2, className = "" }: { text: string; lines?: 1 | 2; className?: string }) {
-  return (
-    <details className={`group ${className}`}>
-      <summary className={`cursor-pointer list-none ${lines === 1 ? "line-clamp-1" : "line-clamp-2"} group-open:line-clamp-none`}>{text}</summary>
-    </details>
-  );
-}
-
 /** "brand_perception" -> "Brand perception" (the mirror has no API, so no config lookup here). */
 const goalWords = (g: string) => (g.charAt(0).toUpperCase() + g.slice(1)).replace(/_/g, " ");
 
@@ -87,7 +79,7 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                 <p className="flex gap-2 text-[0.95rem] font-medium leading-snug text-ink"><span className="shrink-0 font-mono text-sm text-ink-3">{n + 1}.</span>{f.text}</p>
                 {f.quote && (
                   <blockquote className="mt-1.5 border-l-2 border-line-strong pl-2.5">
-                    <p className="line-clamp-1 font-serif text-sm text-ink" title={f.quote.text}>“{f.quote.text}”</p>
+                    <p className="line-clamp-2 font-serif text-sm text-ink" title={f.quote.text}>“{f.quote.text}”</p>
                     {f.quote_en && <p className="line-clamp-1 text-xs text-ink-3" title={f.quote_en}>In English (the post): {f.quote_en}</p>}
                   </blockquote>
                 )}
@@ -119,9 +111,9 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                 <li key={d.id} className="flex items-start gap-2 rounded-lg border border-line p-2.5 text-sm">
                   <span className="shrink-0 font-mono text-ink-3">{n + 1}.</span>
                   <div className="min-w-0 flex-1">
-                    <Clamp text={d.action} className="text-ink" />
+                    <p className="text-ink">{d.action}</p>{/* UX audit: the first moves are never cut off */}
                     {d.goal && <p className="text-xs text-ink-3">for: {goalWords(d.goal)}</p>}
-                    {d.success_measure && <p className="mt-0.5 line-clamp-1 text-xs text-ink-2" title={d.success_measure}>
+                    {d.success_measure && <p className="mt-0.5 line-clamp-2 text-xs text-ink-2" title={d.success_measure}>
                       <span className="font-medium text-ink">How you'll know:</span> {d.success_measure}</p>}
                   </div>
                   <CopyButton text={d.action} />

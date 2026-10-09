@@ -64,7 +64,7 @@ async def test_asking_needs_a_key_and_says_run_key_only(packed, monkeypatch):  #
     monkeypatch.setattr(guards, "key_kind", refuse)
     with pytest.raises(guards.GuardError) as exc:
         await service.ask_pack(packed["pack_id"], "Anything?")
-    assert exc.value.status == 401 and exc.value.message == "Asking needs a run key: add it on the start page."
+    assert exc.value.status == 401 and exc.value.message == "Asking needs an access key: add it on the start page or in the Ask panel."
     assert "guest" not in exc.value.message
 
 

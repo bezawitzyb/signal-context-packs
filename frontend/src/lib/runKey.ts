@@ -21,7 +21,7 @@ export function saveRunKey(key: string): void {
 
 /** A refusal in plain words (never the key itself). */
 export function explain(status: number, message: string): string {
-  if (status === 401) return "That run key was not accepted. Please check it and try again.";
+  if (status === 401) return "That access key was not accepted. Please check it and try again.";
   if (status === 503) return "Starting new research is paused right now. Existing packs are still available.";
   if (status === 429) return message; // queue full / daily cap: the server's own polite words
   if (status === 422) return "Please check the brief: it needs at least a few words.";

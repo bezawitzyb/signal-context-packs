@@ -6,23 +6,19 @@ import AxeBuilder from "@axe-core/playwright";
 const KEY = process.env.E2E_RUN_KEY!;
 
 test("ask a featured pack: citations open real posts; no evidence is said plainly", async ({ page }) => {
-  // Without a key: the panel says it needs a run key (never "guest") and offers no question box (2026-10-09)
+  // Without a key: the panel asks for an access key (never "guest") and offers no question box (2026-10-09)
   await page.goto("/packs");
   await page.getByText("Launching a snack brand in the Netherlands").first().click();
   await page.getByRole("button", { name: "Ask this pack" }).click();
-  let panel = page.getByRole("complementary", { name: "Ask this pack" });
-  await expect(panel.getByText("Asking needs a run key: add it on the start page.")).toBeVisible();
+  const panel = page.getByRole("complementary", { name: "Ask this pack" });
+  await expect(panel.getByText("Asking needs an access key.")).toBeVisible();
   await expect(panel.getByLabel("Your question about this pack")).toHaveCount(0);
   expect(await panel.innerText()).not.toMatch(/guest/i);
 
-  // The key typed on the start page is kept for this tab (no brief needed), then asking works
-  await panel.getByRole("link", { name: "Go to the start page" }).click();
-  await page.getByLabel("Run key").fill(KEY);
+  // UX audit: the key is entered right in the panel (masked, tab only), so the reader keeps their place
+  await panel.getByLabel("Access key").fill(KEY);
+  await panel.getByRole("button", { name: "Use key" }).click();
   expect(await page.content()).not.toContain(KEY);                     // never on the page
-  await page.goto("/packs");
-  await page.getByText("Launching a snack brand in the Netherlands").first().click();
-  await page.getByRole("button", { name: "Ask this pack" }).click();
-  panel = page.getByRole("complementary", { name: "Ask this pack" });
   await expect(panel.getByRole("list", { name: "Suggested questions" }).getByRole("button")).toHaveCount(4);
 
   await panel.getByLabel("Your question about this pack").fill("uitverkocht");

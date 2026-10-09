@@ -36,7 +36,12 @@ def featured() -> list[dict[str, Any]]:
         out.append({"pack_id": row.id, "brief": p["brief"]["text"], "topic": i["topic"], "market": i["market"],
                     "audience": i["audience"], "mode": p["mode"], "generated_at": p["generated_at"],
                     "coverage_grade": p["snapshot"]["coverage_grade"],
-                    "thin_evidence": p["coverage"]["thin_evidence"]})
+                    "thin_evidence": p["coverage"]["thin_evidence"],
+                    # UX audit: example cards describe what a pack holds, not its codes
+                    "relevant_posts": p["coverage"]["counts"]["relevant"], "languages": i["languages"],
+                    "findings": sum(1 for it in all_items(p).values() if it.get("confidence") and it.get("claim")),
+                    "strong_findings": sum(1 for it in all_items(p).values()
+                                           if (it.get("confidence") or {}).get("label") == "strong")})
     return out
 
 
@@ -143,7 +148,7 @@ async def ask_pack(pack_id: str, question: str, history: list[dict] | None = Non
     except guards.GuardError as exc:
         if exc.status != 401:
             raise
-        raise guards.GuardError(401, "Asking needs a run key: add it on the start page.") from None
+        raise guards.GuardError(401, "Asking needs an access key: add it on the start page or in the Ask panel.") from None
     if guards.daily_spend_left() <= 0:
         raise guards.GuardError(429, "Today's allowance for questions is used up. The pack stays available; "
                                      "ask again tomorrow.")
