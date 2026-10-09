@@ -44,6 +44,16 @@ def _strings(value: Any, path: str = "") -> Iterator[tuple[str, str]]:
         yield path, value
 
 
+# The post links WE build for Facebook (cleaning.facebook_url): a post number, never a person. Only exempt as the
+# whole value of a link field - the same pattern inside text is still checked.
+_OUR_FB_LINK = re.compile(r"https://www\.facebook\.com/\d{8,25}/?(?:\?comment_id=\d{1,25})?")
+_LINK_FIELDS = (".url", ".permalink", ".text_fragment_url")
+
+
+def _our_link(path: str, text: str) -> bool:
+    return path.endswith(_LINK_FIELDS) and bool(_OUR_FB_LINK.fullmatch(text))
+
+
 def privacy_problems(pack: dict) -> list[str]:
     """Everything that must not be published. Empty list = safe to feature."""
     problems = []
@@ -51,6 +61,8 @@ def privacy_problems(pack: dict) -> list[str]:
         if _COST.search(text):
             problems.append(f"{path}: cost amount")
     for path, text in _strings(pack):
+        if _our_link(path, text):
+            continue
         for pattern, what in CHECKS:
             if m := pattern.search(text):
                 problems.append(f"{path}: {what} ({m.group(0)[:40]})")

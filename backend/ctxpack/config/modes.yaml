@@ -49,7 +49,8 @@ languages:
   supported: {en: English, de: German, nl: Dutch, fr: French, it: Italian, es: Spanish, pl: Polish,
               sv: Swedish, da: Danish, nb: Norwegian, fi: Finnish, pt: Portuguese}
   max_per_mode: {quick: 4, standard: 6}
-  english_weight: 0.15          # English joins every run with at least this share (lingua franca, expats)
+  english_weight: 0.15          # English joins global and multi-country runs with at least this share (lingua
+                                # franca); a single-country brief only when the planner picks it (2026-10-09)
   model_language_bonus: 0.10    # a language the planner picked for this brief gets this extra share
   named_country_weight: 0.30    # a country the brief names gets this extra weight; its main language is always kept
   min_share_of_top: 0.25        # a market language scoring below this share of the top language is left out
@@ -98,6 +99,7 @@ synthesis:
   evidence_per_cluster_max: 3   # taken round-robin over the call's clusters, biggest first
   evidence_chars: 280           # evidence excerpt length (pack schema max)
   max_tokens: 16000             # one writer answer
+  perform_max_tokens: 3000      # follow-up for top posts call B left undescribed (it skipped them in long answers)
   opportunities_max: 6          # opportunity texts written (top by score)
   non_obvious_batch: 60         # items per non_obvious worker call
 
@@ -192,7 +194,10 @@ collection:
   web_fetch_max_content_tokens: 20000  # caps the cost of one huge page (~0.02 USD input)
   probe_items: 20               # the first social call on a platform is a small test (2026-10-09 audit: full-size
                                 # first calls cost 60 posts at 0-11% relevant); also every subreddit browse without a query
-  probe_min_relevant_share: 0.30  # later calls on a platform get full size while at least this share is relevant
+  probe_min_relevant_share: 0.30  # a search that proved at least this relevant gets full size when repeated
+  probe_trusted_platform_share: 0.70  # a NEW search starts full size only on a platform at least this relevant ...
+  probe_trusted_min_searches: 2       # ... over at least this many searches (NL rerun: one 79% search let a 16% in)
+  groups_listed_max: 5          # public Facebook groups a search result lists for read_facebook_group
 
 # Agent loop (guide B8a, B8e). Same for every mode.
 agent:
@@ -202,6 +207,7 @@ agent:
   top_up_extra_secs: 90         # a low-evidence top-up may run this long past the collection time (2026-10-09:
                                 # the agent uses its whole time, so without it every top-up call was refused)
   top_up_pages_per_unit: 3      # web top-up: unfetched pages per kept domain, from earlier web_search results
+  top_up_fuller_min_share: 0.60 # a fuller page of the same search only when that search was at least this relevant
 
 # Job worker (guide B13) and live events (B6). Same for every mode.
 worker:

@@ -25,8 +25,9 @@ language and the user's goals.
   assumed: true if the brief does not state it. Leave "market" and
   "languages_excluded" empty: code fills them.
 - languages: ISO 639-1 codes, most important first: the markets' local
-  languages, and "en" where locals really discuss the topic in English.
-  Code makes the final choice from the markets (and keeps English).
+  languages, and "en" only where locals really discuss the topic in
+  English or the brief is about expats or an international audience.
+  Code makes the final choice from the markets.
 - audience: who we listen to. Be concrete (age, life stage, role,
   situation), inferred from the brief if not stated.
 - category: the product or service category.

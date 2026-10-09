@@ -57,15 +57,15 @@ def test_trends_12_months_is_the_empty_value_for_apify(live, monkeypatch):
 
 # --- 2. Reddit searches keep relevance ------------------------------------------------------
 
-def test_reddit_search_keeps_relevance_and_browsing_keeps_the_date(live, monkeypatch):
+def test_reddit_wide_search_keeps_relevance_and_subreddits_keep_the_date(live, monkeypatch):
     seen = capture(monkeypatch)
     asyncio.run(tools.search_reddit(make_ctx(180), "meal prep cost", 20, "test"))
     search = seen["harshmaur/reddit-scraper"]
     assert search["searchSort"] == "relevance" and search["searchTime"] == "year" and "postedAfter" not in search
-    asyncio.run(tools.search_reddit(make_ctx(30), "r/MealPrepSunday", 20, "test", query="budget"))
+    asyncio.run(tools.search_reddit(make_ctx(180), "r/MealPrepSunday", 20, "test", query="budget"))
     inside = seen["harshmaur/reddit-scraper"]
-    assert inside["withinCommunity"] == "MealPrepSunday" and inside["searchTime"] == "month"
-    assert "postedAfter" not in inside
+    assert inside["withinCommunity"] == "MealPrepSunday" and inside["postedAfter"] == tools._cutoff(make_ctx(180))
+    assert "searchTime" not in inside                                       # inside a subreddit: newest-first
     asyncio.run(tools.search_reddit(make_ctx(30), "r/EatCheapAndHealthy", 20, "test"))
     assert "postedAfter" in seen["harshmaur/reddit-scraper"]                # browsing is newest-first anyway
     assert [tools.reddit_search_time(d) for d in (7, 30, 90, 365, 400)] == ["week", "month", "year", "year", "all"]
@@ -311,7 +311,7 @@ def test_platforms_with_their_own_tool_are_never_web_searched_or_read(live, monk
                                     "https://quora.com/q": "nothing (login wall, JavaScript)"}
 
 
-def test_probe_first_platform_call_then_full_size_when_relevant(live, monkeypatch):
+def test_probe_per_search_with_trusted_platforms_and_proven_searches(live, monkeypatch):
     from collections import Counter
     from ctxpack.schemas.enums import Platform
 
@@ -325,19 +325,41 @@ def test_probe_first_platform_call_then_full_size_when_relevant(live, monkeypatc
     ctx = make_ctx()
     ctx.mode = "standard"
     probe = tools._modes()["collection"]["probe_items"]
-    out = asyncio.run(tools.search_reddit(ctx, "meal prep cost", 80, "test"))
-    assert "first reddit call" in out["limited"]
-    assert sizes[-1] <= probe                                               # posts share of the probe
-    ctx.unit_stats["reddit:search:x"], ctx.unit_platform["reddit:search:x"] = Counter(kept=20, relevant=2), \
-        Platform.reddit
-    out = asyncio.run(tools.search_reddit(ctx, "meal prep budget", 80, "test"))
-    assert "10% relevant" in out["limited"]                                 # low so far: still small
-    ctx.unit_stats["reddit:search:x"] = Counter(kept=20, relevant=12)
-    out = asyncio.run(tools.search_reddit(ctx, "meal prep lunch", 80, "test"))
-    assert "limited" not in out                                             # 60% relevant: full size
-    out = asyncio.run(tools.search_reddit(ctx, "r/de", 80, "test"))
-    assert "without a query" in out["limited"]                              # blind browse: always small
+    out = asyncio.run(tools.search_tiktok(ctx, "snack review", 80, "test"))
+    assert "first tiktok search" in out["limited"] and sizes[-1] <= probe
+    # a good TikTok query (79%) does NOT let a new hashtag in at full size (NL rerun: #snacktip 60 posts, 16%)
+    ctx.unit_stats["tiktok:search:snack review"], ctx.unit_platform["tiktok:search:snack review"] = \
+        Counter(kept=19, relevant=15), Platform.tiktok
+    assert "new tiktok search" in asyncio.run(tools.search_tiktok(ctx, "#snacktip", 80, "test"))["limited"]
+    # ... but repeating the proven search gets full size
+    assert "limited" not in asyncio.run(tools.search_tiktok(ctx, "snack review", 80, "again, bigger"))
+    # two searches averaging at least the trusted share let new searches start at full size
+    ctx.unit_stats["tiktok:search:snack proeven"], ctx.unit_platform["tiktok:search:snack proeven"] = \
+        Counter(kept=20, relevant=16), Platform.tiktok
+    assert "limited" not in asyncio.run(tools.search_tiktok(ctx, "nieuwe snacks", 80, "test"))
+    # a search that proved poor stays small; a blind subreddit browse is always small
+    ctx.unit_stats["tiktok:#snacktip"], ctx.unit_platform["tiktok:#snacktip"] = Counter(kept=20, relevant=3), \
+        Platform.tiktok
+    assert "15% relevant" in asyncio.run(tools.search_tiktok(ctx, "#snacktip", 60, "retry"))["limited"]
+    assert "without a query" in asyncio.run(tools.search_reddit(ctx, "r/de", 80, "test"))["limited"]
 
+
+def test_a_search_that_finds_nothing_is_not_a_blind_spot(live, monkeypatch):
+    async def placeholder(spec, run_input, limit, timeout=None):        # one "no results" row each
+        return apify.ActorResult(spec["id"], [{"message": "no results"}], 0.0, "SUCCEEDED")
+
+    monkeypatch.setattr(apify, "run_actor", placeholder)
+    ctx = make_ctx()
+    out = asyncio.run(tools.search_youtube(ctx, "lidl aldi jumbo huismerk", 20, "x"))
+    assert out["actor_status"] == apify.NO_RESULTS and "no_results" in out and "source_problem" not in out
+    assert ctx.source_failures == []
+
+    async def broken(spec, run_input, limit, timeout=None):
+        return apify.ActorResult(spec["id"], [], 0.0, "FAILED", error="boom")
+
+    monkeypatch.setattr(apify, "run_actor", broken)
+    out = asyncio.run(tools.search_youtube(ctx, "something else", 20, "x"))
+    assert "source_problem" in out and ctx.source_failures                  # a real failure still is one
 
 def test_top_up_gets_its_own_time_after_the_agent_used_all_of_it(live, monkeypatch):
     from types import SimpleNamespace
@@ -354,3 +376,100 @@ def test_top_up_gets_its_own_time_after_the_agent_used_all_of_it(live, monkeypat
     monkeypatch.setattr(fallback, "_top_up", fake_top_up)
     assert asyncio.run(fallback.top_up(SimpleNamespace(ctx=ctx)))
     assert seen["seconds_left"] > 60 and ctx.extra_secs == 0                # grace during the top-up only
+
+
+# --- rerun findings (2026-10-09) ---------------------------------------------------------------
+
+def test_invalid_subreddit_names_are_refused_with_a_reason(live, monkeypatch):
+    seen = capture(monkeypatch)
+    ctx = make_ctx()
+    out = asyncio.run(tools.search_reddit(ctx, "r/wärmepumpe", 20, "x", query="kosten"))
+    assert out["status"] == "refused" and "r/waermepumpe" in out["error"] and ctx.calls == 0 and not seen
+    ok = asyncio.run(tools.search_reddit(ctx, "r/de", 20, "x", query="wärmepumpe"))
+    assert ok["status"] == "ok" and seen["harshmaur/reddit-scraper"]["withinCommunity"] == "de"
+
+
+def test_a_query_with_a_reddit_wide_target_is_never_dropped(live, monkeypatch):
+    seen = capture(monkeypatch)
+    asyncio.run(tools.search_reddit(make_ctx(), "wärmepumpe", 20, "x", query="altbau kosten"))
+    assert seen["harshmaur/reddit-scraper"]["searchTerms"] == ["wärmepumpe altbau kosten"]
+
+
+def test_empty_what_performs_says_why_when_posts_were_found():
+    from ctxpack.synthesis import finalize
+    pack = {"landscape": {"themes": [], "platform_lens": []}, "pain_points": [], "tensions": [], "motivations": [],
+            "objections": [], "segments": [], "opportunities": [], "what_performs": [], "moments": [], "culture": {}}
+    found = finalize.sections_meta(pack, {}, set(), None, {"what_performs": [{"doc_id": "D1"}]})["what_performs"]
+    assert "none of them" in found["empty_reason"]
+    none = finalize.sections_meta(pack, {}, set(), None, {"what_performs": []})["what_performs"]
+    assert "no engagement numbers" in none["empty_reason"]
+
+
+def test_top_posts_the_writer_skipped_get_one_small_follow_up(monkeypatch):
+    from types import SimpleNamespace
+    from ctxpack.synthesis import write as W
+    from ctxpack.llm.client import CallResult
+
+    docs = {f"D{i}": SimpleNamespace(id=f"D{i}", platform="facebook", language="de", text=f"Post {i} über Kosten",
+                                     extraction={}) for i in range(1, 4)}
+    pool = W.Pool(local={"E01": "D1", "E02": "D2", "E03": "D3"}, clusters_of={"D1": [], "D2": [], "D3": []})
+    b = W.AnswerB(what_performs=[W.PerformOut(evidence="E01", format="question", why_it_worked="asks")])
+    calls = []
+
+    async def fake_structured(role, system, user, schema, tool, **kw):
+        calls.append(user)
+        return CallResult(data=schema.model_validate(W._fake_perform(user)), usd=0.02)
+
+    monkeypatch.setattr(W, "structured", fake_structured)
+    outcome = W.WriteOutcome()
+    ctx = BriefContext(topic="Wärmepumpe", market="DE", languages=["de"])
+    asyncio.run(W.describe_missing_performers(ctx, b, pool, ["D1", "D2", "D3"], docs,
+                                              {"evidence_chars": 280, "perform_max_tokens": 3000}, outcome))
+    assert len(calls) == 1 and "E01" not in calls[0] and "E02" in calls[0] and "E03" in calls[0]
+    assert sorted(o.evidence for o in b.what_performs) == ["E01", "E02", "E03"] and outcome.calls == 1
+    asyncio.run(W.describe_missing_performers(ctx, b, pool, ["D1", "D2", "D3"], docs,
+                                              {"evidence_chars": 280, "perform_max_tokens": 3000}, outcome))
+    assert len(calls) == 1                                                  # nothing missing: no call
+
+
+def test_what_performs_comes_early_in_the_writer_answer():
+    from ctxpack.synthesis import write as W
+    fields = list(W.AnswerB.model_fields)
+    assert fields.index("what_performs") < fields.index("motivations")
+
+
+def test_top_up_tries_new_material_first_and_fuller_pages_only_for_strong_searches(monkeypatch):
+    from collections import Counter
+    from types import SimpleNamespace
+    from ctxpack.collect import fallback
+
+    ctx = make_ctx()
+    ctx.limits  # noqa: B018 - quick mode limits
+    ctx.unit_stats = {"youtube:search:strong": Counter(kept=20, relevant=18),
+                      "youtube:search:weak": Counter(kept=20, relevant=8)}
+    ctx.finished = {"follow_up_queries": [{"source_unit": "youtube:search:weak", "query": "sharper words"}]}
+    state = SimpleNamespace(ctx=ctx, interp=None)
+    monkeypatch.setattr(fallback, "_kept_units", lambda st: ["youtube:search:weak", "youtube:search:strong"])
+    monkeypatch.setattr(fallback, "_last_call_for", lambda st, unit: (
+        "search_youtube", {"query": unit.rsplit(":", 1)[1], "limit": 20, "reason": "x"}))
+    calls = list(fallback._candidates(state))
+    assert calls[0] == ("search_youtube", {"query": "sharper words",
+                                           "reason": "top-up: follow-up proposed for youtube:search:weak"})
+    fuller = [c for c in calls if c[1]["reason"].startswith("top-up: fuller page")]
+    assert [c[1]["query"] for c in fuller] == ["strong"]                     # 90% yes, 40% no
+
+
+def test_web_search_hints_a_retry_when_no_recent_voice_page_is_found(live, monkeypatch):
+    def found(*pages):
+        async def fake_discover(query, country, language, blocked=None):
+            return web.DiscoverResult([web.FoundPage(url=u, page_type=t, language="nl", why="x", estimated_date=d)
+                                       for u, t, d in pages])
+        monkeypatch.setattr(web, "discover", fake_discover)
+
+    ctx = make_ctx(180)
+    found(("https://radar.nl/forum/t/1", "forum", "2011"), ("https://blog.nl/a", "article", "2026-09-01"))
+    assert "hint" in asyncio.run(tools.web_search(ctx, "gezonde snack forum", "NL", "nl", "x"))
+    found(("https://forum.fok.nl/topic/1", "forum", "2026"))                # a year-only date this year: recent enough
+    assert "hint" not in asyncio.run(tools.web_search(ctx, "snacks fok", "NL", "nl", "x"))
+    found(("https://forum.nl/t/9", "forum", None))                         # no date known: worth reading
+    assert "hint" not in asyncio.run(tools.web_search(ctx, "snacks forum", "NL", "nl", "x"))

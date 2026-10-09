@@ -10,6 +10,8 @@ and implications.
   making either stronger than the posts. claim_type is "observed" only
   if one cited post says both sides; when the pairing is yours, it is
   "inferred".
+- what_performs: one entry per performing post listed (if any): format
+  and why_it_worked (always your inference).
 - motivations: one item per motivation cluster.
 - objections: one item per objection cluster.
 - competitors: one entry per competitor cluster listed: tone (how they
@@ -29,5 +31,3 @@ and implications.
   refuted | inconclusive), why (what the evidence showed), evidence.
 - risks: what could go wrong for a brand acting on this (backlash,
   sensitivities, misreadings), each with the cluster_ids it relates to.
-- what_performs: one entry per performing post listed (if any): format
-  and why_it_worked (always your inference).

@@ -127,6 +127,26 @@ async def test_a_failed_batch_does_not_sink_the_others(fake, monkeypatch):
     assert outcome.extracted == 4 and outcome.missing == []
 
 
+async def test_one_bad_doc_only_loses_itself(fake, monkeypatch):
+    """2026-10-09 rerun: a batch failing for one doc was rebuilt identically and lost all 16 docs twice.
+    Now a failed batch is split in half until the bad doc is alone."""
+    docs = [doc(i, f"post {i}") for i in range(8)]
+    real_structured = extract.structured
+    sizes = []
+
+    async def poison(system, *args, **kwargs):
+        user = args[1] if len(args) > 1 else kwargs.get("user", "")
+        sizes.append(user.count("<untrusted_user_content"))
+        if "post 5" in user:
+            raise LLMError("record_extractions: no valid answer after one retry")
+        return await real_structured(system, *args, **kwargs)
+
+    monkeypatch.setattr(extract, "structured", poison)
+    outcome = await extract_documents(docs, CTX)
+    assert outcome.extracted == 7 and outcome.missing == [docs[5].id]
+    assert 1 in sizes                                                       # split down to the one bad doc
+
+
 async def test_invented_phrases_are_counted_as_dropped(fake, monkeypatch):
     docs = [doc(1, "Kaassoufflé om middernacht is het beste.")]
     real = extract._fake_answer

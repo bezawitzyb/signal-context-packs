@@ -76,7 +76,8 @@ best, with links to related findings elsewhere.
   offer is always asked (up to 4 questions in all); no platform may take more than half of the starting
   sources unless the plan says why.
 - The **agent loop** (Claude Sonnet, plain tool use) then picks the next call itself, with a reason:
-  Reddit, TikTok, YouTube, Instagram, LinkedIn, X and Facebook (keyword search only, no login of ours) through
+  Reddit, TikTok, YouTube, Instagram, LinkedIn, X and Facebook (keyword search only, no login of ours; on
+  Facebook also public groups that a keyword search found in the same run) through
   Apify, the open web through web search and fetch, and Google Trends. It sees only short summaries
   ("collected 50, kept 43, 84% relevant"), never raw posts. Every Apify source has a tested backup actor
   ([`catalog.yaml`](backend/ctxpack/config/catalog.yaml)); if both fail, the pack says so as a blind spot.
@@ -114,6 +115,10 @@ best, with links to related findings elsewhere.
 ## Data handling and privacy
 
 - Only public posts. Packs carry per-pack author ids, so the same person cannot be linked across packs.
+- Facebook: keyword search of public posts, and reading a **public** group only when that same run's keyword
+  search found posts in it - never a group, page or profile chosen by name, never a private group, never a
+  login of ours. Links are rebuilt as `facebook.com/<post number>`, so they carry no names.
+- Author names written inside a post (signatures, people tagged in comments) are redacted too.
 - Author names are hashed (salted) in the function that receives them and are
   never stored, logged or sent to a model. Emails, phone numbers, handles and profile links are redacted.
 - Scraped text is treated as untrusted data and is wrapped as such in every prompt.

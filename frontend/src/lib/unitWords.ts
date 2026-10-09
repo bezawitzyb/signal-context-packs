@@ -7,5 +7,6 @@ export function unitWords(unit: string): string {
     linkedin: "LinkedIn", x: "X", facebook: "Facebook", web: "the web", trends: "Google Trends" };
   if (target.startsWith("search:")) return `${platform === "web" ? "Web" : name[platform] ?? platform} search: "${target.slice(7)}"`;
   if (platform === "web") return target;
+  if (platform === "facebook" && target.startsWith("group:")) return `Public Facebook group ${target.slice(6)}`;
   return target ? `${target} on ${name[platform] ?? platform}` : (name[platform] ?? unit);
 }

@@ -184,6 +184,8 @@ def _follow_up_call(unit: str, query: str, interp: Interpretation) -> tuple[str,
     if family == "x":
         return "search_x", {"target": query, "reason": reason}
     if family == "facebook":
+        if rest.startswith("group:"):              # a kept public group: read more of it (query unused)
+            return "read_facebook_group", {"group": rest.removeprefix("group:"), "reason": reason}
         return "search_facebook", {"query": query, "reason": reason}
     if family == "web":
         country = primary_country([m.model_dump() for m in interp.markets])  # V2: first country of the top market
@@ -193,10 +195,15 @@ def _follow_up_call(unit: str, query: str, interp: Interpretation) -> tuple[str,
 
 
 def _candidates(state: Any) -> Iterator[tuple[str, dict[str, Any]]]:
+    """New material first (more forum pages, the agent's follow-up queries), then - only for searches that
+    were clearly relevant - a fuller page of the same search. 2026-10-09 NL rerun: a fuller page of a 94%
+    YouTube search came back 20% relevant (deeper results are weaker and the first ones are repeats)."""
     ctx = state.ctx
     follow_ups = (ctx.finished or {}).get("follow_up_queries", [])
     per_call = ctx.limits["items_per_call_max"]
-    for unit in _kept_units(state):
+    min_share = _agent_cfg()["top_up_fuller_min_share"]
+    kept = _kept_units(state)
+    for unit in kept:
         if unit.startswith("web:"):
             more = [u for u in ctx.page_types if tools.web_unit(u) == unit and u not in ctx.fetched_urls]
             if more:
@@ -205,9 +212,15 @@ def _candidates(state: Any) -> Iterator[tuple[str, dict[str, Any]]]:
         for f in follow_ups:
             if f["source_unit"] == unit and (call := _follow_up_call(unit, f["query"], state.interp)):
                 yield call
+    for unit in sorted(kept, key=lambda u: -_share(ctx, u)):            # best searches first
         last = _last_call_for(state, unit)
-        if last and (last[1].get("limit") or per_call) < per_call:   # a fuller page of the same unit
+        if last and (last[1].get("limit") or per_call) < per_call and _share(ctx, unit) >= min_share:
             yield last[0], {**last[1], "limit": per_call, "reason": f"top-up: fuller page of kept {unit}"}
+
+
+def _share(ctx: Any, unit: str) -> float:
+    st = ctx.unit_stats.get(unit)
+    return st["relevant"] / st["kept"] if st and st["kept"] else 0.0
 
 
 async def top_up(state: Any) -> bool:

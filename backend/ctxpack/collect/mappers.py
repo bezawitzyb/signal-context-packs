@@ -26,6 +26,7 @@ class RawPost(TypedDict, total=False):
     community: str | None
     engagement: dict[str, Any]
     comments: int               # comment count, used to pick posts for chained comments
+    group_id: str | None        # facebook: the public group a search result was posted in
 
 
 def get(item: dict, path: str) -> Any:
@@ -305,9 +306,22 @@ def facebook_scrapeforge(item: dict, ctx: dict) -> RawPost | None:
     return RawPost(kind="post", text=_join(item.get("message")), author=get(item, "author.name"),
                    date=item.get("timestamp"), url=facebook_url(pid), thread_id=pid,
                    community=get(item, "associated_group.name"),
+                   group_id=_fb_id(get(item, "associated_group.group_id")) or None,
                    engagement=_counts(reactions=item.get("reactions_count"), comments=item.get("comments_count"),
                                       shares=item.get("reshare_count")),
                    comments=_count(item.get("comments_count")) or 0)
+
+
+def facebook_group_post(item: dict, ctx: dict) -> RawPost | None:
+    """A post read from a public group (both group actors use these field names)."""
+    pid = _fb_id(item.get("legacyId"))
+    if not pid or not item.get("text") or item.get("isMarketplaceListing"):
+        return None
+    return RawPost(kind="post", text=_join(item.get("text")), author=get(item, "user.name"),
+                   date=item.get("time"), url=facebook_url(pid), thread_id=pid, community=item.get("groupTitle"),
+                   engagement=_counts(likes=item.get("likesCount"), comments=item.get("commentsCount"),
+                                      shares=item.get("sharesCount")),
+                   comments=_count(item.get("commentsCount")) or 0)
 
 
 def facebook_scraperone(item: dict, ctx: dict) -> RawPost | None:
@@ -414,7 +428,13 @@ MAPPERS: dict[str, tuple[Mapper, list[str], list[str], list[str]]] = {
         "quoteCount", "author.screenName"], ["author.screenName"], ["postText"]),
     "scrapeforge/facebook-search-posts": (facebook_scrapeforge, [
         "post_id", "type", "message", "timestamp", "reactions_count", "comments_count", "reshare_count",
-        "associated_group.name", "author.name"], ["author.name"], ["message"]),
+        "associated_group.name", "associated_group.group_id", "author.name"], ["author.name"], ["message"]),
+    "apify/facebook-groups-scraper": (facebook_group_post, [
+        "legacyId", "text", "time", "likesCount", "commentsCount", "sharesCount", "groupTitle", "user.name"],
+        ["user.name"], ["text"]),
+    "memo23/facebook-public-group-posts-scraper": (facebook_group_post, [
+        "legacyId", "text", "time", "likesCount", "commentsCount", "sharesCount", "groupTitle",
+        "isMarketplaceListing", "user.name"], ["user.name"], ["text"]),
     "scraper_one/facebook-posts-search": (facebook_scraperone, [
         "postId", "postText", "timestamp", "reactionsCount", "commentsCount", "sharesCount", "isReshare",
         "author.name"], ["author.name"], ["postText"]),

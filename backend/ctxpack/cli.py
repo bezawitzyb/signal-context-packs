@@ -124,13 +124,13 @@ def catalog() -> None:
         if src["kind"] == "web":
             rows = [("tool", src["tool"]), ("limits", "modes.yaml web_pages_per_call_max")]
         else:
-            comments = src.get("comments")
+            comments, groups = src.get("comments"), src.get("groups")
             rows = [
                 ("actor", actor(src["actor"])),
                 ("fallback", actor(src.get("fallback"))),
                 ("comments", f"{actor(comments['actor'])}, fallback {actor(comments.get('fallback'))}" if comments else "-"),
                 ("limits", ", ".join(src["actor"]["limit_inputs"])),
-            ]
+            ] + ([("groups", f"{actor(groups['actor'])}, fallback {actor(groups.get('fallback'))}")] if groups else [])
         for label, value in rows:
             console.print(f"  {label:<9}{value}", soft_wrap=False, highlight=False)
 

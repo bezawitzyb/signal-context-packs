@@ -172,6 +172,8 @@ class PerformOut(BaseModel):
 
 class AnswerB(BaseModel):
     tensions: list[TensionOut] = Field(default_factory=list)
+    # early in the answer: as the last field it was skipped in long answers (2026-10-09 rerun)
+    what_performs: list[PerformOut] = Field(default_factory=list)
     motivations: list[ItemOut] = Field(default_factory=list)
     objections: list[ItemOut] = Field(default_factory=list)
     competitors: list[CompetitorOut] = Field(default_factory=list)
@@ -179,6 +181,10 @@ class AnswerB(BaseModel):
     opportunities: list[OpportunityOut] = Field(default_factory=list)
     hypotheses: list[HypothesisOut] = Field(default_factory=list)
     risks: list[RiskOut] = Field(default_factory=list)
+
+
+class PerformAnswer(BaseModel):
+    """Follow-up when call B left top posts undescribed."""
     what_performs: list[PerformOut] = Field(default_factory=list)
 
 
@@ -326,6 +332,12 @@ def _fake_a(user: str) -> dict:
     return {**out, "platform_lens": [{"platform": p, "tone": "fake tone", "what_is_unique": "fake"}
                                      for p in platforms],
             "voice": {"tone": "casual", "say_this": ["lekker"], "not_this": ["superfood"]}}
+
+
+def _fake_perform(user: str) -> dict:
+    ids = re.findall(r'<untrusted_user_content id="(E\d+)">', user)
+    return {"what_performs": [{"evidence": i, "format": "text post", "why_it_worked": "Fake: a concrete question."}
+                              for i in ids]}
 
 
 def _fake_b(user: str) -> dict:
@@ -514,7 +526,27 @@ async def _write_calls(ctx: BriefContext, clusters: list[Any], docs_by_id: dict,
                    max_tokens=cfg["max_tokens"], fake=_fake_b))
     outcome.calls += 2
     outcome.usd += res_a.usd + res_b.usd
+    await describe_missing_performers(ctx, res_b.data, b_pool, perf_docs, docs_by_id, cfg, outcome)
     return res_a.data, a_pool, res_b.data, b_pool
+
+
+async def describe_missing_performers(ctx: BriefContext, b: AnswerB, b_pool: Pool, perf_docs: list[str],
+                                      docs_by_id: dict, cfg: dict, outcome: WriteOutcome) -> None:
+    """Call B skips what_performs in long answers and an empty list is valid, so code checks: top posts it
+    left undescribed get one small follow-up call (only those posts, ~3k tokens)."""
+    described = {b_pool.doc(o.evidence) for o in b.what_performs}
+    missing = [d for d in perf_docs if d in b_pool.clusters_of and d not in described]
+    if not missing:
+        return
+    local_of = {v: k for k, v in b_pool.local.items()}
+    sub = Pool(local={local_of[d]: d for d in missing}, clusters_of={d: b_pool.clusters_of[d] for d in missing})
+    user = brief_block(ctx) + "\n\nPerforming posts:\n\n" + _evidence_block(sub, docs_by_id, cfg["evidence_chars"])
+    res = await structured("synth", load_prompt("write") + "\n\n" + load_prompt("write_perform"), user,
+                           PerformAnswer, "record_what_performs", description="Record why each listed post performed.",
+                           max_tokens=cfg["perform_max_tokens"], fake=_fake_perform)
+    outcome.calls += 1
+    outcome.usd += res.usd
+    b.what_performs += [o for o in res.data.what_performs if sub.doc(o.evidence)]
 
 
 def build_sections(a: AnswerA, a_pool: Pool, b: AnswerB, b_pool: Pool, bld: Builder, analysis: dict,

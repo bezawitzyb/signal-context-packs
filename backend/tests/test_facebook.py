@@ -122,6 +122,7 @@ def test_names_of_other_authors_in_the_batch_are_redacted(offline, monkeypatch):
 
     monkeypatch.setattr(apify, "run_actor", fake_run)
     monkeypatch.setenv("USE_FIXTURES", "false")
+    monkeypatch.setenv("AUTHOR_HASH_SALT", "test-salt-not-a-secret")   # CI has no .env
     get_settings.cache_clear()
     ctx, stored = make_ctx()
     asyncio.run(tools.search_facebook(ctx, "Wärmepumpe", 20, "x"))
@@ -140,3 +141,61 @@ def test_committed_facebook_fixtures_hold_no_profile_links():
         assert not any(k in text for k in ("profileUrl", "profile_url", "profilePicture", "fbcdn", "gender"))
         assert "facebook.com/" not in text or all(
             seg.split("?")[0].split('"')[0].isdigit() for seg in text.split("facebook.com/")[1:])
+
+
+# --- public groups (owner's decision 2026-10-09): only groups the same run's search found ------------------
+
+def test_search_lists_the_public_groups_it_found(offline):
+    ctx, _ = make_ctx()
+    out = asyncio.run(tools.search_facebook(ctx, "Wärmepumpe Erfahrung", 30, "x"))
+    assert out["public_groups"] and all(g["group"].isdigit() for g in out["public_groups"])
+    assert all(g["name"].startswith("<untrusted_user_content") for g in out["public_groups"])   # scraped text
+    assert set(ctx.facebook_groups) == {g["group"] for g in out["public_groups"]}
+
+
+def test_only_a_group_found_by_search_in_this_run_can_be_read(offline):
+    ctx, stored = make_ctx()
+    refused = asyncio.run(tools.read_facebook_group(ctx, "123456789012345", 20, "a group I know"))
+    assert refused["status"] == "refused" and ctx.calls == 0
+    for named in ("https://www.facebook.com/groups/somegroup", "somegroup", "@someone"):
+        assert asyncio.run(tools.read_facebook_group(ctx, named, 20, "x"))["status"] == "refused"
+    found = asyncio.run(tools.search_facebook(ctx, "Wärmepumpe Erfahrung", 30, "x"))["public_groups"][0]["group"]
+    out = asyncio.run(tools.read_facebook_group(ctx, found, 20, "most relevant group"))
+    assert out["status"] == "ok" and out["source_unit"] == f"facebook:group:{found}"
+    assert out["actor"] == "apify/facebook-groups-scraper"
+    assert all(d.url.split(".com/")[1].isdigit() for d in stored)
+
+
+def test_group_inputs_never_send_billed_filters(offline, monkeypatch):
+    seen = {}
+
+    async def fake_run(spec, run_input, limit, timeout=None):
+        seen[spec["id"]] = run_input
+        return apify.ActorResult(spec["id"], [], 0.0, "SUCCEEDED")
+
+    monkeypatch.setattr(apify, "run_actor", fake_run)
+    ctx, _ = make_ctx()
+    ctx.facebook_groups["111222333444555"] = {"name": "g", "posts": 3}
+    asyncio.run(tools.read_facebook_group(ctx, "111222333444555", 20, "x"))
+    main, backup = seen["apify/facebook-groups-scraper"], seen["memo23/facebook-public-group-posts-scraper"]
+    assert "onlyPostsNewerThan" not in main and main["viewOption"] == "CHRONOLOGICAL"     # billed per post there
+    assert backup["fetchAllComments"] is False and backup["startUrls"] == main["startUrls"]
+    assert main["startUrls"] == [{"url": "https://www.facebook.com/groups/111222333444555/"}]
+
+
+def test_top_up_reads_more_of_a_kept_group():
+    from ctxpack.collect.fallback import _follow_up_call
+    assert _follow_up_call("facebook:group:111222333444555", "kosten", None) == (
+        "read_facebook_group", {"group": "111222333444555", "reason": "top-up: follow-up proposed for "
+                                                                       "facebook:group:111222333444555"})
+
+
+def test_featured_privacy_check_allows_our_post_links_only_in_link_fields():
+    from ctxpack.exports.featured import privacy_problems
+    ok = {"evidence": [{"id": "EV-1", "text": "Unsere Wärmepumpe läuft.", "url": "https://www.facebook.com/957202620148401",
+                        "permalink": "https://www.facebook.com/957202620148401?comment_id=1234567"}]}
+    assert privacy_problems(ok) == []
+    in_text = {"evidence": [{"id": "EV-1", "text": "see https://www.facebook.com/957202620148401", "url": "x"}]}
+    assert privacy_problems(in_text)                                        # in what people wrote: still blocked
+    named = {"evidence": [{"id": "EV-1", "text": "ok", "url": "https://www.facebook.com/some.person"}]}
+    assert privacy_problems(named)                                          # a name in a link field: blocked

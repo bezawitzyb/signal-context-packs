@@ -31,9 +31,12 @@ HOW TO WORK
 - X: keywords or a #hashtag only (search_x); never a person, @handle,
   profile or list. Good for real-time reactions, complaints aimed at
   brands, news and fandom talk; expect bots and giveaways.
-- Facebook: keywords only (search_facebook); never a person, profile,
-  page or group. It reaches posts in public groups - strong for older
-  audiences, parents, homeowners and local or hobby communities.
+- Facebook: keywords (search_facebook); never a person, profile or
+  page. It reaches posts in public groups - strong for older audiences,
+  parents, homeowners and local or hobby communities. Its result lists
+  the public groups those posts came from; when one holds a lot of
+  relevant talk, read it with read_facebook_group (only groups listed
+  there, in this run).
 - Prefer first-person discussion (people describing their own
   experience, questions, complaints) over brand, retailer or news
   content. News and trends are context only.
@@ -44,6 +47,10 @@ HOW TO WORK
   related query, more pages from the same forum, the new terms the
   result surfaced). Where relevance is low, drop the source and say why;
   never call a source you dropped again.
+- If web_search says it found no recent forum, Q&A or review page,
+  search once more with other words (the local word for "forum" or
+  "experiences", or a known local forum or review site with site:)
+  before giving up on forums for this market.
 - Use coverage_report to see which research questions have little
   evidence, and fill those gaps with targeted calls.
 - Reddit: for a broad subreddit (a country, city or general one such as

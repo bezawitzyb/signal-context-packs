@@ -33,6 +33,7 @@ OK_STATUSES = {"SUCCEEDED", "TIMED-OUT"}  # a timed-out run keeps its partial it
 NO_CREDIT = "NO_CREDIT"    # the account's monthly usage is used up: no actor can run until it resets
 NO_TIME = "NO_TIME"        # the run's collection time is (nearly) up: the actor was not started
 UNREADABLE = "UNREADABLE"  # items came back but none could be mapped (the actor changed its output format)
+NO_RESULTS = "NO_RESULTS"  # the search ran and found nothing (at most a placeholder row): not a source failure
 _NO_CREDIT_RE = re.compile(r"remaining usage|monthly usage|usage limit|isn't enough for this run", re.I)
 
 
@@ -161,9 +162,11 @@ async def run_with_fallback(attempts: list[tuple], limit: int, timeout_secs: int
         if result.status in OK_STATUSES and result.items:
             if usable is None or usable(result):
                 return result
-            result.status = UNREADABLE
-            log.warning("actor %s returned %d items but none could be read (output format changed?)",
-                        spec["id"], len(result.items))
+            # One unreadable row is an actor's "no results" placeholder (NL rerun, 2026-10-09), not a new format
+            result.status = NO_RESULTS if len(result.items) <= 1 else UNREADABLE
+            if result.status == UNREADABLE:
+                log.warning("actor %s returned %d items but none could be read (output format changed?)",
+                            spec["id"], len(result.items))
             continue
         if result.status == NO_CREDIT:
             log.warning("actor %s refused: Apify credit for this month is used up", spec["id"])

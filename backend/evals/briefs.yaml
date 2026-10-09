@@ -15,7 +15,7 @@ briefs:
     expect: {market: global, languages: [en], questions_max: 4, questions_fill: [goal, offer],
              platform_share_max: {linkedin: 0.34}}
     answers: {goals: [content_plan], offer_stage: no_offer}
-    reuse_pack: pk_FSdLk4CH1zZO   # rebuilt in Step 5.4 twice (was pk_CamfAsJ7Zbdr, then pk_74QaEuaavYgs)
+    reuse_pack: pk_vTTgWkilgckH   # rerun 2026-10-09 after the scraper audit (was pk_FSdLk4CH1zZO)
 
   - id: nl_snack_brand
     brief: Launching a snack brand in the Netherlands
@@ -30,7 +30,8 @@ briefs:
     expect: {market: DE, languages: [de], compliance_category: energy_environmental, questions_max: 3,
              questions_fill: [goal, offer]}
     answers: {goals: [content_plan, sales_enablement], offer_stage: selling, offer: heat pump installation}
-    reuse_pack: pk_WPKWWfPABYxN   # researched in Step 5.1, rebuilt in Step 5.4 (was pk_0yCXA3I3WI--)
+    reuse_pack: pk_i0zai5bgIxEW   # rerun 2026-10-09 after the scraper audit, goal understand_audience
+                                  # (was pk_WPKWWfPABYxN)
     note: B2B-like; energy and green claims. Becomes the third example (feature it after a privacy check).
 
   - id: snacks_vague

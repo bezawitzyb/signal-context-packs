@@ -213,8 +213,14 @@ async def extract_documents(docs: list[Doc], ctx: BriefContext, save: Saver | No
             res = await structured("worker", system, user, ExtractionBatch, "record_extractions",
                                    description="Record the extraction for every item.",
                                    max_tokens=cfg["max_tokens"], fake=_fake_answer)
-        except LLMError as exc:  # one bad batch must not sink the run: its docs get the retry pass
+        except LLMError as exc:
+            # One bad batch must not sink the run. The retry pass used to rebuild the SAME batch, which failed
+            # again (2026-10-09 rerun: 16 docs lost), so a failed batch is split in half and each half retried,
+            # down to single docs: only a doc the model cannot answer for on its own is left out.
             log.warning("extraction batch of %d docs failed: %s", len(chunk), exc)
+            if len(chunk) > 1:
+                half = len(chunk) // 2
+                await asyncio.gather(run([chunk[:half]]), run([chunk[half:]]))
             return
         outcome.calls += 1
         outcome.usd += res.usd

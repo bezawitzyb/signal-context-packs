@@ -212,7 +212,8 @@ def scrub_url(url: str | None) -> str | None:
     """Item URLs must not carry a handle either (TikTok video URLs contain one)."""
     if not url:
         return url
-    # TODO(step 1.6): confirm on a real item that tiktok.com/@/video/<id> still opens the video.
+    # tiktok.com/@/video/<id> opens the video (checked 2026-10-09: same page data as the real handle's link;
+    # a wrong id gives TikTok's not-found status 10204).
     if (m := _LINKEDIN_POST.search(url)):  # /posts/<first-last>_..-<activity id>-xxxx names the author
         return linkedin_url(m.group(1))
     if (m := _X_STATUS.search(url)):  # x.com/<handle>/status/<id> names the author

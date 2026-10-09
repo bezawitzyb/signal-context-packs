@@ -106,7 +106,8 @@ def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short
     if cov.get("dated_share", 0) < 0.2:
         spots.append("Most posts have no date: trends, recency and what is new cannot be judged.")
     if not sections["what_performs"]:
-        spots.append("No engagement data: what performs is empty.")
+        spots.append("Top posts by engagement were found, but none could be described: what performs is empty."
+                     if analysis.get("what_performs") else "No engagement data: what performs is empty.")
     if run.fallback_used:
         spots.append("The research agent stopped early; the remaining planned sources were collected automatically.")
     if run.top_up_used:
@@ -159,7 +160,8 @@ EMPTY = {
 }
 
 
-def sections_meta(pack: dict, written: dict[str, dict], alive: set[str], interp: Any) -> dict[str, dict]:
+def sections_meta(pack: dict, written: dict[str, dict], alive: set[str], interp: Any,
+                  analysis: dict | None = None) -> dict[str, dict]:
     """so_what (from the notes call), see_also (consolidation, live ids only), and for empty sections the
     reason and next steps."""
     present = {"themes": pack["landscape"]["themes"], "pain_points": pack["pain_points"], "tensions": pack["tensions"],
@@ -174,6 +176,10 @@ def sections_meta(pack: dict, written: dict[str, dict], alive: set[str], interp:
                 "see_also": [i for i in dict.fromkeys(w.get("see_also", [])) if i in alive]}
         if not items and name in EMPTY:
             meta["empty_reason"], meta["next_steps"] = EMPTY[name][0], EMPTY[name][1][:2]
+            if name == "what_performs" and (analysis or {}).get("what_performs"):  # posts found, none described
+                meta["empty_reason"], meta["next_steps"] = (
+                    "Top posts by engagement were found, but the writer described none of them.",
+                    ["Run the pack step again (pack --from-run RUN_ID --redo)"])
         if any(meta.values()):
             out[name] = meta
     return out
@@ -428,7 +434,7 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
         data["blind_spots"].append({"id": f"BLS-{len(data['blind_spots']) + 1:02d}", "text": (
             f"Only {dated:.0%} of the relevant posts have a date, so the {interp.time_window_days}-day window applies "
             "to those only; the rest may be older. Trends and 'what's new' use dated posts only.")})
-    data["sections_meta"] = sections_meta(data, notes.get("meta", {}), alive, interp)
+    data["sections_meta"] = sections_meta(data, notes.get("meta", {}), alive, interp, analysis)
     data["snapshot"] = snapshot(s, draft.get("generic_points", []),
                                 analysis.get("coverage", {}).get("grade", "d"), list(opportunities),
                                 evidence=data["evidence"], thin=data["coverage"]["thin_evidence"],

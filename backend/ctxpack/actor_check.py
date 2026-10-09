@@ -64,8 +64,10 @@ def catalog_actors() -> list[tuple[str, dict]]:
         if src.get("kind") != "apify":
             continue
         comments = src.get("comments") or {}
+        groups = src.get("groups") or {}
         for role, spec in (("main", src.get("actor")), ("fallback", src.get("fallback")),
-                           ("comments", comments.get("actor")), ("comments fallback", comments.get("fallback"))):
+                           ("comments", comments.get("actor")), ("comments fallback", comments.get("fallback")),
+                           ("groups", groups.get("actor")), ("groups fallback", groups.get("fallback"))):
             if spec:
                 out.append((f"{name} {role}", spec))
     return out
@@ -105,6 +107,7 @@ _CALLS: list[tuple[str, dict]] = [
     ("search_x", {"target": "meal prep"}),
     ("search_x", {"target": "#mealprep"}),
     ("search_facebook", {"query": "meal prep"}),
+    ("read_facebook_group", {"group": "123456789012345"}),   # registered below, as a search would
     ("get_trends", {"terms": ["meal prep"], "geo": "NL"}),
 ]
 # (countries, languages): worldwide English, and a single-country non-English brief (country inputs)
@@ -117,7 +120,7 @@ def sent_inputs() -> dict[str, list[dict]]:
     from ctxpack.collect import apify, tools
     from ctxpack.collect.relevance import BriefContext
 
-    mains = {spec["id"] for role, spec in catalog_actors() if role.endswith(("main", " comments"))}
+    mains = {spec["id"] for role, spec in catalog_actors() if role.endswith(("main", " comments", " groups"))}
     seen: dict[str, list[dict]] = {}
 
     async def capture(spec: dict, run_input: dict, limit: int, timeout: int | None = None) -> apify.ActorResult:
@@ -137,6 +140,8 @@ def sent_inputs() -> dict[str, list[dict]]:
                         brief=BriefContext(topic="meal prep", market=countries[0] if countries else "global",
                                            countries=list(countries), languages=list(languages),
                                            research_questions={"RQ1": "Why?"}))
+                    if name == "read_facebook_group":
+                        ctx.facebook_groups[args["group"]] = {"name": "actor-check", "posts": 1}
                     await tools.TOOLS[name](ctx, reason="actor-check", **args)
 
     original, quiet = apify.run_actor, logging.getLogger("ctxpack.collect.apify")

@@ -45,7 +45,8 @@ def test_quick_caps_languages_and_says_how_to_include_the_rest():
 
 def test_a_poland_brief_includes_polish_and_unsupported_languages_are_named():
     _, langs, _ = settle("protein bars for women in Poland", [{"code": "PL"}], ["pl"], mode="quick")
-    assert langs[0] == "pl" and "en" in langs
+    assert langs == ["pl"]                                   # one non-English country: no automatic English
+    assert "en" in settle("protein bars for expats in Poland", [{"code": "PL"}], ["pl", "en"], mode="quick")[1]
     _, _, excluded = settle("software in central and eastern europe", [{"code": "cee"}], ["en"])
     assert any(e["reason"] == "not supported yet" for e in excluded)           # e.g. Czech, Hungarian
 

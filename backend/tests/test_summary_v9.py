@@ -1,6 +1,7 @@
 """Change V9: summary findings, grade cap, generic-point comparison, position, quick brief, hand-off. No money."""
 
 import json
+from pathlib import Path
 
 from ctxpack.api import service
 from ctxpack.config import REPO_DIR, load_yaml
@@ -46,7 +47,9 @@ def test_a_thin_pack_never_shows_a_top_grade_or_commit_budget():
 
 
 def test_featured_packs_are_migrated_to_the_new_summary_for_free():
-    p = featured("pk_WPKWWfPABYxN")                                  # thin, grade a before V9
+    # the 2026-10-06 heat-pump pack (featured until 2026-10-09, kept as test data): thin, grade a before V9
+    raw = json.loads((Path(__file__).parent / "fixtures" / "packs" / "pk_WPKWWfPABYxN_pre_v9.json").read_text("utf-8"))
+    p = ContextPack.model_validate(raw).model_dump(mode="json")
     s = p["snapshot"]
     assert s["coverage_grade"] == "c" and s["grade_note"]
     assert len(s["findings"]) == 3 and s["represents"].startswith("101 public posts")

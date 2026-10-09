@@ -204,8 +204,8 @@ async def test_low_evidence_finish_tops_up_from_kept_units_only(offline, monkeyp
     out = await run(run_id, scripted([[REDDIT, TIKTOK], [COVERAGE], [finish]]))
     assert out.finish_reason == FinishReason.finish and out.top_up_used and not out.fallback_used
     after_finish = calls(run_id)[4:]
-    assert after_finish == [("search_reddit", "reddit:r/MealPrepSunday"),       # follow-up searched INSIDE it
-                            ("search_reddit", "reddit:r/MealPrepSunday")]       # fuller page of the kept unit
+    assert after_finish[0] == ("search_reddit", "reddit:r/MealPrepSunday")      # follow-up searched INSIDE it
+    assert len(after_finish) <= 2              # + a fuller page only if that search was >= 60% relevant (2026-10-09)
     top_up_reasons = [e["reason"] for e in out.collection["decision_log"][4:]]
     assert top_up_reasons[0] == "top-up: follow-up proposed for reddit:r/MealPrepSunday"
     assert not any(tool == "search_tiktok" for tool, _ in after_finish)          # dropped: never again

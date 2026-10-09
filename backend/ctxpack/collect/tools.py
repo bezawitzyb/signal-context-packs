@@ -98,6 +98,7 @@ class RunContext:
     apify_recorded_usd: float = 0.0                      # Apify spend already written to the spend table
     blocked_domains: set = field(default_factory=set)    # sites that refused fetching (this run + remembered)
     site_failures: Counter = field(default_factory=Counter)  # domain -> pages that failed or showed no posts
+    facebook_groups: dict[str, dict] = field(default_factory=dict)  # public groups search_facebook returned
     apify_by_actor: dict[str, dict[str, float]] = field(default_factory=dict)   # actor -> {runs, usd, items}
     source_failures: list[dict] = field(default_factory=list)  # actor + fallback gave nothing (V6 -> blind spot)
     # Reserved by calls still running, so concurrent calls cannot jointly overshoot a limit.
@@ -138,25 +139,33 @@ def _count_actor(ctx: RunContext, result: apify.ActorResult) -> None:
     row["items"] += len(result.items)
 
 
-def _probe_limit(ctx: RunContext, platform: Platform, limit: int, blind: bool = False) -> tuple[int, str | None]:
-    """Explore small, exploit what works: a platform's first call, a platform whose posts are mostly not
-    relevant so far, and a subreddit browse without a query get at most probe_items."""
+def _probe_limit(ctx: RunContext, platform: Platform, unit: str, limit: int,
+                 blind: bool = False) -> tuple[int, str | None]:
+    """Explore small, exploit what works, per search: a new search (query, hashtag, subreddit, group) starts at
+    probe_items unless its platform is already strongly relevant; a search that proved relevant gets full size.
+    2026-10-09 NL rerun: a good TikTok query let an English hashtag in at full size (60 posts, 16% relevant)."""
     cfg = _modes()["collection"]
     probe, share_min = cfg["probe_items"], cfg["probe_min_relevant_share"]
+    trusted, trusted_n = cfg["probe_trusted_platform_share"], cfg["probe_trusted_min_searches"]
     if limit <= probe:
         return limit, None
     if blind:
         return probe, (f"browsing a subreddit without a query returns its newest posts on every subject: limited "
                        f"to {probe} items; pass query to search inside it")
-    kept = sum(st["kept"] for u, st in ctx.unit_stats.items() if ctx.unit_platform.get(u) == platform)
-    relevant = sum(st["relevant"] for u, st in ctx.unit_stats.items() if ctx.unit_platform.get(u) == platform)
-    if not kept:
-        return probe, (f"first {platform} call: limited to {probe} items to test the source; later {platform} "
-                       f"calls get up to {limit} while at least {share_min:.0%} of its posts are relevant")
-    if relevant / kept < share_min:
-        return probe, (f"{platform} posts so far are {relevant / kept:.0%} relevant: calls stay at {probe} items "
-                       f"until a better target lifts it to {share_min:.0%}")
-    return limit, None
+    st = ctx.unit_stats.get(unit)
+    if st and st["kept"]:                        # this very search ran before: judge it on its own results
+        share = st["relevant"] / st["kept"]
+        if share >= share_min:
+            return limit, None
+        return probe, (f"this search was {share:.0%} relevant: it stays at {probe} items; sharpen it or move on")
+    on_platform = [s for u, s in ctx.unit_stats.items() if ctx.unit_platform.get(u) == platform and s["kept"]]
+    kept = sum(s["kept"] for s in on_platform)
+    relevant = sum(s["relevant"] for s in on_platform)
+    if len(on_platform) >= trusted_n and relevant / kept >= trusted:   # one good search is not enough
+        return limit, None
+    first = "first" if not kept else "new"
+    return probe, (f"{first} {platform} search: limited to {probe} items to test it; repeat it for up to {limit} "
+                   f"if at least {share_min:.0%} of its posts are relevant")
 
 
 def _limit_reached(ctx: RunContext, why: str) -> dict[str, Any]:
@@ -322,11 +331,18 @@ def _readable(result: apify.ActorResult, context: dict | None = None) -> bool:
     return bool(trend_series(result.items)) if "trends" in result.actor_id else True
 
 
+def _src(source: str) -> dict[str, Any]:
+    """A catalog source; "facebook/groups" is the groups block of facebook (it shares facebook's comments)."""
+    base, _, part = source.partition("/")
+    src = _catalog()["sources"][base]
+    return {**src[part], "comments": src.get("comments")} if part else src
+
+
 async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int], dict | None], limit: int,
                       timeout: int | None = None,
                       limit_for: Callable[[dict], int] | None = None,
                       fallback_first: bool = False) -> apify.ActorResult:
-    src = _catalog()["sources"][source]
+    src = _src(source)
     attempts = []
     specs = (src.get("fallback"), src["actor"]) if fallback_first else (src["actor"], src.get("fallback"))
     for spec in specs:
@@ -346,7 +362,7 @@ async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int]
 
 async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: int) -> apify.ActorResult | None:
     """Chained comments: only posts that HAVE comments, highest first (call_rules.chain_comments)."""
-    src = _catalog()["sources"][source].get("comments")
+    src = _src(source).get("comments")
     cfg = _modes()["collection"]
     parents = sorted((p for p in posts if (p.get("comments") or 0) > 0 and p.get("url")),
                      key=lambda p: p["comments"], reverse=True)[:cfg["chain_parent_posts_max"]]
@@ -408,8 +424,8 @@ async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platfor
     limit, why = _item_limit(ctx, unit, limit)
     if why:
         return _limit_reached(ctx, why)
-    limit, probe_note = _probe_limit(ctx, platform, limit, blind)
-    src = _catalog()["sources"][source]
+    limit, probe_note = _probe_limit(ctx, platform, unit, limit, blind)
+    src = _src(source)
     expected = apify.expected_cost(src["actor"], limit)
     if ctx.apify_usd + ctx.pending_apify_usd + expected > apify_cap(ctx):
         return _limit_reached(ctx, "social-source budget for this run is used up")
@@ -448,8 +464,10 @@ async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Plat
 
     cached = apify.cache_get(tool, target, language, extra)
     notes: dict[str, Any] = {"cached": bool(cached)}
+    groups: dict[str, dict] = {}
     if cached:
         drafts = [Draft.from_cache(d) for d in cached["drafts"]]
+        groups = cached.get("groups") or {}
     else:
         fetched_at = datetime.now(timezone.utc)
         posts_n = limit if not with_comments else max(1, round(limit * _modes()["collection"]["chain_posts_share"]))
@@ -458,7 +476,9 @@ async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Plat
         notes.update(actor=res.actor_id, fallback_used=res.used_fallback)
         if not raw:
             notes["actor_status"] = res.status
-            if res.status not in (apify.NO_CREDIT, apify.NO_TIME):
+            if res.status in (apify.NO_RESULTS, "SUCCEEDED"):   # it worked and found nothing: not a blind spot
+                notes["no_results"] = "this search found no posts; try other words or another place"
+            elif res.status not in (apify.NO_CREDIT, apify.NO_TIME):
                 ctx.source_failures.append({"source_unit": unit, "platform": str(platform), "status": res.status})
                 notes["source_problem"] = (f"{platform} gave nothing ({res.status}) after its fallback; "
                                            "recorded as a blind spot - try another source")
@@ -468,8 +488,25 @@ async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Plat
                 raw += map_items(com.actor_id, com.items, com.context)
                 notes["comments_actor"] = com.actor_id
         drafts = _drafts_from_raw(platform, unit, raw[:limit], fetched_at)
-        apify.cache_put(tool, target, language, {"drafts": [d.to_cache() for d in drafts]}, extra)
+        groups = _public_groups(raw) if tool == "search_facebook" else {}
+        apify.cache_put(tool, target, language, {"drafts": [d.to_cache() for d in drafts], "groups": groups}, extra)
+    if groups:
+        for gid, g in groups.items():
+            ctx.facebook_groups.setdefault(gid, {"name": g["name"], "posts": 0})["posts"] += g["posts"]
+        top = sorted(groups.items(), key=lambda kv: -kv[1]["posts"])[:_modes()["collection"]["groups_listed_max"]]
+        notes["public_groups"] = [{"group": gid, "name": untrusted(f"group-{gid}", g["name"][:80]),
+                                   "posts_here": g["posts"]} for gid, g in top]
     return drafts, notes
+
+
+def _public_groups(raw: list[dict]) -> dict[str, dict]:
+    """Public groups the search results were posted in: id -> {name, posts}."""
+    out: dict[str, dict] = {}
+    for p in raw:
+        if (gid := p.get("group_id")):
+            g = out.setdefault(gid, {"name": p.get("community") or "", "posts": 0})
+            g["posts"] += 1
+    return out
 
 
 def _cutoff(ctx: RunContext) -> str:
@@ -496,8 +533,12 @@ def reddit_search_time(window_days: int) -> str:
     return "all"
 
 
+_LOOKS_LIKE_SUB = re.compile(r"\s*(?:https?://(?:www\.)?reddit\.com)?/?r/\S", re.I)
+
+
 def _sub(target: str) -> str | None:
-    m = re.fullmatch(r"(?:https?://(?:www\.)?reddit\.com)?/?r/([A-Za-z0-9_]+)/?", target.strip())
+    """The subreddit name in 'r/<name>' (letters, digits or _, up to 21), else None."""
+    m = re.fullmatch(r"(?:https?://(?:www\.)?reddit\.com)?/?r/([A-Za-z0-9_]{1,21})/?", target.strip())
     return m.group(1) if m else None
 
 
@@ -548,6 +589,7 @@ def unit_for(tool: str, args: dict[str, Any]) -> str | None:
             "search_linkedin": lambda: linkedin_unit(args.get("query", "")),
             "search_x": lambda: x_unit(args.get("target", "")),
             "search_facebook": lambda: facebook_unit(args.get("query", "")),
+            "read_facebook_group": lambda: facebook_group_unit(str(args.get("group", ""))),
             }.get(tool, lambda: None)()
 
 
@@ -556,6 +598,12 @@ async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: st
     """target 'r/<name>' browses the subreddit; with `query` it searches INSIDE it (same unit);
     any other target is a Reddit-wide search."""
     sub = _sub(target)
+    if not sub and _LOOKS_LIKE_SUB.match(target):  # e.g. r/wärmepumpe: was silently searched Reddit-wide
+        return {"status": "refused", "error": f"'{target.strip()}' is not a valid subreddit name: Reddit names use "
+                "only letters, digits and _ (up to 21 characters, e.g. r/waermepumpe). Fix the name, or search "
+                "Reddit-wide with plain words", **ctx.left()}
+    if not sub and query.strip():                  # a query with a Reddit-wide target: search both, never drop it
+        target = f"{target.strip()} {query.strip()}"
     unit = reddit_unit(target)
     query = query.strip() if sub else ""
 
@@ -565,11 +613,13 @@ async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: st
         if spec["id"] == "harshmaur/reddit-scraper":
             base = {"crawlCommentsPerPost": True, "maxPostsCount": posts, "maxCommentsPerPost": per_post,
                     "maxCommentsCount": n - posts, "aiAnalysis": False, "includeNSFW": False}
-            # postedAfter switches searches to newest-first and ignores searchSort (actor docs, 2026-10-09):
-            # searches use searchTime and keep relevance; cleaning drops anything older than the window.
+            # postedAfter switches searches to newest-first and ignores searchSort (actor docs, 2026-10-09).
+            # Reddit-wide: relevance + searchTime (newest-first gave loosely matching posts). Inside a subreddit
+            # the query and the community already keep posts on topic, and relevance + "past year" returned only
+            # posts older than a 180-day window (r/de, 2026-10-09 rerun): newest-first there.
             search = {**base, "searchSort": "relevance", "searchTime": reddit_search_time(ctx.window_days)}
             if sub and query:
-                return {**search, "searchTerms": [query], "withinCommunity": sub}
+                return {**base, "searchTerms": [query], "withinCommunity": sub, "postedAfter": _cutoff(ctx)}
             return {**base, "subredditUrls": [f"r/{sub}"], "postedAfter": _cutoff(ctx)} if sub else \
                    {**search, "searchTerms": [target]}
         # fatihtahta: maxPosts per query, maxComments per post; extra analysis options stay off (billed)
@@ -742,6 +792,31 @@ async def search_facebook(ctx: RunContext, query: str, limit: int = 0, reason: s
                              inputs, with_comments=True)
 
 
+def facebook_group_unit(group: str) -> str:
+    return f"facebook:group:{group.strip()}"
+
+
+async def read_facebook_group(ctx: RunContext, group: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
+    """Newest posts of a PUBLIC Facebook group, plus comments on posts that have some. Only a group that
+    search_facebook returned in THIS run (owner's decision 2026-10-09): never a group named by the agent, a page
+    or a profile."""
+    gid = str(group).strip()
+    if gid not in ctx.facebook_groups:
+        return {"status": "refused", "error": "read_facebook_group only reads a public group that search_facebook "
+                "listed under public_groups in this run - pass its group number exactly as listed",
+                **({"groups_found": sorted(ctx.facebook_groups)} if ctx.facebook_groups else {}), **ctx.left()}
+    url = f"https://www.facebook.com/groups/{gid}/"
+
+    def inputs(spec: dict, n: int) -> dict:
+        if spec["id"] == "apify/facebook-groups-scraper":   # its date filter is billed per post: newest first
+            return {"startUrls": [{"url": url}], "resultsLimit": n, "viewOption": "CHRONOLOGICAL"}
+        return {"startUrls": [{"url": url}], "maxItems": n, "viewOption": "CHRONOLOGICAL",
+                "onlyPostsNewerThan": _cutoff(ctx), "includeComments": False, "fetchAllComments": False}
+
+    return await _apify_tool(ctx, "read_facebook_group", "facebook/groups", Platform.facebook,
+                             facebook_group_unit(gid), url, limit, reason, inputs, with_comments=True)
+
+
 # --------------------------------------------------------------------------
 # Google Trends (external signal, never Documents)
 # --------------------------------------------------------------------------
@@ -857,10 +932,34 @@ async def web_search(ctx: RunContext, query: str, country: str, language: str, r
         pages.append({"url": p.url, "page_type": p.page_type, "language": p.language, "why": p.why[:160],
                       **({"estimated_date": p.estimated_date[:40]} if p.estimated_date else {}),
                       "already_fetched": p.url in ctx.fetched_urls})
+    hint = {} if any(_recent_voice_page(p, ctx) for p in pages) else {"hint": (
+        "no recent forum, Q&A or review page in these results: try ONE more web_search with other words - the "
+        "local word for forum or experiences, or a known local forum or review site of this market (site:...) - "
+        "before moving on")}
     return {"status": "ok", "tool": "web_search", "pages": pages, "searches": res.searches,
-            "oldest_wanted": _cutoff(ctx),
+            "oldest_wanted": _cutoff(ctx), **hint,
             **({"blocked_sites_hidden": hidden} if hidden else {}),
             **({"unlisted_pages_dropped": res.unlisted} if res.unlisted else {}), **ctx.left()}
+
+
+def _recent_voice_page(page: dict, ctx: RunContext) -> bool:
+    """A forum / Q&A / review page not known to be older than the window (2026-10-09 NL rerun: one web search
+    found only a 2011 thread and blog posts, and the agent never tried again)."""
+    if page["page_type"] not in ("forum", "qa", "review") or page.get("already_fetched"):
+        return False
+    if not page.get("estimated_date"):
+        return True
+    from ctxpack.collect.cleaning import parse_date
+    from ctxpack.schemas.enums import DatePrecision
+
+    day, precision = parse_date(page["estimated_date"], datetime.now(timezone.utc))
+    if day is None:
+        return True
+    if precision == DatePrecision.year:      # "2026": the page may be from any day of that year
+        day = day.replace(month=12, day=31)
+    elif precision == DatePrecision.month:
+        day = day.replace(day=28)
+    return day.isoformat() >= _cutoff(ctx)
 
 
 async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") -> dict[str, Any]:
@@ -1070,6 +1169,15 @@ def tool_definitions() -> list[dict[str, Any]]:
                                            f"a person, profile, page or group. Latency "
                                            f"{_latency('search_facebook')}.",
                         {"query": {"type": "string"}, "limit": limit, "reason": _reason()}, ["query", "reason"]))
+        if _catalog()["sources"]["facebook"].get("groups"):
+            defs.insert(4, ("read_facebook_group", f"Newest posts of ONE public Facebook group, plus comments on "
+                                                   f"posts that have some. Only a group that search_facebook "
+                                                   f"listed under public_groups in this run (pass its number); "
+                                                   f"use it when a group holds a lot of relevant talk. Never a "
+                                                   f"page, profile or any other group. Latency "
+                                                   f"{_latency('read_facebook_group')}.",
+                            {"group": {"type": "string", "description": "The group number from public_groups."},
+                             "limit": limit, "reason": _reason()}, ["group", "reason"]))
     if "x" in _catalog()["sources"]:
         defs.insert(3, ("search_x", f"X (Twitter) posts for keywords or a '#hashtag' (real-time reactions, "
                                     f"complaints aimed at brands, news and fandom talk), plus replies to posts "
@@ -1095,7 +1203,8 @@ def tool_definitions() -> list[dict[str, Any]]:
 TOOLS: dict[str, Callable[..., Awaitable[dict[str, Any]]]] = {
     "search_reddit": search_reddit, "search_tiktok": search_tiktok, "search_youtube": search_youtube,
     "search_instagram": search_instagram, "search_linkedin": search_linkedin, "search_x": search_x,
-    "search_facebook": search_facebook, "web_search": web_search, "fetch_and_segment": fetch_and_segment,
+    "search_facebook": search_facebook, "read_facebook_group": read_facebook_group,
+    "web_search": web_search, "fetch_and_segment": fetch_and_segment,
     "get_trends": get_trends, "coverage_report": coverage_report, "finish": finish,
 }
 

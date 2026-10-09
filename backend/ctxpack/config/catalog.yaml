@@ -26,6 +26,7 @@ tool_latency:
   search_linkedin: "usually 5-30 s"
   search_x: "usually 5-30 s"
   search_facebook: "usually 10-60 s"
+  read_facebook_group: "usually 20-90 s"
   get_trends: "usually 20-60 s"
   coverage_report: "instant"
 
@@ -64,8 +65,9 @@ sources:
       date_inputs: [searchTime, postedAfter, postedBefore, commentedAfter]
       date_filter: >-
         postedAfter switches a search to newest-first and ignores searchSort (actor docs,
-        2026-10-09): searches use searchTime (week | month | year | all) with relevance;
-        subreddit browsing (newest-first anyway) keeps postedAfter
+        2026-10-09): Reddit-wide searches use searchTime (week | month | year | all) with relevance;
+        searches inside a subreddit and browsing keep postedAfter (relevance + year returned only
+        posts older than a 180-day window in r/de)
       unit_inputs: {query: searchTerms, subreddit: withinCommunity}
       comments: inline (crawlCommentsPerPost true, maxCommentsPerPost)
       notes: keep aiAnalysis and all mcp* inputs OFF (extra charges)
@@ -558,6 +560,7 @@ sources:
         engagement: [reactions_count, comments_count, reshare_count]
         author: author.name
         community: associated_group.name   # the public group it was posted in
+        group_id: associated_group.group_id   # registers the group for read_facebook_group
     fallback:
       id: scraper_one/facebook-posts-search
       needs_session: false
@@ -611,6 +614,50 @@ sources:
           permalink: comment_url  # facebook.com/<post id>?comment_id=<id> (no name)
           engagement: [replies_count]
           author: author_name
+
+    # Public groups by name (owner's decision 2026-10-09): ONLY a group that search_facebook returned in the
+    # same run (code checks); never a group the agent names itself, a page or a profile. Posts come with the
+    # facebook comments above. Link: facebook.com/groups/<id>/ (no name).
+    groups:
+      actor:
+        id: apify/facebook-groups-scraper
+        needs_session: false      # public groups only; no cookies or account of ours
+        memory_mbytes: 4096       # actor default
+        smoke: ok 2026-10-09 (5/5 newest posts of a public heat-pump group, text, ISO date, permalink with ids
+          only, comment counts; ~0.03 USD)
+        price_usd: {post: 0.005, actor_start: 0.001}
+        success_30d: 0.997
+        limit_inputs: [resultsLimit]
+        date_inputs: [onlyPostsNewerThan]   # billed 0.002 per post ("filter-applied"): never sent; newest-first
+        unit_inputs: {group: startUrls}
+        notes: viewOption CHRONOLOGICAL (newest first keeps the window); never read user, collaborators or
+          topComments authors
+        fields:
+          text: [text]
+          date: time
+          url: legacyId -> https://www.facebook.com/<legacyId>
+          engagement: [likesCount, commentsCount, sharesCount]
+          author: user.name
+          community: groupTitle
+      fallback:
+        id: memo23/facebook-public-group-posts-scraper
+        needs_session: false      # its own residential proxy, no cookies of ours
+        memory_mbytes: 512        # actor default
+        smoke: ok 2026-10-09 (keyword filter "Kosten" + date filter, 1/1 matching post; same fields; ~0.01 USD)
+        price_usd: {result: 0.0015, actor_start: 0.008}
+        success_30d: 0.987
+        limit_inputs: [maxItems]  # per group
+        date_inputs: [onlyPostsNewerThan]   # free here
+        unit_inputs: {group: startUrls}
+        notes: includeComments, fetchAllComments, enrichMarketplaceListings and monitoringMode OFF; marketplace
+          listings skipped
+        fields:
+          text: [text]
+          date: time
+          url: legacyId -> https://www.facebook.com/<legacyId>
+          engagement: [likesCount, commentsCount, sharesCount]
+          author: user.name
+          community: groupTitle
 
   web_forums:
     kind: web
