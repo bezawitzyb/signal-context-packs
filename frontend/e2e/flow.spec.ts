@@ -109,3 +109,21 @@ test("a vague brief gets brief-specific questions with chips, then an editable p
   await expect(page.getByRole("button", { name: "Remove NL" })).toBeVisible();
   await noSeriousA11yIssues(page, "Plan with editable chips");
 });
+
+test("the brief guide opens from the info button and the template fills an empty box", async ({ page }) => {
+  await page.goto("/");
+  const info = page.getByRole("button", { name: "How to write a brief" });
+  await expect(info).toHaveAttribute("aria-expanded", "false");
+  await info.click();
+  await expect(page.getByRole("heading", { name: "How to write a brief" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Key question/ })).toBeVisible();
+  await noSeriousA11yIssues(page, "Brief guide");
+  await page.getByRole("button", { name: "Close the guide" }).click();
+  await expect(page.getByRole("heading", { name: "How to write a brief" })).toHaveCount(0);
+
+  const brief = page.getByLabel("Your brief");
+  await brief.fill("");
+  await page.getByRole("button", { name: "Use the template" }).click();
+  await expect(brief).toHaveValue(/^GOALS \(main first\): /);
+  await expect(page.getByRole("button", { name: "Use the template" })).toBeDisabled();  // never overwrites a brief
+});

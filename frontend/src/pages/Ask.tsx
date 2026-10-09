@@ -10,6 +10,7 @@ import {
 } from "../lib/api";
 import { explain, readRunKey, saveRunKey } from "../lib/runKey";
 import { intakeFromParam, loadDraft, saveDraft } from "../lib/rerun";
+import { BRIEF_TEMPLATE, BriefGuide, BriefGuideButton } from "../components/BriefGuide";
 
 const EXAMPLES = [
   "Launching a snack brand in the Netherlands",
@@ -58,6 +59,7 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
     params.get("window") ? Number(params.get("window")) : draft?.window ?? null);
   const [voice, setVoice] = useState(params.get("voice") ?? draft?.voice ?? "");
   const [intake, setIntake] = useState<IntakeData | null>(intakeFromParam(params.get("intake")));  // "Run again"
+  const [guideOpen, setGuideOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const keyRef = useRef<HTMLInputElement>(null);
@@ -94,12 +96,23 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
   const est = options?.modes[mode];
   return (
     <form onSubmit={submit} className="space-y-4" aria-describedby={error ? "ask-error" : undefined}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <BriefGuideButton open={guideOpen} onToggle={() => setGuideOpen((o) => !o)} />
+        <button type="button" onClick={() => setBrief(BRIEF_TEMPLATE)} disabled={brief.trim().length > 0}
+                title={brief.trim() ? "Clear the box first to use the template" : undefined}
+                className="text-sm text-ink underline disabled:text-ink-3 disabled:no-underline">
+          Use the template
+        </button>
+      </div>
+      {guideOpen && <BriefGuide onClose={() => setGuideOpen(false)} />}
       <label htmlFor="brief" className="sr-only">Your brief</label>
       <textarea
-        id="brief" value={brief} onChange={(e) => setBrief(e.target.value)} rows={3} maxLength={2000}
-        placeholder={`e.g. ${example}`}
+        id="brief" value={brief} onChange={(e) => setBrief(e.target.value)} maxLength={2000}
+        rows={Math.min(10, Math.max(3, brief.split("\n").length))}
+        placeholder={`e.g. ${example}`} aria-describedby="brief-count"
         className="w-full resize-y rounded-lg border border-line-strong bg-paper px-4 py-3 text-lg text-ink placeholder:text-ink-3 focus:border-ink focus:outline-none"
       />
+      <p id="brief-count" className="-mt-3 text-right font-mono text-xs text-ink-3">{brief.length} / 2000</p>
       <div className="grid gap-4 md:grid-cols-[auto_auto_1fr]">
         <fieldset>
           <legend className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">Depth</legend>
