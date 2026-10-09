@@ -105,7 +105,7 @@ Read the relevant step before working. Do only that step.
 - Backend CLI: cd backend && uv run python -m ctxpack.cli <command>
   (doctor, catalog, tool, classify, plan, research, extract, cluster, write, verify, pack, export, feature
   [--replaces OLD_ID], redact-run, overlap, export-schema, eval [--reuse] [--only ID] [--recheck],
-  demo-check [--no-paid], version)
+  demo-check [--no-paid], actor-check, version)
 - Research run: ... research "<brief>" --mode quick|standard [--fixtures]
   [--auto-approve] [--goal ID ...] [--offer TEXT] [--offer-stage STAGE]
   [--brand NAME] [--parent-brand NAME] [--no-apify] [--apify-max USD] [--record]
@@ -114,6 +114,8 @@ Read the relevant step before working. Do only that step.
   ... cluster --from-run RUN_ID [--redo], then write, verify and pack --from-run RUN_ID
   [--redo] (estimate shown first); pack [--brand-voice] [--test-hook] writes
   every export to data/packs/<pack_id>/; export PACK_ID re-exports (free)
+- Actor health (free, public Apify API, no key): ... actor-check (health, prices, inputs vs schemas;
+  thresholds in catalog.yaml health_check; weekly in .github/workflows/actor-check.yml)
 - Scripts: cd backend && uv run python -m scripts.demo_agent [--pack ID];
   uv run python -m scripts.build_mirror (static mirror into mirror/, not committed)
 - Keyless local demo: USE_FIXTURES=true LLM_FAKE=true ./start.sh (local SQLite, no keys)

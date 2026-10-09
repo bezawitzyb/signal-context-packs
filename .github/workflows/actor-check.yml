@@ -1,0 +1,25 @@
+# Weekly health check of every Apify actor in catalog.yaml (deprecated, success rate, usage, prices, and the
+# inputs our tools send vs each actor's input schema). Needs NO secrets: it reads the PUBLIC Apify API without
+# a key and runs our tools offline on recorded data. A failing actor fails the run, so GitHub emails the owner.
+name: actor-check
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"   # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  actors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Check every catalogued actor (free)
+        run: uv run python -m ctxpack.cli actor-check

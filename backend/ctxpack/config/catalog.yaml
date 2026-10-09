@@ -30,6 +30,17 @@ tool_latency:
 
 verified_on: "2026-10-04"
 
+# actor-check (free: public Apify API, no key): when an actor needs attention. Deprecated actors,
+# rental pricing and inputs the actor no longer accepts always fail; the rest warn.
+health_check:
+  min_success_30d: 0.95         # public runs that succeeded in the last 30 days
+  max_success_drop: 0.03        # warn when below the catalog's success_30d by more than this
+  min_runs_30d: 100
+  min_users_30d: 10
+  max_days_since_build: 180     # no new version for longer: maybe abandoned
+  min_rating: 3.5               # warn below this average ...
+  min_reviews: 5                # ... once it has at least this many reviews
+
 sources:
   reddit:
     kind: apify

@@ -1407,6 +1407,34 @@ def demo_check(
         raise typer.Exit(1)
 
 
+@app.command("actor-check")
+def actor_check() -> None:
+    """Free health check of every Apify actor in the catalog: deprecated, success rate, usage, last build,
+    rating, live prices vs the catalog, and every input our tools send vs the actor's input schema."""
+    from ctxpack.actor_check import run
+
+    reports = run()
+    mark = {"ok": OK, "warn": "[yellow]![/yellow]", "fail": BAD}
+    for r in reports:
+        f = r.facts
+        success = f"{f['success_30d']:.1%}" if f.get("success_30d") is not None else "-"
+        console.print(mark[r.level], end=" ")
+        console.print(f"{r.actor_id}  ({r.role})", highlight=False, markup=False, soft_wrap=True)
+        if f:
+            console.print(f"    success {success} of {f['runs_30d']:,} runs, {f['users_30d'] or 0:,} users (30 d), "
+                          f"build {f['last_build'] or '-'}, rating {f['rating'] or '-'} ({f['reviews']}), "
+                          f"{r.inputs_checked} inputs checked", highlight=False, markup=False, soft_wrap=True)
+        for finding in r.findings:
+            console.print(f"    {finding.level.upper()}: {finding.text}", highlight=False, markup=False,
+                          soft_wrap=True)
+    fails = sum(r.level == "fail" for r in reports)
+    warns = sum(r.level == "warn" for r in reports)
+    console.print(f"\n{len(reports)} actor slots: {len(reports) - fails - warns} ok, {warns} to watch, "
+                  f"{fails} failing")
+    if fails:
+        raise typer.Exit(1)
+
+
 @app.command()
 def version() -> None:
     """Print the package version."""
