@@ -13,6 +13,7 @@ modes:
     item_budget: 600            # raw items per run
     items_per_call_max: 40
     web_pages_per_call_max: 5
+    probe_items: 20             # first call of a new search (2026-10-09 audit; collection.probe_items explains)
     typical_usd: [1.50, 3.00]   # shown on the plan (PRD NFR2); the hard cap is apify_usd + llm_usd + analysis_llm_usd
     typical_minutes: 7          # end to end (PRD NFR1)
   standard:
@@ -26,6 +27,7 @@ modes:
     item_budget: 2000
     items_per_call_max: 80
     web_pages_per_call_max: 8
+    probe_items: 40             # Standard: 20 made 19 small calls run out of time (NL rerun 2026-10-09)
     typical_usd: [5.00, 7.00]
     typical_minutes: 12
 
@@ -49,8 +51,8 @@ languages:
   supported: {en: English, de: German, nl: Dutch, fr: French, it: Italian, es: Spanish, pl: Polish,
               sv: Swedish, da: Danish, nb: Norwegian, fi: Finnish, pt: Portuguese}
   max_per_mode: {quick: 4, standard: 6}
-  english_weight: 0.15          # English joins global and multi-country runs with at least this share (lingua
-                                # franca); a single-country brief only when the planner picks it (2026-10-09)
+  english_weight: 0.15          # English joins every run with at least this share (lingua franca, expats); owner
+                                # 2026-10-09: kept for every brief (NL talks snacks in English too)
   model_language_bonus: 0.10    # a language the planner picked for this brief gets this extra share
   named_country_weight: 0.30    # a country the brief names gets this extra weight; its main language is always kept
   min_share_of_top: 0.25        # a market language scoring below this share of the top language is left out
@@ -192,8 +194,8 @@ collection:
   site_failures_max: 2          # pages from one site that failed (bot wall, rate limit) or showed no posts
                                 # (JavaScript-only): after this many the site is skipped for the rest of the run
   web_fetch_max_content_tokens: 20000  # caps the cost of one huge page (~0.02 USD input)
-  probe_items: 20               # the first social call on a platform is a small test (2026-10-09 audit: full-size
-                                # first calls cost 60 posts at 0-11% relevant); also every subreddit browse without a query
+  probe_items: 20               # default test size of a new search (each mode sets its own probe_items; 2026-10-09
+                                # audit: full-size first calls cost 60 posts at 0-11% relevant)
   probe_min_relevant_share: 0.30  # a search that proved at least this relevant gets full size when repeated
   probe_trusted_platform_share: 0.70  # a NEW search starts full size only on a platform at least this relevant ...
   probe_trusted_min_searches: 2       # ... over at least this many searches (NL rerun: one 79% search let a 16% in)

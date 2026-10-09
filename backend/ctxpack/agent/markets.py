@@ -106,10 +106,8 @@ def primary_country(markets: list[dict]) -> str:
 def choose_languages(markets: list[dict], model_languages: list[str], mode: str,
                      named_countries: list[str] = ()) -> tuple[list[str], list[dict]]:
     """(chosen languages, excluded [{language, reason}]). Weighted by the markets' official languages;
-    countries the brief names count extra and their languages are never dropped as "too small".
-    English joins global and multi-country briefs (lingua franca); a single-country brief gets it only when it
-    is that country's language or the planner chose it (owner's decision 2026-10-09: German briefs stay German,
-    no false "English voices missing" blind spot)."""
+    countries the brief names count extra and their languages are never dropped as "too small";
+    English always joins."""
     cfg = _lang_cfg()
     g = _geo()
     supported = cfg["supported"]
@@ -128,10 +126,7 @@ def choose_languages(markets: list[dict], model_languages: list[str], mode: str,
         keep.update(g["countries"].get(c, {}).get("languages", [])[:1])
     for lang in model_languages:
         score[lang] = score.get(lang, 0.0) + cfg["model_language_bonus"]
-    countries_all = {c for m in markets for c in m["countries"]}
-    auto_english = len(countries_all) != 1 or "en" in model_languages
-    if auto_english:
-        score["en"] = max(score.get("en", 0.0), cfg["english_weight"])
+    score["en"] = max(score.get("en", 0.0), cfg["english_weight"])
     ranked = sorted(score, key=lambda k: (-score[k], k))
     top_score = max(score.values())
     chosen: list[str] = []
@@ -141,14 +136,14 @@ def choose_languages(markets: list[dict], model_languages: list[str], mode: str,
             excluded.append({"language": lang, "reason": "not supported yet"})
         elif lang != "en" and lang not in keep and score[lang] / top_score < cfg["min_share_of_top"]:
             excluded.append({"language": lang, "reason": "only a small share of the chosen markets"})
-        elif len(chosen) < cap - (0 if "en" in chosen or lang == "en" or not auto_english else 1):  # English seat
+        elif len(chosen) < cap - (0 if "en" in chosen or lang == "en" else 1):  # keep a seat for English
             chosen.append(lang)
         else:
             excluded.append({"language": lang, "reason": (
                 f"left out to keep the run fast ({mode.capitalize()} covers up to {cap} languages)"
                 + ("; choose Standard to include it" if mode == "quick" else
                    "; it has a smaller share of the chosen markets than the languages kept"))})
-    if "en" not in chosen and auto_english:
+    if "en" not in chosen:
         chosen.append("en")
     # local languages first, English last unless it leads (e.g. UK, US, global)
     top = max(score[c] for c in chosen)

@@ -95,7 +95,7 @@ def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short
                      f"error or no results, also with the backup tool): "
                      f"{_FAILED_IMPACT.get(name, 'the voices found there are missing')}.")
     cov = analysis.get("coverage", {})
-    missing = [lang for lang in interp.languages if lang not in cov.get("languages", [])]
+    missing = missing_languages(interp, cov.get("languages", []))
     if missing:
         spots.append(f"No posts in {', '.join(missing)} although the brief targets it: those voices are missing.")
     lens = analysis.get("platform_lens", [])
@@ -122,6 +122,20 @@ def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short
     spots.append("Public posts only (plus LinkedIn posts any logged-in user can see): private groups, direct "
                  "messages, closed profiles and offline talk are not covered.")
     return spots
+
+
+def missing_languages(interp: Any, found: list[str]) -> list[str]:
+    """Brief languages with no posts. English joins every brief as a second language, so finding none is only a
+    gap where English is a language of the market itself (owner 2026-10-09: no "English voices missing" for a
+    German brief)."""
+    from ctxpack.agent.markets import countries
+    from ctxpack.config import load_yaml
+
+    markets = [m.model_dump() if hasattr(m, "model_dump") else m for m in (getattr(interp, "markets", None) or [])]
+    in_market = countries(markets) if markets else []
+    geo = load_yaml("markets")["countries"]
+    market_langs = {lang for c in in_market for lang in geo.get(c, {}).get("languages", [])} if in_market else {"en"}
+    return [lang for lang in interp.languages if lang not in found and (lang != "en" or "en" in market_langs)]
 
 
 _PLATFORM_NAME = {"linkedin": "LinkedIn", "reddit": "Reddit", "tiktok": "TikTok", "youtube": "YouTube",

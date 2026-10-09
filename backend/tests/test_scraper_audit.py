@@ -473,3 +473,46 @@ def test_web_search_hints_a_retry_when_no_recent_voice_page_is_found(live, monke
     assert "hint" not in asyncio.run(tools.web_search(ctx, "snacks fok", "NL", "nl", "x"))
     found(("https://forum.nl/t/9", "forum", None))                         # no date known: worth reading
     assert "hint" not in asyncio.run(tools.web_search(ctx, "snacks forum", "NL", "nl", "x"))
+
+
+def test_standard_probes_with_more_items_than_quick(live, monkeypatch):
+    capture(monkeypatch)
+    quick, std = make_ctx(), make_ctx()
+    std.mode = "standard"
+    assert tools._probe_limit(quick, tools.Platform.tiktok, "tiktok:search:x", 80)[0] == quick.limits["probe_items"]
+    assert tools._probe_limit(std, tools.Platform.tiktok, "tiktok:search:x", 80)[0] == std.limits["probe_items"]
+    assert std.limits["probe_items"] > quick.limits["probe_items"]
+
+
+def test_a_failed_web_search_is_an_error_with_advice(live, monkeypatch):
+    from ctxpack.llm.client import LLMError
+
+    async def failing(query, country, language, blocked=None):
+        raise LLMError("record_pages: no valid answer after one retry")
+
+    monkeypatch.setattr(web, "discover", failing)
+    out = asyncio.run(tools.web_search(make_ctx(), "site:tweakers.net snacks", "NL", "nl", "x"))
+    assert out["status"] == "error" and "try once more" in out["error"]
+
+
+def test_discovery_keeps_pages_when_no_result_blocks_are_visible(live, monkeypatch):
+    async def fake_structured(*args, **kwargs):            # dynamic filtering: results not in result blocks
+        return CallResult(data=web.Discovery(pages=[web.FoundPage(url="https://forum.nl/t/1", page_type="forum",
+                                                                  language="nl", why="x")]), web_searches=1)
+
+    monkeypatch.setattr(web, "structured", fake_structured)
+    res = asyncio.run(web.discover("snacks", "NL", "nl"))
+    assert [p.url for p in res.pages] == ["https://forum.nl/t/1"] and res.unlisted == 0
+
+
+def test_english_voices_missing_only_when_english_is_a_market_language():
+    from types import SimpleNamespace
+    from ctxpack.synthesis.finalize import missing_languages
+
+    de = SimpleNamespace(languages=["de", "en"], markets=[{"code": "DE", "countries": ["DE"], "weight": 1.0}])
+    assert missing_languages(de, ["de"]) == []                              # English was only the second language
+    assert missing_languages(de, ["en"]) == ["de"]                          # the market language is still a gap
+    uk = SimpleNamespace(languages=["en"], markets=[{"code": "GB", "countries": ["GB"], "weight": 1.0}])
+    assert missing_languages(uk, []) == ["en"]
+    world = SimpleNamespace(languages=["en"], markets=[{"code": "global", "countries": [], "weight": 1.0}])
+    assert missing_languages(world, []) == ["en"]

@@ -24,7 +24,7 @@ from ctxpack.collect.mappers import MAPPERS, map_items, sanitize_for_fixture
 from ctxpack.collect.relevance import BriefContext
 from ctxpack.config import load_yaml
 from ctxpack.guards import BudgetExceeded, StopRequested
-from ctxpack.llm.client import untrusted
+from ctxpack.llm.client import LLMError, untrusted
 from ctxpack.schemas.document import Document
 from ctxpack.schemas.enums import Platform
 
@@ -145,7 +145,7 @@ def _probe_limit(ctx: RunContext, platform: Platform, unit: str, limit: int,
     probe_items unless its platform is already strongly relevant; a search that proved relevant gets full size.
     2026-10-09 NL rerun: a good TikTok query let an English hashtag in at full size (60 posts, 16% relevant)."""
     cfg = _modes()["collection"]
-    probe, share_min = cfg["probe_items"], cfg["probe_min_relevant_share"]
+    probe, share_min = ctx.limits.get("probe_items", cfg["probe_items"]), cfg["probe_min_relevant_share"]
     trusted, trusted_n = cfg["probe_trusted_platform_share"], cfg["probe_trusted_min_searches"]
     if limit <= probe:
         return limit, None
@@ -920,7 +920,12 @@ async def web_search(ctx: RunContext, query: str, country: str, language: str, r
     ctx.blocked_domains |= set(web.blocked_sites())
     skip = list(web.skip_domains())                          # platforms with their own tool, login walls
     blocked = (skip + sorted(ctx.blocked_domains - set(skip)))[:_modes()["collection"]["blocked_sites_max"]]
-    res = await web.discover(query, country, language, blocked)
+    try:
+        res = await web.discover(query, country, language, blocked)
+    except LLMError as exc:  # the model gave no valid page list (NL rerun 2026-10-09): say so, let the agent retry
+        log.warning("web_search failed: %s", type(exc).__name__)
+        return {"status": "error", "tool": "web_search", "error": "the search ran but no usable page list came back; "
+                "try once more with simpler words (fewer terms, no site:) or another source", **ctx.left()}
     ctx.llm_usd += res.usd
     pages, hidden = [], 0
     for p in res.pages:

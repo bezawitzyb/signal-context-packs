@@ -160,11 +160,14 @@ async def discover(query: str, country: str, language: str, blocked: list[str] |
                                             **({"blocked_domains": blocked} if blocked else {})}},
     )
     found = search_results(res.blocks)
+    # Only check against result blocks we can see (a model using dynamic filtering may get results through
+    # code execution instead; then checking would drop every page).
+    check = bool(found) and not get_settings().llm_fake
     pages, seen, unlisted = [], set(), 0
     for p in res.data.pages:  # http(s) only, no duplicates, only pages a search really returned
         if urlparse(p.url).scheme not in ("http", "https") or p.url in seen:
             continue
-        if (key := _url_key(p.url)) not in found and not get_settings().llm_fake:  # fake answers have no blocks
+        if (key := _url_key(p.url)) not in found and check:
             unlisted += 1
             continue
         seen.add(p.url)

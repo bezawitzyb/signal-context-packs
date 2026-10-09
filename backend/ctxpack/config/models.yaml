@@ -6,6 +6,8 @@
 roles:
   reasoner: claude-sonnet-5-5     # interpret + plan, agent loop, clustering, baseline, synthesis, playbook, compliance
   worker: claude-haiku-4-5-20251001  # relevance, web discovery, segmenting, extraction, membership, claim checks
+                                  # (2026-10-09: Sonnet 5.5 + web_search_20260209 spent its 2 searches inside its own
+                                  # code and listed no pages; Haiku listed fok.nl and viva.nl for the same query)
   evaluator: claude-opus-5-5      # eval-only entailment re-check: a different, stronger model than the writer
                                   # (Sonnet) so it does not grade its own style (owner's change, 2026-10-09)
   synth: claude-sonnet-5-5        # synthesis only; switch to claude-opus-5-5 if justified (decision log)
