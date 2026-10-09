@@ -141,7 +141,8 @@ async def build(s: dict, clusters: dict[str, Any], docs: list[Any], interp: Any)
 
     # links inside the list (a scored opportunity building on white space) use the new ids too; an
     # opportunity never builds on itself
-    out = rename_ids(out, mapping)
+    for o in out:  # only the references: renaming the new ids too would rename them twice (OPP-05 -> OPP-04)
+        o["builds_on"], o["related_ids"] = rename_ids(o["builds_on"], mapping), rename_ids(o["related_ids"], mapping)
     for o in out:
         o["builds_on"] = [b for b in o["builds_on"] if b != o["id"]]
         o["related_ids"] = [r for r in o["related_ids"] if r != o["id"]]

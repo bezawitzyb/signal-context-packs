@@ -193,6 +193,7 @@ def create_tables() -> None:
     engine = get_engine()
     SQLModel.metadata.create_all(engine)
     add_missing_columns(engine)
+    add_missing_enum_values(engine)
 
 
 def add_missing_columns(engine: Engine) -> list[str]:
@@ -216,6 +217,45 @@ def add_missing_columns(engine: Engine) -> list[str]:
                 added.append(f"{table.name}.{col.name}")
     for name in added:
         log.info("added column %s", name)
+    return added
+
+
+def wanted_enum_values() -> dict[str, list[str]]:
+    """Postgres enum type name -> the labels the models allow (native enums only)."""
+    import sqlalchemy as sa
+
+    out: dict[str, list[str]] = {}
+    for table in SQLModel.metadata.sorted_tables:
+        for col in table.columns:
+            if isinstance(col.type, sa.Enum) and col.type.native_enum and col.type.name:
+                out.setdefault(col.type.name, list(col.type.enums))
+    return out
+
+
+def missing_enum_values(existing: dict[str, list[str]], wanted: dict[str, list[str]]) -> dict[str, list[str]]:
+    """Labels a model allows that the database type lacks (types the database does not have are left alone)."""
+    return {name: [v for v in labels if v not in existing[name]]
+            for name, labels in wanted.items() if name in existing and any(v not in existing[name] for v in labels)}
+
+
+def add_missing_enum_values(engine: Engine) -> list[str]:
+    """create_all never changes an existing Postgres enum type. This only ADDS the labels the models gained since
+    the type was made (e.g. platform "x", 2026-10-07); it never removes or renames one. No-op outside Postgres."""
+    if engine.dialect.name != "postgresql":
+        return []
+    with engine.connect() as conn:
+        rows = conn.execute(text("SELECT t.typname, e.enumlabel FROM pg_type t JOIN pg_enum e ON e.enumtypid = t.oid"))
+        existing: dict[str, list[str]] = {}
+        for name, label in rows:
+            existing.setdefault(name, []).append(label)
+    added = []
+    with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+        for name, labels in missing_enum_values(existing, wanted_enum_values()).items():
+            for label in labels:
+                conn.execute(text(f'ALTER TYPE "{name}" ADD VALUE IF NOT EXISTS \'{label}\''))
+                added.append(f"{name}.{label}")
+    for name in added:
+        log.info("added enum value %s", name)
     return added
 
 

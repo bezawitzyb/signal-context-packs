@@ -151,3 +151,14 @@ def test_featured_pack_without_a_file_is_unfeatured(temp_db, tmp_path):
     path.unlink()                                                     # replaced by a rebuilt pack
     assert temp_db.load_featured(tmp_path) == 1 and temp_db.list_featured_packs() == []
     assert temp_db.get_pack(fixture["pack_id"]) is not None           # still readable by id
+
+
+def test_new_enum_labels_are_found_and_only_added():
+    """Seen live (2026-10-09): the Postgres platform type lacked "x", so every X search failed to save."""
+    from ctxpack.db import missing_enum_values, wanted_enum_values
+
+    assert "x" in wanted_enum_values()["platform"]
+    existing = {"platform": ["reddit", "tiktok"], "other_type": ["a"]}
+    wanted = {"platform": ["reddit", "tiktok", "x"], "not_in_db": ["b"]}
+    assert missing_enum_values(existing, wanted) == {"platform": ["x"]}   # never removes; unknown types left alone
+    assert missing_enum_values({"platform": ["reddit", "x"]}, {"platform": ["reddit", "x"]}) == {}

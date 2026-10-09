@@ -82,3 +82,16 @@ def test_urls_the_search_did_not_return_are_dropped(monkeypatch):
     out, usd = asyncio.run(opp.check("x", "NL", ["nl"]))
     get_settings.cache_clear()
     assert [s.name for s in out.existing_solutions] == ["Real"] and usd == 0.01
+
+
+def test_ids_stay_unique_when_the_verifier_dropped_one_in_the_middle(fake):  # noqa: F811
+    """Seen live (V12 paid run): OPP-04 dropped, so OPP-05 -> OPP-04 and OPP-06 -> OPP-05. Renaming the new list
+    as well renamed OPP-05 a second time, giving two OPP-04s and an invalid pack. Only references are renamed."""
+    s = sections()
+    base = s["opportunities"][0]
+    s["opportunities"] = [{**base, "id": i, "builds_on": ["PAIN-01"]} for i in ("OPP-01", "OPP-02", "OPP-03")] + [
+        {**base, "id": "OPP-05", "builds_on": ["PAIN-01"]}, {**base, "id": "OPP-06", "builds_on": ["OPP-05"]}]
+    out, mapping, _ = asyncio.run(opp.build(s, clusters(), DOCS, INTERP))
+    ids = [o["id"] for o in out]
+    assert ids == ["OPP-01", "OPP-02", "OPP-03", "OPP-04", "OPP-05", "OPP-06"] and len(set(ids)) == len(ids)
+    assert mapping["OPP-05"] == "OPP-04" and out[4]["builds_on"] == ["OPP-04"]   # reference renamed exactly once
