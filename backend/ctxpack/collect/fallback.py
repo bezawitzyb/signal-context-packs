@@ -138,7 +138,7 @@ async def crash_fallback(state: Any, reason: FinishReason) -> bool:
             if _final(result):
                 break
     finally:
-        ctx.extra_secs = 0              # the grace is for these units only; a top-up keeps the normal cap
+        ctx.extra_secs = 0              # the grace is for these units only; a top-up gets its own (top_up_extra_secs)
     return True
 
 
@@ -208,7 +208,20 @@ def _candidates(state: Any) -> Iterator[tuple[str, dict[str, Any]]]:
 async def top_up(state: Any) -> bool:
     """Below min_relevant: top up from kept units. Returns True if anything ran."""
     ctx = state.ctx
-    if ctx.relevant_total >= ctx.limits["min_relevant"] or tools._general_limit(ctx):
+    if ctx.relevant_total >= ctx.limits["min_relevant"]:
+        return False
+    # The agent usually works until its time is up, so the top-up gets its own short grace (like the crash
+    # fallback); without it every top-up call was refused for time (de_heat_pumps, 2026-10-06).
+    ctx.extra_secs = max(ctx.extra_secs, _agent_cfg()["top_up_extra_secs"])
+    try:
+        return await _top_up(state)
+    finally:
+        ctx.extra_secs = 0
+
+
+async def _top_up(state: Any) -> bool:
+    ctx = state.ctx
+    if tools._general_limit(ctx):
         return False
     started = False
     for name, args in list(_candidates(state)):     # planned from the agent's calls, before any top-up call

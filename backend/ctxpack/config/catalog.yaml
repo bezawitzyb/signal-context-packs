@@ -555,6 +555,22 @@ sources:
     audience: News and articles; context only, never counted as audience voice.
     language_country_inputs: query language + country in the search prompt
 
+# Never web-searched or read with fetch_and_segment (2026-10-09 audit: web searches like "reddit ... thread"
+# and "quora ..." gave nothing - these sites refuse or need JavaScript/login). A general rule for every brief,
+# NOT a per-brief source list. domain (subdomains included) -> what to use instead.
+web_skip_domains:
+  reddit.com: search_reddit
+  redd.it: search_reddit
+  tiktok.com: search_tiktok
+  youtube.com: search_youtube
+  youtu.be: search_youtube
+  instagram.com: search_instagram
+  linkedin.com: search_linkedin
+  x.com: search_x
+  twitter.com: search_x
+  facebook.com: nothing (login wall)
+  quora.com: nothing (login wall, JavaScript)
+
 # Rules for collect/apify.py (Step 1.6), learned from the 2026-10-04 smoke test.
 call_rules:
   budget_check: >-

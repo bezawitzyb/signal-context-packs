@@ -29,7 +29,9 @@ from ctxpack.schemas.enums import Platform
 BLOCKED_ERRORS = {"url_not_allowed"}   # the site refuses Anthropic's fetcher: retrying never helps
 # Bot walls, rate limits and JavaScript-only pages: maybe temporary, so the site is skipped for the
 # rest of the run only (after modes.yaml site_failures_max), never remembered across runs.
-SOFT_ERRORS = {"url_not_accessible", "too_many_requests", "unavailable", "not_text", "unsupported_content_type"}
+SEGMENT_FAILED = "segment_failed"      # the page was fetched but the model gave no valid split (e.g. a huge page)
+SOFT_ERRORS = {"url_not_accessible", "too_many_requests", "unavailable", "not_text", "unsupported_content_type",
+               SEGMENT_FAILED}
 DISCOVER_FIXTURE = FIXTURE_DIR / "web_discover.json"
 PAGES_FIXTURE = FIXTURE_DIR / "web_pages.json"
 
@@ -97,6 +99,20 @@ def _load(path) -> dict:
 
 def domain_of(url: str) -> str:
     return urlparse(url if "//" in url else f"https://{url}").netloc.removeprefix("www.").casefold()
+
+
+def skip_domains() -> dict[str, str]:
+    """Sites web search and fetch never touch (catalog.yaml web_skip_domains) -> what to use instead."""
+    return load_yaml("catalog").get("web_skip_domains") or {}
+
+
+def skipped(url: str) -> str | None:
+    """What to use instead, if the URL is on a skipped site (or a subdomain of one)."""
+    domain = domain_of(url)
+    for site, instead in skip_domains().items():
+        if domain == site or domain.endswith("." + site):
+            return instead
+    return None
 
 
 def _blocked_file():

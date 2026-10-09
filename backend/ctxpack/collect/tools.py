@@ -9,6 +9,7 @@ A tool past a limit returns {"status": "limit_reached", ...} and does nothing.
 from __future__ import annotations
 
 import asyncio
+import logging
 import math
 import re
 import time
@@ -22,9 +23,13 @@ from ctxpack.collect.cleaning import Deduper, Draft, clean, make_draft, words
 from ctxpack.collect.mappers import MAPPERS, map_items, sanitize_for_fixture
 from ctxpack.collect.relevance import BriefContext
 from ctxpack.config import load_yaml
+from ctxpack.guards import BudgetExceeded, StopRequested
 from ctxpack.llm.client import untrusted
 from ctxpack.schemas.document import Document
 from ctxpack.schemas.enums import Platform
+
+
+log = logging.getLogger(__name__)
 
 
 def _modes() -> dict[str, Any]:
@@ -131,6 +136,27 @@ def _count_actor(ctx: RunContext, result: apify.ActorResult) -> None:
     row["runs"] += 1
     row["usd"] += result.usd
     row["items"] += len(result.items)
+
+
+def _probe_limit(ctx: RunContext, platform: Platform, limit: int, blind: bool = False) -> tuple[int, str | None]:
+    """Explore small, exploit what works: a platform's first call, a platform whose posts are mostly not
+    relevant so far, and a subreddit browse without a query get at most probe_items."""
+    cfg = _modes()["collection"]
+    probe, share_min = cfg["probe_items"], cfg["probe_min_relevant_share"]
+    if limit <= probe:
+        return limit, None
+    if blind:
+        return probe, (f"browsing a subreddit without a query returns its newest posts on every subject: limited "
+                       f"to {probe} items; pass query to search inside it")
+    kept = sum(st["kept"] for u, st in ctx.unit_stats.items() if ctx.unit_platform.get(u) == platform)
+    relevant = sum(st["relevant"] for u, st in ctx.unit_stats.items() if ctx.unit_platform.get(u) == platform)
+    if not kept:
+        return probe, (f"first {platform} call: limited to {probe} items to test the source; later {platform} "
+                       f"calls get up to {limit} while at least {share_min:.0%} of its posts are relevant")
+    if relevant / kept < share_min:
+        return probe, (f"{platform} posts so far are {relevant / kept:.0%} relevant: calls stay at {probe} items "
+                       f"until a better target lifts it to {share_min:.0%}")
+    return limit, None
 
 
 def _limit_reached(ctx: RunContext, why: str) -> dict[str, Any]:
@@ -363,7 +389,7 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
 
 async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platform, unit: str, target: str,
                       limit: int, reason: str, search_inputs: Callable[[dict, int], dict | None],
-                      with_comments: bool, fallback_first: bool = False) -> dict[str, Any]:
+                      with_comments: bool, fallback_first: bool = False, blind: bool = False) -> dict[str, Any]:
     if why := _general_limit(ctx) or _apify_limit(ctx) or _time_limit(ctx, tool):
         return _limit_reached(ctx, why)
     if unit in ctx.dropped_units:
@@ -374,6 +400,7 @@ async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platfor
     limit, why = _item_limit(ctx, unit, limit)
     if why:
         return _limit_reached(ctx, why)
+    limit, probe_note = _probe_limit(ctx, platform, limit, blind)
     src = _catalog()["sources"][source]
     expected = apify.expected_cost(src["actor"], limit)
     if ctx.apify_usd + ctx.pending_apify_usd + expected > apify_cap(ctx):
@@ -396,6 +423,8 @@ async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platfor
         ctx.pending_apify_usd -= expected
     if ctx.apify_unavailable and not drafts:
         return _limit_reached(ctx, NO_APIFY_CREDIT)
+    if probe_note:
+        notes["limited"] = probe_note
     return await _finish_collection(ctx, tool, unit, drafts, notes)
 
 
@@ -542,7 +571,7 @@ async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: st
 
     call_target = f"{target.strip()} {query}" if query else target   # call key, cache key, seen words
     return await _apify_tool(ctx, "search_reddit", "reddit", Platform.reddit, unit, call_target, limit, reason,
-                             inputs, with_comments=False)
+                             inputs, with_comments=False, blind=bool(sub and not query))
 
 
 async def search_tiktok(ctx: RunContext, target: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
@@ -779,12 +808,13 @@ async def web_search(ctx: RunContext, query: str, country: str, language: str, r
     ctx.calls += 1
     ctx.queries.append(query)
     ctx.blocked_domains |= set(web.blocked_sites())
-    blocked = sorted(ctx.blocked_domains)[:_modes()["collection"]["blocked_sites_max"]]
+    skip = list(web.skip_domains())                          # platforms with their own tool, login walls
+    blocked = (skip + sorted(ctx.blocked_domains - set(skip)))[:_modes()["collection"]["blocked_sites_max"]]
     res = await web.discover(query, country, language, blocked)
     ctx.llm_usd += res.usd
     pages, hidden = [], 0
     for p in res.pages:
-        if web.domain_of(p.url) in ctx.blocked_domains:     # search may still return one: never offer it
+        if web.domain_of(p.url) in ctx.blocked_domains or web.skipped(p.url):  # never offer one search returned
             hidden += 1
             continue
         ctx.page_types[p.url] = p.page_type
@@ -803,10 +833,12 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
         return _limit_reached(ctx, why)
     max_pages = ctx.limits["web_pages_per_call_max"]
     ctx.blocked_domains |= set(web.blocked_sites())
-    todo, skipped, blocked = [], [], []
+    todo, skipped, blocked, platform = [], [], [], {}
     for url in dict.fromkeys(u.strip() for u in urls if u.strip()):
         unit = web_unit(url)
-        if web.domain_of(url) in ctx.blocked_domains:
+        if instead := web.skipped(url):
+            platform[url] = f"use {instead}" if instead.startswith("search_") else instead
+        elif web.domain_of(url) in ctx.blocked_domains:
             blocked.append(url)
         elif url in ctx.fetched_urls or unit in ctx.dropped_units or len(todo) >= max_pages:
             skipped.append(url)
@@ -816,6 +848,8 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
             todo.append(url)
     note = {"blocked_sites": sorted({web.domain_of(u) for u in blocked}),
             "blocked_note": "these sites refuse fetching; choose other sites"} if blocked else {}
+    if platform:
+        note["not_read_here"] = platform                     # e.g. a reddit thread: search_reddit reads it
     if not todo:
         return {"status": "nothing_to_fetch", "skipped": skipped, **note, **ctx.left()}
     ctx.calls += 1
@@ -829,7 +863,13 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
         if cached:
             return web.PageResult(url, [Draft.from_cache(d) for d in cached["drafts"]])
         async with gate:
-            res = await web.fetch_and_segment(url, ctx.page_types.get(url, "forum"), fetched_at)
+            try:
+                res = await web.fetch_and_segment(url, ctx.page_types.get(url, "forum"), fetched_at)
+            except (BudgetExceeded, StopRequested):
+                raise
+            except Exception as exc:  # one page the model could not split never loses the other pages
+                log.warning("fetch_and_segment %s failed: %s", web.domain_of(url), type(exc).__name__)
+                return web.PageResult(url, error=web.SEGMENT_FAILED)
         if not res.error:
             apify.cache_put("fetch_and_segment", url, "", {"drafts": [d.to_cache() for d in res.drafts]})
         return res
@@ -958,6 +998,8 @@ def tool_definitions() -> list[dict[str, Any]]:
         ("web_search", f"Find 5-15 forum, Q&A and review pages in a country and language, each with its "
                        f"estimated date when one is visible. Stores nothing; follow with fetch_and_segment, and "
                        f"skip pages dated before oldest_wanted (their posts are dropped as out of window). "
+                       f"Never returns social platforms that have their own tool (Reddit, TikTok, YouTube, "
+                       f"Instagram, LinkedIn, X) or login-walled sites: use their tools instead. "
                        f"Latency {_latency('web_search')}.",
          {"query": {"type": "string"}, "country": {"type": "string", "description": "ISO country code"},
           "language": {"type": "string", "description": "ISO 639-1"}, "reason": _reason()},

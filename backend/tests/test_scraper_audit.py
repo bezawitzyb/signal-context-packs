@@ -252,3 +252,105 @@ def test_country_add_on_is_counted_only_when_sent():
     assert apify.expected_cost(spec, 10, False, {"searchQueries": ["x"]}) == pytest.approx(0.037)
     assert apify.expected_cost(spec, 10, False, {"proxyCountryCode": "NL"}) == pytest.approx(0.05)
     assert apify.expected_cost(spec, 10, False) == pytest.approx(0.05)     # budget check: assume it is used
+
+
+# --- source-selection audit (2026-10-09) ------------------------------------------------------
+
+def test_one_failing_page_never_loses_the_others(live, monkeypatch):
+    from ctxpack.llm.client import LLMError
+
+    async def fake_fetch(url, page_type, fetched_at):
+        if "huge" in url:
+            raise LLMError("record_segments: no valid answer after one retry")
+        return web.PageResult(url, error="url_not_accessible")
+
+    monkeypatch.setattr(web, "fetch_and_segment", fake_fetch)
+    ctx = make_ctx()
+    out = asyncio.run(tools.fetch_and_segment(ctx, ["https://forum.de/huge", "https://other.de/t/1"], "x"))
+    assert out["status"] == "ok"
+    assert {p["url"]: p.get("error") for p in out["pages"]} == {
+        "https://forum.de/huge": web.SEGMENT_FAILED, "https://other.de/t/1": "url_not_accessible"}
+
+
+def test_budget_stop_still_stops_a_page_batch(live, monkeypatch):
+    from ctxpack.guards import BudgetExceeded
+
+    async def fake_fetch(url, page_type, fetched_at):
+        raise BudgetExceeded("run budget")
+
+    monkeypatch.setattr(web, "fetch_and_segment", fake_fetch)
+    with pytest.raises(BudgetExceeded):
+        asyncio.run(tools.fetch_and_segment(make_ctx(), ["https://forum.de/t/1"], "x"))
+
+
+def test_platforms_with_their_own_tool_are_never_web_searched_or_read(live, monkeypatch):
+    seen = {}
+
+    async def fake_discover(query, country, language, blocked=None):
+        seen["blocked"] = blocked
+        return web.DiscoverResult([web.FoundPage(url="https://old.reddit.com/r/x/1", page_type="forum",
+                                                 language="en", why="x"),
+                                   web.FoundPage(url="https://forum.nl/t/1", page_type="forum", language="nl",
+                                                 why="y")])
+
+    monkeypatch.setattr(web, "discover", fake_discover)
+    out = asyncio.run(tools.web_search(make_ctx(), "snacks reddit", "NL", "nl", "x"))
+    assert {"reddit.com", "quora.com", "tiktok.com"} <= set(seen["blocked"])
+    assert [p["url"] for p in out["pages"]] == ["https://forum.nl/t/1"] and out["blocked_sites_hidden"] == 1
+    fetched = []
+
+    async def fake_fetch(url, page_type, fetched_at):
+        fetched.append(url)
+        return web.PageResult(url)
+
+    monkeypatch.setattr(web, "fetch_and_segment", fake_fetch)
+    ctx = make_ctx()
+    res = asyncio.run(tools.fetch_and_segment(ctx, ["https://www.reddit.com/r/x/1", "https://quora.com/q"], "x"))
+    assert res["status"] == "nothing_to_fetch" and not fetched and ctx.calls == 0
+    assert res["not_read_here"] == {"https://www.reddit.com/r/x/1": "use search_reddit",
+                                    "https://quora.com/q": "nothing (login wall, JavaScript)"}
+
+
+def test_probe_first_platform_call_then_full_size_when_relevant(live, monkeypatch):
+    from collections import Counter
+    from ctxpack.schemas.enums import Platform
+
+    sizes = []
+
+    async def fake_run(spec, run_input, limit, timeout=None):
+        sizes.append(limit)
+        return apify.ActorResult(spec["id"], [], 0.0, "SUCCEEDED")
+
+    monkeypatch.setattr(apify, "run_actor", fake_run)
+    ctx = make_ctx()
+    ctx.mode = "standard"
+    probe = tools._modes()["collection"]["probe_items"]
+    out = asyncio.run(tools.search_reddit(ctx, "meal prep cost", 80, "test"))
+    assert "first reddit call" in out["limited"]
+    assert sizes[-1] <= probe                                               # posts share of the probe
+    ctx.unit_stats["reddit:search:x"], ctx.unit_platform["reddit:search:x"] = Counter(kept=20, relevant=2), \
+        Platform.reddit
+    out = asyncio.run(tools.search_reddit(ctx, "meal prep budget", 80, "test"))
+    assert "10% relevant" in out["limited"]                                 # low so far: still small
+    ctx.unit_stats["reddit:search:x"] = Counter(kept=20, relevant=12)
+    out = asyncio.run(tools.search_reddit(ctx, "meal prep lunch", 80, "test"))
+    assert "limited" not in out                                             # 60% relevant: full size
+    out = asyncio.run(tools.search_reddit(ctx, "r/de", 80, "test"))
+    assert "without a query" in out["limited"]                              # blind browse: always small
+
+
+def test_top_up_gets_its_own_time_after_the_agent_used_all_of_it(live, monkeypatch):
+    from types import SimpleNamespace
+    from ctxpack.collect import fallback
+
+    ctx = make_ctx()
+    ctx.started -= ctx.limits["collection_secs"] + 5                        # the agent used all its time
+    seen = {}
+
+    async def fake_top_up(state):
+        seen["seconds_left"] = state.ctx.seconds_left()
+        return True
+
+    monkeypatch.setattr(fallback, "_top_up", fake_top_up)
+    assert asyncio.run(fallback.top_up(SimpleNamespace(ctx=ctx)))
+    assert seen["seconds_left"] > 60 and ctx.extra_secs == 0                # grace during the top-up only

@@ -190,12 +190,17 @@ collection:
   site_failures_max: 2          # pages from one site that failed (bot wall, rate limit) or showed no posts
                                 # (JavaScript-only): after this many the site is skipped for the rest of the run
   web_fetch_max_content_tokens: 20000  # caps the cost of one huge page (~0.02 USD input)
+  probe_items: 20               # the first social call on a platform is a small test (2026-10-09 audit: full-size
+                                # first calls cost 60 posts at 0-11% relevant); also every subreddit browse without a query
+  probe_min_relevant_share: 0.30  # later calls on a platform get full size while at least this share is relevant
 
 # Agent loop (guide B8a, B8e). Same for every mode.
 agent:
   turn_max_tokens: 4096         # one reasoner turn (tool calls + short reasons)
   code_verdict_keep_share: 0.30 # units the agent gave no verdict: kept if at least this share is relevant
   crash_fallback_extra_secs: 90 # after a timeout without finish(), the crash fallback may use this much more time
+  top_up_extra_secs: 90         # a low-evidence top-up may run this long past the collection time (2026-10-09:
+                                # the agent uses its whole time, so without it every top-up call was refused)
   top_up_pages_per_unit: 3      # web top-up: unfetched pages per kept domain, from earlier web_search results
 
 # Job worker (guide B13) and live events (B6). Same for every mode.

@@ -49,6 +49,11 @@ HOW TO WORK
   Browse only subreddits that are entirely about the topic.
 - Keep any one source unit under 30% of the item budget; tools refuse
   calls over that share.
+- Your first call on each social platform is a small test (the result
+  says "limited"). A platform whose posts are mostly relevant gets
+  full-size calls after that; one that stays low keeps small calls -
+  aim it better (a sharper query, a topic subreddit, the market's
+  language) or move on.
 - Each tool states its typical latency. Batch independent calls in ONE
   turn (they run in parallel, at most 3 at a time) and plan around the
   time left that every result reports. Do not repeat an identical call.

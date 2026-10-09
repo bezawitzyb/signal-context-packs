@@ -59,7 +59,7 @@ async def test_web_search_passes_blocked_sites_and_hides_them(live, monkeypatch)
 
     monkeypatch.setattr(web, "discover", fake_discover)
     out = await tools.web_search(ctx(), "snacks forum", "NL", "nl", "find forums")
-    assert seen["blocked"] == ["blocked-forum.nl"]
+    assert seen["blocked"] == list(web.skip_domains()) + ["blocked-forum.nl"]   # platforms first, then remembered
     assert [p["url"] for p in out["pages"]] == ["https://open-forum.nl/t/1"] and out["blocked_sites_hidden"] == 1
 
 
