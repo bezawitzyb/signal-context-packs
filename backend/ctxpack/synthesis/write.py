@@ -333,7 +333,7 @@ def _fake_b(user: str) -> dict:
     out: dict[str, list] = {k: [] for k in ("tensions", "motivations", "objections", "competitors", "white_space",
                                             "opportunities", "hypotheses", "risks")}
     kinds = {cid: kind for cid, kind, _ in clusters}
-    for cid, kind, label in clusters:
+    for cid, kind, _label in clusters:
         item = _fake_item(cid, ev_clusters, texts)
         if item is None:
             continue

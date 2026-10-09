@@ -9,6 +9,7 @@ people bringing the brand up unasked, the awareness signal. Short-form posts are
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 from typing import Any
 
@@ -24,9 +25,15 @@ def _norm(text: str) -> str:
 
 
 def matches(name: str, aliases: list[str]) -> bool:
-    """A mention names the brand when it equals or contains one of its aliases (case and spacing ignored)."""
+    """A mention names the brand when it contains the MAIN alias as whole words ("Lidl Deluxe range"), or equals
+    another alias exactly (audit: a short alias like "Deluxe" must not match "Tesco Deluxe")."""
     n = _norm(name)
-    return any(a and _norm(a) in n for a in aliases)
+    if not aliases:
+        return False
+    main = _norm(aliases[0])
+    if main and re.search(rf"(?<!\w){re.escape(main)}(?!\w)", n):
+        return True
+    return any(a and _norm(a) == n for a in aliases[1:])
 
 
 def mentions_of(doc: Any, aliases: list[str], exclude: list[str] = ()) -> list[dict]:
@@ -39,9 +46,10 @@ def mentions_of(doc: Any, aliases: list[str], exclude: list[str] = ()) -> list[d
 
 
 def prompted(doc: Any, aliases: list[str]) -> bool:
-    """Found by a search that named the brand: the source unit (platform:query or target) contains an alias."""
-    unit = _norm(doc.source_unit or "")
-    return any(a and _norm(a) in unit for a in aliases)
+    """Found by a search that named the brand: the search words that found it (found_by) or the source unit
+    contain an alias. Web posts are stored by domain, so found_by is what tells (audit finding 3)."""
+    where = _norm(f"{doc.source_unit or ''} {getattr(doc, 'found_by', None) or ''}")
+    return any(a and _norm(a) in where for a in aliases)
 
 
 def _shares(values: list[str], keys: tuple[str, ...], key_name: str) -> list[dict]:
@@ -82,8 +90,10 @@ def stats(docs: list[Any], aliases: list[str], name: str, *, exclude: list[str] 
         "distinct_authors": len({author_key(d) for d in members}),
         "platforms": sorted({str(d.platform) for d in members}),
         "stance_mix": _shares([m.get("stance", "neutral") for m in ments], STANCES, "stance"),
-        "relation_mix": [] if is_parent else _shares([m.get("relation") for m in ments if m.get("relation")],
-                                                     RELATIONS, "relation"),
+        # the relation counts only where the post names the parent on its own (not inside the brand's name)
+    "relation_mix": [] if is_parent else _shares([m.get("relation") for d in with_parent
+                                                  for m in mentions_of(d, aliases, exclude) if m.get("relation")],
+                                                 RELATIONS, "relation"),
         "with_parent": len(with_parent),
         "aspects_praised": _aspects(ments, "positive", cfg["aspects_max"]),
         "aspects_criticised": _aspects(ments, "negative", cfg["aspects_max"]),
@@ -91,15 +101,17 @@ def stats(docs: list[Any], aliases: list[str], name: str, *, exclude: list[str] 
     return out, members
 
 
-def bases(members: list[Any], aliases: list[str]) -> dict[str, list[Any]]:
+def bases(members: list[Any], aliases: list[str], parent: list[str] = ()) -> dict[str, list[Any]]:
     """The groups of the brand's posts a finding may rest on (the writer picks one; counts come from it):
-    all, by stance, by aspect and stance, and by relation to the parent."""
+    all, by stance, by aspect and stance, and by relation to the parent (only posts naming the parent on their
+    own)."""
     groups: dict[str, list[Any]] = {"all": list(members)}
     for d in members:
+        names_parent = bool(parent) and bool(mentions_of(d, parent, aliases))
         for m in mentions_of(d, aliases):
             keys = [f"stance:{m.get('stance', 'neutral')}"]
             keys += [f"aspect:{a}:{m.get('stance', 'neutral')}" for a in aspect_words(m.get("aspect"))]
-            if m.get("relation"):
+            if m.get("relation") and names_parent:
                 keys.append(f"relation:{m['relation']}")
             for k in keys:
                 if d not in groups.setdefault(k, []):

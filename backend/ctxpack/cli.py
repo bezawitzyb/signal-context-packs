@@ -459,7 +459,9 @@ def _execute(run_id: str, brief: str, *, no_apify: bool = False, apify_max: floa
         signal_loop.add_signal_handler(signal.SIGINT, lambda: (
             console.print("[yellow]Stopping - packaging what was collected...[/yellow]"),
             orchestrator.request_stop(run_id)))
-        task = asyncio.create_task(orchestrator.run_pipeline(run_id, collect=collect))
+        from ctxpack import worker  # the worker's job runner: same heartbeat, so the live service never treats
+        #                             a CLI run as crashed and takes it over (audit finding 1)
+        task = asyncio.create_task(worker.run_job(run_id, collect=collect))
         last = 0
         while True:
             done = task.done()
@@ -674,7 +676,7 @@ def cluster(
         spent = t.spent_usd - before
     analysis = compute_run(run.id)
 
-    console.print(f"\n[bold]CLUSTERS[/bold] (verified of proposed; rejected by the check)")
+    console.print("\n[bold]CLUSTERS[/bold] (verified of proposed; rejected by the check)")
     flagged = []
     for c in db.get_clusters(run.id):
         st = out.by_cluster.get(c.id, {})
@@ -998,7 +1000,7 @@ def feature(pack_id: str = typer.Argument(..., help="A finished pack to publish 
         paths = write_featured(p)
     except ValueError as exc:
         console.print(f"{BAD} {exc}", highlight=False, markup=False)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
     db.set_featured(pack_id)
     console.print(f"{OK} privacy check passed; featured {pack_id}")
     if replaces and replaces != pack_id:

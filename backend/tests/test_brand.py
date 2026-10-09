@@ -50,7 +50,7 @@ def test_brand_numbers_are_computed_in_code():
 
 def test_bases_group_the_brands_posts_by_stance_aspect_and_relation():
     _, members = an.stats(DOCS, ["Lidl Deluxe", "Deluxe"], "Lidl Deluxe", parent=["Lidl"])
-    groups = an.bases(members, ["Lidl Deluxe", "Deluxe"])
+    groups = an.bases(members, ["Lidl Deluxe", "Deluxe"], ["Lidl"])
     assert [d.id for d in groups["all"]] == ["d1", "d2", "d3"]
     assert [d.id for d in groups["aspect:price:negative"]] == ["d2"]
     assert [d.id for d in groups["relation:same_as_parent"]] == ["d2"]
@@ -129,3 +129,23 @@ def test_findings_on_an_unfitting_basis_count_only_the_cited_posts(fake, monkeyp
     section, _, _ = asyncio.run(brand.build(_run(["brand_perception"]), SimpleNamespace(time_window_days=180),
                                             DOCS, evidence=[]))
     assert section["findings"][0]["counts"]["matching"] == 1                     # d2 only, not all 3 brand posts
+
+
+def test_a_web_post_found_by_searching_the_brand_is_prompted():
+    """Audit finding 3: web posts are stored by domain; the search words that found them decide."""
+    page = doc(9, "Deluxe is fine", [m("Lidl Deluxe")], unit="web:mumsnet.com")
+    assert not an.prompted(page, ["Lidl Deluxe"])
+    page.found_by = "lidl deluxe vs aldi specially selected mumsnet"
+    assert an.prompted(page, ["Lidl Deluxe"]) and an.prompted(page, ["Lidl"])
+
+
+def test_short_aliases_match_only_exactly_and_the_relation_needs_the_parent_named_on_its_own():
+    """Audit finding 9: "Deluxe" matched "Tesco Deluxe"; the relation to the parent was counted because the brand's
+    own name contains it ("Lidl Deluxe")."""
+    aliases = ["Lidl Deluxe", "Deluxe"]
+    assert an.matches("Lidl Deluxe range", aliases) and an.matches("deluxe", aliases)
+    assert not an.matches("Tesco Deluxe", aliases) and not an.matches("Lidl Deluxes", aliases)
+    only_name = doc(10, "Lidl Deluxe scones", [m("Lidl Deluxe", "positive", "taste", "part_of_parent")])
+    assert "relation:part_of_parent" not in an.bases([only_name], aliases, ["Lidl"])
+    own, _ = an.stats([only_name], aliases, "Lidl Deluxe", parent=["Lidl"])
+    assert own["relation_mix"] == [] and own["with_parent"] == 0

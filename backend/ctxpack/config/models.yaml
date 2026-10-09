@@ -56,3 +56,7 @@ client:
   max_retries: 4                # SDK retries 408/409/429/5xx + connection errors with exponential backoff
   timeout_secs: 300             # per request; web fetch turns can be slow
   cost_event_step_usd: 0.01     # emit a "cost" event when the run total grows by at least this
+  reserve_output_share: 0.25    # audit: a call reserves its input + this share of max_tokens before it starts;
+                                # a call whose reservation does not fit the remaining budget is refused
+  chars_per_token: 3.5          # rough input estimate for the reservation (never billed on it)
+  max_tokens_cap: 32000         # a cut-off answer is retried once with twice the room, up to this

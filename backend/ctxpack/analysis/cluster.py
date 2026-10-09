@@ -251,7 +251,7 @@ def _fake_clusters(user: str) -> dict:
             answer["lexicon"] = [{"term": term, "meaning": "a fake meaning", "language": "nl",
                                   "member_ids": [alias] + shorts}]
             break
-    for alias, _, rest in lines:
+    for _alias, _, rest in lines:
         if m := re.search(r"brands: ([^(|]+) \(", rest):
             name = m.group(1).strip()
             answer["competitors"] = [{"name": name, "aliases": [], "member_ids": [

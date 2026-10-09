@@ -79,12 +79,17 @@ def test_apify_tool_contract(offline, tool, args):
     assert ctx.calls == 1 and ctx.apify_usd == 0.0
 
 
+def test_apify_posts_record_the_search_that_found_them(offline):
+    ctx, stored = make_ctx()
+    run(tools.search_reddit(ctx, "r/MealPrepSunday", 10, "test", query="budget"))
+    assert stored and {d.found_by for d in stored} == {"r/MealPrepSunday budget"}
+
+
 def test_chained_comments_are_collected(offline):
     ctx, stored = make_ctx()
     summary = run(tools.search_tiktok(ctx, "#mealprep", 20, "test"))
     assert summary["comments_actor"] == "clockworks/tiktok-comments-scraper"
     posts = json.loads(apify.fixture_path("clockworks/tiktok-scraper").read_text(encoding="utf-8"))
-    video_urls = {p["webVideoUrl"] for p in posts}
     assert summary["collected"] > len([p for p in posts if p.get("text")])   # comments came on top
 
 
@@ -97,6 +102,8 @@ def test_web_contract(offline):
     check_contract(summary, stored)
     assert summary["pages"][0]["not_exact"] == 1          # the invented segment is thrown away
     assert len({d.author_hash for d in stored}) == 2       # two different authors
+    assert set(ctx.page_queries.values()) == {"snacks"} and len(ctx.page_queries) == len(found["pages"])
+    assert {d.found_by for d in stored} == {None}           # audit 3: fetched without a search -> none recorded
     texts = {d.text for d in stored}
     assert "Bij ons is het altijd een stroopwafel, de kinderen willen niks anders." in texts  # page spelling
     assert all(d.fragment_anchor_start for d in stored)
@@ -326,3 +333,21 @@ def test_finish_is_refused_until_user_competitors_are_searched():
     ctx2.calls = ctx2.limits["max_tool_calls"]                        # no calls left: finish, with a gap
     assert asyncio.run(t.finish(ctx2, "done", [], []))["status"] == "ok"
     assert ctx2.finished["gaps"] == ["Not searched (limits reached): Factor, named by the user"]
+
+
+def test_a_page_found_by_a_search_records_that_query(offline, monkeypatch):
+    """Audit finding 3: web posts are stored by domain, so the search that found the page is recorded."""
+    from ctxpack.collect.cleaning import make_draft
+
+    ctx, stored = make_ctx(topic="snacks na school", languages=("nl",))
+    found = run(tools.web_search(ctx, "snacks", "NL", "nl", "test"))
+    url = found["pages"][0]["url"]
+
+    async def fake_fetch(u, page_type, fetched_at):
+        d = make_draft(platform=tools.Platform.web_forum, source_unit="web:x", url=u, text="Ik eet graag snacks na school",
+                       author="a", date_raw="2026-09-01", fetched_at=fetched_at, salt="s")
+        return web.PageResult(u, [d])
+
+    monkeypatch.setattr(web, "fetch_and_segment", fake_fetch)
+    run(tools.fetch_and_segment(ctx, [url], "test"))
+    assert stored and {d.found_by for d in stored} == {"snacks"}

@@ -116,7 +116,7 @@ best, with links to related findings elsewhere.
 - Only public posts. Author names are hashed (salted) in the function that receives them and are
   never stored, logged or sent to a model. Emails, phone numbers, handles and profile links are redacted.
 - Scraped text is treated as untrusted data and is wrapped as such in every prompt.
-- Collected posts expire after 30 days. Packs keep at most short excerpts (280 characters) with links.
+- Collected posts expire after 30 days (checked every hour while the service runs, and at every start). Packs keep at most short excerpts (280 characters) with links.
 - Quoted excerpts are for internal research and briefs only, **not for ads or other public material** -
   every pack says so. Exports note that the analysis is AI-assisted and that compliance flags are not legal advice.
 - The repo is public and contains no keys: gitleaks runs on every commit, and `demo-check` also
@@ -164,6 +164,8 @@ One **Render Free** web service (Docker, one worker, 512 MB) plus **Neon Free** 
 card anywhere. Runs are jobs in the database: no work happens inside an HTTP request, every stage
 saves to Neon, and live updates stream from the events table, so a restart loses nothing. A GitHub
 Actions job pings `/ping` to keep the service awake, and the static mirror is published to GitHub Pages.
+CI runs the lint, all tests, the build with the end-to-end tests and a secrets scan on every push (no secrets
+needed: tests use recorded data). Each research run works on its own thread, so the site stays responsive.
 Only Anthropic and Apify cost money; a daily spend cap stops new runs when it is reached.
 More in [docs/DEPLOY.md](docs/DEPLOY.md).
 
@@ -210,7 +212,7 @@ More in [docs/DEPLOY.md](docs/DEPLOY.md).
                                    v
                  Neon Postgres (runs, events, documents, packs)
 
- GitHub Actions: keep-alive ping, static mirror -> GitHub Pages
+ GitHub Actions: CI (lint, tests, e2e, secrets scan), keep-alive ping, static mirror -> GitHub Pages
 ```
 
 ## Folder map

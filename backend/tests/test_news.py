@@ -1,9 +1,7 @@
 """Change V7: news hooks and timing - nothing without a URL, never invented; fixture timing chips. No money."""
 
-import asyncio
 import copy
 from datetime import date, timedelta
-from types import SimpleNamespace
 
 import pytest
 

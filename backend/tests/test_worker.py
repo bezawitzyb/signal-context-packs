@@ -321,3 +321,57 @@ async def test_fresh_heartbeat_is_left_alone(offline):
     db.claim_next_run()
     assert worker.handle_interrupted() == {"resumed": [], "failed": []}
     assert db.get_run(run_id).status == RunStatus.running
+
+
+async def test_the_pipeline_never_blocks_the_web_apps_event_loop(offline):
+    """Audit finding 2: a run's blocking work (database calls, clustering) happens on its own loop in a worker
+    thread, so the web app, live updates, MCP and /ping keep answering meanwhile."""
+    import threading
+    import time
+
+    from ctxpack import db as _db
+
+    run_id = await approved_run()
+    claimed = _db.claim_next_run()
+    seen: dict[str, object] = {}
+
+    async def blocking_collect(rid: str) -> None:
+        seen["thread"] = threading.current_thread().name
+        time.sleep(0.6)                                   # stands in for slow, blocking work
+
+    ticks = 0
+
+    async def web_app() -> None:
+        nonlocal ticks
+        for _ in range(20):
+            await asyncio.sleep(0.02)
+            ticks += 1
+
+    await asyncio.gather(worker.run_job(claimed.id, collect=blocking_collect), web_app())
+    assert claimed.id == run_id and seen["thread"] != threading.current_thread().name
+    assert ticks == 20                                    # the main loop kept running during the 0.6 s block
+
+
+def test_cli_runs_go_through_the_worker_job_and_its_heartbeat():
+    """Audit finding 1: a CLI run against the live database sends heartbeats, so the deployed worker never marks
+    it interrupted and takes it over (seen in the V12 paid run)."""
+    import inspect
+
+    from ctxpack import cli
+
+    source = inspect.getsource(cli._execute)
+    assert "worker.run_job(run_id" in source and "orchestrator.run_pipeline(" not in source
+
+
+async def test_the_worker_deletes_expired_posts_without_a_restart(offline, monkeypatch):
+    """Audit finding 5: the 30-day expiry ran only at app start; the keep-alive ping can keep the app up for weeks."""
+    calls = []
+    monkeypatch.setattr(db, "delete_expired_documents", lambda: calls.append(1) or 0)
+    stop = asyncio.Event()
+
+    async def stop_soon():
+        await asyncio.sleep(0.3)
+        stop.set()
+
+    await asyncio.gather(worker.worker_loop(stop), stop_soon())
+    assert calls                                          # ran in the loop, not only at startup

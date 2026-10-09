@@ -238,11 +238,13 @@ class Draft:
     short_form: bool = False
     fragment_anchor_start: str | None = None  # from the ORIGINAL text, PII-free (DH12)
     fragment_anchor_end: str | None = None
+    found_by: str | None = None  # the search words that found it (set by the tool, never cached across runs)
 
     def to_cache(self) -> dict[str, Any]:
         data = asdict(self)
         data["platform"] = str(self.platform)
         data["fetched_at"] = self.fetched_at.isoformat()
+        data.pop("found_by", None)
         return data
 
     @classmethod
@@ -651,7 +653,7 @@ async def clean(
         stats["short_form"] += d.short_form
         stats["undated"] += posted is None
         documents.append(Document(
-            id=key, run_id=run_id, platform=d.platform, source_unit=d.source_unit,
+            id=key, run_id=run_id, platform=d.platform, source_unit=d.source_unit, found_by=d.found_by,
             url=d.url, permalink=d.permalink, community=d.community, thread_id=d.thread_id,
             text=d.text, language=verdict.language if verdict else None,
             posted_at=posted, date_precision=precision,

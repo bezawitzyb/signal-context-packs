@@ -79,6 +79,7 @@ class RunContext:
     call_keys: set = field(default_factory=set)
     fetched_urls: set = field(default_factory=set)
     page_types: dict[str, str] = field(default_factory=dict)
+    page_queries: dict[str, str] = field(default_factory=dict)          # url -> the web search that found it
     queries: list[str] = field(default_factory=list)
     dropped_units: set = field(default_factory=set)
     tried_units: set = field(default_factory=set)        # every unit a collection call was made for
@@ -375,6 +376,8 @@ async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platfor
     try:
         drafts, notes = await _collect_apify(ctx, tool, source, platform, unit, target, limit, search_inputs,
                                              with_comments)
+        for d in drafts:
+            d.found_by = target
     finally:
         ctx.pending_items -= limit
         ctx.pending_unit_items[unit] -= limit
@@ -734,6 +737,7 @@ async def web_search(ctx: RunContext, query: str, country: str, language: str, r
             hidden += 1
             continue
         ctx.page_types[p.url] = p.page_type
+        ctx.page_queries.setdefault(p.url, query)
         pages.append({"url": p.url, "page_type": p.page_type, "language": p.language, "why": p.why[:160],
                       "already_fetched": p.url in ctx.fetched_urls})
     return {"status": "ok", "tool": "web_search", "pages": pages, "searches": res.searches,
@@ -789,6 +793,8 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
         ctx.llm_usd += r.usd
         unit = web_unit(r.url)
         room, _ = _item_limit(ctx, unit, len(r.drafts) or 1)
+        for d in r.drafts[:room]:
+            d.found_by = ctx.page_queries.get(r.url)
         drafts += r.drafts[:room]
         pages.append({"url": r.url, "posts": len(r.drafts), "not_exact": r.segments_not_exact,
                       **({"error": r.error} if r.error else {})})

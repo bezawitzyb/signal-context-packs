@@ -117,7 +117,9 @@ Read the relevant step before working. Do only that step.
 - Scripts: cd backend && uv run python -m scripts.demo_agent [--pack ID];
   uv run python -m scripts.build_mirror (static mirror into mirror/, not committed)
 - Keyless local demo: USE_FIXTURES=true LLM_FAKE=true ./start.sh (local SQLite, no keys)
-- Tests: cd backend && uv run pytest
+- Tests: cd backend && uv run pytest; lint: cd backend && uvx ruff check ctxpack tests scripts
+- CI (.github/workflows/ci.yml, no secrets): lint + pytest, type check + build + e2e, gitleaks on the
+  whole history - on every push and pull request
 - Local app: ./start.sh (builds frontend/, then serves it and the API on :7860)
 - Frontend: cd frontend && npm run dev (:5173, /api proxied to :7860);
   npm run build; npm run types (lib/types.ts from the JSON schema);

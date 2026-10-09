@@ -27,6 +27,8 @@ class Document(SQLModel):
     source_unit: str = Field(
         description='Source unit, e.g. "reddit:r/mealprep" or "web:forum.example.nl".'
     )
+    found_by: str | None = Field(default=None, description="The search words that found it (a web page's query, "
+                                 "an Apify search target); tells prompted from unprompted brand mentions (V12).")
     url: str = Field(description="Page or post URL.")
     permalink: str | None = Field(default=None, description="Comment permalink when available.")
     community: str | None = Field(default=None, description="Subreddit, hashtag, channel or domain.")

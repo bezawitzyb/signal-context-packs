@@ -41,3 +41,18 @@ dev = [
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
 ]
+
+# Lint (audit, 2026-10-09): bugs and unused code only; style is left to review. Run in CI.
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["F", "E9", "B"]
+ignore = [
+    "B008",  # typer.Option(...) in defaults is how typer works
+    "B905",  # zip() without strict=: lengths are equal by construction; strict would only add a crash path
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["F811"]  # pytest fixtures are imported and then named as test parameters

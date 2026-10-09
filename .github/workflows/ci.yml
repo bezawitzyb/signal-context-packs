@@ -1,0 +1,63 @@
+# CI (audit, 2026-10-09): every push and pull request runs the checks that otherwise only ran on one laptop.
+# Needs NO secrets: tests use recorded data and a fake model (they never spend money), the e2e server runs in
+# fake mode with a throwaway SQLite database and a random run key. Secrets stay in Render only (CLAUDE.md).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Lint (bugs and unused code)
+        run: uvx ruff check ctxpack tests scripts
+      - name: Tests (no network, no money)
+        run: uv run pytest -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend packages
+        run: npm ci
+        working-directory: frontend
+      - name: Type check, build and end-to-end tests (fake mode, installed Chrome)
+        run: npm run e2e
+        working-directory: frontend
+
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan the whole history for secrets (gitleaks, .gitleaks.toml)
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            | tar -xz gitleaks
+          ./gitleaks git --config .gitleaks.toml --redact --verbose .

@@ -117,7 +117,7 @@ async def build(run: Any, interp: Any, docs: list[Any], evidence: list[dict], th
         notes.append(f"{own['mentions']} post(s) named {brands[0]}: too few mentions to judge how people see it.")
         return {"brands": rows, "findings": [], "note": " ".join(notes)}, [], 0.0
 
-    groups = an.bases(members, brands)
+    groups = an.bases(members, brands, parents)
     ranked = sorted(members, key=lambda d: -(d.engagement_percentile or 0))[:cfg["member_texts_max"]]
     try:
         res = await structured("reasoner", load_prompt("brand_perception"), _user(rows, groups, ranked, chars),

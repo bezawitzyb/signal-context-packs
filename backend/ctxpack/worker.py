@@ -95,10 +95,13 @@ async def _heartbeat(run_id: str) -> None:
 
 
 async def run_job(run_id: str, **pipeline: Any) -> RunStatus:
-    """Run one claimed job with a heartbeat. `pipeline` overrides orchestrator stages (tests)."""
+    """Run one claimed job with a heartbeat. `pipeline` overrides orchestrator stages (tests).
+
+    The pipeline runs on its own event loop in a worker thread: its database calls and CPU work (clustering,
+    packaging) never block the web app, live updates, MCP or /ping, which share the one uvicorn worker."""
     beat = asyncio.create_task(_heartbeat(run_id))
     try:
-        return await orchestrator.run_pipeline(run_id, **pipeline)
+        return await asyncio.to_thread(asyncio.run, orchestrator.run_pipeline(run_id, **pipeline))
     finally:
         beat.cancel()
 
@@ -118,12 +121,16 @@ async def worker_loop(stop: asyncio.Event | None = None, **pipeline: Any) -> Non
     """Started with the app. One job at a time, oldest first, until `stop` is set."""
     cfg = _cfg()
     stop = stop or asyncio.Event()
-    next_check = 0.0
+    next_check = next_retention = 0.0
     while not stop.is_set():
         try:
             if time.monotonic() >= next_check:
                 await asyncio.to_thread(handle_interrupted)
                 next_check = time.monotonic() + cfg["interrupted_check_secs"]
+            if time.monotonic() >= next_retention:  # posts expire after 30 days even if the app never restarts
+                if deleted := await asyncio.to_thread(db.delete_expired_documents):
+                    log.info("retention: %d expired documents deleted", deleted)
+                next_retention = time.monotonic() + cfg["retention_check_secs"]
             if await run_next(**pipeline):
                 continue
         except Exception as exc:  # keep the loop alive; the database may be waking up

@@ -19,7 +19,6 @@ from ctxpack import db, mcp_server, worker
 from ctxpack.api import service
 from ctxpack.api.main import app
 from ctxpack.config import get_settings
-from ctxpack.schemas.enums import RunStatus
 from ctxpack.schemas.pack import ContextPack
 from tests.test_cluster import fake  # noqa: F401  (fixture)
 from tests.test_worker import offline  # noqa: F401  (fixture)
@@ -523,3 +522,12 @@ def test_run_again_inputs_keep_the_answers(api):
     again = client.post("/api/v1/runs", json={"brief": "snacks", "intake": inputs["intake"]}, headers=KEY).json()
     assert again["status"] == "awaiting_approval"                # answers restored: not asked again
     assert client.get("/api/v1/packs/pk_missing/inputs").status_code == 404
+
+
+def test_security_headers_on_pages_and_api_but_no_policy_on_the_api_docs(api):
+    """Audit (low): no Content-Security-Policy or framing protection before."""
+    r = client.get("/ping")
+    assert "default-src 'self'" in r.headers["content-security-policy"] and r.headers["x-frame-options"] == "DENY"
+    assert r.headers["x-content-type-options"] == "nosniff"
+    docs = client.get("/docs")
+    assert "content-security-policy" not in docs.headers and docs.headers["x-frame-options"] == "DENY"

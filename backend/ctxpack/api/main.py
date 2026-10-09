@@ -96,6 +96,25 @@ async def friendly_error(request, exc: Exception) -> JSONResponse:
                   f"also in the read-only mirror: {MIRROR_URL}"})
 
 
+# Audit (2026-10-09): browser security headers. The app loads only its own files; the interactive API docs
+# (/docs, /redoc) load FastAPI's CDN scripts, so they get the same headers without the content policy.
+CSP = ("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
+       "font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; "
+       "frame-ancestors 'none'")
+SECURITY_HEADERS = {"X-Content-Type-Options": "nosniff", "Referrer-Policy": "strict-origin-when-cross-origin",
+                    "X-Frame-Options": "DENY"}
+
+
+@app.middleware("http")
+async def security_headers(request, call_next):
+    response = await call_next(request)
+    for name, value in SECURITY_HEADERS.items():
+        response.headers.setdefault(name, value)
+    if not request.url.path.startswith(("/docs", "/redoc")):
+        response.headers.setdefault("Content-Security-Policy", CSP)
+    return response
+
+
 @app.middleware("http")
 async def mcp_without_slash(request, call_next):
     """/mcp and /mcp/ are the same endpoint (MCP clients POST to /mcp and do not follow redirects)."""

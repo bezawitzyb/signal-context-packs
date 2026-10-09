@@ -20,14 +20,15 @@
 from __future__ import annotations
 
 import asyncio
+import weakref
 import copy
 import json
+import re
 import logging
 import time
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
-from functools import lru_cache
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Iterator, Sequence, TypeVar
 
@@ -46,6 +47,7 @@ FAKE_DIR = BACKEND_DIR / "tests" / "fixtures" / "llm"
 
 _OPEN = "<untrusted_user_content"
 _CLOSE = "</untrusted_user_content>"
+_TAG_LIKE = re.compile(r"<\s*/?\s*untrusted_user_content", re.IGNORECASE)
 
 T = TypeVar("T")
 R = TypeVar("R")
@@ -86,7 +88,7 @@ def untrusted(item_id: str, text: str) -> str:
     Tag look-alikes inside the text are neutralised, so a post cannot
     close the wrapper early and smuggle instructions outside it.
     """
-    safe = text.replace(_CLOSE, "</untrusted_user_content_>").replace(_OPEN, "<untrusted_user_content_")
+    safe = _TAG_LIKE.sub(lambda m: m.group(0) + "_", text)  # any case or spacing (audit): never closes the wrapper
     safe_id = "".join(ch for ch in item_id if ch.isalnum() or ch in "-_")
     return f'<untrusted_user_content id="{safe_id}">\n{safe}\n{_CLOSE}'
 
@@ -123,12 +125,20 @@ class Tracker:
     # "role/name" -> {calls, usd, input_tokens, output_tokens, cache_read_tokens, cache_write_tokens, web_searches}
     by_call: dict[str, dict[str, float]] = field(default_factory=dict)
     _last_event_usd: float = 0.0
+    reserved_usd: float = 0.0              # calls in flight (audit: parallel calls see each other)
     _lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
-    def check(self) -> None:
-        if self.llm_limit_usd is not None and self.budget_spent_usd >= self.llm_limit_usd:
-            part = "analysis" if self.analysis else "collection"
+    def check(self, reserve_usd: float = 0.0) -> None:
+        """Refuse a call when the budget is spent, or when its reservation (with the calls already in flight)
+        would not fit what is left. A call that fits alone is never refused just for being the first."""
+        if self.llm_limit_usd is None:
+            return
+        part = "analysis" if self.analysis else "collection"
+        if self.budget_spent_usd >= self.llm_limit_usd:
             raise BudgetExceeded(f"run {part} LLM budget of ${self.llm_limit_usd:.2f} spent")
+        if self.budget_spent_usd + self.reserved_usd + reserve_usd > self.llm_limit_usd:
+            raise BudgetExceeded(f"run {part} LLM budget of ${self.llm_limit_usd:.2f} would be exceeded by "
+                                 f"this call (${reserve_usd:.2f} reserved)")
 
 
 _tracker: ContextVar[Tracker | None] = ContextVar("llm_tracker", default=None)
@@ -168,12 +178,27 @@ def tracking(run_id: str | None = None, llm_limit_usd: float | None = None,
             db.set_cost_breakdown(run_id, "anthropic", tracker.by_call)
 
 
-async def _before_paid_call() -> None:
+def reservation_usd(model: str, kwargs: dict[str, Any]) -> float:
+    """A call's likely cost before it is made: its input (from its size) plus a share of its maximum answer."""
+    cfg = _models()["client"]
+    size = len(json.dumps({k: kwargs.get(k) for k in ("system", "messages", "tools")}, default=str))
+    return cost_usd(model, int(size / cfg["chars_per_token"]),
+                    int(kwargs.get("max_tokens", 4096) * cfg["reserve_output_share"]))
+
+
+async def _before_paid_call(reserve_usd: float = 0.0) -> None:
     tracker = _tracker.get()
     if tracker is None:
         return
-    tracker.check()
-    await asyncio.to_thread(check_daily_cap)
+    async with tracker._lock:  # check and reserve together: parallel calls cannot all pass the same check
+        tracker.check(reserve_usd)
+        tracker.reserved_usd += reserve_usd
+    try:
+        await asyncio.to_thread(check_daily_cap)
+    except BaseException:
+        async with tracker._lock:
+            tracker.reserved_usd -= reserve_usd
+        raise
 
 
 async def _after_paid_call(role: str, name: str, model: str, usage: Any, seconds: float) -> float:
@@ -230,14 +255,23 @@ def _emit_cost(tracker: Tracker) -> None:
 # --------------------------------------------------------------------------
 
 
-@lru_cache
+_CLIENTS: "weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, Any]" = weakref.WeakKeyDictionary()
+
+
 def _client():
+    """One client per event loop: its connection pool belongs to the loop that made it (each research run has
+    its own loop in a worker thread, the web app another)."""
     import anthropic
 
-    key = get_settings().anthropic_api_key
-    cfg = _models()["client"]
-    return anthropic.AsyncAnthropic(api_key=key.get_secret_value() if key else None,
-                                    max_retries=cfg["max_retries"], timeout=cfg["timeout_secs"])
+    loop = asyncio.get_running_loop()
+    client = _CLIENTS.get(loop)
+    if client is None:
+        key = get_settings().anthropic_api_key
+        cfg = _models()["client"]
+        client = _CLIENTS[loop] = anthropic.AsyncAnthropic(api_key=key.get_secret_value() if key else None,
+                                                           max_retries=cfg["max_retries"],
+                                                           timeout=cfg["timeout_secs"])
+    return client
 
 
 def server_tool(name: str, model: str, **options: Any) -> dict[str, Any]:
@@ -252,11 +286,17 @@ def _cached_system(system: str) -> list[dict[str, Any]]:
 
 
 async def _create(role: str, name: str, **kwargs: Any) -> tuple[Any, float]:
-    """One paid request: limits first, then the call, then cost accounting."""
-    await _before_paid_call()
-    started = time.monotonic()
-    resp = await _client().messages.create(**kwargs)
-    usd = await _after_paid_call(role, name, kwargs["model"], resp.usage, time.monotonic() - started)
+    """One paid request: limits first (with a reservation), then the call, then cost accounting."""
+    reserve = reservation_usd(kwargs["model"], kwargs)
+    await _before_paid_call(reserve)
+    try:
+        started = time.monotonic()
+        resp = await _client().messages.create(**kwargs)
+        usd = await _after_paid_call(role, name, kwargs["model"], resp.usage, time.monotonic() - started)
+    finally:
+        if (tracker := _tracker.get()) is not None:
+            async with tracker._lock:
+                tracker.reserved_usd -= reserve
     return resp, usd
 
 
@@ -341,6 +381,8 @@ async def structured(
             messages.append({"role": "assistant", "content": resp.content})
             continue
         attempts += 1
+        if resp.stop_reason == "max_tokens":  # cut off: the retry gets twice the room, or it fails the same way
+            max_tokens = min(max_tokens * 2, _models()["client"]["max_tokens_cap"])
 
         block = next((b for b in resp.content if b.type == "tool_use" and b.name == tool_name), None)
         if block is None and no_tool_answer is not None and (answer := no_tool_answer(result.blocks)) is not None:

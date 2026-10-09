@@ -33,5 +33,9 @@ COPY --from=frontend /frontend/dist /app/frontend/dist
 
 ENV PATH="/app/backend/.venv/bin:$PATH"
 
+# Not root (audit): the app only writes to /app/data (DATA_DIR default ../data); the code stays read-only.
+RUN useradd --create-home --uid 10001 app && mkdir -p /app/data && chown -R app:app /app/data
+USER app
+
 # ONE uvicorn worker on Render's $PORT (7860 if unset).
 CMD ["sh", "-c", "exec uvicorn ctxpack.api.main:app --host 0.0.0.0 --port ${PORT:-7860} --workers 1"]
