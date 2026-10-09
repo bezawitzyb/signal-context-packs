@@ -32,6 +32,7 @@ class BriefContext:
 
     topic: str
     market: str = "global"
+    countries: list[str] = field(default_factory=list)                 # every market country, top weight first
     languages: list[str] = field(default_factory=lambda: ["en"])
     audience: str = ""
     research_questions: dict[str, str] = field(default_factory=dict)  # id -> question

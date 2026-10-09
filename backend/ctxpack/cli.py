@@ -166,7 +166,8 @@ def tool(
         raise typer.Exit(1)
     stored: list = []
     ctx = t.RunContext(run_id="cli", mode=mode, window_days=window, record=record,
-                       brief=BriefContext(topic=topic or " ".join(targets), market=market, languages=[language]),
+                       brief=BriefContext(topic=topic or " ".join(targets), market=market, languages=[language],
+                                          countries=[market.upper()] if len(market) == 2 else []),
                        store=lambda docs, replaced: stored.extend(docs))
     args: dict = {"reason": "manual CLI test"}
     if name in ("search_reddit", "search_tiktok", "search_x"):

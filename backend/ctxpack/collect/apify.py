@@ -49,13 +49,17 @@ def fixture_path(actor_id: str) -> Path:
     return FIXTURE_DIR / f"{actor_id.replace('/', '__')}.json"
 
 
-def expected_cost(spec: dict[str, Any], items: int, margin: bool = True) -> float:
+def expected_cost(spec: dict[str, Any], items: int, margin: bool = True,
+                  run_input: dict[str, Any] | None = None) -> float:
     """Start fees + per-item price from the catalog, plus the overshoot margin (budget checks only:
-    the cost of what actually came back is recorded without it)."""
+    the cost of what actually came back is recorded without it). Paid add-ons (addons_per_item) count
+    when run_input sends them; without a run_input every add-on counts (a safe budget check)."""
     price = spec.get("price_usd") or {}
     per_item = next((v for k, v in price.items() if k in (
         "result", "dataset_item", "result_item", "comment")), 0.0) or 0.0
     per_item += sum(v for k, v in price.items() if k.endswith("_per_item"))  # e.g. charged date filters
+    per_item += sum(v for k, v in (spec.get("addons_per_item") or {}).items()
+                    if run_input is None or run_input.get(k))
     start = sum(v for k, v in price.items() if ("start" in k or k == "init") and not k.endswith("_per_gb"))
     if "actor_start_per_gb" in price:
         start += price["actor_start_per_gb"] * spec.get("memory_mbytes", 1024) / 1024
@@ -92,7 +96,7 @@ async def run_actor(spec: dict[str, Any], run_input: dict[str, Any], limit: int,
 
     token = get_settings().apify_api_token
     client = ApifyClientAsync(token.get_secret_value() if token else None)
-    ceiling = max(expected_cost(spec, limit), spec.get("min_max_charge_usd", 0.0))
+    ceiling = max(expected_cost(spec, limit, run_input=run_input), spec.get("min_max_charge_usd", 0.0))
     try:
         run = await client.actor(actor_id).call(
             run_input=run_input,
@@ -116,7 +120,7 @@ async def run_actor(spec: dict[str, Any], run_input: dict[str, Any], limit: int,
         items = [i for i in items if isinstance(i, dict)][:limit]
     except Exception as exc:  # the run finished (and was billed) but its items could not be read
         reported = float(run.get("usageTotalUsd") or 0.0)
-        return ActorResult(actor_id, usd=round(max(reported, expected_cost(spec, limit, margin=False)), 4),
+        return ActorResult(actor_id, usd=round(max(reported, expected_cost(spec, limit, False, run_input)), 4),
                            status="ERROR", seconds=time.monotonic() - started,
                            error=f"reading items failed: {type(exc).__name__}: {str(exc)[:200]}")
     try:
@@ -124,7 +128,7 @@ async def run_actor(spec: dict[str, Any], run_input: dict[str, Any], limit: int,
     except Exception:  # the cost is re-read only for accuracy: fall back to what the run reported
         settled = run
     reported = float(settled.get("usageTotalUsd") or 0.0)
-    usd = max(reported, expected_cost(spec, len(items), margin=False) if items else reported)
+    usd = max(reported, expected_cost(spec, len(items), False, run_input) if items else reported)
     return ActorResult(actor_id, items, round(usd, 4), run.get("status", "?"), time.monotonic() - started)
 
 

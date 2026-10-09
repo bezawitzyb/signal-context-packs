@@ -92,13 +92,16 @@ sources:
     audience: >-
       Under-35 heavy, trend and slang driven; captions are short, the
       real voice is in the comments (chained actor).
-    language_country_inputs: proxyCountryCode (extra 0.0013 per run)
+    language_country_inputs: >-
+      proxyCountryCode on the primary (add-on "scrape as in country", 0.0013 per video, checked
+      2026-10-09); region on the fallback (defaults to GB when not given). Set for single-country briefs.
     actor:
       id: clockworks/tiktok-scraper
       memory_mbytes: 4096   # actor default
       smoke: ok 2026-10-04 (5/5 text, date, url, likes)
       min_max_charge_usd: 0.50  # Apify refuses a lower per-run cap; max_items bounds real cost
       price_usd: {result: 0.0037, actor_start: 0.001, date_filter_per_item: 0.0013}
+      addons_per_item: {proxyCountryCode: 0.0013}   # billed only when that input is sent
       date_filter: >-
         hashtag pages return all-time top videos (2021) and ignore
         oldestPostDateUnified; use video search (searchSection /video) with
@@ -171,7 +174,9 @@ sources:
     audience: >-
       Broad ages; reviews, tutorials and comparisons. Video text is
       creator voice; the audience voice is in the comments (chained).
-    language_country_inputs: none on the primary (query in the target language)
+    language_country_inputs: >-
+      none on the primary (query in the target language); the fallback takes regionCode and
+      relevanceLanguage, so a non-English single-country brief tries the fallback FIRST (2026-10-09)
     actor:
       id: streamers/youtube-scraper
       memory_mbytes: 1024   # actor default

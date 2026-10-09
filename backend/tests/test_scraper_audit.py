@@ -205,3 +205,50 @@ def test_cache_is_per_window_and_old_files_are_deleted(live, monkeypatch):
     past = time.time() - 25 * 3600
     os.utime(old, (past, past))
     assert apify.purge_cache(folder) == 1 and not old.exists() and list(folder.glob("*.json"))
+
+
+# --- local results: TikTok and YouTube search in the brief's country (2026-10-09) -----------------
+
+def local_ctx(countries=("NL",), languages=("nl", "en")):
+    ctx = make_ctx()
+    ctx.brief.countries, ctx.brief.languages = list(countries), list(languages)
+    return ctx
+
+
+def test_tiktok_searches_as_in_the_country(live, monkeypatch):
+    seen = capture(monkeypatch)
+    asyncio.run(tools.search_tiktok(local_ctx(), "#snacks", 20, "test"))
+    assert seen["clockworks/tiktok-scraper"]["proxyCountryCode"] == "NL"
+    assert seen["novi/fast-tiktok-api"]["region"] == "NL"                   # never its GB default
+    seen.clear()
+    asyncio.run(tools.search_tiktok(local_ctx(("DE", "AT", "CH"), ("de",)), "#snacks", 20, "test"))
+    assert "proxyCountryCode" not in seen["clockworks/tiktok-scraper"]      # several countries: worldwide
+    assert seen["novi/fast-tiktok-api"]["region"] == "DE"
+
+
+def test_youtube_non_english_single_country_tries_the_local_actor_first(live, monkeypatch):
+    ids, seen = [], {}
+
+    async def fake_run(spec, run_input, limit, timeout=None):
+        ids.append(spec["id"])
+        seen[spec["id"]] = run_input
+        return apify.ActorResult(spec["id"], [], 0.0, "SUCCEEDED")
+
+    monkeypatch.setattr(apify, "run_actor", fake_run)
+    asyncio.run(tools.search_youtube(local_ctx(), "gezonde snacks", 20, "test"))
+    assert ids == ["grow_media/youtube-search-api", "streamers/youtube-scraper"]
+    assert seen["grow_media/youtube-search-api"]["regionCode"] == "NL"
+    assert seen["grow_media/youtube-search-api"]["relevanceLanguage"] == "nl"
+    ids.clear()
+    asyncio.run(tools.search_youtube(local_ctx(("US",), ("en",)), "healthy snacks", 20, "test"))
+    assert ids == ["streamers/youtube-scraper", "grow_media/youtube-search-api"]    # English: order unchanged
+    ids.clear()
+    asyncio.run(tools.search_youtube(local_ctx(), "@somechannel", 20, "test"))
+    assert ids == ["streamers/youtube-scraper"]                             # channels: primary only
+
+
+def test_country_add_on_is_counted_only_when_sent():
+    spec = {"id": "t", "price_usd": {"result": 0.0037}, "addons_per_item": {"proxyCountryCode": 0.0013}}
+    assert apify.expected_cost(spec, 10, False, {"searchQueries": ["x"]}) == pytest.approx(0.037)
+    assert apify.expected_cost(spec, 10, False, {"proxyCountryCode": "NL"}) == pytest.approx(0.05)
+    assert apify.expected_cost(spec, 10, False) == pytest.approx(0.05)     # budget check: assume it is used

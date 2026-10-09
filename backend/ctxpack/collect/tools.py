@@ -296,10 +296,12 @@ def _readable(result: apify.ActorResult, context: dict | None = None) -> bool:
 
 async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int], dict | None], limit: int,
                       timeout: int | None = None,
-                      limit_for: Callable[[dict], int] | None = None) -> apify.ActorResult:
+                      limit_for: Callable[[dict], int] | None = None,
+                      fallback_first: bool = False) -> apify.ActorResult:
     src = _catalog()["sources"][source]
     attempts = []
-    for spec in (src["actor"], src.get("fallback")):
+    specs = (src.get("fallback"), src["actor"]) if fallback_first else (src["actor"], src.get("fallback"))
+    for spec in specs:
         if spec:
             n = limit_for(spec) if limit_for else limit
             if (run_input := inputs(spec, n)) is not None:  # None: this actor cannot take this unit
@@ -361,7 +363,7 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
 
 async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platform, unit: str, target: str,
                       limit: int, reason: str, search_inputs: Callable[[dict, int], dict | None],
-                      with_comments: bool) -> dict[str, Any]:
+                      with_comments: bool, fallback_first: bool = False) -> dict[str, Any]:
     if why := _general_limit(ctx) or _apify_limit(ctx) or _time_limit(ctx, tool):
         return _limit_reached(ctx, why)
     if unit in ctx.dropped_units:
@@ -385,7 +387,7 @@ async def _apify_tool(ctx: RunContext, tool: str, source: str, platform: Platfor
     ctx.pending_apify_usd += expected
     try:
         drafts, notes = await _collect_apify(ctx, tool, source, platform, unit, target, limit, search_inputs,
-                                             with_comments)
+                                             with_comments, fallback_first)
         for d in drafts:
             d.found_by = target
     finally:
@@ -403,7 +405,7 @@ def _apify_limit(ctx: RunContext) -> str | None:
 
 async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Platform, unit: str, target: str,
                          limit: int, search_inputs: Callable[[dict, int], dict | None],
-                         with_comments: bool) -> tuple[list[Draft], dict[str, Any]]:
+                         with_comments: bool, fallback_first: bool = False) -> tuple[list[Draft], dict[str, Any]]:
     language = ",".join(ctx.brief.languages)
     extra = f"{limit}|{ctx.window_days}"   # actor date filters follow the window: never share across windows
 
@@ -414,7 +416,7 @@ async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Plat
     else:
         fetched_at = datetime.now(timezone.utc)
         posts_n = limit if not with_comments else max(1, round(limit * _modes()["collection"]["chain_posts_share"]))
-        res = await _run_source(ctx, source, search_inputs, posts_n)
+        res = await _run_source(ctx, source, search_inputs, posts_n, fallback_first=fallback_first)
         raw = map_items(res.actor_id, res.items)
         notes.update(actor=res.actor_id, fallback_used=res.used_fallback)
         if not raw:
@@ -435,6 +437,18 @@ async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Plat
 
 def _cutoff(ctx: RunContext) -> str:
     return (date.today() - timedelta(days=ctx.window_days)).isoformat()
+
+
+def search_country(ctx: RunContext) -> str:
+    """The brief's country for actors that search 'as in' a country - only when the brief has exactly one:
+    pinning a multi-country brief to its first country would hide the others."""
+    return ctx.brief.countries[0] if len(ctx.brief.countries) == 1 else ""
+
+
+def search_language(ctx: RunContext) -> str:
+    """The brief's main language when it is not English (YouTube relevanceLanguage); "" otherwise."""
+    lang = ctx.brief.languages[0] if ctx.brief.languages else ""
+    return "" if lang in ("", "en") else lang
 
 
 def reddit_search_time(window_days: int) -> str:
@@ -534,6 +548,7 @@ async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: st
 async def search_tiktok(ctx: RunContext, target: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
     tag = target.strip().lstrip("#") if target.strip().startswith("#") else None
     unit = tiktok_unit(target)
+    country = search_country(ctx)
 
     def inputs(spec: dict, n: int) -> dict:
         if spec["id"] == "clockworks/tiktok-scraper":
@@ -542,11 +557,14 @@ async def search_tiktok(ctx: RunContext, target: str, limit: int = 0, reason: st
             period = ("PAST_MONTH" if ctx.window_days <= 30 else "LAST_3_MONTHS" if ctx.window_days <= 90
                       else "LAST_6_MONTHS")
             return {"searchQueries": [f"#{tag}" if tag else target], "resultsPerPage": n,
-                    "searchSection": "/video", "videoSearchDateFilter": period}
+                    "searchSection": "/video", "videoSearchDateFilter": period,
+                    **({"proxyCountryCode": country} if country else {})}   # billed per video
         # novi: video search for hashtags too, so publishTime applies; limit is soft (code counts items)
         period = ("MONTH" if ctx.window_days <= 30 else "THREE_MONTH" if ctx.window_days <= 90 else "SIX_MONTH")
+        # region defaults to GB: always send one (the first market country for a multi-country brief)
+        region = country or (ctx.brief.countries[0] if ctx.brief.countries else "")
         return {"type": "SEARCH", "keyword": f"#{tag}" if tag else target, "limit": n, "publishTime": period,
-                "sortType": 0}
+                "sortType": 0, **({"region": region} if region else {})}
 
     return await _apify_tool(ctx, "search_tiktok", "tiktok", Platform.tiktok, unit, target, limit, reason,
                              inputs, with_comments=True)
@@ -555,6 +573,10 @@ async def search_tiktok(ctx: RunContext, target: str, limit: int = 0, reason: st
 async def search_youtube(ctx: RunContext, query: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
     channel = query.strip() if query.strip().startswith(("@", "https://www.youtube.com/")) else None
     unit = youtube_unit(query)
+    country, language = search_country(ctx), search_language(ctx)
+    # The primary has no region or language input (worldwide, mostly English results); for a non-English
+    # single-country brief the fallback, which takes both, goes first. Channels: the primary only.
+    local_first = bool(country and language and not channel)
 
     def inputs(spec: dict, n: int) -> dict | None:
         if spec["id"] == "streamers/youtube-scraper":
@@ -567,10 +589,12 @@ async def search_youtube(ctx: RunContext, query: str, limit: int = 0, reason: st
         if channel:  # grow_media searches only: a channel unit has no fallback
             return None
         return {"q": query, "maxResults": n, "useFilters": True, "order": "relevance",
-                "publishedAfter": f"{_cutoff(ctx)}T00:00:00Z"}
+                "publishedAfter": f"{_cutoff(ctx)}T00:00:00Z",
+                **({"regionCode": country} if country else {}),
+                **({"relevanceLanguage": language} if language else {})}
 
     return await _apify_tool(ctx, "search_youtube", "youtube", Platform.youtube, unit, query, limit, reason,
-                             inputs, with_comments=True)
+                             inputs, with_comments=True, fallback_first=local_first)
 
 
 async def search_instagram(ctx: RunContext, hashtag: str, limit: int = 0, reason: str = "") -> dict[str, Any]:

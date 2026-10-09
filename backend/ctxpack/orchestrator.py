@@ -26,6 +26,7 @@ import sys
 from typing import Any, Awaitable, Callable
 
 from ctxpack import db
+from ctxpack.agent.markets import countries as market_countries
 from ctxpack.config import load_yaml, mode_limits
 from ctxpack.guards import BudgetExceeded, StopRequested
 from ctxpack.llm.client import tracking
@@ -161,6 +162,7 @@ def brief_context(run: db.Run) -> Any:
     brands, parents = brand_names(known, run.interpretation) if "brand_perception" in (known.get("goals") or []) \
         else ([], [])
     return BriefContext(topic=interp.topic, market=interp.market, languages=interp.languages,
+                        countries=market_countries([m.model_dump() for m in interp.markets]),
                         audience=interp.audience,
                         research_questions={q.id: q.text for q in plan.research_questions},
                         goals=confirmed_goal(known), offer=offer_text(known),            # V12: every step sees them
