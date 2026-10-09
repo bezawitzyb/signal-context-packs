@@ -5,7 +5,8 @@ Rules from the 2026-10-04 smoke test (catalog.yaml call_rules):
   some actors refuse a ceiling below min_max_charge_usd;
 - actors can return more than max_items: code keeps at most `limit`;
 - usageTotalUsd settles late: the recorded cost is the larger of the
-  reported cost and the expected cost of what came back;
+  reported cost and the expected cost (no margin) of what came back;
+- a run that finished but whose items could not be read is still counted;
 - memory_mbytes always comes from the catalog.
 USE_FIXTURES=true replays tests/fixtures/tools/<actor>.json (no network).
 """
@@ -21,7 +22,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from ctxpack.config import BACKEND_DIR, get_settings, load_yaml
 
@@ -31,6 +32,7 @@ FIXTURE_DIR = BACKEND_DIR / "tests" / "fixtures" / "tools"
 OK_STATUSES = {"SUCCEEDED", "TIMED-OUT"}  # a timed-out run keeps its partial items
 NO_CREDIT = "NO_CREDIT"    # the account's monthly usage is used up: no actor can run until it resets
 NO_TIME = "NO_TIME"        # the run's collection time is (nearly) up: the actor was not started
+UNREADABLE = "UNREADABLE"  # items came back but none could be mapped (the actor changed its output format)
 _NO_CREDIT_RE = re.compile(r"remaining usage|monthly usage|usage limit|isn't enough for this run", re.I)
 
 
@@ -47,8 +49,9 @@ def fixture_path(actor_id: str) -> Path:
     return FIXTURE_DIR / f"{actor_id.replace('/', '__')}.json"
 
 
-def expected_cost(spec: dict[str, Any], items: int) -> float:
-    """Start fees + per-item price from the catalog, plus the overshoot margin."""
+def expected_cost(spec: dict[str, Any], items: int, margin: bool = True) -> float:
+    """Start fees + per-item price from the catalog, plus the overshoot margin (budget checks only:
+    the cost of what actually came back is recorded without it)."""
     price = spec.get("price_usd") or {}
     per_item = next((v for k, v in price.items() if k in (
         "result", "dataset_item", "result_item", "comment")), 0.0) or 0.0
@@ -56,7 +59,7 @@ def expected_cost(spec: dict[str, Any], items: int) -> float:
     start = sum(v for k, v in price.items() if ("start" in k or k == "init") and not k.endswith("_per_gb"))
     if "actor_start_per_gb" in price:
         start += price["actor_start_per_gb"] * spec.get("memory_mbytes", 1024) / 1024
-    return round((start + per_item * items) * (1 + _cfg()["cost_margin"]), 4)
+    return round((start + per_item * items) * (1 + (_cfg()["cost_margin"] if margin else 0.0)), 4)
 
 
 @dataclass
@@ -104,18 +107,34 @@ async def run_actor(spec: dict[str, Any], run_input: dict[str, Any], limit: int,
         status = NO_CREDIT if is_no_credit(str(exc)) else "ERROR"
         return ActorResult(actor_id, status=status, seconds=time.monotonic() - started,
                            error=f"{type(exc).__name__}: {str(exc)[:200]}")
+    if run is None:  # the client stopped waiting: the run may still be billed, so count its full ceiling
+        return ActorResult(actor_id, usd=round(ceiling, 4), status="ERROR", seconds=time.monotonic() - started,
+                           error="the actor run did not finish")
     run = _d(run)
-    items = (await client.dataset(run["defaultDatasetId"]).list_items(limit=limit)).items
-    items = [i for i in items if isinstance(i, dict)][:limit]
-    settled = _d(await client.run(run["id"]).get() or run)
+    try:
+        items = (await client.dataset(run["defaultDatasetId"]).list_items(limit=limit)).items
+        items = [i for i in items if isinstance(i, dict)][:limit]
+    except Exception as exc:  # the run finished (and was billed) but its items could not be read
+        reported = float(run.get("usageTotalUsd") or 0.0)
+        return ActorResult(actor_id, usd=round(max(reported, expected_cost(spec, limit, margin=False)), 4),
+                           status="ERROR", seconds=time.monotonic() - started,
+                           error=f"reading items failed: {type(exc).__name__}: {str(exc)[:200]}")
+    try:
+        settled = _d(await client.run(run["id"]).get() or run)
+    except Exception:  # the cost is re-read only for accuracy: fall back to what the run reported
+        settled = run
     reported = float(settled.get("usageTotalUsd") or 0.0)
-    usd = max(reported, expected_cost(spec, len(items)) if items else reported)
+    usd = max(reported, expected_cost(spec, len(items), margin=False) if items else reported)
     return ActorResult(actor_id, items, round(usd, 4), run.get("status", "?"), time.monotonic() - started)
 
 
 async def run_with_fallback(attempts: list[tuple], limit: int, timeout_secs: int | None = None,
-                            deadline: float | None = None) -> ActorResult:
+                            deadline: float | None = None,
+                            usable: Callable[[ActorResult], bool] | None = None) -> ActorResult:
     """Try the actor, then its fallback, if it failed or returned nothing usable.
+
+    usable(result): whether the items can actually be read (an actor that renamed its output fields
+    returns rows our mapper cannot read - that counts as a failure, so the fallback runs).
 
     attempts: (spec, input) or (spec, input, own_limit) when actors count items differently.
     deadline (time.monotonic): each actor gets at most the time left, so it stops itself on time
@@ -136,7 +155,12 @@ async def run_with_fallback(attempts: list[tuple], limit: int, timeout_secs: int
         spent += result.usd
         result.usd, result.used_fallback = spent, n > 0
         if result.status in OK_STATUSES and result.items:
-            return result
+            if usable is None or usable(result):
+                return result
+            result.status = UNREADABLE
+            log.warning("actor %s returned %d items but none could be read (output format changed?)",
+                        spec["id"], len(result.items))
+            continue
         if result.status == NO_CREDIT:
             log.warning("actor %s refused: Apify credit for this month is used up", spec["id"])
             return result
@@ -174,5 +198,20 @@ def cache_put(tool: str, target: str, language: str, payload: dict, extra: str =
         return
     path = _cache_file(tool, target, language, extra)
     path.parent.mkdir(parents=True, exist_ok=True)
+    purge_cache(path.parent)
     path.write_text(json.dumps({"saved_at": datetime.now(timezone.utc).isoformat(), **payload}),
                     encoding="utf-8")
+
+
+def purge_cache(folder: Path) -> int:
+    """Delete cache files older than cache_hours (PRD DH2: the cache is kept 24 h, not forever)."""
+    cutoff = time.time() - _cfg()["cache_hours"] * 3600
+    removed = 0
+    for f in folder.glob("*.json"):
+        try:
+            if f.stat().st_mtime < cutoff:
+                f.unlink()
+                removed += 1
+        except OSError:  # another task removed it first
+            pass
+    return removed

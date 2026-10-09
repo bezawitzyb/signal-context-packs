@@ -50,6 +50,10 @@ sources:
       limit_inputs: [maxPostsCount, maxCommentsCount, maxCommentsPerPost]
       overshoot: billed 12 results with max_items 10 - count items, never trust the cap alone
       date_inputs: [searchTime, postedAfter, postedBefore, commentedAfter]
+      date_filter: >-
+        postedAfter switches a search to newest-first and ignores searchSort (actor docs,
+        2026-10-09): searches use searchTime (week | month | year | all) with relevance;
+        subreddit browsing (newest-first anyway) keeps postedAfter
       unit_inputs: {query: searchTerms, subreddit: withinCommunity}
       comments: inline (crawlCommentsPerPost true, maxCommentsPerPost)
       notes: keep aiAnalysis and all mcp* inputs OFF (extra charges)
@@ -253,7 +257,7 @@ sources:
       price_usd: {dataset_item: 0.003}   # PLUS the 4 GB compute, paid by us (~0.009 per term in the smoke)
       success_30d: 0.576        # 2026-10-07: 23% of runs time out; short timeout, then the fallback
       limit_inputs: [maxItems]
-      date_inputs: [timeRange]
+      date_inputs: [timeRange]  # no 'today 12-m' (refused): the empty value means past 12 months (2026-10-09)
       unit_inputs: {query: searchTerms}
       fields:
         series: interestOverTime_timelineData

@@ -187,6 +187,8 @@ collection:
   segment_max_chars: 10000      # a post cut from start/end words is never longer than this
   blocked_site_days: 30         # a site that refused web fetch (url_not_allowed) is skipped this long
   blocked_sites_max: 50         # at most this many are passed to web search as blocked_domains
+  site_failures_max: 2          # pages from one site that failed (bot wall, rate limit) or showed no posts
+                                # (JavaScript-only): after this many the site is skipped for the rest of the run
   web_fetch_max_content_tokens: 20000  # caps the cost of one huge page (~0.02 USD input)
 
 # Agent loop (guide B8a, B8e). Same for every mode.

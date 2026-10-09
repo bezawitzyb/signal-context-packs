@@ -92,6 +92,7 @@ class RunContext:
     apify_usd_cap: float | None = None                   # a lower Apify cap for this run than the mode's
     apify_recorded_usd: float = 0.0                      # Apify spend already written to the spend table
     blocked_domains: set = field(default_factory=set)    # sites that refused fetching (this run + remembered)
+    site_failures: Counter = field(default_factory=Counter)  # domain -> pages that failed or showed no posts
     apify_by_actor: dict[str, dict[str, float]] = field(default_factory=dict)   # actor -> {runs, usd, items}
     source_failures: list[dict] = field(default_factory=list)  # actor + fallback gave nothing (V6 -> blind spot)
     # Reserved by calls still running, so concurrent calls cannot jointly overshoot a limit.
@@ -286,6 +287,13 @@ def _record(ctx: RunContext, result: apify.ActorResult) -> None:
     path.write_text(json.dumps(items, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
+def _readable(result: apify.ActorResult, context: dict | None = None) -> bool:
+    """At least one item our mapper (or the trends reader) can read."""
+    if result.actor_id in MAPPERS:
+        return bool(map_items(result.actor_id, result.items, context))
+    return bool(trend_series(result.items)) if "trends" in result.actor_id else True
+
+
 async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int], dict | None], limit: int,
                       timeout: int | None = None,
                       limit_for: Callable[[dict], int] | None = None) -> apify.ActorResult:
@@ -296,7 +304,7 @@ async def _run_source(ctx: RunContext, source: str, inputs: Callable[[dict, int]
             n = limit_for(spec) if limit_for else limit
             if (run_input := inputs(spec, n)) is not None:  # None: this actor cannot take this unit
                 attempts.append((spec, run_input, n))
-    result = await apify.run_with_fallback(attempts, limit, timeout, deadline=ctx.deadline())
+    result = await apify.run_with_fallback(attempts, limit, timeout, deadline=ctx.deadline(), usable=_readable)
     if not limit_for:
         result.items = result.items[:limit]
     ctx.apify_unavailable |= result.status == apify.NO_CREDIT
@@ -339,10 +347,12 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
         }[spec["id"]]
 
     attempts = [(spec, inputs(spec, total)) for spec in (src["actor"], src.get("fallback")) if spec]
-    result = await apify.run_with_fallback(attempts, total, deadline=ctx.deadline())
+    context = {"parent_urls": urls, "parent_by_id": {str(p.get("thread_id")): p["url"] for p in parents}}
+    result = await apify.run_with_fallback(attempts, total, deadline=ctx.deadline(),
+                                           usable=lambda r: _readable(r, context))
     ctx.apify_unavailable |= result.status == apify.NO_CREDIT
     result.items = result.items[:total]
-    result.context = {"parent_urls": urls, "parent_by_id": {str(p.get("thread_id")): p["url"] for p in parents}}
+    result.context = context
     ctx.apify_usd += result.usd
     _count_actor(ctx, result)
     _record(ctx, result)
@@ -395,8 +405,9 @@ async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Plat
                          limit: int, search_inputs: Callable[[dict, int], dict | None],
                          with_comments: bool) -> tuple[list[Draft], dict[str, Any]]:
     language = ",".join(ctx.brief.languages)
+    extra = f"{limit}|{ctx.window_days}"   # actor date filters follow the window: never share across windows
 
-    cached = apify.cache_get(tool, target, language, str(limit))
+    cached = apify.cache_get(tool, target, language, extra)
     notes: dict[str, Any] = {"cached": bool(cached)}
     if cached:
         drafts = [Draft.from_cache(d) for d in cached["drafts"]]
@@ -406,7 +417,7 @@ async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Plat
         res = await _run_source(ctx, source, search_inputs, posts_n)
         raw = map_items(res.actor_id, res.items)
         notes.update(actor=res.actor_id, fallback_used=res.used_fallback)
-        if not res.items:
+        if not raw:
             notes["actor_status"] = res.status
             if res.status not in (apify.NO_CREDIT, apify.NO_TIME):
                 ctx.source_failures.append({"source_unit": unit, "platform": str(platform), "status": res.status})
@@ -418,12 +429,20 @@ async def _collect_apify(ctx: RunContext, tool: str, source: str, platform: Plat
                 raw += map_items(com.actor_id, com.items, com.context)
                 notes["comments_actor"] = com.actor_id
         drafts = _drafts_from_raw(platform, unit, raw[:limit], fetched_at)
-        apify.cache_put(tool, target, language, {"drafts": [d.to_cache() for d in drafts]}, str(limit))
+        apify.cache_put(tool, target, language, {"drafts": [d.to_cache() for d in drafts]}, extra)
     return drafts, notes
 
 
 def _cutoff(ctx: RunContext) -> str:
     return (date.today() - timedelta(days=ctx.window_days)).isoformat()
+
+
+def reddit_search_time(window_days: int) -> str:
+    """The narrowest searchTime that still covers the window (harshmaur/reddit-scraper)."""
+    for days, name in ((7, "week"), (31, "month"), (366, "year")):
+        if window_days <= days:
+            return name
+    return "all"
 
 
 def _sub(target: str) -> str | None:
@@ -489,12 +508,14 @@ async def search_reddit(ctx: RunContext, target: str, limit: int = 0, reason: st
         per_post = max(1, math.ceil((n - posts) / posts))
         if spec["id"] == "harshmaur/reddit-scraper":
             base = {"crawlCommentsPerPost": True, "maxPostsCount": posts, "maxCommentsPerPost": per_post,
-                    "maxCommentsCount": n - posts, "postedAfter": _cutoff(ctx), "aiAnalysis": False,
-                    "includeNSFW": False}
+                    "maxCommentsCount": n - posts, "aiAnalysis": False, "includeNSFW": False}
+            # postedAfter switches searches to newest-first and ignores searchSort (actor docs, 2026-10-09):
+            # searches use searchTime and keep relevance; cleaning drops anything older than the window.
+            search = {**base, "searchSort": "relevance", "searchTime": reddit_search_time(ctx.window_days)}
             if sub and query:
-                return {**base, "searchTerms": [query], "withinCommunity": sub, "searchSort": "relevance"}
-            return {**base, "subredditUrls": [f"r/{sub}"]} if sub else \
-                   {**base, "searchTerms": [target], "searchSort": "relevance"}
+                return {**search, "searchTerms": [query], "withinCommunity": sub}
+            return {**base, "subredditUrls": [f"r/{sub}"], "postedAfter": _cutoff(ctx)} if sub else \
+                   {**search, "searchTerms": [target]}
         # fatihtahta: maxPosts per query, maxComments per post; extra analysis options stay off (billed)
         frame = "month" if ctx.window_days <= 31 else "year"
         base = {"maxPosts": posts, "scrapeComments": True, "maxComments": per_post, "dateFrom": _cutoff(ctx),
@@ -637,13 +658,19 @@ async def search_x(ctx: RunContext, target: str, limit: int = 0, reason: str = "
 # Google Trends (external signal, never Documents)
 # --------------------------------------------------------------------------
 
-def _timeframe(window_days: int) -> tuple[str, str]:
-    """(label, timeRange) for the brief's window; both trend actors take the same timeRange values."""
+def _timeframe(window_days: int) -> str:
+    """timeRange for the brief's window (scrapesage's values; see _apify_time_range for apify's)."""
     if window_days <= 30:
-        return "today 1-m", "today 1-m"
+        return "today 1-m"
     if window_days <= 90:
-        return "today 3-m", "today 3-m"
-    return "today 12-m", "today 12-m"
+        return "today 3-m"
+    return "today 12-m"
+
+
+def _apify_time_range(time_range: str) -> str:
+    """apify/google-trends-scraper has no 'today 12-m': its empty value means the past 12 months
+    (input schema checked 2026-10-09; the API refuses any value outside its list)."""
+    return "" if time_range == "today 12-m" else time_range
 
 
 def trend_series(items: list[dict]) -> dict[str, list[float]]:
@@ -691,13 +718,13 @@ async def get_trends(ctx: RunContext, terms: list[str], geo: str = "", reason: s
         return _limit_reached(ctx, "social-source budget for this run is used up")
     ctx.call_keys.add(key)
     ctx.calls += 1
-    tf, tr = _timeframe(ctx.window_days)
+    tf = tr = _timeframe(ctx.window_days)
 
     def inputs(spec: dict, n: int) -> dict:
         if spec["id"] == "scrapesage/google-trends-scraper":  # interest over time only: fewer types = cheaper
             return {"mode": "keywords", "searchTerms": terms, "geo": geo.upper(), "timeRange": tr,
                     "dataTypes": ["interestOverTime"], "maxItems": n}
-        return {"searchTerms": terms, "geo": geo.upper(), "timeRange": tr, "isMultiple": len(terms) > 1,
+        return {"searchTerms": terms, "geo": geo.upper(), "timeRange": _apify_time_range(tr), "isMultiple": len(terms) > 1,
                 "maxItems": n}
 
     res = await _run_source(ctx, "google_trends", inputs, points, _modes()["collection"]["trends_timeout_secs"],
@@ -739,9 +766,12 @@ async def web_search(ctx: RunContext, query: str, country: str, language: str, r
         ctx.page_types[p.url] = p.page_type
         ctx.page_queries.setdefault(p.url, query)
         pages.append({"url": p.url, "page_type": p.page_type, "language": p.language, "why": p.why[:160],
+                      **({"estimated_date": p.estimated_date[:40]} if p.estimated_date else {}),
                       "already_fetched": p.url in ctx.fetched_urls})
     return {"status": "ok", "tool": "web_search", "pages": pages, "searches": res.searches,
-            **({"blocked_sites_hidden": hidden} if hidden else {}), **ctx.left()}
+            "oldest_wanted": _cutoff(ctx),
+            **({"blocked_sites_hidden": hidden} if hidden else {}),
+            **({"unlisted_pages_dropped": res.unlisted} if res.unlisted else {}), **ctx.left()}
 
 
 async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") -> dict[str, Any]:
@@ -782,11 +812,15 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
 
     results = await asyncio.gather(*(one(u) for u in todo))
     newly_blocked = {web.domain_of(r.url) for r in results if r.error in web.BLOCKED_ERRORS}
-    if newly_blocked:
-        ctx.blocked_domains |= newly_blocked
-        web.remember_blocked(newly_blocked)
-        note = {"blocked_sites": sorted(set(note.get("blocked_sites", [])) | newly_blocked),
-                "blocked_note": "these sites refuse fetching; choose other sites"}
+    web.remember_blocked(newly_blocked)
+    ctx.site_failures.update(web.domain_of(r.url) for r in results
+                             if r.error in web.SOFT_ERRORS or (not r.error and not r.drafts))
+    failing = {d for d, n in ctx.site_failures.items()
+               if n >= _modes()["collection"]["site_failures_max"]} - ctx.blocked_domains
+    if newly_blocked or failing:
+        ctx.blocked_domains |= newly_blocked | failing
+        note = {"blocked_sites": sorted(set(note.get("blocked_sites", [])) | newly_blocked | failing),
+                "blocked_note": "these sites refuse fetching or show no readable posts; choose other sites"}
     drafts: list[Draft] = []
     pages = []
     for r in results:
@@ -897,8 +931,10 @@ def tool_definitions() -> list[dict[str, Any]]:
         ("search_youtube", f"YouTube videos for a query or a channel ('@handle'), plus comments on the "
                            f"most-discussed videos. Latency {_latency('search_youtube')}.",
          {"query": {"type": "string"}, "limit": limit, "reason": _reason()}, ["query", "reason"]),
-        ("web_search", f"Find 5-15 forum, Q&A and review pages in a country and language. Stores nothing; "
-                       f"follow with fetch_and_segment. Latency {_latency('web_search')}.",
+        ("web_search", f"Find 5-15 forum, Q&A and review pages in a country and language, each with its "
+                       f"estimated date when one is visible. Stores nothing; follow with fetch_and_segment, and "
+                       f"skip pages dated before oldest_wanted (their posts are dropped as out of window). "
+                       f"Latency {_latency('web_search')}.",
          {"query": {"type": "string"}, "country": {"type": "string", "description": "ISO country code"},
           "language": {"type": "string", "description": "ISO 639-1"}, "reason": _reason()},
          ["query", "country", "language", "reason"]),

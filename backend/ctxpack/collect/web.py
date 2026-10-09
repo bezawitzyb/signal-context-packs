@@ -27,6 +27,9 @@ from ctxpack.llm.client import load_prompt, structured, untrusted
 from ctxpack.schemas.enums import Platform
 
 BLOCKED_ERRORS = {"url_not_allowed"}   # the site refuses Anthropic's fetcher: retrying never helps
+# Bot walls, rate limits and JavaScript-only pages: maybe temporary, so the site is skipped for the
+# rest of the run only (after modes.yaml site_failures_max), never remembered across runs.
+SOFT_ERRORS = {"url_not_accessible", "too_many_requests", "unavailable", "not_text", "unsupported_content_type"}
 DISCOVER_FIXTURE = FIXTURE_DIR / "web_discover.json"
 PAGES_FIXTURE = FIXTURE_DIR / "web_pages.json"
 
@@ -68,6 +71,7 @@ class DiscoverResult:
     pages: list[FoundPage]
     usd: float = 0.0
     searches: int = 0
+    unlisted: int = 0          # pages the model named that no search returned (dropped, never fetched)
 
 
 @dataclass
@@ -139,12 +143,36 @@ async def discover(query: str, country: str, language: str, blocked: list[str] |
         server_tool_options={"web_search": {"max_uses": load_yaml("modes")["collection"]["web_search_max_uses"],
                                             **({"blocked_domains": blocked} if blocked else {})}},
     )
-    pages, seen = [], set()
-    for p in res.data.pages:  # http(s) only, no duplicates
-        if urlparse(p.url).scheme in ("http", "https") and p.url not in seen:
-            seen.add(p.url)
-            pages.append(p)
-    return DiscoverResult(pages, res.usd, res.web_searches)
+    found = search_results(res.blocks)
+    pages, seen, unlisted = [], set(), 0
+    for p in res.data.pages:  # http(s) only, no duplicates, only pages a search really returned
+        if urlparse(p.url).scheme not in ("http", "https") or p.url in seen:
+            continue
+        if (key := _url_key(p.url)) not in found and not get_settings().llm_fake:  # fake answers have no blocks
+            unlisted += 1
+            continue
+        seen.add(p.url)
+        pages.append(p if p.estimated_date or not found.get(key) else p.model_copy(update={"estimated_date": found[key]}))
+    return DiscoverResult(pages, res.usd, res.web_searches, unlisted)
+
+
+def _url_key(url: str) -> str:
+    """The same page whatever its scheme, www., fragment or trailing slash."""
+    u = urlparse(url.strip())
+    return f"{u.netloc.removeprefix('www.').casefold()}{u.path.rstrip('/')}" + (f"?{u.query}" if u.query else "")
+
+
+def search_results(blocks: list[Any]) -> dict[str, str | None]:
+    """url key -> page_age for every result in the web_search_tool_result blocks."""
+    found: dict[str, str | None] = {}
+    for block in blocks:
+        data = block.model_dump() if hasattr(block, "model_dump") else block
+        if data.get("type") != "web_search_tool_result" or not isinstance(data.get("content"), list):
+            continue
+        for r in data["content"]:
+            if isinstance(r, dict) and r.get("url"):
+                found.setdefault(_url_key(r["url"]), r.get("page_age"))
+    return found
 
 
 # --------------------------------------------------------------------------
