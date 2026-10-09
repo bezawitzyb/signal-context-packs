@@ -1074,7 +1074,10 @@ async def coverage_report(ctx: RunContext) -> dict[str, Any]:
 async def finish(ctx: RunContext, summary: str, source_verdicts: list[dict], gaps: list[str],
                  follow_up_queries: list[dict] | None = None) -> dict[str, Any]:
     problems = []
-    if not ctx.coverage_after_last_collection:
+    can_collect = ctx.calls_left() > 0 and ctx.seconds_left() > 0
+    # At the limits the loop gives no further turn, so a refusal would only throw the verdicts away
+    # (nl_snack_brand rerun, 2026-10-09: finish 7 s after the deadline -> crash fallback)
+    if not ctx.coverage_after_last_collection and can_collect:
         problems.append("call coverage_report after your last collection call, then finish")
     named = {}
     for v in source_verdicts or []:
@@ -1088,7 +1091,7 @@ async def finish(ctx: RunContext, summary: str, source_verdicts: list[dict], gap
     if missing:
         problems.append(f"give a verdict for every source unit used: {', '.join(missing)}")
     unsearched = [c for c in ctx.must_search if not any(c.casefold() in q.casefold() for q in ctx.queries)]
-    if unsearched and ctx.calls_left() > 0 and ctx.seconds_left() > 0:
+    if unsearched and can_collect:
         problems.append("search every competitor the user named, by name, before you finish: " + ", ".join(unsearched))
     if not (summary or "").strip():
         problems.append("summary must not be empty")

@@ -335,6 +335,19 @@ def test_finish_is_refused_until_user_competitors_are_searched():
     assert ctx2.finished["gaps"] == ["Not searched (limits reached): Factor, named by the user"]
 
 
+def test_finish_at_the_limits_needs_no_fresh_coverage_report():
+    """A finish in the turn that used up the time is accepted: no later turn could fix a refusal."""
+    import asyncio
+
+    from ctxpack.collect import tools as t
+
+    ctx = t.RunContext(run_id="r", mode="quick", brief=t.BriefContext(topic="x"), window_days=180, store=None)
+    out = asyncio.run(t.finish(ctx, "done", [], []))
+    assert out["status"] == "refused" and out["problems"][0].startswith("call coverage_report")
+    ctx.started -= ctx.limits["collection_secs"] + 1                  # collection time is up
+    assert asyncio.run(t.finish(ctx, "done", [], []))["status"] == "ok"
+
+
 def test_a_page_found_by_a_search_records_that_query(offline, monkeypatch):
     """Audit finding 3: web posts are stored by domain, so the search that found the page is recorded."""
     from ctxpack.collect.cleaning import make_draft
