@@ -28,8 +28,8 @@ Return:
   success_measure (one observable sign it worked within 2-4 weeks, e.g.
   "replies asking for the figures table"; never an invented number).
 - channel_plan: at least 3 channels in priority order: platform (reddit,
-  tiktok, youtube, instagram, linkedin, x, web_forum, web_review,
-  web_editorial), why,
+  tiktok, youtube, instagram, linkedin, x, facebook, web_forum,
+  web_review, web_editorial), why,
   why_ids, formats, communities_or_hashtags, tone_note, posts_per_week
   (1-7: how often to post there; fewer for long formats). Never a channel
   without evidence: why_ids must name items that justify it. If the
@@ -58,7 +58,7 @@ Return:
   objections (OBJ-..), your hooks, opportunities (OPP-..) and news hooks
   (NWS-..). Use the user's own channels first when they are given;
   otherwise a channel from your channel plan. Each: channel (reddit,
-  tiktok, youtube, instagram, linkedin, x, web_forum, blog,
+  tiktok, youtube, instagram, linkedin, x, facebook, web_forum, blog,
   newsletter), role (who in the audience it is for), goal, hook (text)
   and hook_id (one of your hooks, or null), angle, key_points (3-5,
   each with text and item_ids: the pack items that back it), structure

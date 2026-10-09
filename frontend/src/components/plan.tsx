@@ -11,7 +11,7 @@ type Brief = ContextPack["post_briefs"][number];
 type Draft = ContextPack["drafts"][number];
 
 export const CHANNEL: Record<string, string> = {
-  reddit: "Reddit", tiktok: "TikTok", youtube: "YouTube", instagram: "Instagram", linkedin: "LinkedIn", x: "X",
+  reddit: "Reddit", tiktok: "TikTok", youtube: "YouTube", instagram: "Instagram", linkedin: "LinkedIn", x: "X", facebook: "Facebook",
   web_forum: "Forums", blog: "Blog", newsletter: "Newsletter", web_review: "Review sites", web_editorial: "Articles",
 };
 const FORMAT: Record<string, string> = { text_post: "text post", carousel: "carousel", short_video: "short video",

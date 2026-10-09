@@ -6,7 +6,7 @@ from ctxpack.cli import app
 from ctxpack.config import load_yaml
 from ctxpack.schemas.enums import Platform, SourceUnitKind
 
-APIFY = {"reddit", "tiktok", "youtube", "google_trends", "instagram", "linkedin", "x"}
+APIFY = {"reddit", "tiktok", "youtube", "google_trends", "instagram", "linkedin", "x", "facebook"}
 WEB = {"web_forums", "web_reviews", "web_editorial"}
 
 

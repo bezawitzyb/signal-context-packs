@@ -25,6 +25,7 @@ tool_latency:
   search_instagram: "usually 25-60 s"
   search_linkedin: "usually 5-30 s"
   search_x: "usually 5-30 s"
+  search_facebook: "usually 10-60 s"
   get_trends: "usually 20-60 s"
   coverage_report: "instant"
 
@@ -530,6 +531,87 @@ sources:
           engagement: [favouriteCount, replyCount, repostCount]
           author: author.screenName
 
+  facebook:                     # added 2026-10-09: public posts by keyword search only
+    kind: apify
+    platform: facebook
+    tool: search_facebook
+    unit_types: [query]           # keywords only - never a person, profile, page or named group
+    audience: >-
+      Broad and older-skewing (35+), parents, homeowners, local communities and hobby groups. Keyword search
+      reaches posts in PUBLIC groups, where most of the discussion is; comments (chained) carry the argument.
+    language_country_inputs: none used (query in the target language; relevance step filters)
+    verified_on: "2026-10-09"     # smoke 2026-10-09 (query "Wärmepumpe Erfahrung", 180 days): 0.044 USD in total
+    actor:
+      id: scrapeforge/facebook-search-posts
+      needs_session: false        # no cookies or account of ours
+      memory_mbytes: 256          # actor default
+      smoke: ok 2026-10-09 (5/5 posts, all in public groups, all in window, 8-38 comments each; ~5 s; 0.013 USD)
+      price_usd: {result: 0.00259, actor_start: 0.00005}
+      success_30d: 1.00           # 853k runs; rating 3.63 (10 reviews)
+      limit_inputs: [max_results]
+      date_inputs: [start_date, end_date]   # YYYY-MM-DD
+      unit_inputs: {query: query (search_type posts)}
+      fields:
+        text: [message]
+        date: timestamp           # unix seconds
+        url: post_id -> https://www.facebook.com/<post_id> (redirects to the post; no name in it)
+        engagement: [reactions_count, comments_count, reshare_count]
+        author: author.name
+        community: associated_group.name   # the public group it was posted in
+    fallback:
+      id: scraper_one/facebook-posts-search
+      needs_session: false
+      memory_mbytes: 256
+      smoke: ok 2026-10-09 (5/5 posts, text, unix ms date, likes, comments; mostly personal posts; 0.015 USD)
+      price_usd: {result: 0.004, init: 0.00005}
+      success_30d: 0.998
+      limit_inputs: [resultsCount]  # Free plan: at most 100 posts per query
+      date_inputs: [startDate, endDate]   # YYYY-MM-DD
+      unit_inputs: {query: query}
+      notes: its url names the author (facebook.com/<name>/posts/...) - never read; rebuilt from postId
+      fields:
+        text: [postText]
+        date: timestamp           # unix milliseconds
+        url: postId -> https://www.facebook.com/<postId>
+        engagement: [reactionsCount, commentsCount, sharesCount]
+        author: author.name
+    comments:
+      actor:
+        id: apify/facebook-comments-scraper
+        needs_session: false
+        memory_mbytes: 4096       # actor default
+        smoke: ok 2026-10-09 (6/6 on name-free post links, text, ISO date, comment link, likes; 0.013 USD)
+        price_usd: {comment: 0.0025, actor_start: 0.001}
+        success_30d: 1.00
+        limit_inputs: [resultsLimit]   # per post
+        input_from_parent: startUrls
+        notes: keep onlyCommentsNewerThan OFF (billed 0.002 per comment; cleaning keeps the window) and
+          includeNestedComments off; never read author, profileUrl, profileName or gender
+        fields:
+          text: [text]
+          date: date
+          url: inputUrl (the name-free post link we sent)
+          permalink: facebook.com/<post id>?comment_id=<commentId>
+          engagement: [likesCount, commentsCount]   # likesCount arrives as a string
+          author: profileName
+      fallback:
+        id: thedoor/facebook-comment-scraper
+        needs_session: false
+        memory_mbytes: 4096       # actor default
+        smoke: ok 2026-10-09 (6/6 text, ISO date, name-free comment link; 0.003 USD)
+        price_usd: {result: 0.0005, actor_start: 0.00005}
+        success_30d: 0.998
+        limit_inputs: [targetComments]   # per post
+        input_from_parent: postUrls
+        notes: includeReplies and includeReactions off
+        fields:
+          text: [text]
+          date: comment_time
+          url: post_url
+          permalink: comment_url  # facebook.com/<post id>?comment_id=<id> (no name)
+          engagement: [replies_count]
+          author: author_name
+
   web_forums:
     kind: web
     platform: web_forum
@@ -625,3 +707,10 @@ rejected:
   danek/twitter-scraper: Free plan = 20 results per run
   api-ninja/x-twitter-advanced-search: 0.015 per result on the Free plan, 0.10 minimum per run
   altimis/scweet: needs X cookies (needs_session)
+  # Facebook (2026-10-09): keyword search of public posts only; no session of ours
+  apify/facebook-groups-scraper: needs group links (we never name a group); public-groups decision left open
+  apify/facebook-posts-scraper: needs page links; mostly brand voice
+  apify/facebook-search-scraper: finds pages and places, not posts
+  danek/facebook-search-ppr: 2x the price of scrapeforge for the same search
+  powerai/facebook-post-search-scraper: 0.09 USD per run start, 0.01 per post, 94.9% success
+  dami_studio/facebook-comments-scraper: has a sessionCookies input (we never send cookies)

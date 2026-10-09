@@ -12,7 +12,7 @@ import re
 from datetime import datetime
 from typing import Any, Callable, TypedDict
 
-from ctxpack.collect.cleaning import linkedin_url, redact, scrub_url, x_url
+from ctxpack.collect.cleaning import facebook_url, linkedin_url, name_like, redact, scrub_url, x_url
 
 
 class RawPost(TypedDict, total=False):
@@ -274,6 +274,76 @@ def x_scraperone_reply(item: dict, ctx: dict) -> RawPost | None:
                    thread_id=root or None, engagement=_eng(item, "favouriteCount", "replyCount", "repostCount"))
 
 
+# --- facebook (2026-10-09) ----------------------------------------------------------
+# Links are rebuilt from the post id: the actors' own post and profile links can name people.
+
+_DIGITS = re.compile(r"(\d{8,25})")
+
+
+def _fb_id(value: Any) -> str:
+    """The post id from an id or one of OUR name-free links (facebook.com/<id>); never from a link with a name."""
+    text = str(value or "")
+    return text if text.isdigit() else (m.group(1) if (m := re.fullmatch(r"https://www\.facebook\.com/(\d{8,25})/?",
+                                                                       text)) else "")
+
+
+def _count(value: Any) -> float | None:
+    """Counts arrive as numbers or digit strings ("3")."""
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return value
+    return int(value) if isinstance(value, str) and value.isdigit() else None
+
+
+def _counts(**values: Any) -> dict[str, Any]:
+    return {k: c for k, v in values.items() if (c := _count(v)) is not None}
+
+
+def facebook_scrapeforge(item: dict, ctx: dict) -> RawPost | None:
+    pid = _fb_id(item.get("post_id"))
+    if not pid or not item.get("message") or item.get("type", "post") != "post":
+        return None
+    return RawPost(kind="post", text=_join(item.get("message")), author=get(item, "author.name"),
+                   date=item.get("timestamp"), url=facebook_url(pid), thread_id=pid,
+                   community=get(item, "associated_group.name"),
+                   engagement=_counts(reactions=item.get("reactions_count"), comments=item.get("comments_count"),
+                                      shares=item.get("reshare_count")),
+                   comments=_count(item.get("comments_count")) or 0)
+
+
+def facebook_scraperone(item: dict, ctx: dict) -> RawPost | None:
+    pid = _fb_id(item.get("postId"))
+    if not pid or not item.get("postText") or item.get("isReshare"):
+        return None
+    return RawPost(kind="post", text=_join(item.get("postText")), author=get(item, "author.name"),
+                   date=item.get("timestamp"), url=facebook_url(pid), thread_id=pid,
+                   engagement=_counts(reactions=item.get("reactionsCount"), comments=item.get("commentsCount"),
+                                      shares=item.get("sharesCount")),
+                   comments=_count(item.get("commentsCount")) or 0)
+
+
+def facebook_comment_apify(item: dict, ctx: dict) -> RawPost | None:
+    pid = _fb_id(item.get("inputUrl")) or _fb_id(item.get("facebookId"))
+    cid = str(item.get("commentId") or "")
+    if not pid or not item.get("text") or (item.get("threadingDepth") or 0) > 0:
+        return None
+    return RawPost(kind="comment", text=_join(item.get("text")), author=item.get("profileName"),
+                   date=item.get("date"), url=facebook_url(pid),
+                   permalink=facebook_url(pid, cid) if cid.isdigit() else None, thread_id=pid,
+                   community=item.get("groupTitle"),
+                   engagement=_counts(likes=item.get("likesCount"), replies=item.get("commentsCount")))
+
+
+def facebook_comment_thedoor(item: dict, ctx: dict) -> RawPost | None:
+    pid = _fb_id(item.get("post_url"))
+    cid = str(item.get("id") or "")
+    if not pid or not item.get("text") or item.get("is_reply"):
+        return None
+    return RawPost(kind="comment", text=_join(item.get("text")), author=item.get("author_name"),
+                   date=item.get("comment_time") or item.get("timestamp"), url=facebook_url(pid),
+                   permalink=facebook_url(pid, cid) if cid.isdigit() else None, thread_id=pid,
+                   engagement=_counts(replies=item.get("replies_count")))
+
+
 Mapper = Callable[[dict, dict], RawPost | None]
 
 # actor id -> (mapper, fields kept in fixtures, author fields, free-text fields)
@@ -342,6 +412,18 @@ MAPPERS: dict[str, tuple[Mapper, list[str], list[str], list[str]]] = {
     "scraper_one/x-posts-search": (x_scraperone_post, [
         "postId", "conversationId", "postText", "timestamp", "favouriteCount", "replyCount", "repostCount",
         "quoteCount", "author.screenName"], ["author.screenName"], ["postText"]),
+    "scrapeforge/facebook-search-posts": (facebook_scrapeforge, [
+        "post_id", "type", "message", "timestamp", "reactions_count", "comments_count", "reshare_count",
+        "associated_group.name", "author.name"], ["author.name"], ["message"]),
+    "scraper_one/facebook-posts-search": (facebook_scraperone, [
+        "postId", "postText", "timestamp", "reactionsCount", "commentsCount", "sharesCount", "isReshare",
+        "author.name"], ["author.name"], ["postText"]),
+    "apify/facebook-comments-scraper": (facebook_comment_apify, [
+        "inputUrl", "facebookId", "commentId", "text", "date", "likesCount", "commentsCount", "threadingDepth",
+        "groupTitle", "profileName"], ["profileName"], ["text"]),
+    "thedoor/facebook-comment-scraper": (facebook_comment_thedoor, [
+        "post_url", "id", "text", "comment_time", "timestamp", "replies_count", "is_reply", "author_name"],
+        ["author_name"], ["text"]),
     "scraper_one/x-post-replies-scraper": (x_scraperone_reply, [
         "replyId", "inReplyTo", "replyText", "timestamp", "favouriteCount", "replyCount", "repostCount",
         "author.screenName"], ["author.screenName"], ["replyText"]),
@@ -369,6 +451,7 @@ def sanitize_for_fixture(actor_id: str, items: list[dict]) -> list[dict]:
     """
     _, fields, author_fields, text_fields = MAPPERS[actor_id]
     names: dict[str, str] = {}
+    real = name_like([str(v) for item in items for f in author_fields if (v := get(item, f))])
     out = []
     for item in items:
         clean: dict = {}
@@ -379,7 +462,7 @@ def sanitize_for_fixture(actor_id: str, items: list[dict]) -> list[dict]:
             if path in author_fields:
                 value = names.setdefault(str(value), f"user_{len(names) + 1}")
             elif path in text_fields and isinstance(value, str):
-                value = redact(value)[0]
+                value = redact(value, real)[0]          # authors' own names written in the text, too
             elif isinstance(value, str) and value.startswith("http"):
                 value = scrub_url(value)
             _set(clean, path, copy.deepcopy(value))

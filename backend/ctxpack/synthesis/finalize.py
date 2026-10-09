@@ -124,11 +124,13 @@ def blind_spots(run: Any, sections: dict, analysis: dict, interp: Any, bar_short
 
 
 _PLATFORM_NAME = {"linkedin": "LinkedIn", "reddit": "Reddit", "tiktok": "TikTok", "youtube": "YouTube",
-                  "instagram": "Instagram", "x": "X"}
+                  "instagram": "Instagram", "x": "X", "facebook": "Facebook"}
 _FAILED_IMPACT = {"linkedin": "professional and B2B voices (buyers, installers, managers) are under-represented",
                   "tiktok": "younger, trend-driven voices are under-represented",
                   "instagram": "lifestyle and visual-brand voices are under-represented",
-                  "x": "real-time reactions and complaints aimed at brands are under-represented"}
+                  "x": "real-time reactions and complaints aimed at brands are under-represented",
+                  "facebook": "older, local and community-group voices (parents, homeowners, hobby groups) are "
+                              "under-represented"}
 
 
 def _rank_key(it: dict) -> tuple:
@@ -226,7 +228,7 @@ def capped_grade(grade: str, thin: bool) -> tuple[str, str]:
 
 
 _PLATFORM_WORDS = {"reddit": "Reddit", "tiktok": "TikTok", "youtube": "YouTube", "instagram": "Instagram",
-                   "linkedin": "LinkedIn", "x": "X", "web_forum": "forums", "web_review": "review sites",
+                   "linkedin": "LinkedIn", "x": "X", "facebook": "Facebook", "web_forum": "forums", "web_review": "review sites",
                    "web_editorial": "articles"}
 
 

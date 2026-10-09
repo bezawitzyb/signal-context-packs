@@ -19,7 +19,7 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Any, Awaitable, Callable
 
 from ctxpack.collect import apify, web
-from ctxpack.collect.cleaning import Deduper, Draft, clean, make_draft, words
+from ctxpack.collect.cleaning import Deduper, Draft, clean, make_draft, name_like, words
 from ctxpack.collect.mappers import MAPPERS, map_items, sanitize_for_fixture
 from ctxpack.collect.relevance import BriefContext
 from ctxpack.config import load_yaml
@@ -173,8 +173,8 @@ def _general_limit(ctx: RunContext) -> str | None:
     return None
 
 
-NO_APIFY_CREDIT = ("social sources are unavailable for this run: Reddit, TikTok, "
-                   "YouTube, Instagram and Trends cannot run; use web_search and fetch_and_segment")
+NO_APIFY_CREDIT = ("social sources are unavailable for this run: Reddit, TikTok, YouTube, Instagram, "
+                   "LinkedIn, X, Facebook and Trends cannot run; use web_search and fetch_and_segment")
 
 
 def apify_cap(ctx: RunContext) -> float:
@@ -281,11 +281,13 @@ async def _finish_collection(ctx: RunContext, tool: str, unit_label: str, drafts
 
 
 def _drafts_from_raw(platform: Platform, unit: str, raw: list[dict], fetched_at: datetime) -> list[Draft]:
-    """RawPost dicts -> Drafts. The author name is hashed inside make_draft and discarded."""
+    """RawPost dicts -> Drafts. The author name is hashed inside make_draft and discarded. Names of the other
+    authors in the batch are redacted from every text too (comments tag each other by name)."""
+    names = name_like([p.get("author") for p in raw])
     return [make_draft(platform=platform, source_unit=unit, url=p.get("url") or "", text=p["text"],
                        author=p.get("author"), date_raw=p.get("date"), fetched_at=fetched_at,
                        permalink=p.get("permalink"), community=p.get("community"),
-                       thread_id=p.get("thread_id"), engagement=p.get("engagement"))
+                       thread_id=p.get("thread_id"), engagement=p.get("engagement"), page_names=names)
             for p in raw]
 
 
@@ -372,6 +374,12 @@ async def _run_comments(ctx: RunContext, source: str, posts: list[dict], total: 
             "xquik/x-tweet-scraper": {"mode": "replies", "replyTweetIds": [x_post_id(u) for u in urls],
                                       "maxItemsPerTarget": n, "maxItems": limit},
             "scraper_one/x-post-replies-scraper": {"postUrls": urls, "resultsLimit": n},
+            # facebook: name-free post links; the date filter stays off (billed per comment), cleaning keeps
+            # the window
+            "apify/facebook-comments-scraper": {"startUrls": [{"url": u} for u in urls], "resultsLimit": n,
+                                                "includeNestedComments": False, "viewOption": "RANKED_THREADED"},
+            "thedoor/facebook-comment-scraper": {"postUrls": urls, "targetComments": n, "includeReplies": False,
+                                                 "includeReactions": False},
         }[spec["id"]]
 
     attempts = [(spec, inputs(spec, total)) for spec in (src["actor"], src.get("fallback")) if spec]
@@ -523,6 +531,10 @@ def x_unit(target: str) -> str:
     return f"x:#{t.lstrip('#').casefold()}" if t.startswith("#") else f"x:search:{t.casefold()}"
 
 
+def facebook_unit(query: str) -> str:
+    return f"facebook:search:{query.strip().casefold()}"
+
+
 def web_unit(url: str) -> str:
     return "web:" + (web.urlparse(url).netloc.removeprefix("www.") or "?")
 
@@ -535,6 +547,7 @@ def unit_for(tool: str, args: dict[str, Any]) -> str | None:
             "search_instagram": lambda: instagram_unit(args.get("hashtag", "")),
             "search_linkedin": lambda: linkedin_unit(args.get("query", "")),
             "search_x": lambda: x_unit(args.get("target", "")),
+            "search_facebook": lambda: facebook_unit(args.get("query", "")),
             }.get(tool, lambda: None)()
 
 
@@ -705,6 +718,28 @@ async def search_x(ctx: RunContext, target: str, limit: int = 0, reason: str = "
 
     return await _apify_tool(ctx, "search_x", "x", Platform.x, unit, query, limit, reason, inputs,
                              with_comments=True)
+
+
+# Keywords only (2026-10-09): never a person, profile, page, named group, event or link.
+_FB_PRIVATE = re.compile(r"(?:facebook|fb)\.(?:com|me)/|^\s*(?:https?://|www\.)|(?<![\w])@\w", re.I)
+
+
+async def search_facebook(ctx: RunContext, query: str, limit: int = 0, reason: str = "") -> dict[str, Any]:
+    """Public Facebook posts for a keyword query (mostly from PUBLIC groups), plus comments on posts that
+    have some. No session of ours; links are rebuilt as facebook.com/<post id>."""
+    if _FB_PRIVATE.search(query) or not query.strip():
+        return {"status": "refused", "error": "search_facebook takes keywords only - never a person, profile, "
+                "page, group, event or link (private or personal content is never collected)", **ctx.left()}
+    unit = facebook_unit(query)
+    q = query.strip()
+
+    def inputs(spec: dict, n: int) -> dict:
+        if spec["id"] == "scrapeforge/facebook-search-posts":
+            return {"query": q, "search_type": "posts", "max_results": n, "start_date": _cutoff(ctx)}
+        return {"query": q, "resultsCount": n, "searchType": "top", "startDate": _cutoff(ctx)}
+
+    return await _apify_tool(ctx, "search_facebook", "facebook", Platform.facebook, unit, q, limit, reason,
+                             inputs, with_comments=True)
 
 
 # --------------------------------------------------------------------------
@@ -1028,6 +1063,13 @@ def tool_definitions() -> list[dict[str, Any]]:
               "query": {"type": "string"}}, "required": ["source_unit", "query"]}}},
          ["summary", "source_verdicts", "gaps"]),
     ]
+    if "facebook" in _catalog()["sources"]:
+        defs.insert(3, ("search_facebook", f"Facebook public posts for a keyword query - mostly from public "
+                                           f"groups (parents, homeowners, local and hobby communities, people "
+                                           f"35+) - plus comments on posts that have some. Keywords only - never "
+                                           f"a person, profile, page or group. Latency "
+                                           f"{_latency('search_facebook')}.",
+                        {"query": {"type": "string"}, "limit": limit, "reason": _reason()}, ["query", "reason"]))
     if "x" in _catalog()["sources"]:
         defs.insert(3, ("search_x", f"X (Twitter) posts for keywords or a '#hashtag' (real-time reactions, "
                                     f"complaints aimed at brands, news and fandom talk), plus replies to posts "
@@ -1052,7 +1094,8 @@ def tool_definitions() -> list[dict[str, Any]]:
 
 TOOLS: dict[str, Callable[..., Awaitable[dict[str, Any]]]] = {
     "search_reddit": search_reddit, "search_tiktok": search_tiktok, "search_youtube": search_youtube,
-    "search_instagram": search_instagram, "search_linkedin": search_linkedin, "search_x": search_x, "web_search": web_search, "fetch_and_segment": fetch_and_segment,
+    "search_instagram": search_instagram, "search_linkedin": search_linkedin, "search_x": search_x,
+    "search_facebook": search_facebook, "web_search": web_search, "fetch_and_segment": fetch_and_segment,
     "get_trends": get_trends, "coverage_report": coverage_report, "finish": finish,
 }
 

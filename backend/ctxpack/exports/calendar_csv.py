@@ -17,7 +17,7 @@ from ctxpack.exports.safe_cells import safe_row
 COLUMNS = ["Title", "Week", "Day", "Channel", "Audience", "Hook", "Angle", "Key points", "Call to action",
            "Status", "Pack link", "Source links"]
 CHANNEL_NAMES = {"reddit": "Reddit", "tiktok": "TikTok", "youtube": "YouTube", "instagram": "Instagram",
-                 "linkedin": "LinkedIn", "x": "X", "web_forum": "Forums", "blog": "Blog", "newsletter": "Newsletter"}
+                 "linkedin": "LinkedIn", "x": "X", "facebook": "Facebook", "web_forum": "Forums", "blog": "Blog", "newsletter": "Newsletter"}
 FORMAT_NAMES = {"text_post": "text post", "carousel": "carousel", "short_video": "short video",
                 "blog_article": "blog article", "newsletter": "newsletter"}
 

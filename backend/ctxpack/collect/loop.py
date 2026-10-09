@@ -241,7 +241,7 @@ def first_message(ctx: RunContext, interp: Interpretation, plan: Plan) -> str:
         f"- target: at least {lim['min_relevant']} relevant documents\n"
         f"- time window: posts from the last {interp.time_window_days} days"
         + ("\n- Apify tools (search_reddit, search_tiktok, search_youtube, search_instagram, search_linkedin, "
-           "search_x, get_trends) "
+           "search_x, search_facebook, get_trends) "
            "are UNAVAILABLE this run: use web_search and fetch_and_segment only" if ctx.apify_unavailable else ""),
         "Start now. Batch independent calls in one turn.",
     ])

@@ -104,6 +104,7 @@ _CALLS: list[tuple[str, dict]] = [
     ("search_linkedin", {"query": "meal prep"}),
     ("search_x", {"target": "meal prep"}),
     ("search_x", {"target": "#mealprep"}),
+    ("search_facebook", {"query": "meal prep"}),
     ("get_trends", {"terms": ["meal prep"], "geo": "NL"}),
 ]
 # (countries, languages): worldwide English, and a single-country non-English brief (country inputs)

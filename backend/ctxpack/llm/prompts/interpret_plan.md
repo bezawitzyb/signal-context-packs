@@ -125,7 +125,8 @@ Otherwise give the plan:
   reddit (subreddit or query), tiktok (hashtag or query), youtube
   (channel or query), instagram (hashtag or query), linkedin (query
   only - keywords, never a person, profile or group), x (query or
-  hashtag - never a person, @handle or profile), web (domain or
+  hashtag - never a person, @handle or profile), facebook (query only
+  - keywords, never a person, profile, page or group), web (domain or
   query: forums, Q&A, review sites; articles are context only).
   Targets: "r/name" for subreddits, "#tag" for hashtags, a bare domain
   for sites (forum.example.com), plain words for queries. Pick only

@@ -31,6 +31,9 @@ HOW TO WORK
 - X: keywords or a #hashtag only (search_x); never a person, @handle,
   profile or list. Good for real-time reactions, complaints aimed at
   brands, news and fandom talk; expect bots and giveaways.
+- Facebook: keywords only (search_facebook); never a person, profile,
+  page or group. It reaches posts in public groups - strong for older
+  audiences, parents, homeowners and local or hobby communities.
 - Prefer first-person discussion (people describing their own
   experience, questions, complaints) over brand, retailer or news
   content. News and trends are context only.

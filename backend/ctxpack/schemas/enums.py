@@ -20,6 +20,7 @@ class Platform(StrEnum):
     instagram = "instagram"
     linkedin = "linkedin"
     x = "x"
+    facebook = "facebook"
     web_forum = "web_forum"
     web_review = "web_review"
     web_editorial = "web_editorial"
@@ -34,6 +35,7 @@ class CollectionPlatform(StrEnum):
     instagram = "instagram"
     linkedin = "linkedin"
     x = "x"
+    facebook = "facebook"
     web = "web"
 
 
@@ -352,6 +354,7 @@ class PostChannel(StrEnum):
     instagram = "instagram"
     linkedin = "linkedin"
     x = "x"
+    facebook = "facebook"
     web_forum = "web_forum"
     blog = "blog"
     newsletter = "newsletter"

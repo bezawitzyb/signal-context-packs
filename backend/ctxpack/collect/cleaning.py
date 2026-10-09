@@ -175,6 +175,21 @@ def redact_names(text: str, names: list[str]) -> str:
     return text
 
 
+_HANDLE_LIKE = re.compile(r"[\d_.]")
+
+
+def name_like(names: list[str | None]) -> list[str]:
+    """Author names safe to redact wherever they appear: a full name (two words or more) or a handle with
+    digits, '_' or '.'. A single plain word ("snacks", "Anna") is left out - redacting it would cut ordinary
+    words out of quotes (first names written in a post are handled by redact_first_names)."""
+    out = []
+    for n in names:
+        n = (n or "").strip().lstrip("@")
+        if len(n) >= 3 and (" " in n or _HANDLE_LIKE.search(n)):
+            out.append(n)
+    return sorted(set(out))
+
+
 def redact(text: str, names: list[str] | None = None) -> tuple[str, bool]:
     """Emails, profile URLs, phones, handles, quote headers, known author names and first names written in
     the post -> [email] [user] [phone] [name]."""
@@ -202,11 +217,22 @@ def scrub_url(url: str | None) -> str | None:
         return linkedin_url(m.group(1))
     if (m := _X_STATUS.search(url)):  # x.com/<handle>/status/<id> names the author
         return x_url(m.group(1))
+    if (m := _FB_POST.search(url)):    # facebook.com/<name>/posts/... names the author
+        return facebook_url(m.group(1))
     return _TIKTOK_HANDLE_IN_URL.sub(r"\1@/", url)
 
 
 _LINKEDIN_POST = re.compile(r"linkedin\.com/posts/[^?#\s]*?(\d{16,22})")
 _X_STATUS = re.compile(r"(?:twitter|x)\.com/(?:[^/?#\s]+|i/web)/status(?:es)?/(\d{5,25})", re.I)
+
+
+_FB_POST = re.compile(r"facebook\.com/(?:groups/[^/?#\s]+/)?(?:[^/?#\s]+/)?(?:posts|permalink)/(\d{8,25})", re.I)
+
+
+def facebook_url(post_id: str, comment_id: str | None = None) -> str:
+    """A Facebook post (or comment) link without anyone's name in it: facebook.com/<post id> opens the post
+    (checked 2026-10-09: it redirects to the post's own page)."""
+    return f"https://www.facebook.com/{post_id}" + (f"?comment_id={comment_id}" if comment_id else "")
 
 
 def x_url(post_id: str) -> str:
@@ -281,8 +307,9 @@ def make_draft(
 
             salt = OFFLINE_SALT
     author_hash = hash_author(str(platform), author, salt)
+    names = name_like([author]) + list(page_names or [])  # people sign their posts with their own name
     del author  # never stored, logged, cached or prompted
-    clean, changed = redact(normalise_text(text), page_names)
+    clean, changed = redact(normalise_text(text), names)
     return Draft(
         platform=platform,
         source_unit=source_unit,

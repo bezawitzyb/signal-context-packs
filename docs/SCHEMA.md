@@ -1347,13 +1347,13 @@ supported: enough authors across communities; signal: an early signal - check be
 
 Source family. All forum domains together are ONE platform (web_forum).
 
-`reddit`, `tiktok`, `youtube`, `instagram`, `linkedin`, `x`, `web_forum`, `web_review`, `web_editorial`
+`reddit`, `tiktok`, `youtube`, `instagram`, `linkedin`, `x`, `facebook`, `web_forum`, `web_review`, `web_editorial`
 
 ### Enum PostChannel
 
 Where a post brief is published (change V8): the social platforms plus owned channels.
 
-`reddit`, `tiktok`, `youtube`, `instagram`, `linkedin`, `x`, `web_forum`, `blog`, `newsletter`
+`reddit`, `tiktok`, `youtube`, `instagram`, `linkedin`, `x`, `facebook`, `web_forum`, `blog`, `newsletter`
 
 ### Enum PostFormat
 

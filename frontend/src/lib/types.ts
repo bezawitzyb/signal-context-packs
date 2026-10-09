@@ -562,7 +562,16 @@ export type DistinctAuthors = number;
  * Source family. All forum domains together are ONE platform (web_forum).
  */
 export type Platform =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "web_review" | "web_editorial";
+  | "reddit"
+  | "tiktok"
+  | "youtube"
+  | "instagram"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "web_forum"
+  | "web_review"
+  | "web_editorial";
 /**
  * Source families the members come from.
  */
@@ -676,7 +685,16 @@ export type Type1 = "platform_lens";
  * Source family. All forum domains together are ONE platform (web_forum).
  */
 export type Platform1 =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "web_review" | "web_editorial";
+  | "reddit"
+  | "tiktok"
+  | "youtube"
+  | "instagram"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "web_forum"
+  | "web_review"
+  | "web_editorial";
 /**
  * Kept posts from this platform (lens needs >= 15).
  */
@@ -1702,7 +1720,16 @@ export type Format = string;
  * Source family. All forum domains together are ONE platform (web_forum).
  */
 export type Platform2 =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "web_review" | "web_editorial";
+  | "reddit"
+  | "tiktok"
+  | "youtube"
+  | "instagram"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "web_forum"
+  | "web_review"
+  | "web_editorial";
 /**
  * Engagement percentile within its platform.
  */
@@ -1999,7 +2026,16 @@ export type Priority = number;
  * Source family. All forum domains together are ONE platform (web_forum).
  */
 export type Platform3 =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "web_review" | "web_editorial";
+  | "reddit"
+  | "tiktok"
+  | "youtube"
+  | "instagram"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "web_forum"
+  | "web_review"
+  | "web_editorial";
 /**
  * Why this channel, in one sentence.
  */
@@ -2156,7 +2192,16 @@ export type TargetKind = "community" | "creator";
  * Source family. All forum domains together are ONE platform (web_forum).
  */
 export type Platform4 =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "web_review" | "web_editorial";
+  | "reddit"
+  | "tiktok"
+  | "youtube"
+  | "instagram"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "web_forum"
+  | "web_review"
+  | "web_editorial";
 /**
  * Public link.
  */
@@ -2197,7 +2242,16 @@ export type Day = string;
  * Source family. All forum domains together are ONE platform (web_forum).
  */
 export type Platform5 =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "web_review" | "web_editorial";
+  | "reddit"
+  | "tiktok"
+  | "youtube"
+  | "instagram"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "web_forum"
+  | "web_review"
+  | "web_editorial";
 /**
  * Format to use.
  */
@@ -2234,7 +2288,7 @@ export type Type20 = "post_brief";
  * Where to publish (the user's own channels first).
  */
 export type PostChannel =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "blog" | "newsletter";
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "facebook" | "web_forum" | "blog" | "newsletter";
 /**
  * Who in the audience it is for.
  */
@@ -2341,7 +2395,7 @@ export type PostBriefId = string;
  * Where to publish.
  */
 export type PostChannel1 =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "blog" | "newsletter";
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "facebook" | "web_forum" | "blog" | "newsletter";
 /**
  * The format.
  */
@@ -2394,7 +2448,7 @@ export type SuggestedDay = string;
  * Where to publish.
  */
 export type PostChannel2 =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "blog" | "newsletter";
+  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "facebook" | "web_forum" | "blog" | "newsletter";
 /**
  * The brief to post.
  */
@@ -2576,7 +2630,16 @@ export type SourceUnit1 = string;
  * Source family. All forum domains together are ONE platform (web_forum).
  */
 export type Platform6 =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "web_review" | "web_editorial";
+  | "reddit"
+  | "tiktok"
+  | "youtube"
+  | "instagram"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "web_forum"
+  | "web_review"
+  | "web_editorial";
 /**
  * Verdict reason, e.g. "kept: 58% relevant".
  */
@@ -2720,7 +2783,16 @@ export type Id31 = string;
  * Source family. All forum domains together are ONE platform (web_forum).
  */
 export type Platform7 =
-  "reddit" | "tiktok" | "youtube" | "instagram" | "linkedin" | "x" | "web_forum" | "web_review" | "web_editorial";
+  | "reddit"
+  | "tiktok"
+  | "youtube"
+  | "instagram"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "web_forum"
+  | "web_review"
+  | "web_editorial";
 /**
  * Where it was found.
  */
@@ -2789,6 +2861,10 @@ export type Trust = "untrusted_user_content";
  * Every cited post (PRD 6.4).
  */
 export type Evidence = Evidence1[];
+/**
+ * Package version, plus the git commit when known.
+ */
+export type CodeVersion = string;
 
 /**
  * Context Pack 1.3 - the canonical object (context_pack.json). Older packs are migrated when read.
@@ -2836,6 +2912,10 @@ export interface ContextPack13 {
   coverage: Coverage;
   events?: Events;
   evidence?: Evidence;
+  /**
+   * Models, prompt and config fingerprints and code version behind this pack (data audit; null for older packs).
+   */
+  provenance?: Provenance | null;
 }
 /**
  * The brief as submitted and as understood.
@@ -4147,4 +4227,31 @@ export interface Evidence1 {
   emotion?: Emotion14;
   role?: EvidenceRole;
   trust?: Trust;
+}
+/**
+ * What made this pack (data audit 8): to reproduce it, or to tell which settings an older pack came from.
+ */
+export interface Provenance {
+  models?: Models;
+  prompts?: Prompts;
+  config?: Config;
+  code_version?: CodeVersion;
+}
+/**
+ * Model per role (config/models.yaml).
+ */
+export interface Models {
+  [k: string]: string;
+}
+/**
+ * Prompt name -> first 12 hex of its sha256.
+ */
+export interface Prompts {
+  [k: string]: string;
+}
+/**
+ * Config file -> first 12 hex of its sha256.
+ */
+export interface Config {
+  [k: string]: string;
 }

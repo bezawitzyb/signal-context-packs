@@ -35,6 +35,7 @@ export interface Summary {
 const TOOL_WORDS: Record<string, string> = {
   search_reddit: "Search Reddit", search_tiktok: "Search TikTok", search_youtube: "Search YouTube",
   search_instagram: "Search Instagram", search_linkedin: "Search LinkedIn", search_x: "Search X",
+  search_facebook: "Search Facebook",
   web_search: "Search the web", fetch_and_segment: "Read pages",
   get_trends: "Check Google Trends", coverage_report: "Check coverage", finish: "Finish collecting",
 };

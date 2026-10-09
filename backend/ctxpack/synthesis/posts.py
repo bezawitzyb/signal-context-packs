@@ -26,10 +26,12 @@ LEVELS = ["speculative", "emerging", "moderate", "strong"]
 DAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 # channel plan platform -> where a post goes (review sites are listened to, not posted on)
 PLAN_TO_POST = {"reddit": "reddit", "tiktok": "tiktok", "youtube": "youtube", "instagram": "instagram",
-                "linkedin": "linkedin", "x": "x", "web_forum": "web_forum", "web_editorial": "blog"}
+                "linkedin": "linkedin", "x": "x", "facebook": "facebook", "web_forum": "web_forum",
+                "web_editorial": "blog"}
 # words a user may type for a channel they already use (V3 intake is free text)
 _CHANNEL_WORDS = [("linkedin", "linkedin"), ("instagram", "instagram"), ("insta", "instagram"),
                   ("tiktok", "tiktok"), ("youtube", "youtube"), ("reddit", "reddit"), ("twitter", "x"),
+                  ("facebook", "facebook"),
                   ("newsletter", "newsletter"), ("e-mail", "newsletter"), ("email", "newsletter"),
                   ("mailing", "newsletter"), ("blog", "blog"), ("website", "blog"), ("seo", "blog"),
                   ("forum", "web_forum")]
