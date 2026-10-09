@@ -1,35 +1,35 @@
 ---
 name: meal-prep-habits-motivations-and-content-among-global-audience
-description: "Real audience research on Gen Z adults aged roughly 18-27, students and young professionals, cooking on a budget in small kitchens in global about meal prep habits, motivations and content among Gen Z: their words, tensions, objections, guardrails and a ready playbook, from 207 public posts. Use when writing marketing content, hooks, posts, ads or briefs for Gen Z adults aged roughly 18-27, students and young professionals, cooking on a budget in small kitchens in global about meal prep habits, motivations and content among Gen Z, or when checking what this audience says, wants or objects to."
+description: "Real audience research on Gen Z adults aged roughly 18-27, students and early-career workers, cooking on a budget and often in small kitchens in global about meal prep habits, motivations and content among Gen Z: their words, tensions, objections, guardrails and a ready playbook, from 263 public posts. Use when writing marketing content, hooks, posts, ads or briefs for Gen Z adults aged roughly 18-27, students and early-career workers, cooking on a budget and often in small kitchens in global about meal prep habits, motivations and content among Gen Z, or when checking what this audience says, wants or objects to."
 ---
 
 # meal prep habits, motivations and content among Gen Z - global audience context
 
-Who: Gen Z adults aged roughly 18-27, students and young professionals, cooking on a budget in small kitchens. Market global, languages en. Built from 207 real public posts (coverage grade c; thin evidence - treat findings as early signals).
+Who: Gen Z adults aged roughly 18-27, students and early-career workers, cooking on a budget and often in small kitchens. Market global, languages en. Built from 263 real public posts (coverage grade c; thin evidence - treat findings as early signals).
 
-Goal (content plan): The audience wants cheap, quick, high-protein prep, but the gaps are boredom, fridge space, fridge life and shift-friendly ideas, so lead with component prep and real numbers (price, macros, days) in small-kitchen content on TikTok and Reddit.
+Goal (content plan): The pack suggests the audience copies prep content that shows the full numbers (price, macros, time, temperature) and answers the day-three and food-safety worries. Reddit and TikTok are the evidence base, so treat other platforms as tests.
 
 ## Do first
-- Post a TikTok on Sunday in a small kitchen about prepping 'ingredients and components, not whole meals': show the receipt total, a mini-fridge shelf, and three different meals built from the same parts across the week. Put the full ingredient list and sauce in the caption and end with 'Comment if you want the recipe'. (DO-01)
-- Post a question in a meal-prep subreddit (for example r/mealprep) asking how many days people keep prepped meals, which ones get soggy, and whether they cook rice fresh. Then turn the answers into a simple fridge-life guide credited to the thread. (DO-02)
-- Post a TikTok of a post-gym high-protein bowl with calories, protein, carbs and fat per serve in the caption, the cooking directions written out, and 'Comment if you want the recipe' as the hook, using #highprotein. (DO-03)
+- Post a TikTok budget prep haul that shows the meal count and total spend, puts calories and protein per serving on screen first, and lists oven time, temperature and the shopping list in the caption or pinned comment. (DO-01)
+- Post on Reddit (a meal prep or cheap-eating community) a plain, first-person storage explainer: how you cool food, how many days ahead you prep and how you freeze portions. Say what you are unsure about and ask readers to share theirs. (DO-02)
+- Film a TikTok of freezer burritos in single portions made from one base and finished with three different sauces, with the 'change up the sauce' fix shown on screen and the reheat steps in the caption. (DO-03)
 
 ## Five truths
-- One poster preps a big pot and eats it four days straight until they hate it, and another keeps landing back in the same two or three dishes. (THM-02)
-- I'm looking for freezer recipes like individually wrapped enchiladas that reheat well. (THM-03)
-- I prep ingredients and components so I can still change what I eat during the week. (THM-05)
-- I'm checking whether stored food has spoiled, from fridge temperature to a sour taste. (THM-09)
-- A plan that goes from 0-100 is likely to fail. (OBJ-02)
+- Homemade food is cheap, but the cooking time can kill the vibe. (TEN-04)
+- I keep the same base but change the sauces, spices or flavours so each meal feels different. (THM-04)
+- Meal prep content looks too slow or too expensive for me to copy. (OBJ-04)
+- When a recipe video leaves out the details, I ask in the comments for macros, ingredients, time and temperature. (THM-10)
+- I'm not sure prepped, stored or reheated food is safe. (OBJ-01)
 
 ## Voice
-Tone: Casual and first-person. TikTok captions are upbeat, with emoji and hashtags. Reddit posts are plain questions and tips, sometimes with humour or frustration.
-Their words: macros = the protein, carb and fat breakdown of a meal; fakeaway = a homemade version of a takeaway meal; #gymgirl = fitness lifestyle hashtag; TIRED GIRL DINNERS = a named series of easy, low-effort dinner recipes; banger = an excellent recipe; the GOAT = greatest of all time, praise for a creator; brokie = broke, on a tight budget; We are so back = excited return to meal prepping; clopening = closing late and opening early shifts; #collegehacks = college life tips hashtag; Clean Out the Fridge Week = a week of using up what is in the fridge; Consider me influenced = responding to content by wanting to try it
+Tone: Casual and first-person. TikTok uses emoji, hashtags and cheerful self-labels like 'lazy girl'. Reddit is plain and practical, with posters explaining their situation and asking for help.
+Their words: lazy girl meal prep = fast, minimal-effort meal prep; dump and bake = recipes where you put everything in a dish and bake it; lazy girl dinner = a very low-effort dinner, with disagreement about what qualifies; gym bro meal prep = stereotypical plain, macro-focused meal prep; goated = the best; excellent; macro friendly = fits macro targets; uni food = meals for university students, in the UK context; brokie = broke; on a tight budget; capsule meal prep = prepping a small set of components; nuke = microwave; game changer = a very useful trick or food
 
 ## Guardrails
-Say: on a college budget; prep ingredients and components; high protein with macros per serve; Comment if you want the recipe; freezer-friendly and reheats well; quick weeknight dinner
-Not: eat the same meal all week as a positive; budget claims with no price; health claims with no numbers; ignoring small kitchens and mini fridges
-Never claim: Freezer-friendly and reheats well, day 5; High protein; it's not budget friendly; smell test and all; meal for five bucks that lasts two days; fridge-life guide from thread answers; high-protein bowl, #highprotein; turn the answers into a fridge-life guide; high-protein bowl with macros; Freezer-friendly enchiladas
-Sensitive: Budget framing can backfire if the meals need gadgets, specialty items or long ingredient lists. Commenters call out budget claims that rely on expensive items.; Storage and food-safety advice, such as how long rice, pasta or chicken keeps and whether to wash chicken, is disputed. Presenting a single rule as settled could draw correction or cause harm.; Posting recipes without macros, directions or realistic portions leads viewers to ask for them or say the portions are too small.; Weight-loss and all-or-nothing language may be sensitive. Posters say drastic overnight changes tend to fail.; Content that assumes a stocked kitchen, large fridge or free evenings may exclude beginners, renters and shift workers.
+Say: cheap, easy and high protein; no thinking; macro friendly; change up the sauce; prep the components; freezer burritos; for a busy week
+Not: gym bro meal prep; leaving out oven time, temperature or macros; fancy or complicated recipes; ignoring small kitchens and tight budgets
+Never claim: high-protein prep: cheap, macro friendly; Macro friendly and not boring; prepped meal replacing a specific takeaway; one named takeaway order, one prepped alternative; fits macro targets, high protein, cheap
+Sensitive: The money motivation cluster has no verified posts and engagement data is absent, so claims that money is the main motive or that formats win on saves would be unsupported.; Storage and safety content can backfire if it gives food-safety advice without care. Posters already doubt safety, and one claim about silicone molds and microplastics is a single commenter's warning.; Gym-macro-led prep may put off those who say no gym bro meal prep, so don't make it the only tone.; Large-batch, ingredient-heavy or pricey recipes may be mocked as slow, expensive or reliant on gear that dorm and shared-home cooks lack.; Using AI-generated recipes could draw pushback from those who find them poor, and the air fryer mentions under the AI label are about the appliance, not AI.; Mocking a 'lazy girl' meal as not lazy enough shows commenters will police the label, so overclaiming ease can draw corrections.
 Quotes: Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.
 
 ## Rules
@@ -50,4 +50,4 @@ Quotes: Quoted excerpts are for internal research and briefs only. Do not use th
 - references/posts.md: post briefs, drafts and the 4-week content calendar - open when writing or scheduling posts
 - references/evidence.json: the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim
 
-Pack pk_vTTgWkilgckH, generated 2026-10-09T17:50:03.835391Z. AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.
+Pack pk_Jeoz-fO2CzAm, generated 2026-10-09T21:42:13.297089Z. AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.

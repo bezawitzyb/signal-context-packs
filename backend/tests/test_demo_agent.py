@@ -10,7 +10,8 @@ from ctxpack.evaluation import claim_items
 from scripts import demo_agent as da
 from tests.test_cluster import fake  # noqa: F401  (fixture)
 
-PACK = json.loads((Path(__file__).parents[2] / "featured" / f"{da.NL_PACK}.json").read_text(encoding="utf-8"))
+# A fixed copy of the NL pack these checks were written against (featured until 2026-10-09): the checks use its words
+PACK = json.loads((Path(__file__).parent / "fixtures" / "packs" / "pk_i4iFso1HnLWR.json").read_text(encoding="utf-8"))
 
 
 def script(hook="Welke snack mis je nog?", cited=("THM-01",), facts=(("Je mist die snack nog.", "THM-01"),),

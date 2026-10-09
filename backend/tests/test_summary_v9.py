@@ -60,14 +60,14 @@ def test_featured_packs_are_migrated_to_the_new_summary_for_free():
 
 
 def test_quick_brief_is_half_a_page_and_keeps_the_quote_rule():
-    p = featured("pk_i4iFso1HnLWR")
+    p = featured("pk_7KAp0R-njCpL")
     text = to_quick_brief(p)
     assert len(text.split()) <= load_yaml("modes")["exports"]["quick_brief_max_words"]
     assert "WHO:" in text and "DON'T:" in text and p["guardrails"]["quote_reuse_note"] in text
 
 
 def test_handoff_options_are_written_for_marketers():
-    options = handoff_options(featured("pk_i4iFso1HnLWR"))
+    options = handoff_options(featured("pk_7KAp0R-njCpL"))
     main = [o["title"] for o in options if not o["more"]]
     assert main == ["Quick brief", "Brief for your AI writer", "Full report", "Content calendar"]
     text = json.dumps(options).lower()

@@ -5,164 +5,158 @@ Drafts written by AI from the research. Review before use; items marked CHECK WI
 
 | Week | Day | Channel | Post | Why then | Status |
 |---|---|---|---|---|---|
-| 1 | Tuesday | TikTok | Prep the parts, not the whole meal: one shop, three different meals [PST-01] | the day this week's plan uses for this channel | idea |
-| 1 | Friday | YouTube | What to pack and when to cook for irregular hours, with the real session time stated [PST-05] | the day this week's plan uses for this channel | idea |
-| 2 | Tuesday | TikTok | Individually wrapped freezer meals, tested reheated on camera [PST-06] | the day this week's plan uses for this channel | idea |
-| 2 | Sunday | Reddit | Community-sourced fridge-life guide: days per meal, how to avoid soggy food, what to cook fresh [PST-02] | Sunday prep day (Sunday; seen in posts) | idea |
-| 3 | Tuesday | TikTok | A post-gym bowl with all numbers and directions, so no one has to ask [PST-03] | the day this week's plan uses for this channel | idea |
-| 3 | Sunday | Reddit | A one-pan, one-pot prep plan with a receipt, as the honest alternative [PST-07] | Sunday prep day (Sunday; seen in posts) | idea |
-| 4 | Sunday | Reddit | Honest midweek report, sauce swaps and a first-person fix [PST-04] | Sunday prep day (Sunday; seen in posts) | idea |
+| 1 | Sunday | TikTok | A budget haul with meal count, total price and macros per serving first, then the shopping list. [PST-01] | Sunday prep day (Sunday; seen in posts) | idea |
+| 1 | Sunday | Reddit | A first-person post about cooking for one: use up part-packs, freeze portions, ask what others do. [PST-05] | Sunday prep day (Sunday; seen in posts) | idea |
+| 2 | Sunday | TikTok | Freezer burritos in single portions, three sauces so it doesn't get boring. [PST-02] | Sunday prep day (Sunday; seen in posts) | idea |
+| 2 | Sunday | TikTok | A prep that works with only a microwave, showing the equipment used and what it costs. [PST-06] | Sunday prep day (Sunday; seen in posts) | idea |
+| 3 | Tuesday | Blog | Takeaway-swap prep: one named takeaway order, one prepped alternative, with cost, time and macros. [PST-07] | spread across the month | idea |
+| 3 | Sunday | Reddit | A first-person explainer on cooling, freezing and days ahead, written as an observation and open to correction. [PST-03] | Sunday prep day (Sunday; seen in posts) | idea |
+| 4 | Sunday | TikTok | Prep one base and components, then change up the sauce each day. [PST-04] | Sunday prep day (Sunday; seen in posts) | idea |
 
-#### PST-01: Prep the parts, not the whole meal: one shop, three different meals
-*TikTok, short video; for Broke student or first-time cook in a small or shared kitchen (SEG-01); confidence emerging*  
-**Goal:** Get saves and recipe requests; show component prep beats same-meal boredom  
-**Hook:** Mini fridge, one tiny freezer shelf: here's my Sunday prep day on a college budget, with the receipt total on screen. [HOOK-02]  
-**Structure:** receipt → prep in small kitchen → three meals → comment prompt  
-- Show the receipt total and how many meals it covers *[MOT-01, THM-01; posts EV-0056, EV-0029, EV-0001, EV-0002]*
-- Prep ingredients and components so you can change what you eat midweek *[THM-05, TEN-01; posts EV-0017, EV-0018, EV-0050, EV-0051]*
-- Show it all fitting in a mini fridge and a small freezer shelf *[TEN-02; posts EV-0035, EV-0052]*
-- Full ingredient list and sauce in the caption *[THM-07; posts EV-0026, EV-0027]*
-**Their words:** brokie, #collegehacks, banger  
-**Call to action:** Comment if you want the recipe  
-**Avoid:** budget claims with no price; ignoring small kitchens and mini fridges; eat the same meal all week as a positive  
-
-**Draft - review before posting** (neutral voice)
-
-> [Scene: receipt on screen, then mini fridge door open]
-> Mini fridge, one tiny freezer shelf, Sunday prep day on a college budget. Receipt: [$TOTAL] for [N] meals.
->
-> [Scene: small counter, quick prep clips]
-> I don't cook whole meals. I prep ingredients and components: rice, roasted veg, chicken, one sauce.
->
-> [Scene: containers stacked in mini fridge, extra portions on the freezer shelf]
-> Everything fits. The extra chicken and rice go in the freezer: freezer-friendly and reheats well.
->
-> [Scene: three plates, one after another]
-> Monday: burrito bowl. Wednesday: fried rice. Friday: wrap. One shop, three different meals, each a quick weeknight dinner.
->
-> [Scene: caption on screen]
-> Full ingredient list and sauce are in the caption. Comment if you want the recipe.
->
-> #collegehacks
-
-#### PST-02: Community-sourced fridge-life guide: days per meal, how to avoid soggy food, what to cook fresh
-*Reddit, text post; for New preppers worried about spoilage; confidence emerging*  
-**Goal:** Own the fridge-life gap and build a guide from real answers  
-**Hook:** How many days does cooked rice really last in your fridge? Asking before I find out on Thursday. [HOOK-07]  
-**Structure:** question → own attempt → ask for numbers → follow-up guide  
-- Ask how many days people keep each prepped meal *[OPP-07, OPP-02; posts EV-0081, EV-0082]*
-- Some won't prep rice or pasta cooked; ask what they do instead *[OBJ-05; posts EV-0069]*
-- Treat food safety as observations, not rules; link official guidance if you add any *[THM-09; posts EV-0031, EV-0032]*
-- Report back with the finished guide *[OPP-02; posts EV-0081, EV-0082]*
-**Their words:** Clean Out the Fridge Week  
-**Call to action:** Tell me your day counts and I'll put them in a guide  
-**Avoid:** health claims with no numbers  
+#### PST-01: A budget haul with meal count, total price and macros per serving first, then the shopping list.
+*TikTok, short video; for Gym and macro trackers who also want a low budget; confidence speculative*  
+**Goal:** Get saves and recipe requests with a budget haul that leads with the numbers  
+**Hook:** Don't gate keep that: my budget prep haul with the meal count and the total. [HOOK-11]  
+**Structure:** hook → haul → macros per meal → where to find the list  
+- Put calories and protein per serving on screen in the first seconds. *[OPP-04, MOT-01; posts EV-0072, EV-0041]*
+- Show the meal count and total price like a budget haul. *[CUL-01, TEN-02; posts EV-0013, EV-0063, EV-0064]*
+- Say oven time and temperature, and name the shopping list in the caption. *[THM-10; posts EV-0037, EV-0038]*
+- Keep the tone relaxed and non-gym-bro. *[OBJ-05, CUL-04; posts EV-0046]*
+**Their words:** macro friendly, brokie, goated  
+**Call to action:** Ask what meal they want broken down next.  
+**Avoid:** gym bro meal prep; leaving out oven time, temperature or macros  
 
 **Draft - review before posting** (neutral voice)
 
-> How many days does cooked rice really last in your fridge? Asking before I find out on Thursday.
+> [On screen, first seconds: "[###] cal | [##]g protein per serving"]
 >
-> I'm new to meal prep and the spoilage question is what worries me most. My own attempt: I'm cooking a batch of rice on Sunday, cooling it, boxing it up and seeing how it holds up by Thursday.
+> Don't gate keep that: my budget prep haul, numbers first.
 >
-> Here's what I keep hearing from people:
-> - Some say rice and pasta turn after a few days, so they cook them the day of, or the night before, in a rice cooker.
-> - Others cook a big batch, eat a few days' worth and freeze the rest.
-> - Almost everyone asks how to keep prepped food from going soggy.
+> [Scene: basket and receipt on the counter. Text on screen: "[##] meals | $[total] total"]
+> That's [##] meals for $[total]. Brokie-friendly, and it fits macro targets. Cheap, easy and high protein, no fancy steps.
 >
-> So I'd love real numbers:
-> 1. How many days do you keep each prepped meal (chicken, rice, pasta, veg)?
-> 2. If you don't prep rice or pasta cooked, what do you do instead?
-> 3. What do you cook fresh, and what's your trick against soggy food?
+> [Scene: quick shots of each item going into the cart or onto the counter]
+> Here's the haul: [item], [item], [item], [item].
 >
-> These are your observations, not rules. If I add food safety guidance, I'll link the official source. Once the answers are in, I'll post the finished guide here, maybe in time for Clean Out the Fridge Week.
+> [Scene: containers lined up, macro card on screen]
+> Macros per meal: [###] calories, [##]g protein. Same on every container.
 >
-> Tell me your day counts and I'll put them in a guide.
+> [Scene: tray going into the oven]
+> It bakes at [temp] for [time]. One tray, and it works in a tiny kitchen.
+>
+> The full shopping list is in the caption, so save this one.
+>
+> Which meal should I break down next? Tell me below.
+>
+> Caption: Full shopping list + oven temp and time: [list].
 
-#### PST-03: A post-gym bowl with all numbers and directions, so no one has to ask
-*TikTok, short video; for Gym-focused protein prepper (SEG-02); confidence emerging*  
-**Goal:** Reach the protein conversation with complete info  
-**Hook:** High protein, macros per serve on screen, post-gym bowl that fits on one mini-fridge shelf. Comment if you want the recipe. [HOOK-05]  
-**Structure:** hook → bowl build → macros overlay → comment prompt  
-- Calories, protein, carbs and fat per serve in the caption *[THM-04, MOT-02; posts EV-0012, EV-0013, EV-0049, EV-0037]*
-- Cooking directions written out *[OPP-09; posts EV-0037, EV-0084]*
-- Post-gym is when this meal is wanted *[MOM-02; posts EV-0048, EV-0049]*
-**Their words:** macros, #gymgirl, banger  
-**Call to action:** Comment if you want the recipe  
-**Avoid:** health claims with no numbers; ignoring small kitchens and mini fridges  
+#### PST-02: Freezer burritos in single portions, three sauces so it doesn't get boring.
+*TikTok, short video; for Shift workers and busy students who are tired after work; confidence emerging*  
+**Goal:** Show a no-thinking grab-and-go answer and get people to share fillings  
+**Hook:** The answer is always burritos. Freezer burritos for a busy week, one portion at a time. [HOOK-05]  
+**Structure:** hook → assembly → freezing → three sauces → reheat  
+- Wrap and freeze single portions, then show a fast reheat. *[THM-11; posts EV-0039, EV-0040]*
+- Change up the sauce to answer the boredom worry. *[THM-04, PAIN-02, TEN-01; posts EV-0017, EV-0018, EV-0053, EV-0054, EV-0061, EV-0012]*
+- Say it needs no thinking after a long day. *[PAIN-01, THM-02; posts EV-0009, EV-0052, EV-0006, EV-0007]*
+- Put oven or microwave time and temperature in the caption. *[THM-10; posts EV-0037, EV-0038]*
+**Their words:** lazy girl meal prep, nuke, game changer  
+**Call to action:** Ask for their burrito filling.  
+**Avoid:** fancy or complicated recipes; leaving out oven time, temperature or macros  
 
 **Draft - review before posting** (neutral voice)
 
-> [Scene: gym bag down, one shelf of a mini fridge, a container slides out]
-> High protein, macros per serve on screen, and this post-gym bowl fits on one mini-fridge shelf.
+> The answer is always burritos. Freezer burritos for a busy week, one portion at a time.
 >
-> [Scene: bowl build]
-> Rice base, chicken, veg, sauce. Done.
+> [Scene: wraps laid out on the counter]
+> Assembly: pick a wrap, add what you already have. Think potato, egg, onion, peppers, spinach or sausage. No recipe, no fuss. Lazy girl meal prep at its easiest.
 >
-> [Scene: macros overlay]
-> Per serve: [calories] kcal, [protein]g protein, [carbs]g carbs, [fat]g fat.
+> [Scene: rolling and wrapping each burrito]
+> Roll it tight, wrap it up, one burrito per portion.
 >
-> [Scene: text on screen]
-> Comment if you want the recipe.
+> [Scene: burritos going into the freezer]
+> Freeze them. Make a whole stack at once so the work is done.
 >
-> CAPTION
-> High protein post-gym bowl. Macros per serve: [calories] kcal | [protein]g protein | [carbs]g carbs | [fat]g fat.
-> Directions:
-> 1. Cook the rice and let it cool in a stackable container.
-> 2. Season the chicken and cook in a hot pan until cooked through, then slice.
-> 3. Cook the veg in the same pan.
-> 4. Build the bowl and add the sauce.
-> Ingredients and amounts: [list]
-> #gymgirl
+> [Scene: three small bowls of sauce]
+> Worried about getting bored? Change up the sauce. Green enchilada sauce one day, BBQ the next, gochujang when you want a kick. Same burrito, a different meal.
+>
+> [Scene: burrito in the microwave, then on a plate]
+> Reheat: nuke it and eat. After a long shift or a late class, there's zero thinking involved. It's a game changer.
+>
+> What's your burrito filling?
 
-#### PST-04: Honest midweek report, sauce swaps and a first-person fix
-*Reddit, text post; for Preppers bored by repeated meals; confidence emerging*  
-**Goal:** Show honest, relatable prep with swaps  
-**Hook:** Day 4 of the same pot of chili and I'm done. Here's how I prep ingredients and components, not whole meals, so I stop hating my fridge. [HOOK-01]  
-**Structure:** frustration → what I changed → result → question  
-- Same meal for four days wears people down *[THM-02, TEN-01; posts EV-0006, EV-0007, EV-0050, EV-0051]*
-- New sauces and seasonings keep prep from getting dull *[MOT-05; posts EV-0060, EV-0061]*
-- Start small, not 0 to 100 *[OBJ-02; posts EV-0067]*
-- Share real portions; some say a week lasts three days *[OBJ-06; posts EV-0068, EV-0070]*
-**Their words:** We are so back, banger  
-**Call to action:** What's your go-to swap by day 4?  
-**Avoid:** eat the same meal all week as a positive  
+#### PST-03: A first-person explainer on cooling, freezing and days ahead, written as an observation and open to correction.
+*Reddit, text post; for Newer preppers asking how long food keeps and how to freeze it; confidence emerging*  
+**Goal:** Build trust through a practical storage explainer and draw replies  
+**Hook:** How long do I wait before the freezer? I asked, so you don't have to guess. [HOOK-13]  
+**Structure:** my situation → what I do → what I'm unsure about → question  
+- Say plainly that people can't find clear guidance on cooling and days ahead. *[OPP-05, OPP-01; posts EV-0098, EV-0023]*
+- Share your routine and say what you're not sure about. *[OBJ-01; posts EV-0073, EV-0032]*
+- Cover why some foods, like chicken, don't hold up by day three. *[TEN-03, THM-07; posts EV-0056, EV-0067, EV-0030, EV-0031]*
+- Point to official food-safety guidance instead of making health claims. *[OBJ-01; posts EV-0073, EV-0032]*
+**Their words:** capsule meal prep, game changer  
+**Call to action:** Ask readers how many days ahead they prep.  
+**Avoid:** leaving out oven time, temperature or macros; ignoring small kitchens and tight budgets  
 
-#### PST-05: What to pack and when to cook for irregular hours, with the real session time stated
-*YouTube, short video; for Shift or desk worker with short breaks (SEG-03); confidence emerging*  
-**Goal:** Fill the gap where prep content doesn't match their schedules  
-**Hook:** Clopening week and every prep video assumes a 9-to-5. What do you actually take to work on a short break? [HOOK-08]  
-**Structure:** problem → what I pack → when I cook → ask for their schedule  
-- Prep content often doesn't match shift or desk schedules *[OPP-06, SEG-03; posts EV-0080, EV-0035, EV-0021, EV-0022]*
-- State the real session time and the reheat time *[OPP-03, OPP-01; posts EV-0057, EV-0058, EV-0080, EV-0035]*
-- Filling, high-protein options for long shifts *[OPP-05, MOT-06; posts EV-0062, EV-0023]*
-- Too busy and tired to cook, so keep it quick *[THM-06; posts EV-0021, EV-0022]*
-**Their words:** clopening, TIRED GIRL DINNERS  
-**Call to action:** Tell me your schedule and I'll plan around it  
-**Avoid:** ignoring small kitchens and mini fridges  
+**Draft - review before posting** (neutral voice)
 
-#### PST-06: Individually wrapped freezer meals, tested reheated on camera
-*TikTok, short video; for Preppers who want freezer meals that still taste good; confidence emerging*  
-**Goal:** Win saves for batch-friendly, reheat-friendly meals  
-**Hook:** Freezer-friendly and reheats well: individually wrapped enchiladas, reheated on day 5 so you can see. Comment if you want the recipe. [HOOK-04]  
-**Structure:** wrap → freeze → reheat reveal → comment prompt  
-- People look for freezer recipes that reheat well *[THM-03; posts EV-0009, EV-0010]*
-- Wrap individually so it works in a small freezer *[TEN-02; posts EV-0035, EV-0052]*
-- Show the reheated result and the price per serve *[MOT-01; posts EV-0056, EV-0029]*
-- Recipe in the comments *[CUL-03; posts EV-0026, EV-0027]*
-**Their words:** banger, fakeaway  
-**Call to action:** Comment if you want the recipe  
-**Avoid:** budget claims with no price; ignoring small kitchens and mini fridges  
+> How long do I wait before the freezer? I asked, so you don't have to guess.
+>
+> My situation: I'm fairly new to meal prep and cook in a small kitchen on a tight budget, so I can't afford to bin a week of food. What I keep running into is that nobody gives a clear answer on how long to cool food before it goes in the freezer, or how many days ahead is too many. People tell me there's no standard, and that's about as specific as it gets.
+>
+> What I do: I prep components rather than full meals (a small capsule set: one protein, one grain, one veg, and a sauce on the side). I let things cool before packing them up, keep the cold stuff in the fridge for a few days, and freeze the rest. Dressings and sauces stay separate, because a day-3 salad with dressing already on it is a sad thing. Chicken is the one that tastes worst to me by day three, so I freeze that earlier.
+>
+> What I'm unsure about: how long is the right cooling time, and how many days is OK in the fridge before I should freeze. I'm not making health claims here. For safe times and temperatures I'm going by my local food-safety authority's guidance, and I'd suggest you check yours too.
+>
+> Please correct me if I've got something wrong. How many days ahead do you prep?
 
-#### PST-07: A one-pan, one-pot prep plan with a receipt, as the honest alternative
-*Reddit, text post; for Beginner with limited equipment; confidence emerging*  
-**Goal:** Answer the 'budget friendly but needs gadgets' objection  
-**Hook:** If a 'budget friendly' meal prep needs gadgets you don't own, it's not budget friendly. One pan, one pot, that's the whole list. [HOOK-06]  
-**Structure:** complaint → my kit → plan → ask what's in your kitchen  
-- Some videos called budget friendly need expensive gadgets *[OBJ-03; posts EV-0068]*
-- People need ideas that work with limited equipment *[OPP-10; posts EV-0086, EV-0046]*
-- Short shopping list and the real total *[OPP-04, OPP-11; posts EV-0036, EV-0043, EV-0047, EV-0087]*
-- Say what you don't have in your own kitchen *[TEN-02; posts EV-0035, EV-0052]*
-**Their words:** brokie  
-**Call to action:** What's in your kitchen? I'll work with it  
-**Avoid:** budget claims with no price; ignoring small kitchens and mini fridges  
+#### PST-04: Prep one base and components, then change up the sauce each day.
+*TikTok, short video; for People who get bored of eating the same prep; confidence speculative*  
+**Goal:** Answer the boredom tension and show the prep-the-components method  
+**Hook:** Same chicken, three sauces. Change up the sauce and Thursday's lunch doesn't feel like Monday's. [HOOK-02]  
+**Structure:** hook → base prep → three sauces → Thursday payoff  
+- Prep the components, not the whole meals. *[THM-09, LEX-09; posts EV-0018, EV-0020, EV-0049]*
+- Show three sauces or spice changes on the same base. *[THM-04; posts EV-0017, EV-0018]*
+- Acknowledge that some people happily repeat meals, while others say it's boring. *[TEN-01, PAIN-02; posts EV-0061, EV-0012, EV-0053, EV-0054]*
+- Keep it cheap, with a total price on screen. *[TEN-02, CUL-01; posts EV-0063, EV-0064, EV-0013]*
+**Their words:** capsule meal prep, lazy girl meal prep, goated  
+**Call to action:** Ask which sauce they would add.  
+**Avoid:** fancy or complicated recipes; ignoring small kitchens and tight budgets  
+
+#### PST-05: A first-person post about cooking for one: use up part-packs, freeze portions, ask what others do.
+*Reddit, text post; for Broke beginners living alone and cooking for one; confidence emerging*  
+**Goal:** Draw advice on single-portion prep and reduce spoilage  
+**Hook:** Cooking for one and my spinach died again. Prep that uses the part-pack before it goes. [HOOK-14]  
+**Structure:** situation → what I tried → what I'm asking  
+- Describe the small kitchen and fridge honestly. *[THM-01, SEG-01; posts EV-0001, EV-0002, EV-0022, EV-0051]*
+- Show how to use part-packs and freeze single portions. *[OPP-03, OPP-06; posts EV-0057, EV-0025]*
+- Say food that goes bad is a money problem. *[PAIN-03, TEN-02; posts EV-0057, EV-0058, EV-0063, EV-0064]*
+**Their words:** brokie, nuke  
+**Call to action:** Ask what they do with half a bag of produce.  
+**Avoid:** ignoring small kitchens and tight budgets  
+
+#### PST-06: A prep that works with only a microwave, showing the equipment used and what it costs.
+*TikTok, short video; for Broke students in dorms with only a microwave; confidence speculative*  
+**Goal:** Reach students with a low-kit prep that works in a dorm  
+**Hook:** Dorm with only a microwave? Here's a prep that's fully nuke-only, no oven needed. [HOOK-07]  
+**Structure:** hook → kit list → steps → cost  
+- Say clearly that it needs only a microwave. *[OPP-07, OBJ-03; posts EV-0099, EV-0074, EV-0075]*
+- Show the cost and the time. *[OBJ-04, TEN-04; posts EV-0071, EV-0065, EV-0069, EV-0070]*
+- Use student hashtags. *[CUL-03; posts EV-0086, EV-0087]*
+- Treat it as an observation, since the dorm evidence is thin. *[OPP-07; posts EV-0099]*
+**Their words:** nuke, brokie, uni food  
+**Call to action:** Ask what else they cook in a dorm.  
+**Avoid:** ignoring small kitchens and tight budgets; fancy or complicated recipes  
+
+#### PST-07: Takeaway-swap prep: one named takeaway order, one prepped alternative, with cost, time and macros.
+*Blog, blog article; for People who want to swap a specific takeaway order for prep; confidence moderate*  
+**Goal:** Create a searchable guide that shows a prepped meal replacing a takeaway order  
+**Hook:** Two hours in the kitchen after work kills the vibe. Prep the components Sunday, nuke them Wednesday. [HOOK-04]  
+**Structure:** takeaway order → prep swap → numbers → storage  
+- Name the takeaway order being replaced. *[OPP-02, THM-08; posts EV-0033, EV-0004, EV-0034]*
+- Show the cost and the hands-on time. *[TEN-04, OBJ-04; posts EV-0069, EV-0070, EV-0071, EV-0065]*
+- Give calories and protein per serving next to the shopping list. *[OPP-04, MOT-01; posts EV-0072, EV-0041]*
+- Add storage days and freezing steps. *[OPP-05, OPP-01; posts EV-0098, EV-0023]*
+**Their words:** lazy girl meal prep, macro friendly, brokie  
+**Call to action:** Invite readers to send the takeaway they want swapped.  
+**Avoid:** leaving out oven time, temperature or macros; fancy or complicated recipes  
 
