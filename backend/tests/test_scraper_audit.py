@@ -516,3 +516,18 @@ def test_english_voices_missing_only_when_english_is_a_market_language():
     assert missing_languages(uk, []) == ["en"]
     world = SimpleNamespace(languages=["en"], markets=[{"code": "global", "countries": [], "weight": 1.0}])
     assert missing_languages(world, []) == ["en"]
+
+
+def test_featured_cards_build_for_every_featured_pack():
+    """2026-10-09: post briefs carry a bare confidence label; the card code expected a dict and the live
+    /api/v1/packs returned 500 for the new featured packs."""
+    import glob
+    import json as _json
+    from pathlib import Path
+    from ctxpack.api.service import featured_card
+
+    files = glob.glob(str(Path(__file__).parents[2] / "featured" / "pk_*.json"))
+    assert files
+    for f in files:
+        card = featured_card(_json.loads(Path(f).read_text(encoding="utf-8")))
+        assert card["relevant_posts"] > 0 and card["strong_findings"] >= 0

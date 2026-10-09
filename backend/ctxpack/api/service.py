@@ -38,9 +38,14 @@ def featured_card(p: dict[str, Any]) -> dict[str, Any]:
             # UX audit: cards describe what a pack holds, not its codes
             "relevant_posts": p["coverage"]["counts"]["relevant"], "languages": i["languages"],
             "findings": sum(1 for it in items if it.get("confidence") and it.get("claim")),
-            "strong_findings": sum(1 for it in items if (it.get("confidence") or {}).get("label") == "strong"),
+            "strong_findings": sum(1 for it in items if _label(it.get("confidence")) == "strong"),
             # the card's line in English (a non-English pack's audience is in its own language)
             "top_finding": next((t["text"] for t in p["snapshot"].get("five_truths", [])), None)}
+
+
+def _label(confidence: Any) -> str | None:
+    """A confidence is {"label": ..., "score": ...} on findings but a bare label on post briefs (PST-..)."""
+    return confidence.get("label") if isinstance(confidence, dict) else confidence
 
 
 def featured() -> list[dict[str, Any]]:
