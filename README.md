@@ -113,10 +113,11 @@ best, with links to related findings elsewhere.
 
 ## Data handling and privacy
 
-- Only public posts. Author names are hashed (salted) in the function that receives them and are
+- Only public posts. Packs carry per-pack author ids, so the same person cannot be linked across packs.
+- Author names are hashed (salted) in the function that receives them and are
   never stored, logged or sent to a model. Emails, phone numbers, handles and profile links are redacted.
 - Scraped text is treated as untrusted data and is wrapped as such in every prompt.
-- Collected posts expire after 30 days (checked every hour while the service runs, and at every start). Packs keep at most short excerpts (280 characters) with links.
+- Collected posts expire after 30 days (checked every hour while the service runs, and at every start); a finished run's working draft and the 24 h cache go with them. Packs keep at most short excerpts (280 characters) with links.
 - Quoted excerpts are for internal research and briefs only, **not for ads or other public material** -
   every pack says so. Exports note that the analysis is AI-assisted and that compliance flags are not legal advice.
 - The repo is public and contains no keys: gitleaks runs on every commit, and `demo-check` also

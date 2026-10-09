@@ -84,6 +84,10 @@ opportunities:
   supported_min_authors: 3
   supported_min_communities: 2
 
+# Data quality (data audit): below this share of dated relevant posts, the pack says so as a blind spot.
+data_quality:
+  dated_share_warn: 0.5
+
 # Brand perception (change V12): only for the brand_perception goal. Below brand_min_mentions there are no
 # findings ("too few mentions to judge"); unprompted = found by a search that did not name the brand.
 brand:

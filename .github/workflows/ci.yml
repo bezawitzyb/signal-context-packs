@@ -31,6 +31,30 @@ jobs:
       - name: Tests (no network, no money)
         run: uv run pytest -q
 
+  backend-postgres:
+    # Data audit 7: the live database is Postgres; SQLite alone missed Postgres-only behaviour (enum types,
+    # FOR UPDATE SKIP LOCKED, ADD VALUE). The same tests on a throwaway Postgres 16 (no secrets: local password).
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: ci-only-not-a-secret
+          POSTGRES_DB: test
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Tests on Postgres
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:ci-only-not-a-secret@localhost:5432/test
+        run: uv run pytest -q
+
   frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 20

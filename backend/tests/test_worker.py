@@ -246,7 +246,7 @@ def restart_later(run_id: str) -> dict:
 
 async def test_killed_after_collection_resumes_from_saved_corpus_once(offline):
     run_id = await approved_run()
-    db_url = str(db.get_engine().url)
+    db_url = db.get_engine().url.render_as_string(hide_password=False)
 
     run_and_kill(db_url, offline)
     run = db.get_run(run_id)
@@ -272,7 +272,7 @@ async def test_killed_after_collection_resumes_from_saved_corpus_once(offline):
 
 async def test_killed_twice_fails_instead_of_resuming_again(offline):
     run_id = await approved_run()
-    db_url = str(db.get_engine().url)
+    db_url = db.get_engine().url.render_as_string(hide_password=False)
     run_and_kill(db_url, offline)
     restart_later(run_id)
     run_and_kill(db_url, offline)  # the resumed run dies too

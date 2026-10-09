@@ -296,6 +296,11 @@ def coverage(run: Any, docs: list[Any], evidence: list[dict], thin: bool) -> dic
     counts["undated"] = sum(1 for d in docs if d.posted_at is None)  # from the store: the live counter may lag
     langs = Counter(d.language or "und" for d in docs)
     dates = sorted(e["posted_at"] for e in evidence if e.get("posted_at"))
+    rel = [d for d in docs if d.is_relevant and not d.short_form]
+    foreign = [d for d in rel if (d.language or "und") not in ("en", "und")]
+
+    def share(part: int, whole: int) -> float | None:
+        return round(part / whole, 3) if whole else None
     return {"decision_log": [_fields(P.DecisionLogEntry, e) for e in col.get("decision_log", [])],
             "sources_used": [_fields(P.SourceUsed, s) for s in col.get("sources_used", [])],
             "sources_dropped": [_fields(P.SourceDropped, s) for s in col.get("sources_dropped", [])],
@@ -305,7 +310,11 @@ def coverage(run: Any, docs: list[Any], evidence: list[dict], thin: bool) -> dic
             "date_range": {"start": dates[0] if dates else None, "end": dates[-1] if dates else None},
             "loop": {"tool_calls": run.tool_calls, "finish_reason": run.finish_reason or "finish",
                      "fallback_used": run.fallback_used, "top_up_used": run.top_up_used},
-            "thin_evidence": thin}
+            "thin_evidence": thin,
+            "data_quality": {"dated_share": share(sum(1 for d in rel if d.posted_at), len(rel)),
+                             "engagement_share": share(sum(1 for d in rel if d.engagement_percentile is not None),
+                                                       len(rel)),
+                             "translated_share": share(sum(1 for d in foreign if d.text_en), len(foreign))}}
 
 
 # --------------------------------------------------------------------------
@@ -391,8 +400,12 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
         "coverage": coverage(run, docs, evidence, thin),
         "events": [{"seq": e.seq, "type": e.type.value, "payload": e.payload or {}, "created_at": e.created_at}
                    for e in db.get_events(run.id, limit=100000)],
-        "evidence": [_fields(P.Evidence, e) for e in evidence],
+        "evidence": [],  # set below, with per-pack author ids (data audit 5)
     }
+    from ctxpack.schemas.migrate import pack_author_id
+
+    data["evidence"] = [_fields(P.Evidence, {**e, "author_hash": pack_author_id(data["pack_id"], e.get("author_hash"))})
+                        for e in evidence]
     alive = {i["id"] for n in ("pain_points", "tensions", "motivations", "objections", "white_space", "segments",
                                "moments", "culture", "lexicon", "phrases") for i in s.get(n, [])}
     alive |= {i["id"] for i in s["themes"]}
@@ -408,6 +421,11 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
     data["content_calendar"] = posts_mod.build_calendar(
         data["post_briefs"], data["channel_plan"], parts["playbook"]["this_week"], data["news_hooks"],
         posts_mod.week_start(data["generated_at"].date()))
+    dated = data["coverage"]["data_quality"]["dated_share"]
+    if dated is not None and dated < load_yaml("scoring")["data_quality"]["dated_share_warn"]:  # data audit 4
+        data["blind_spots"].append({"id": f"BLS-{len(data['blind_spots']) + 1:02d}", "text": (
+            f"Only {dated:.0%} of the relevant posts have a date, so the {interp.time_window_days}-day window applies "
+            "to those only; the rest may be older. Trends and 'what's new' use dated posts only.")})
     data["sections_meta"] = sections_meta(data, notes.get("meta", {}), alive, interp)
     data["snapshot"] = snapshot(s, draft.get("generic_points", []),
                                 analysis.get("coverage", {}).get("grade", "d"), list(opportunities),
@@ -416,8 +434,32 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
     brp = {f["id"] for f in (section or {}).get("findings", [])}   # a saved playbook may predate a brand rebuild
     data["snapshot"]["for_goals"] = [{**b, "item_ids": [i for i in b["item_ids"] if not i.startswith("BRP-") or i in brp]}
                                      for b in parts.get("for_goals", [])]
+    data["provenance"] = provenance()
     data["digest"] = digest(_jsonable(data), load_yaml("modes")["content_bar"]["digest_max_chars"])
     return P.ContextPack.model_validate(data), bar_short
+
+
+def provenance() -> dict:
+    """Data audit 8: models per role, a fingerprint of every prompt and config file, and the code version."""
+    import hashlib
+    import os
+    from importlib.metadata import PackageNotFoundError, version
+
+    from ctxpack.config import CONFIG_DIR
+    from ctxpack.llm.client import PROMPTS_DIR
+
+    def fp(path: Any) -> str:
+        return hashlib.sha256(path.read_bytes()).hexdigest()[:12]
+
+    try:
+        code = version("ctxpack")
+    except PackageNotFoundError:
+        code = "unknown"
+    commit = os.environ.get("RENDER_GIT_COMMIT") or os.environ.get("GIT_COMMIT") or ""
+    return {"models": dict(load_yaml("models")["roles"]),
+            "prompts": {p.stem: fp(p) for p in sorted(PROMPTS_DIR.glob("*.md"))},
+            "config": {p.name: fp(p) for p in sorted(CONFIG_DIR.glob("*.yaml"))},
+            "code_version": code + (f"+{commit[:12]}" if commit else "")}
 
 
 def _jsonable(data: dict) -> dict:

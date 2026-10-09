@@ -531,3 +531,17 @@ def test_security_headers_on_pages_and_api_but_no_policy_on_the_api_docs(api):
     assert r.headers["x-content-type-options"] == "nosniff"
     docs = client.get("/docs")
     assert "content-security-policy" not in docs.headers and docs.headers["x-frame-options"] == "DENY"
+
+
+
+def test_database_routes_wait_for_the_schema_then_say_starting_up(api, monkeypatch):
+    """Data audit 3: the app served requests while its schema change was still running."""
+    from ctxpack.api import main as app_main
+
+    monkeypatch.setattr(db, "SCHEMA_READY", __import__("threading").Event())
+    monkeypatch.setattr(app_main, "load_yaml", lambda name: {"worker": {"schema_wait_secs": 0.05}})
+    busy = client.get("/api/v1/packs")
+    assert busy.status_code == 503 and "starting up" in busy.json()["detail"]
+    assert client.get("/ping").text == "ok"                          # never waits
+    db.SCHEMA_READY.set()
+    assert client.get("/api/v1/packs").status_code == 200

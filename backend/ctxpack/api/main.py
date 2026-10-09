@@ -17,7 +17,7 @@ from sqlalchemy import text
 
 from ctxpack import db, mcp_server, worker
 from ctxpack.api.routes import router
-from ctxpack.config import get_settings
+from ctxpack.config import get_settings, load_yaml
 
 logging.basicConfig(
     level=get_settings().log_level,
@@ -57,11 +57,20 @@ async def _startup_tasks(stop: asyncio.Event) -> None:
     even while Neon wakes up. A failure is logged (type only) and /health
     then reports the database as unreachable.
     """
-    try:
-        result = await asyncio.to_thread(db.startup)
-        log.info("startup tasks done: %s", result)
-    except Exception as exc:  # never log the message: it may contain the URL
-        log.error("startup tasks failed: %s", type(exc).__name__)
+    delay = 2.0
+    while not stop.is_set():  # keep trying while the database wakes up (database routes wait for it)
+        try:
+            result = await asyncio.to_thread(db.startup)
+            log.info("startup tasks done: %s", result)
+            break
+        except Exception as exc:  # never log the message: it may contain the URL
+            log.error("startup tasks failed (%s); retrying in %.0f s", type(exc).__name__, delay)
+            try:
+                await asyncio.wait_for(stop.wait(), timeout=delay)
+            except TimeoutError:
+                pass
+            delay = min(delay * 2, 60.0)
+    if stop.is_set():
         return
     if get_settings().worker_mode == "inprocess":
         await worker.worker_loop(stop)
@@ -113,6 +122,19 @@ async def security_headers(request, call_next):
     if not request.url.path.startswith(("/docs", "/redoc")):
         response.headers.setdefault("Content-Security-Policy", CSP)
     return response
+
+
+@app.middleware("http")
+async def wait_for_schema(request, call_next):
+    """Data audit 3: database routes wait (up to schema_wait_secs) until this process has migrated the database;
+    /ping, /health and the web app's files are served at once, so the service answers while Neon wakes up."""
+    path = request.url.path
+    if (path.startswith("/api/") or path.startswith("/mcp")) and not db.SCHEMA_READY.is_set():
+        wait = load_yaml("modes")["worker"]["schema_wait_secs"]
+        if not await asyncio.to_thread(db.SCHEMA_READY.wait, wait):
+            return JSONResponse(status_code=503, content={
+                "detail": "The service is starting up. Please try again in a minute."})
+    return await call_next(request)
 
 
 @app.middleware("http")

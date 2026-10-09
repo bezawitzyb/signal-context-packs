@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import random
+from collections import Counter
 import statistics
 import re
 import shutil
@@ -577,3 +578,58 @@ def published() -> dict[str, Any]:
     for b in data.get("briefs", []):
         b.pop("units", None)
     return data
+
+
+# --------------------------------------------------------------------------
+# Human labels (data audit 9): a gold set for the relevance check and for claim entailment
+# --------------------------------------------------------------------------
+
+RELEVANCE_COLUMNS = ["doc_id", "platform", "language", "text", "text_en", "model_says_relevant", "your_label"]
+CLAIM_COLUMNS = ["pack_id", "item_id", "claim", "evidence", "your_label"]
+LABEL_HELP = {"relevance": "your_label: yes (helps answer the brief, first-person audience talk) or no",
+              "claims": "your_label: supported, partly or not (do the posts show the claim?)"}
+
+
+def relevance_sample(docs: list[Any], n: int, seed: str = "labels") -> list[list[str]]:
+    """Half posts the model kept as relevant, half it dropped (as far as there are), in a fixed order."""
+    from ctxpack.exports.safe_cells import safe_row
+
+    rng = random.Random(seed)
+    counted = [d for d in docs if not d.short_form and d.is_relevant is not None]
+    yes = [d for d in counted if d.is_relevant]
+    no = [d for d in counted if not d.is_relevant]
+    pick = rng.sample(yes, min(n // 2, len(yes))) + rng.sample(no, min(n - n // 2, len(no)))
+    rng.shuffle(pick)
+    return [safe_row([d.id, str(d.platform), d.language or "", (d.text or "")[:600], (d.text_en or "")[:600],
+                      "yes" if d.is_relevant else "no", ""]) for d in pick]
+
+
+def claim_sample(pack: dict, n: int) -> list[list[str]]:
+    """The same claims the evaluator re-checks (entailment_sample), with their evidence texts."""
+    from ctxpack.exports.safe_cells import safe_row
+
+    ev = {e["id"]: e for e in pack.get("evidence", [])}
+    rows = []
+    for it in entailment_sample(pack, n):
+        texts = [f"[{e}] {(ev[e].get('text_en') or ev[e]['text'])[:300]}" for e in item_evidence_ids(it)[:3] if e in ev]
+        rows.append(safe_row([pack["pack_id"], it["id"], it["claim"], "\n".join(texts), ""]))
+    return rows
+
+
+def score_labels(kind: str, rows: list[dict]) -> dict[str, Any]:
+    """Labelled rows -> the numbers to compare with the model: relevance precision / recall, or the human
+    entailment rate (supported + partly, the evaluator's definition). Unlabelled rows are skipped."""
+    done = [r for r in rows if (r.get("your_label") or "").strip()]
+    lab = [(r, r["your_label"].strip().casefold()) for r in done]
+    if kind == "relevance":
+        tp = sum(1 for r, y in lab if r["model_says_relevant"] == "yes" and y == "yes")
+        model_yes = sum(1 for r, _ in lab if r["model_says_relevant"] == "yes")
+        human_yes = sum(1 for _, y in lab if y == "yes")
+        agree = sum(1 for r, y in lab if r["model_says_relevant"] == y)
+        return {"labelled": len(lab), "precision": round(tp / model_yes, 3) if model_yes else None,
+                "recall": round(tp / human_yes, 3) if human_yes else None,
+                "agreement": round(agree / len(lab), 3) if lab else None}
+    counts = Counter(y for _, y in lab)
+    return {"labelled": len(lab), **dict(counts),
+            "entailment": round((counts["supported"] + counts["partly"]) / len(lab), 3) if lab else None,
+            "strictly_supported": round(counts["supported"] / len(lab), 3) if lab else None}

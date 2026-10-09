@@ -150,3 +150,18 @@ def test_a_1_1_pack_is_migrated_to_1_2_without_a_guessed_goal():
     again = ContextPack.model_validate(migrate(old)).model_dump(mode="json")["brief"]
     assert again["intake"]["goals"] == [] and again["intake"]["goal_note"] == "a content calendar"
     assert again["interpreted"]["understanding"]["offer"]["source"] == "none"      # never assumed
+
+
+def test_published_author_ids_are_per_pack_and_keep_distinct_counts():
+    """Data audit 5: the stable salted hash (same in every pack) was published; packs now carry per-pack ids."""
+    from ctxpack.schemas.migrate import migrate, pack_author_id
+
+    stable = "a" * 64
+    one, two = pack_author_id("pk_one123456", stable), pack_author_id("pk_two123456", stable)
+    assert len(one) == 16 and one != two and pack_author_id("pk_one123456", one) == one   # idempotent
+    old = json.loads(EXAMPLE.read_text(encoding="utf-8"))
+    for n, e in enumerate(old["evidence"]):
+        e["author_hash"] = ("b" if n % 2 else "c") * 64
+    new = ContextPack.model_validate(migrate(old)).model_dump(mode="json")
+    ids = [e["author_hash"] for e in new["evidence"]]
+    assert all(len(i) == 16 for i in ids) and len(set(ids)) == min(2, len(ids))   # distinct authors preserved

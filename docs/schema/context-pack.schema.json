@@ -989,6 +989,10 @@
           "description": "True if the minimum content bar (PRD 6.6) was not met.",
           "title": "Thin Evidence",
           "type": "boolean"
+        },
+        "data_quality": {
+          "$ref": "#/$defs/DataQuality",
+          "description": "Dated, engagement and translation shares of the relevant posts (data audit)."
         }
       },
       "required": [
@@ -1395,6 +1399,59 @@
       "title": "CultureKind",
       "type": "string"
     },
+    "DataQuality": {
+      "additionalProperties": false,
+      "description": "How complete the relevant posts are (data audit 4 and 10), computed in code. Null when not measured.",
+      "properties": {
+        "dated_share": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Share with a posting date: the time window only applies to these; undated posts are kept and flagged.",
+          "title": "Dated Share"
+        },
+        "engagement_share": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Share with an engagement score (what performs rests on these).",
+          "title": "Engagement Share"
+        },
+        "translated_share": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Of non-English posts, the share with an English translation; null when all are English.",
+          "title": "Translated Share"
+        }
+      },
+      "title": "DataQuality",
+      "type": "object"
+    },
     "DatePrecision": {
       "enum": [
         "day",
@@ -1776,7 +1833,7 @@
             }
           ],
           "default": null,
-          "description": "Salted hash, never a username.",
+          "description": "Per-pack author id (16 hex): tells authors apart within this pack, cannot link them across packs; never a username.",
           "title": "Author Hash"
         },
         "emotion": {
@@ -4999,6 +5056,44 @@
       "title": "PostFormat",
       "type": "string"
     },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "What made this pack (data audit 8): to reproduce it, or to tell which settings an older pack came from.",
+      "properties": {
+        "models": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Model per role (config/models.yaml).",
+          "title": "Models",
+          "type": "object"
+        },
+        "prompts": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Prompt name -> first 12 hex of its sha256.",
+          "title": "Prompts",
+          "type": "object"
+        },
+        "config": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Config file -> first 12 hex of its sha256.",
+          "title": "Config",
+          "type": "object"
+        },
+        "code_version": {
+          "default": "",
+          "description": "Package version, plus the git commit when known.",
+          "title": "Code Version",
+          "type": "string"
+        }
+      },
+      "title": "Provenance",
+      "type": "object"
+    },
     "QAnswer": {
       "additionalProperties": false,
       "properties": {
@@ -6908,6 +7003,18 @@
       },
       "title": "Evidence",
       "type": "array"
+    },
+    "provenance": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Models, prompt and config fingerprints and code version behind this pack (data audit; null for older packs)."
     }
   },
   "required": [

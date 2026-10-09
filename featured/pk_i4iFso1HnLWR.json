@@ -5341,7 +5341,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "19dd14840cc0da23a1f41834611b6b92856adf7f382a207aaabc9154b083789a",
+   "author_hash": "68f3934e97b67aa9",
    "emotion": [
     "frustration",
     "nostalgia"
@@ -5364,7 +5364,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "7a847bdacadf18ca26b2afc28935ce56a95d105a5b338fab566be21a622df0f5",
+   "author_hash": "bb2eca0633586dab",
    "emotion": [
     "nostalgia"
    ],
@@ -5386,7 +5386,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "f0c0d704dbeb0640362008cacd07a219bdb7e4b215c7e247940f9359a52fec61",
+   "author_hash": "23eea3f8506c803d",
    "emotion": [
     "nostalgia",
     "excitement"
@@ -5409,7 +5409,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 42.4,
-   "author_hash": "b32f2260eb7f5f84cc5e9e7d869ffec6ea4a4124d595783c9fa3348cdcc5ee90",
+   "author_hash": "c5c0964b6eb68881",
    "emotion": [
     "skepticism"
    ],
@@ -5431,7 +5431,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 31.9,
-   "author_hash": "08c4ab59e768103913e639ab9aa4bce5f2ba0d4c563b02dd3b94e9b5b4c39e9d",
+   "author_hash": "68bef206181fb658",
    "emotion": [
     "humour"
    ],
@@ -5453,7 +5453,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 31.0,
-   "author_hash": "bf901e655135df9565313875a44c790223a9bc606b44807e046bab4a12bbd9b7",
+   "author_hash": "50e7602b99b3efec",
    "emotion": [
     "frustration"
    ],
@@ -5475,7 +5475,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 15.2,
-   "author_hash": "7b919e58f298b64d4a2fcf5520783a941e6d104fabe517c6bcaa52ad2aa30ff9",
+   "author_hash": "41a40fdcb499f117",
    "emotion": [
     "skepticism",
     "anxiety"
@@ -5498,7 +5498,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "ce92070363f8150e6e12b325b733444df6379db277650489f683a12e3a750ef4",
+   "author_hash": "523cdca288dc1ab7",
    "emotion": [
     "excitement",
     "pride"
@@ -5521,7 +5521,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "275e65f23806d7f502a29f3c4d0719beaa5a5859588c2223f7dd06947bb243a3",
+   "author_hash": "88d8d675ecc876b2",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -5541,7 +5541,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "3e3d72ccf3238ce2bbfee598de2d2e7b1155b674339e221e4e0f6067b6f18480",
+   "author_hash": "6e7f5015d3a6ca5a",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -5561,7 +5561,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "64277f59a8bd8e6b6691a0490ab84a4a349b52b121149f3c71391dfbb9038650",
+   "author_hash": "f59d881bef00c6ca",
    "emotion": [
     "frustration"
    ],
@@ -5583,7 +5583,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "8cfa9404e237b728170662a95db8e79c6e5fa7be7f7ebe1b5bfea89827d8dd37",
+   "author_hash": "ba0d6787ba0aa981",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -5603,7 +5603,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "b71b6e2941bb2476a99677b9591480faea84806a16ffe260bbcdb8232b4916aa",
+   "author_hash": "517fcb35c801958d",
    "emotion": [
     "indifference"
    ],
@@ -5625,7 +5625,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "dcf11fb927f22b8009df1dc555280187cc798e0ab3e122b5a4569c2ec9fdba09",
+   "author_hash": "04b89a722ce8f77a",
    "emotion": [
     "humour"
    ],
@@ -5647,7 +5647,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.5,
-   "author_hash": "373d59ce941175129f97fe5c2a2a7d23bbc17b58dc5d66246ec410f1ab3a69c0",
+   "author_hash": "7e7a801186e619b1",
    "emotion": [
     "excitement"
    ],
@@ -5669,7 +5669,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.5,
-   "author_hash": "b5e6c8613cea3ed1b176cefab7cc8226d50d4203cf138f4f7df55f1445e3abd7",
+   "author_hash": "6b335435913b64c1",
    "emotion": [
     "pride",
     "aspiration"
@@ -5692,7 +5692,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.5,
-   "author_hash": "447689003bca78768338ad22f86f4f1fd2d687194754468eac52d4d98dd6b75e",
+   "author_hash": "a761a60e337a2630",
    "emotion": [
     "pride",
     "excitement"
@@ -5715,7 +5715,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.5,
-   "author_hash": "544f19e10220a74198ed95e94c87c8a227163b7e6f27403eeafc06fb2355b6ba",
+   "author_hash": "c8b924097d52381b",
    "emotion": [
     "nostalgia",
     "pride"
@@ -5738,7 +5738,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 96.5,
-   "author_hash": "27d654bfda182a26e71e1ea9daa40bb09eaba25dea38f6b016c48267532a2275",
+   "author_hash": "dbbc88688b20d21a",
    "emotion": [
     "excitement"
    ],
@@ -5760,7 +5760,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 94.2,
-   "author_hash": "27d654bfda182a26e71e1ea9daa40bb09eaba25dea38f6b016c48267532a2275",
+   "author_hash": "dbbc88688b20d21a",
    "emotion": [
     "excitement",
     "aspiration"
@@ -5783,7 +5783,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 89.5,
-   "author_hash": "b83182b20f7855c4ab2ab1865f5158f407fe574d1250940cce22a0e49a31cdf3",
+   "author_hash": "5dc8e70d6fdba2c1",
    "emotion": [
     "excitement"
    ],
@@ -5805,7 +5805,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 91.9,
-   "author_hash": "b83182b20f7855c4ab2ab1865f5158f407fe574d1250940cce22a0e49a31cdf3",
+   "author_hash": "5dc8e70d6fdba2c1",
    "emotion": [
     "excitement"
    ],
@@ -5827,7 +5827,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
+   "author_hash": "cb2ccc1a2c0491d8",
    "emotion": [
     "frustration"
    ],
@@ -5849,7 +5849,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "b277aab4d737d2a32d8d3fb32419b8b0a5e7a51cb491aa68f16eecb2bf27f8c6",
+   "author_hash": "c81f87a5977b603f",
    "emotion": [
     "frustration"
    ],
@@ -5871,7 +5871,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "066723a61dab00d828ad177986e73e964b53d6d0143496df91fb0eb6b9b86445",
+   "author_hash": "3828359594090ed2",
    "emotion": [
     "frustration"
    ],
@@ -5893,7 +5893,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "274d0c7cc0b1d73e7b11bcf7f6a698157d4ef78df964cc8563beb5efe9a16354",
+   "author_hash": "2e41457d7d7ee34b",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -5913,7 +5913,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
+   "author_hash": "cb2ccc1a2c0491d8",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -5933,7 +5933,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 22.9,
-   "author_hash": "b0cd50accc467f4017b11dc6260b2e547935e5bb0075a863289036abb771cfd5",
+   "author_hash": "35213104f51bba4a",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -5953,7 +5953,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 25.0,
-   "author_hash": "298a32a149d4dbc1eb0491de458a9f4169c693bd0c82f64628616bf7bef851a5",
+   "author_hash": "d8d64a64512cb054",
    "emotion": [
     "aspiration"
    ],
@@ -5975,7 +5975,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "96a854d2b11291524fe894c9b4ee24b93910de20c7150883eb6869cbff64c47a",
+   "author_hash": "c5d110794ce86657",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -5995,7 +5995,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 43.8,
-   "author_hash": "b5edd93110fd27025d104bfcb087e290a69282740dc5774310a52d858d661977",
+   "author_hash": "c3c4dc6fccf48c5b",
    "emotion": [
     "frustration",
     "aspiration"
@@ -6018,7 +6018,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "21ac618ae8f74d6bf65bb2bbcbad470810d5b4b382d09e3292959dc74ff85201",
+   "author_hash": "0fd578576e8e9497",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6038,7 +6038,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "8b9fbfe9ca6e87644cb0641dd5e72b47404c97e7428dee07845b671ae417a1b5",
+   "author_hash": "73dcfeb92b24437b",
    "emotion": [
     "nostalgia"
    ],
@@ -6060,7 +6060,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.5,
-   "author_hash": "3493f1dc37817a9da0ebc362bbe4418059763637e5f8ebd3332c14d8464a8514",
+   "author_hash": "aa825209de492159",
    "emotion": [
     "humour",
     "excitement"
@@ -6083,7 +6083,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "08ff42930e3bdf5cbf964aa2eb9b5992112c876b738dab1a64c4a786ad898bb3",
+   "author_hash": "1dd632f371aab4f7",
    "emotion": [
     "frustration"
    ],
@@ -6105,7 +6105,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "4c04c59e9255fcf81c0075471945fa2097199e2939c8854a4128861bdaad4433",
+   "author_hash": "0c521d3bf75ebb82",
    "emotion": [
     "frustration"
    ],
@@ -6127,7 +6127,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
+   "author_hash": "cb2ccc1a2c0491d8",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6147,7 +6147,7 @@
    "requires_login": false,
    "short_form": true,
    "engagement_percentile": null,
-   "author_hash": "b724abf612b85e0bbc3ca6ebfcb40f4e5eb4aa5dcfa2d791d7bbdb91c289d0ab",
+   "author_hash": "4182e0905aea3a21",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6167,7 +6167,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "189126f1a303c82e1eec1c6f0099cd06d0e9bec8e94ee0bf98a1dfe64c5ab2f6",
+   "author_hash": "ab3e2249e2e3e501",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6187,7 +6187,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "6f396f925d071bc17f05d72d1e2442dd0b454dbc5dc5acd982d10c8d77714d14",
+   "author_hash": "efb2c48802621583",
    "emotion": [
     "excitement"
    ],
@@ -6209,7 +6209,7 @@
    "requires_login": false,
    "short_form": true,
    "engagement_percentile": null,
-   "author_hash": "2bbe1ee376986b58718f2347b2fb6e95a1bcb62c9c85228307bb8ac2d408d59c",
+   "author_hash": "b73f953d504a7c1c",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6229,7 +6229,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "5803637c1e8bfce3168393173b32ef2ef9f7e446739c7b0eb0614eed928914ea",
+   "author_hash": "b82ee502a8725e27",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6249,7 +6249,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "a7c174613c4079317f815f8e15e689714731c47e6b08a36a124513c3ed9ccefa",
+   "author_hash": "5b5b37c1bbbbffa6",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6269,7 +6269,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "dcf11fb927f22b8009df1dc555280187cc798e0ab3e122b5a4569c2ec9fdba09",
+   "author_hash": "04b89a722ce8f77a",
    "emotion": [
     "excitement"
    ],
@@ -6291,7 +6291,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "62d1ae90634e7ff4922722ae43e2314746313f476c43fb239b66d1eb99993552",
+   "author_hash": "4d09d58ce05dd440",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6311,7 +6311,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "158a6fcbd32551ea4bc25d10e0e6369c2cad257f802ea19e8901b26107022bc3",
+   "author_hash": "33fe30fe4d988abb",
    "emotion": [
     "nostalgia"
    ],
@@ -6333,7 +6333,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "e95e597ea77d008fad36d91220dd501a84ca8c2dc35710e2daa15f08ce538c7b",
+   "author_hash": "907a79a490449e34",
    "emotion": [
     "frustration"
    ],
@@ -6355,7 +6355,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "fb6c93e8374a1c9612669858f5328fae29a869e51eecd3f21ce5088911c4b243",
+   "author_hash": "37953fcc08f9a63f",
    "emotion": [
     "humour"
    ],
@@ -6377,7 +6377,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
+   "author_hash": "cb2ccc1a2c0491d8",
    "emotion": [
     "anxiety"
    ],
@@ -6399,7 +6399,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "16e207db1c730904a21791f9e2b0e9cf3bacea3d727c4425acb1cfe8822ed52b",
+   "author_hash": "a7c27500f2086458",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6419,7 +6419,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "0bd4dac473a5773ada2bffbd63efe49a2db2e2063b8936b27cf9f878d8ba6ca5",
+   "author_hash": "e0974705d901ceb2",
    "emotion": [
     "excitement"
    ],
@@ -6441,7 +6441,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 77.6,
-   "author_hash": "193532446bc579ad14ac48ad514e9b7cc8de70623d8d65cdd43cf50dd580238a",
+   "author_hash": "bc9916808c1261d8",
    "emotion": [
     "aspiration"
    ],
@@ -6463,7 +6463,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "04a851dd872c7d06897024f18fa8338a4e55a71e9beb5b3b61803943ebb64fc9",
+   "author_hash": "ba72eacd0ab95d3f",
    "emotion": [
     "excitement"
    ],
@@ -6485,7 +6485,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "bb39e604ab71600cce03f3e9f6002a7f0e390ba49bf9f2ca3f77f65e230f3af3",
+   "author_hash": "72361b20ede2a22f",
    "emotion": [
     "nostalgia"
    ],
@@ -6507,7 +6507,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "7a13ad60746e1f416c6f9b9a5f06a78a6337b0643ae852d7a9aa4ccaae57c46b",
+   "author_hash": "a0432c7bc54caff3",
    "emotion": [
     "excitement"
    ],
@@ -6529,7 +6529,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 71.0,
-   "author_hash": "9953bd51fcfa069e2e36a97690df4468cfcbaa119b8482850e55b8e181d7ee83",
+   "author_hash": "3ca5a2d670812f70",
    "emotion": [
     "aspiration",
     "anxiety"
@@ -6552,7 +6552,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 98.8,
-   "author_hash": "27d654bfda182a26e71e1ea9daa40bb09eaba25dea38f6b016c48267532a2275",
+   "author_hash": "dbbc88688b20d21a",
    "emotion": [
     "excitement"
    ],
@@ -6574,7 +6574,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 35.7,
-   "author_hash": "2b3925bc9a7033853df064de3b3b53c021000b4e29da1877be4e7d096a41af0e",
+   "author_hash": "7dea22822e47b29b",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6594,7 +6594,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "f7ce85e78650849a246cd591a3b53a2fdd539d61621e2b561707a2eb1e9c1e69",
+   "author_hash": "53e68ceb2908e1b7",
    "emotion": [
     "frustration"
    ],
@@ -6616,7 +6616,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "e9fdad1338cfa0bffc34c8b3c781344ef65fa100c1b1316b842b8e416b86e9aa",
+   "author_hash": "b84059a535ba3c2b",
    "emotion": [
     "frustration"
    ],
@@ -6638,7 +6638,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 81.2,
-   "author_hash": "cd7f093cfc8a0c154466ff2e1b9e9307ebfb4906bcb2327a5b05538c6baa2288",
+   "author_hash": "21c002c22ed5a27a",
    "emotion": [
     "frustration",
     "nostalgia"
@@ -6661,7 +6661,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 79.5,
-   "author_hash": "8f39799ef01b431974438d67325d123e21bf4aaf381ec947b9e5d6d00cb42119",
+   "author_hash": "4ea9e7423f650fbf",
    "emotion": [
     "pride"
    ],
@@ -6683,7 +6683,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 38.4,
-   "author_hash": "d0f5d2f6eac88397c159552af002546c5a1b99fdce3867cf52ef90f6ac699b8f",
+   "author_hash": "f7facc463e85ea97",
    "emotion": [
     "excitement"
    ],
@@ -6705,7 +6705,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 40.2,
-   "author_hash": "3b52bf3b894bf16f4fd3e6d8336a70ff419586f11e1ca3d82d1f9a44c11201b4",
+   "author_hash": "0aa201a4b5dd97ad",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6725,7 +6725,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 35.7,
-   "author_hash": "07dc9bbd3b69337d0a089edc4fea1d8f75d37684bc26fcc5d1c154c51405c163",
+   "author_hash": "e057941744a9579a",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6745,7 +6745,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 35.7,
-   "author_hash": "95eb925e6923e1e4f0ad640744f7eada8aa57f52f97a560213caf58a3fccf828",
+   "author_hash": "c9135bce93258b3e",
    "emotion": [
     "skepticism"
    ],
@@ -6767,7 +6767,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "ee25cab2491ca534114863775318faa653988ab67548dcd13c6951afd1384082",
+   "author_hash": "f6cf55f719277100",
    "emotion": [
     "humour"
    ],
@@ -6789,7 +6789,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "066723a61dab00d828ad177986e73e964b53d6d0143496df91fb0eb6b9b86445",
+   "author_hash": "3828359594090ed2",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6809,7 +6809,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "f7ce85e78650849a246cd591a3b53a2fdd539d61621e2b561707a2eb1e9c1e69",
+   "author_hash": "53e68ceb2908e1b7",
    "emotion": [
     "frustration"
    ],
@@ -6831,7 +6831,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 10.0,
-   "author_hash": "a8f32fc2f74a2b2864f283e96e9a8502488945315b7b47dd456670cca485f08a",
+   "author_hash": "1712f111eb6b02ee",
    "emotion": [
     "skepticism"
    ],
@@ -6853,7 +6853,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 35.7,
-   "author_hash": "429d06871ef421b55ea48edcebc89372fd42643776870c85381fe72ac67ccf7b",
+   "author_hash": "6657f35454d07e5a",
    "emotion": [
     "frustration",
     "skepticism"
@@ -6876,7 +6876,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 35.7,
-   "author_hash": "0ce5c74da6af53ce07ddfa3fa31f630ad395eed533ea2795c22d092449ba3f9d",
+   "author_hash": "19a4f5ea930e31b7",
    "emotion": [
     "frustration",
     "skepticism"
@@ -6899,7 +6899,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "8cfa9404e237b728170662a95db8e79c6e5fa7be7f7ebe1b5bfea89827d8dd37",
+   "author_hash": "ba0d6787ba0aa981",
    "emotion": [
     "skepticism"
    ],
@@ -6921,7 +6921,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "c8dbb13cfb37ef68fe59ba0eff8f9b8259c255755c1f7a23241b2aa3d816f394",
+   "author_hash": "c69682f7529c3a05",
    "emotion": [
     "frustration"
    ],
@@ -6943,7 +6943,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "591d394643956d171a1ce164b58b339304d5b565e3bb5ca75e3e83b62f6dcb91",
+   "author_hash": "0476b2038c16343e",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -6963,7 +6963,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "8f4472fe14441fb98103a45c6a91c049f2de8129416297b3f371352435d2b6bb",
+   "author_hash": "6e8ea110e04c3612",
    "emotion": [
     "excitement"
    ],
@@ -6985,7 +6985,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "753482322d96ded65d03b79ee9e47fd42d5897eacb297349efd632f3dd9de7e7",
+   "author_hash": "9d0b62562f9094b3",
    "emotion": [
     "skepticism"
    ],
@@ -7007,7 +7007,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "1a960fb04d4da6d22fa6f52d84684b167595fdfc8926d5c54d4f3489bc55ee74",
+   "author_hash": "e79e9c0efa8d63f9",
    "emotion": [
     "pride"
    ],
@@ -7029,7 +7029,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "93b1a65f0e7f453b7d8038a7af1034b1c0fbb661d6bd724fdfaab931f7fa0e0c",
+   "author_hash": "1ec40a4898411983",
    "emotion": [
     "nostalgia"
    ],
@@ -7051,7 +7051,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.5,
-   "author_hash": "3e485e9f21c2472cd2a3cd788b260d4d9e0986ca0e8eee1d18c602fcf04d14d4",
+   "author_hash": "27361e3ae3ef785b",
    "emotion": [
     "nostalgia"
    ],
@@ -7073,7 +7073,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "2f6f664d57374b8ababc3d95541abb36669ddc2abb15120ae8fcc495f3cc885e",
+   "author_hash": "4ea070b3e7ac3167",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -7093,7 +7093,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.5,
-   "author_hash": "b877ff1bb88289e239033b1f870a39b46d544f1a56e55bf2c9a2daef86dc30b2",
+   "author_hash": "30cd96de0dafcc09",
    "emotion": [
     "excitement",
     "pride"
@@ -7116,7 +7116,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.5,
-   "author_hash": "192fa13cddc22b6d0d6e304cb8aa510b92c2a60e44a1347f219c1efe9431640f",
+   "author_hash": "9643005deb8475be",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -7136,7 +7136,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "753482322d96ded65d03b79ee9e47fd42d5897eacb297349efd632f3dd9de7e7",
+   "author_hash": "9d0b62562f9094b3",
    "emotion": [
     "indifference"
    ],
@@ -7158,7 +7158,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "21b2caba78b9adf77a74e51b180867cf57feac7ce410b6757e32852b8f259c11",
+   "author_hash": "ecaaa58c918a3ffe",
    "emotion": [
     "nostalgia"
    ],
@@ -7180,7 +7180,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "6a63c8c08e7bd4a0fba86ea4aefd793c4bb8f6d0da4c77d1e2006f1a7d92ae62",
+   "author_hash": "cb2ccc1a2c0491d8",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -7200,7 +7200,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 39.5,
-   "author_hash": "e58c19990285496ff72c022cec2914790e9f33c6c4263a4f87ad1e53b61898e0",
+   "author_hash": "418506331ec41dec",
    "emotion": [
     "excitement",
     "aspiration"
@@ -7223,7 +7223,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "816744c5a128220de4bd516964af56bc317a3e1f804d944e190f94510779e69a",
+   "author_hash": "6bb209641cea3b86",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -7243,7 +7243,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 93.8,
-   "author_hash": "5e418ad657e1855b0a41424f0e0848c49dd0f8fb40f0da4f2e9361f957442e6b",
+   "author_hash": "047e443361c7c2fa",
    "emotion": [],
    "role": "unknown",
    "trust": "untrusted_user_content"
@@ -7263,7 +7263,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 87.2,
-   "author_hash": "4f6d2919c009d368a0debbdcae1664444d19e517a1ba19cb24f083c8ca7d1772",
+   "author_hash": "3939dd09a3bfc0a4",
    "emotion": [
     "excitement"
    ],
@@ -7285,7 +7285,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 84.9,
-   "author_hash": "b15fde30a1498a940a0a03c592f6aa20af5d11f46ceef9bf2db4cf3b2e3571a2",
+   "author_hash": "583c5d9a5005fa96",
    "emotion": [
     "pride",
     "nostalgia"
@@ -7308,7 +7308,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 82.4,
-   "author_hash": "833ee356c036c57a91802e821fc79afd6bc9cb4aeb4f19fb9236b8bd6f71f0dc",
+   "author_hash": "5139d75ed03826ec",
    "emotion": [
     "excitement"
    ],
@@ -7330,7 +7330,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 35.7,
-   "author_hash": "4a0146a90f7e713c3a351a61a26bcd3c0c5c0660356ee7a99ffb786f90179b11",
+   "author_hash": "6a2b38394a9cfbcf",
    "emotion": [
     "pride"
    ],
@@ -7352,7 +7352,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": 53.8,
-   "author_hash": "63bf165d17e3b63232b7d1cd83286cfb4d1a71975687a54ec6f69048be19824f",
+   "author_hash": "8f3efbf116bcfec6",
    "emotion": [
     "frustration"
    ],
@@ -7374,7 +7374,7 @@
    "requires_login": false,
    "short_form": false,
    "engagement_percentile": null,
-   "author_hash": "08ff42930e3bdf5cbf964aa2eb9b5992112c876b738dab1a64c4a786ad898bb3",
+   "author_hash": "1dd632f371aab4f7",
    "emotion": [
     "frustration"
    ],

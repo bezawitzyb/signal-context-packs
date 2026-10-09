@@ -226,6 +226,106 @@ def classify(
                   f"cache write {t.cache_write_tokens}) out {t.output_tokens} | cost ${t.spent_usd:.5f}")
 
 
+def _ready_db() -> None:
+    """Data audit 3: a local SQLite database is migrated; a shared (Postgres) database is only CHECKED - this
+    code never changes the live schema behind the owner's back. Behind -> a plain message and `migrate`."""
+    from ctxpack import db
+
+    if db.get_engine().dialect.name == "sqlite":
+        db.migrate()
+        return
+    if problems := db.schema_problems():
+        console.print(f"{BAD} the database is behind this code ({', '.join(problems[:6])}"
+                      f"{', ...' if len(problems) > 6 else ''}). Run: uv run python -m ctxpack.cli migrate",
+                      highlight=False)
+        raise typer.Exit(1)
+    db.SCHEMA_READY.set()
+
+
+@app.command("label-sample")
+def label_sample(
+    kind: str = typer.Argument(..., help="relevance (posts from the database) or claims (from a pack)"),
+    size: int = typer.Option(100, help="Rows to label (relevance: about 100; claims: about 50)"),
+    pack_id: str = typer.Option("", "--pack", help="claims: the pack to sample (featured file or database)"),
+    run_id: str = typer.Option("", "--run", help="relevance: only this run's posts"),
+) -> None:
+    """Data audit 9: a spreadsheet to label by hand, in data/labels/ (git-ignored: it holds post text). Free."""
+    import csv
+
+    from ctxpack import db
+    from ctxpack import evaluation as ev
+
+    folder = get_settings().data_path / "labels"
+    folder.mkdir(parents=True, exist_ok=True)
+    if kind == "relevance":
+        db.init_engine()
+        _ready_db()
+        docs = db.get_documents(run_id) if run_id else [d for r in db.list_runs(200) for d in db.get_documents(r.id)]
+        header, rows = ev.RELEVANCE_COLUMNS, ev.relevance_sample(docs, size)
+        path = folder / "relevance.csv"
+    elif kind == "claims":
+        if not pack_id:
+            console.print(f"{BAD} claims need --pack PACK_ID")
+            raise typer.Exit(1)
+        from ctxpack.db import FEATURED_DIR
+
+        file = FEATURED_DIR / f"{pack_id}.json"
+        if file.exists():
+            import json
+
+            pack = json.loads(file.read_text(encoding="utf-8"))
+        else:
+            db.init_engine()
+            _ready_db()
+            pack = db.get_pack(pack_id)
+        if pack is None:
+            console.print(f"{BAD} pack {pack_id} not found")
+            raise typer.Exit(1)
+        header, rows = ev.CLAIM_COLUMNS, ev.claim_sample(pack, size)
+        path = folder / f"claims_{pack_id}.csv"
+    else:
+        console.print(f"{BAD} kind must be relevance or claims")
+        raise typer.Exit(1)
+    with path.open("w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(header)
+        w.writerows(rows)
+    console.print(f"{OK} {len(rows)} rows -> {path}\n   {ev.LABEL_HELP[kind]}; then: label-score {kind} {path}",
+                  highlight=False)
+
+
+@app.command("label-score")
+def label_score(kind: str = typer.Argument(..., help="relevance or claims"),
+                file: str = typer.Argument(..., help="The labelled spreadsheet (CSV)")) -> None:
+    """Data audit 9: compare your labels with the model (relevance precision / recall, or human entailment). Free."""
+    import csv
+    import json
+
+    from ctxpack import evaluation as ev
+
+    with open(file, encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    console.print_json(json.dumps(ev.score_labels(kind, rows)))
+
+
+@app.command()
+def migrate(dry_run: bool = typer.Option(False, "--dry-run", help="Only list what is missing")) -> None:
+    """Bring the database up to this code: new tables, nullable columns, enum labels, then named steps (each once,
+    recorded in schema_migrations). Only ever adds. The app also runs it at start before serving the API."""
+    from ctxpack import db
+
+    db.init_engine()
+    problems = db.schema_problems()
+    if not problems:
+        console.print(f"{OK} the database is up to date")
+        return
+    console.print("missing: " + ", ".join(problems), highlight=False)
+    if dry_run:
+        return
+    applied = db.migrate()
+    console.print(f"{OK} applied: " + (", ".join(applied) or "nothing"), highlight=False)
+
+
 def _print_plan(out) -> None:
     """Interpretation, then the question or the plan, then the estimate."""
     res, est = out.result, out.estimate
@@ -537,7 +637,7 @@ def research(
                 console.print(f"{BAD} {name} not set - run the doctor command")
                 raise typer.Exit(1)
         db.init_engine()
-    db.create_tables()
+    _ready_db()
 
     run = db.create_run(brief, mode=Mode(mode), requester=Requester.cli)
     if brand_voice:
@@ -588,6 +688,7 @@ def extract(
     from ctxpack.llm.client import tracking
 
     db.init_engine()
+    _ready_db()
     run = db.get_run(from_run)
     if run is None or not run.plan:
         console.print(f"{BAD} run {from_run} not found or never planned")
@@ -652,6 +753,7 @@ def cluster(
     from ctxpack.llm.client import tracking
 
     db.init_engine()
+    _ready_db()
     run = db.get_run(from_run)
     if run is None or not run.plan or run.finish_reason is None:
         console.print(f"{BAD} run {from_run} not found or has not finished collecting")
@@ -744,6 +846,7 @@ def write(
     from ctxpack.synthesis import write as wr
 
     db.init_engine()
+    _ready_db()
     run = db.get_run(from_run)
     clusters = db.get_clusters(from_run) if run else []
     if run is None or not clusters or not run.analysis:
@@ -815,6 +918,7 @@ def verify(
     from ctxpack.synthesis.write import INSIGHT_SECTIONS
 
     db.init_engine()
+    _ready_db()
     run = db.get_run(from_run)
     draft = (run.draft or {}) if run else {}
     if not draft.get("sections"):
@@ -882,6 +986,7 @@ def pack(
     from ctxpack.synthesis.finalize import package_run
 
     db.init_engine()
+    _ready_db()
     run = db.get_run(from_run)
     if run is None or not (run.draft or {}).get("verified"):
         console.print(f"{BAD} run {from_run} has no verified draft: run verify --from-run {from_run} first")
@@ -973,6 +1078,7 @@ def export(pack_id: str = typer.Argument(..., help="A saved pack id")) -> None:
     from ctxpack import db
 
     db.init_engine()
+    _ready_db()
     p = db.get_pack(pack_id)
     if p is None:
         console.print(f"{BAD} pack {pack_id} not found")
@@ -992,6 +1098,7 @@ def feature(pack_id: str = typer.Argument(..., help="A finished pack to publish 
     from ctxpack.exports.featured import feature as write_featured
 
     db.init_engine()
+    _ready_db()
     p = db.get_pack(pack_id)
     if p is None:
         console.print(f"{BAD} pack {pack_id} not found")
@@ -1021,6 +1128,7 @@ def redact_run_cmd(run_id: str = typer.Argument(..., help="A saved run")) -> Non
     from ctxpack.maintenance import redact_run
 
     db.init_engine()
+    _ready_db()
     rep = redact_run(run_id)
     console.print(f"{OK} run {run_id}: documents changed {rep.documents_changed} | text-fragment links dropped "
                   f"{rep.anchors_cleared} | strings changed {rep.strings_changed} | quotes removed "
@@ -1034,6 +1142,7 @@ def overlap(run_ids: list[str] = typer.Argument(..., help="Two or more run ids")
     from ctxpack.orchestrator import source_units, units_overlap
 
     db.init_engine()
+    _ready_db()
     units = {}
     for rid in run_ids:
         run = db.get_run(rid)
@@ -1124,7 +1233,7 @@ def eval_cmd(
     from ctxpack.schemas.enums import Mode, Requester
 
     db.init_engine()
-    db.create_tables()
+    _ready_db()
     cfg = ev.load_briefs()
     targets = cfg["targets"]
     specs = [b for b in cfg["briefs"] if not only or b["id"] in only]

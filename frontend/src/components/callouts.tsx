@@ -22,6 +22,10 @@ export function CoverageStrip({ pack }: { pack: ContextPack }) {
     ["Languages", langs.join(", ") || "-"],
     ["Dates", c.date_range?.start ? <><span className="whitespace-nowrap">{c.date_range.start}</span> → <span className="whitespace-nowrap">{c.date_range.end}</span></> : "mostly undated"],
   ];
+  const dq = c.data_quality;   // data audit: how complete the relevant posts are
+  if (dq?.dated_share != null) items.push(["Dated posts", `${pct(dq.dated_share)} (the time window applies to these)`]);
+  if (dq?.engagement_share != null) items.push(["With engagement data", pct(dq.engagement_share)]);
+  if (dq?.translated_share != null) items.push(["Translated", `${pct(dq.translated_share)} of non-English posts`]);
   return (
     <div className="overflow-hidden rounded-lg border border-line">
       <dl className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3">

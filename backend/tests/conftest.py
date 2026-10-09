@@ -1,14 +1,23 @@
-"""Shared test setup: a throwaway SQLite database per test. Tests never spend money."""
+"""Shared test setup: a throwaway database per test (SQLite; Postgres when TEST_DATABASE_URL is set, as in CI's
+postgres job - data audit 7). Tests never spend money."""
+
+import os
 
 import pytest
+from sqlalchemy import text
 
 from ctxpack import db
 
 
 @pytest.fixture
 def temp_db(tmp_path):
-    db.init_engine(f"sqlite:///{tmp_path / 'test.db'}")
-    db.create_tables()
+    url = os.environ.get("TEST_DATABASE_URL")
+    db.init_engine(url or f"sqlite:///{tmp_path / 'test.db'}")
+    if url:  # a clean schema for every test: tables AND enum types go
+        with db.get_engine().begin() as conn:
+            conn.execute(text("DROP SCHEMA public CASCADE"))
+            conn.execute(text("CREATE SCHEMA public"))
+    db.migrate()
     yield db
     db.get_engine().dispose()
     db._engine = None

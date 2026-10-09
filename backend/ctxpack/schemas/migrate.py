@@ -22,14 +22,25 @@ idempotent and also run on packs saved as 1.1 before a later step existed:
 1.2 -> 1.3 (change V12):
   V12 section_order from the pack's confirmed goals (config/goals.yaml); snapshot.for_goals, do_first[].goal
       and brand_perception start empty (they need the model); intake brand fields start empty.
+Data audit 5 (any version): evidence author_hash, once the stable salted hash shared by every pack, becomes a
+      per-pack id (pack_author_id), so published packs cannot be linked by author.
 Packs are never written back in an older version.
 """
 
 from __future__ import annotations
 
 import copy
+import hashlib
 import re
 from typing import Any
+
+
+def pack_author_id(pack_id: str, author_hash: str | None) -> str | None:
+    """Data audit 5: a per-pack author id. Within a pack it tells authors apart (strength counts still work); across
+    packs the same person gets different ids. The stable salted hash stays internal (documents)."""
+    if not author_hash or len(author_hash) != 64:
+        return author_hash  # missing, or already a per-pack id
+    return hashlib.sha256(f"{pack_id}|{author_hash}".encode()).hexdigest()[:16]
 
 
 def needs_migration(pack: dict[str, Any]) -> bool:
@@ -38,7 +49,8 @@ def needs_migration(pack: dict[str, Any]) -> bool:
     return (pack.get("schema_version") != SCHEMA_VERSION or "pain_points" not in pack or "white_space" in pack
             or "news_hooks" not in pack or "findings" not in (pack.get("snapshot") or {})
             or "understanding" not in ((pack.get("brief") or {}).get("interpreted") or {})
-            or "section_order" not in pack)
+            or "section_order" not in pack
+            or any(len(e.get("author_hash") or "") == 64 for e in pack.get("evidence") or []))
 
 
 def migrate(pack: dict[str, Any]) -> dict[str, Any]:
@@ -64,6 +76,8 @@ def migrate(pack: dict[str, Any]) -> dict[str, Any]:
         out = _summary_v9(out)
     if "understanding" not in ((out.get("brief") or {}).get("interpreted") or {}):
         out = _understanding_v11(out)
+    out = {**out, "evidence": [{**e, "author_hash": pack_author_id(out.get("pack_id", ""), e.get("author_hash"))}
+                               for e in out.get("evidence") or []]}
     if "section_order" not in out:
         from ctxpack.schemas.plan import section_order
 

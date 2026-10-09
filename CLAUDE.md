@@ -117,7 +117,12 @@ Read the relevant step before working. Do only that step.
 - Scripts: cd backend && uv run python -m scripts.demo_agent [--pack ID];
   uv run python -m scripts.build_mirror (static mirror into mirror/, not committed)
 - Keyless local demo: USE_FIXTURES=true LLM_FAKE=true ./start.sh (local SQLite, no keys)
-- Tests: cd backend && uv run pytest; lint: cd backend && uvx ruff check ctxpack tests scripts
+- Tests: cd backend && uv run pytest (on Postgres: TEST_DATABASE_URL=postgresql://... uv run pytest);
+  lint: cd backend && uvx ruff check ctxpack tests scripts
+- Database schema: ... migrate [--dry-run] (adds only; the app runs it at start before serving the API;
+  other commands only CHECK a shared database and stop if it is behind). New steps: db.MIGRATIONS
+- Human labels (gold set): ... label-sample relevance|claims [--pack ID] [--size N] -> data/labels/*.csv,
+  fill your_label, then ... label-score relevance|claims FILE (free)
 - CI (.github/workflows/ci.yml, no secrets): lint + pytest, type check + build + e2e, gitleaks on the
   whole history - on every push and pull request
 - Local app: ./start.sh (builds frontend/, then serves it and the API on :7860)

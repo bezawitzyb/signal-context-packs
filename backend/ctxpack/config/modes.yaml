@@ -202,6 +202,8 @@ worker:
   stale_after_secs: 120         # no heartbeat for this long -> "interrupted"
   interrupted_check_secs: 60    # how often the worker looks for interrupted runs
   retention_check_secs: 3600    # how often expired posts are deleted (also at every start)
+  schema_wait_secs: 30          # database routes wait this long for the start-up migration, then answer 503
+  statement_timeout_secs: 60    # set on the database role by migration 001 (Postgres)
   poll_secs: 2                  # idle worker checks the queue this often
   max_resumes: 1                # an interrupted run is resumed at most once
   thin_evidence_floor: 20       # relevant docs needed for a pack; below it the run ends on the thin screen (V1)

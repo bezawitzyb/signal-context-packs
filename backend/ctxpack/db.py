@@ -7,12 +7,13 @@ Every pipeline stage saves here; the SSE endpoint reads the events table.
 """
 
 import json
+import threading
 import logging
 import secrets
 import datetime as dt
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from sqlalchemy import DateTime, Engine, UniqueConstraint, delete, func, inspect, text, update
 from sqlalchemy.exc import IntegrityError
@@ -176,7 +177,9 @@ def init_engine(url: str | None = None) -> Engine:
         _engine = create_engine(url, connect_args={"check_same_thread": False})
     else:
         # Small pool: one uvicorn worker on a 512 MB instance; Neon pooled URL.
-        _engine = create_engine(url, pool_pre_ping=True, pool_size=3, max_overflow=2, pool_recycle=300)
+        # data audit 11: room for the pipeline thread, its to_thread calls, the API and the heartbeat at once
+        _engine = create_engine(url, pool_pre_ping=True, pool_size=5, max_overflow=5, pool_recycle=300,
+                                pool_timeout=20)
     return _engine
 
 
@@ -189,11 +192,93 @@ def session() -> Session:
 
 
 def create_tables() -> None:
-    """Create missing tables, then add any new nullable columns to existing ones."""
+    """Create missing tables, then add any new nullable columns and enum labels (additive only)."""
     engine = get_engine()
     SQLModel.metadata.create_all(engine)
     add_missing_columns(engine)
     add_missing_enum_values(engine)
+
+
+# --------------------------------------------------------------------------
+# Migrations (data audit 3): explicit, recorded, run before the database is used
+# --------------------------------------------------------------------------
+
+class SchemaMigration(SQLModel, table=True):
+    """One applied migration step (name + when)."""
+
+    __tablename__ = "schema_migrations"
+
+    name: str = Field(primary_key=True)
+    applied_at: datetime = Field(default_factory=lambda: utcnow(), sa_type=DateTime(timezone=True))
+
+
+# Named steps run once, in order, and are recorded. Additive changes (new tables, nullable columns, enum labels)
+# need no step: create_tables() adds them on every migrate. Add a step here for anything else (data fixes,
+# renames, NOT NULL columns) - never edit or reorder an applied one.
+def _statement_timeout(engine: Engine) -> None:
+    """Data audit 11: no query may hang a connection. Set on the role so it holds through Neon's pooled endpoint
+    (a per-session SET can land on another server connection). Postgres only; a refusal is logged, not fatal."""
+    if engine.dialect.name != "postgresql":
+        return
+    try:
+        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            conn.execute(text(f"ALTER ROLE CURRENT_USER SET statement_timeout = "
+                              f"'{int(load_yaml('modes')['worker']['statement_timeout_secs'])}s'"))
+    except Exception as exc:  # never the message: it may contain the URL
+        log.warning("statement timeout not set (%s)", type(exc).__name__)
+
+
+MIGRATIONS: list[tuple[str, Callable[[Engine], Any]]] = [
+    ("001_statement_timeout", _statement_timeout),
+]
+SCHEMA_READY = threading.Event()       # set once migrate() has finished in this process
+
+
+def schema_problems() -> list[str]:
+    """Read-only: what the database lacks compared with this code (tables, columns, enum labels, steps)."""
+    engine = get_engine()
+    insp = inspect(engine)
+    out = [f"table {t.name}" for t in SQLModel.metadata.sorted_tables if not insp.has_table(t.name)]
+    for t in SQLModel.metadata.sorted_tables:
+        if insp.has_table(t.name):
+            have = {c["name"] for c in insp.get_columns(t.name)}
+            out += [f"column {t.name}.{c.name}" for c in t.columns if c.name not in have]
+    if engine.dialect.name == "postgresql":
+        with engine.connect() as conn:
+            existing: dict[str, list[str]] = {}
+            for name, label in conn.execute(text("SELECT t.typname, e.enumlabel FROM pg_type t "
+                                                 "JOIN pg_enum e ON e.enumtypid = t.oid")):
+                existing.setdefault(name, []).append(label)
+        out += [f"enum {n}.{v}" for n, vals in missing_enum_values(existing, wanted_enum_values()).items()
+                for v in vals]
+    done: set[str] = set()
+    if insp.has_table("schema_migrations"):
+        with session() as s:
+            done = {m.name for m in s.exec(select(SchemaMigration))}
+    out += [f"step {name}" for name, _ in MIGRATIONS if name not in done]
+    return out
+
+
+def migrate() -> list[str]:
+    """Bring the database up to this code: additive changes, then each named step not applied yet. Returns what
+    was applied. Idempotent; the app runs it before serving database routes, owners run cli migrate."""
+    before = schema_problems()
+    create_tables()
+    engine = get_engine()
+    applied = [p for p in before if not p.startswith("step ")]
+    with session() as s:
+        done = {m.name for m in s.exec(select(SchemaMigration))}
+    for name, step in MIGRATIONS:
+        if name in done:
+            continue
+        step(engine)
+        with session() as s:
+            s.add(SchemaMigration(name=name))
+            s.commit()
+        applied.append(f"step {name}")
+        log.info("migration step %s applied", name)
+    SCHEMA_READY.set()
+    return applied
 
 
 def add_missing_columns(engine: Engine) -> list[str]:
@@ -537,24 +622,32 @@ def list_featured_packs() -> list[PackRow]:
 # --------------------------------------------------------------------------
 
 
+def _upsert_add(table: Any, keys: dict[str, Any], adds: dict[str, float]) -> Any:
+    """INSERT the row, or ADD to its counters if it exists - one atomic statement (audit 2: concurrent writers
+    used to read, add in Python and write back, losing updates). Postgres and SQLite both support it."""
+    dialect = get_engine().dialect.name
+    if dialect == "postgresql":
+        from sqlalchemy.dialects.postgresql import insert
+    else:
+        from sqlalchemy.dialects.sqlite import insert
+    stmt = insert(table).values(**keys, **adds)
+    return stmt.on_conflict_do_update(index_elements=list(keys),
+                                      set_={k: table.c[k] + stmt.excluded[k] for k in adds})
+
+
 def add_spend(apify_usd: float = 0.0, llm_usd: float = 0.0, run_id: str | None = None,
               analysis: bool = False) -> None:
-    """Add cost to today's total (and to the run, if given; analysis spend also to its own budget)."""
+    """Add cost to today's total (and to the run, if given; analysis spend also to its own budget).
+    Database-side increments: parallel calls, other threads and other processes never lose an update."""
     today = utcnow().date()
     with session() as s:
-        row = s.get(Spend, today) or Spend(date=today)
-        row.usd_apify += apify_usd
-        row.usd_llm += llm_usd
-        s.add(row)
+        s.execute(_upsert_add(Spend.__table__, {"date": today}, {"usd_apify": apify_usd, "usd_llm": llm_usd}))
         if run_id:
-            run = s.get(Run, run_id)
-            if run is not None:
-                run.cost_apify_usd += apify_usd
-                run.cost_llm_usd += llm_usd
-                if analysis:
-                    run.cost_analysis_llm_usd = (run.cost_analysis_llm_usd or 0.0) + llm_usd
-                run.updated_at = utcnow()
-                s.add(run)
+            values: dict[str, Any] = {"cost_apify_usd": Run.cost_apify_usd + apify_usd,
+                                      "cost_llm_usd": Run.cost_llm_usd + llm_usd, "updated_at": utcnow()}
+            if analysis:
+                values["cost_analysis_llm_usd"] = func.coalesce(Run.cost_analysis_llm_usd, 0.0) + llm_usd
+            s.execute(update(Run).where(Run.id == run_id).values(**values))
         s.commit()
 
 
@@ -566,12 +659,9 @@ def asks_today(pack_id: str) -> int:
 
 def add_ask(pack_id: str, usd: float) -> None:
     """One more question for this pack today (its cost is in the spend table already)."""
-    today = utcnow().date()
     with session() as s:
-        row = s.get(AskCount, (pack_id, today)) or AskCount(pack_id=pack_id, date=today)
-        row.questions += 1
-        row.usd += usd
-        s.add(row)
+        s.execute(_upsert_add(AskCount.__table__, {"pack_id": pack_id, "date": utcnow().date()},
+                              {"questions": 1, "usd": usd}))
         s.commit()
 
 
@@ -587,11 +677,57 @@ def spend_today() -> float:
 
 
 def delete_expired_documents(now: datetime | None = None) -> int:
-    """Retention (DH6): delete documents past expires_at. Also run once a day."""
+    """Retention (DH6): delete documents past expires_at, then what still held their text (data audit 6): the
+    drafts and clusters of finished runs with no documents left, and cache files past their hours. The finished
+    pack stays (short excerpts with links). Runs at start and hourly in the worker."""
+    now = now or utcnow()
     with session() as s:
-        result = s.execute(delete(DocumentRow).where(DocumentRow.expires_at < (now or utcnow())))
+        result = s.execute(delete(DocumentRow).where(DocumentRow.expires_at < now))
         s.commit()
-        return result.rowcount or 0
+    deleted = result.rowcount or 0
+    cleared = expire_run_working_data(now)
+    removed = delete_expired_cache_files(now)
+    if cleared or removed:
+        log.info("retention: %d run drafts cleared, %d cache files removed", cleared, removed)
+    return deleted
+
+
+def expire_run_working_data(now: datetime | None = None) -> int:
+    """Finished runs older than the retention period with no documents left: draft (evidence excerpts,
+    translations, sections) and clusters are cleared. Returns how many runs were cleared."""
+    cutoff = (now or utcnow()) - timedelta(days=get_settings().retention_days)
+    finished = [RunStatus.complete, RunStatus.partial, RunStatus.failed, RunStatus.stopped]
+    with session() as s:
+        runs = s.exec(select(Run).where(Run.status.in_(finished), Run.created_at < cutoff,
+                                        Run.draft.is_not(None))).all()
+        cleared = 0
+        for run in runs:
+            if s.exec(select(func.count()).select_from(DocumentRow).where(DocumentRow.run_id == run.id)).one():
+                continue
+            run.draft = None
+            run.updated_at = utcnow()
+            s.add(run)
+            s.execute(delete(ClusterRow).where(ClusterRow.run_id == run.id))
+            cleared += 1
+        s.commit()
+    return cleared
+
+
+def delete_expired_cache_files(now: datetime | None = None) -> int:
+    """The 24 h collection cache (hashed, redacted posts on disk): files older than cache_hours are deleted."""
+    folder = get_settings().data_path / "cache"
+    if not folder.is_dir():
+        return 0
+    limit = (now or utcnow()).timestamp() - load_yaml("modes")["collection"]["cache_hours"] * 3600
+    removed = 0
+    for path in folder.glob("*.json"):
+        try:
+            if path.stat().st_mtime < limit:
+                path.unlink()
+                removed += 1
+        except OSError:
+            pass
+    return removed
 
 
 def load_featured(folder: Path = FEATURED_DIR) -> int:
@@ -657,8 +793,9 @@ def startup() -> dict[str, Any]:
 
     The worker loop (started by the app) then resumes or closes interrupted runs.
     """
-    create_tables()
+    applied = migrate()
     return {
+        "migrated": applied,
         "featured_added": load_featured(),
         "documents_deleted": delete_expired_documents(),
         "runs_interrupted": mark_stale_runs_interrupted(),

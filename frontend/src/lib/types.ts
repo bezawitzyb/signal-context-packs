@@ -2675,6 +2675,18 @@ export type TopUpUsed = boolean;
  */
 export type ThinEvidence = boolean;
 /**
+ * Share with a posting date: the time window only applies to these; undated posts are kept and flagged.
+ */
+export type DatedShare = number | null;
+/**
+ * Share with an engagement score (what performs rests on these).
+ */
+export type EngagementShare = number | null;
+/**
+ * Of non-English posts, the share with an English translation; null when all are English.
+ */
+export type TranslatedShare = number | null;
+/**
  * Event number in the run.
  */
 export type Seq1 = number;
@@ -2758,7 +2770,7 @@ export type ShortForm = boolean;
  */
 export type EngagementPercentile1 = number | null;
 /**
- * Salted hash, never a username.
+ * Per-pack author id (16 hex): tells authors apart within this pack, cannot link them across packs; never a username.
  */
 export type AuthorHash = string | null;
 /**
@@ -4041,6 +4053,7 @@ export interface Coverage {
   date_range?: DateRange;
   loop: LoopSummary;
   thin_evidence?: ThinEvidence;
+  data_quality?: DataQuality;
 }
 export interface DecisionLogEntry {
   seq: Seq;
@@ -4091,6 +4104,14 @@ export interface LoopSummary {
   finish_reason: FinishReason;
   fallback_used?: FallbackUsed;
   top_up_used?: TopUpUsed;
+}
+/**
+ * Dated, engagement and translation shares of the relevant posts (data audit).
+ */
+export interface DataQuality {
+  dated_share?: DatedShare;
+  engagement_share?: EngagementShare;
+  translated_share?: TranslatedShare;
 }
 export interface PackEvent {
   seq: Seq1;

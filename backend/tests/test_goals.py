@@ -155,3 +155,27 @@ async def test_agents_and_the_cli_must_name_the_brand(fake, temp_db):
     out = CliRunner().invoke(app, ["research", "snacks", "--fixtures", "--auto-approve", "--goal", "brand_perception"],
                              terminal_width=200)
     assert out.exit_code == 1 and "needs --brand" in out.output
+
+
+async def test_packs_report_how_complete_their_posts_are(fake, temp_db, monkeypatch):  # noqa: F811
+    """Data audit 4 + 10: 56% of live posts had no date, yet packs said "last 180 days" without saying so."""
+    real = finalize.load_yaml
+    monkeypatch.setattr(finalize, "load_yaml", lambda name: {**real(name), "data_quality": {"dated_share_warn": 1.01}}
+                        if name == "scoring" else real(name))
+    p = await _pack(["content_plan"])
+    dq = p["coverage"]["data_quality"]
+    assert all(dq[k] is None or 0 <= dq[k] <= 1 for k in ("dated_share", "engagement_share", "translated_share"))
+    assert dq["dated_share"] is not None and "of posts dated)" in to_markdown(p)
+    assert any("window applies to those only" in b["text"] for b in p["blind_spots"])
+
+
+async def test_packs_record_what_made_them(fake, temp_db):  # noqa: F811
+    """Data audit 8: packs did not record models, prompts, config or code version."""
+    from ctxpack.config import load_yaml
+
+    p = await _pack(["positioning"])
+    prov = p["provenance"]
+    assert prov["models"] == load_yaml("models")["roles"]
+    assert "interpret_plan" in prov["prompts"] and len(prov["prompts"]["interpret_plan"]) == 12
+    assert "modes.yaml" in prov["config"] and prov["code_version"]
+    assert "**Made with:**" in to_markdown(p)

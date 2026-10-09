@@ -143,7 +143,14 @@ def test_clarifying_questions_expectations():
     assert ev.expectations(p, {"questions_max": 1}, 0.05, None)[0]["pass"] is None   # not checked yet
 
 
-def test_api_evals_before_and_after_a_run(pack, out_dirs):
+def test_api_evals_before_and_after_a_run(pack, out_dirs, monkeypatch):
+    import threading
+
+    from ctxpack import db as _db
+
+    ready = threading.Event()
+    ready.set()                                       # the app's start-up migration is not part of this test
+    monkeypatch.setattr(_db, "SCHEMA_READY", ready)
     client = TestClient(app)
     body = client.get("/api/v1/evals").json()
     assert body["status"] == "not_run_yet" and body["briefs"] == []
@@ -171,3 +178,24 @@ def test_plan_mix_expectations():
         p, {"plans_platforms": ["linkedin"], "platform_share_max": {"reddit": 0.5}}, 0.05, None, plan)}
     assert res == {"plans linkedin": True, "reddit at most 50% of the plan": True}
     assert ev.expectations(p, {"plans_platforms": ["linkedin"]}, 0.05, None, None)[0]["pass"] is None
+
+
+def test_label_sheets_and_scores(tmp_path):
+    """Data audit 9: a human-labelled gold set for relevance and claim entailment (tools only; labels are yours)."""
+    from types import SimpleNamespace
+
+    from ctxpack import evaluation as ev
+
+    docs = [SimpleNamespace(id=f"d{i}", platform="reddit", language="en", text=f"=cmd {i}", text_en=None,
+                            is_relevant=i % 2 == 0, short_form=False) for i in range(20)]
+    rows = ev.relevance_sample(docs, 10)
+    assert len(rows) == 10 and sum(r[5] == "yes" for r in rows) == 5
+    assert all(r[3].startswith("'=") for r in rows)                        # formula-safe cells
+    labelled = [dict(zip(ev.RELEVANCE_COLUMNS, r)) for r in rows]
+    for r in labelled:
+        r["your_label"] = "yes" if r["doc_id"] in ("d0", "d2", "d1") else "no"
+    score = ev.score_labels("relevance", labelled)
+    assert score["labelled"] == 10 and 0 <= score["precision"] <= 1 and 0 <= score["agreement"] <= 1
+    claims = [{"your_label": x} for x in ("supported", "partly", "not", "supported", "")]
+    assert ev.score_labels("claims", claims) == {"labelled": 4, "supported": 2, "partly": 1, "not": 1,
+                                                 "entailment": 0.75, "strictly_supported": 0.5}

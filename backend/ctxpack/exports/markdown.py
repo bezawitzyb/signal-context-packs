@@ -95,7 +95,9 @@ def to_markdown(pack: dict) -> str:
     goal = confirmed_goal(b.get("intake"))
     add(f"*Audience:* {inline(i['audience'])}{' | *Goals:* ' + inline(goal) if goal else ''} | *Languages:* "
         f"{', '.join(i['languages'])} | *Mode:* {pack['mode']} | *Window:* {i['time_window_days']} days"
-        f"{' | *Brand voice:* ' + inline(b['brand_voice']) if b.get('brand_voice') else ''}")
+        + (f" ({dq['dated_share']:.0%} of posts dated)" if (dq := cov.get("data_quality") or {}).get("dated_share")
+           is not None else "")
+        + f"{' | *Brand voice:* ' + inline(b['brand_voice']) if b.get('brand_voice') else ''}")
     add(f"*Pack:* {pack['pack_id']} | *Generated:* {pack['generated_at']} | *Coverage grade:* "
         f"{snap['coverage_grade']}{' (' + inline(snap['grade_note']) + ')' if snap.get('grade_note') else ''} | "
         f"*Relevant posts:* {cov['counts']['relevant']}")
@@ -392,6 +394,9 @@ def to_markdown(pack: dict) -> str:
     add("\n**How to read the strength labels:** " + " ".join(
         f"{w['words']}." for w in load_yaml("scoring")["plain_labels"].values())
         + " Evidence ids (EV-...) point to the posts in context_pack.json.")
+    if prov := pack.get("provenance"):  # data audit 8
+        add("\n**Made with:** " + ", ".join(f"{role} {model}" for role, model in prov["models"].items())
+            + f"; code {prov['code_version']}; prompts and config fingerprinted in context_pack.json.")
     add(f"\n*{DISCLAIMER}*")
     return "\n".join(L) + "\n"
 

@@ -842,6 +842,17 @@ class LoopSummary(Strict):
     top_up_used: bool = Field(default=False, description="Low-evidence top-up ran (PRD 8.6).")
 
 
+class DataQuality(Strict):
+    """How complete the relevant posts are (data audit 4 and 10), computed in code. Null when not measured."""
+
+    dated_share: float | None = Field(default=None, ge=0, le=1, description="Share with a posting date: the time "
+                                      "window only applies to these; undated posts are kept and flagged.")
+    engagement_share: float | None = Field(default=None, ge=0, le=1, description="Share with an engagement "
+                                           "score (what performs rests on these).")
+    translated_share: float | None = Field(default=None, ge=0, le=1, description="Of non-English posts, the share "
+                                           "with an English translation; null when all are English.")
+
+
 class Coverage(Strict):
     decision_log: list[DecisionLogEntry] = Field(default_factory=list, description="Every agent tool call.")
     sources_used: list[SourceUsed] = Field(default_factory=list, description="Sources kept, with reasons.")
@@ -851,6 +862,17 @@ class Coverage(Strict):
     date_range: DateRange = Field(default_factory=DateRange, description="Dates the evidence spans.")
     loop: LoopSummary = Field(description="How the agent loop ended.")
     thin_evidence: bool = Field(default=False, description="True if the minimum content bar (PRD 6.6) was not met.")
+    data_quality: DataQuality = Field(default_factory=DataQuality, description="Dated, engagement and translation "
+                                      "shares of the relevant posts (data audit).")
+
+
+class Provenance(Strict):
+    """What made this pack (data audit 8): to reproduce it, or to tell which settings an older pack came from."""
+
+    models: dict[str, str] = Field(default_factory=dict, description="Model per role (config/models.yaml).")
+    prompts: dict[str, str] = Field(default_factory=dict, description="Prompt name -> first 12 hex of its sha256.")
+    config: dict[str, str] = Field(default_factory=dict, description="Config file -> first 12 hex of its sha256.")
+    code_version: str = Field(default="", description="Package version, plus the git commit when known.")
 
 
 class PackEvent(Strict):
@@ -881,7 +903,8 @@ class Evidence(Strict):
     engagement_percentile: float | None = Field(default=None, ge=0, le=100,
                                                 description="Engagement percentile within its platform.")
     author_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{8,64}$",
-                                    description="Salted hash, never a username.")
+                                    description="Per-pack author id (16 hex): tells authors apart within this pack, "
+                                    "cannot link them across packs; never a username.")
     emotion: list[Emotion] = Field(default_factory=list, description="Emotions expressed.")
     role: EvidenceRole = Field(default=EvidenceRole.unknown, description="Who the author is, when the post shows "
                                "it (1.1, V3).")
@@ -953,6 +976,8 @@ class ContextPack(Strict):
     coverage: Coverage = Field(description="How the evidence was found (META layer).")
     events: list[PackEvent] = Field(default_factory=list, description="Run event log (replay research).")
     evidence: list[Evidence] = Field(default_factory=list, description="Every cited post (PRD 6.4).")
+    provenance: Provenance | None = Field(default=None, description="Models, prompt and config fingerprints and "
+                                          "code version behind this pack (data audit; null for older packs).")
 
     # ---- cross-checks -----------------------------------------------------
 
