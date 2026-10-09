@@ -1,9 +1,9 @@
 /* Generated from docs/schema/context-pack.schema.json by npm run types - do not edit. */
 
 /**
- * Always 1.1 (1.0 packs are migrated).
+ * Always 1.2 (1.0 and 1.1 packs are migrated).
  */
-export type SchemaVersion = "1.1";
+export type SchemaVersion = "1.2";
 /**
  * Random id; the pack's link.
  */
@@ -86,7 +86,7 @@ export type ComplianceCategory =
  */
 export type Competitors = string[];
 /**
- * What the marketer wants to achieve.
+ * Filled in code from the confirmed goals (V11). Leave it empty.
  */
 export type Intent = string;
 /**
@@ -112,6 +112,42 @@ export type InterpretationField =
  */
 export type Assumed1 = InterpretationField[];
 /**
+ * What you understood, in plain words. Empty when missing.
+ */
+export type Value = string;
+/**
+ * The exact words of the brief it rests on, copied character for character. Empty when missing.
+ */
+export type BriefQuote = string;
+/**
+ * stated (the brief says it clearly), unclear (named but too vague to research well) or missing.
+ */
+export type InputStatus = "stated" | "unclear" | "missing";
+/**
+ * Filled in code: brief, answer, assumed or none. Leave it as none.
+ */
+export type InputSource = "brief" | "answer" | "assumed" | "none";
+/**
+ * What the research is for (change V11; chips and descriptions in config/goals.yaml).
+ */
+export type Goal =
+  | "content_plan"
+  | "campaign_launch"
+  | "positioning"
+  | "product_validation"
+  | "market_entry"
+  | "brand_perception"
+  | "sales_enablement"
+  | "understand_audience";
+/**
+ * Goal ids the brief or the user states, main first (ids in the goal list). Empty unless stated - never guessed.
+ */
+export type Goals = Goal[];
+/**
+ * How far the user's offer is (change V11).
+ */
+export type OfferStage = "idea" | "launching" | "selling" | "no_offer";
+/**
  * Optional brand voice (used only by the playbook).
  */
 export type BrandVoice = string | null;
@@ -120,13 +156,21 @@ export type BrandVoice = string | null;
  */
 export type AudienceRoles = string[];
 /**
- * What the research is for (content calendar, campaign, positioning, product research, sales).
+ * What the research is for, main goal first (ids in config/goals.yaml).
  */
-export type Goal = string | null;
+export type Goals1 = Goal[];
+/**
+ * The goal in the user's own words.
+ */
+export type GoalNote = string | null;
 /**
  * What the user offers.
  */
 export type Offer = string | null;
+/**
+ * The decision or question the research must help with, in the user's words.
+ */
+export type KeyQuestion = string | null;
 /**
  * Channels the user already uses.
  */
@@ -152,7 +196,7 @@ export type Answer = string;
  */
 export type OtherAnswers = QAnswer[];
 /**
- * Q1, Q2, Q3.
+ * Q1, Q2, Q3, Q4.
  */
 export type Id = string;
 /**
@@ -167,15 +211,28 @@ export type WhyItHelps = string;
  * Which intake field the answer fills.
  */
 export type IntakeFill =
-  "audience_roles" | "goal" | "offer" | "channels_in_use" | "market" | "competitors" | "timeframe" | "other";
+  | "audience_roles"
+  | "goal"
+  | "offer"
+  | "channels_in_use"
+  | "market"
+  | "competitors"
+  | "timeframe"
+  | "key_question"
+  | "other";
 /**
- * 3-5 answer chips written for THIS brief.
+ * 3-5 answer chips written for THIS brief (the goal and offer chips are set in code).
  *
  * @minItems 3
- * @maxItems 5
+ * @maxItems 8
  */
 export type Options =
-  [string, string, string] | [string, string, string, string] | [string, string, string, string, string];
+  | [string, string, string]
+  | [string, string, string, string]
+  | [string, string, string, string, string]
+  | [string, string, string, string, string, string]
+  | [string, string, string, string, string, string, string]
+  | [string, string, string, string, string, string, string, string];
 /**
  * True if more than one chip may be chosen.
  */
@@ -184,6 +241,14 @@ export type MultiSelect = boolean;
  * True if the user may answer in their own words.
  */
 export type AllowFreeText = boolean;
+/**
+ * A short example answer for the own-words box, written for THIS brief (e.g. 'e.g. booking software for venues').
+ */
+export type Placeholder = string;
+/**
+ * Set in code: the goal and offer questions cannot be skipped. Leave it false.
+ */
+export type Required = boolean;
 /**
  * The questions shown to the user.
  */
@@ -2491,9 +2556,9 @@ export type Trust = "untrusted_user_content";
 export type Evidence = Evidence1[];
 
 /**
- * Context Pack 1.1 - the canonical object (context_pack.json). 1.0 packs are migrated when read.
+ * Context Pack 1.2 - the canonical object (context_pack.json). Older packs are migrated when read.
  */
-export interface ContextPack11 {
+export interface ContextPack12 {
   schema_version?: SchemaVersion;
   pack_id: PackId;
   generated_at: GeneratedAt;
@@ -2554,9 +2619,10 @@ export interface Interpretation {
   category: Category;
   compliance_category: ComplianceCategory;
   competitors?: Competitors;
-  intent: Intent;
+  intent?: Intent;
   time_window_days: TimeWindowDays;
   assumed?: Assumed1;
+  understanding?: Understanding;
 }
 /**
  * One market of the brief (schema 1.1, change V2).
@@ -2572,12 +2638,78 @@ export interface ExcludedLanguage {
   reason: Reason;
 }
 /**
- * What the user told us before planning (1.1, V3).
+ * The five inputs only the user knows, each with the brief's own words and a status (V11, 1.2).
+ */
+export interface Understanding {
+  goal?: UnderstoodInput;
+  goals?: Goals;
+  offer?: UnderstoodInput1;
+  /**
+   * idea, launching, selling or no_offer - only when stated.
+   */
+  offer_stage?: OfferStage | null;
+  who?: UnderstoodInput2;
+  markets?: UnderstoodInput3;
+  key_question?: UnderstoodInput4;
+}
+/**
+ * What the research is for.
+ */
+export interface UnderstoodInput {
+  value?: Value;
+  brief_quote?: BriefQuote;
+  status?: InputStatus;
+  source?: InputSource;
+}
+/**
+ * What the user sells or plans to sell.
+ */
+export interface UnderstoodInput1 {
+  value?: Value;
+  brief_quote?: BriefQuote;
+  status?: InputStatus;
+  source?: InputSource;
+}
+/**
+ * Whose conversations to listen to, and their roles (buyer, influencer, user).
+ */
+export interface UnderstoodInput2 {
+  value?: Value;
+  brief_quote?: BriefQuote;
+  status?: InputStatus;
+  source?: InputSource;
+}
+/**
+ * Where these people are.
+ */
+export interface UnderstoodInput3 {
+  value?: Value;
+  brief_quote?: BriefQuote;
+  status?: InputStatus;
+  source?: InputSource;
+}
+/**
+ * The decision or question the research must help with, and by when.
+ */
+export interface UnderstoodInput4 {
+  value?: Value;
+  brief_quote?: BriefQuote;
+  status?: InputStatus;
+  source?: InputSource;
+}
+/**
+ * What the user told us before planning (1.1 V3; goals, offer stage and key question since 1.2).
  */
 export interface Intake {
   audience_roles?: AudienceRoles;
-  goal?: Goal;
+  goals?: Goals1;
+  goal_note?: GoalNote;
   offer?: Offer;
+  /**
+   * idea, launching, selling or no_offer.
+   */
+  offer_stage?: OfferStage | null;
+  key_question?: KeyQuestion;
   channels_in_use?: ChannelsInUse;
   competitors_user?: CompetitorsUser;
   timeframe?: Timeframe;
@@ -2589,7 +2721,7 @@ export interface QAnswer {
   answer: Answer;
 }
 /**
- * One of 0-3 questions that would most improve THIS research (change V3). Never asked of agents.
+ * One of 0-4 questions that would most improve THIS research (change V3, V11). Never asked of agents.
  */
 export interface ClarifyingQuestion {
   id?: Id;
@@ -2599,6 +2731,8 @@ export interface ClarifyingQuestion {
   options: Options;
   multi_select?: MultiSelect;
   allow_free_text?: AllowFreeText;
+  placeholder?: Placeholder;
+  required?: Required;
 }
 /**
  * The one-screen summary.

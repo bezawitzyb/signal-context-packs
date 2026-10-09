@@ -30,7 +30,9 @@ skill, MCP) - and you can ask it questions.
    **View as agent** shows the JSON an agent reads; **Watch how this pack was made** replays the
    agent's decisions.
 4. **Run your own brief.** Live runs need an access key (the run key); it is never shown on screen.
-   A vague brief gets up to 3 quick questions first (who exactly, which goal, which channels).
+   "How to write a brief" next to the box explains the five things only you know. Whatever your brief
+   leaves out gets up to 4 quick questions first: always your goal and your offer, then only gaps that
+   change the research (who exactly, which countries, by when).
    A Quick run takes about 7-11 minutes; one run at a time, later ones queue.
 5. If the live app is slow to answer, the free server is waking up (about a minute). The
    [read-only mirror](https://bezawitzyb.github.io/signal-context-packs/) has every featured pack, the
@@ -49,7 +51,7 @@ do first, channel plan, opportunities, post briefs, drafts, content calendar, pl
 risks, guardrails and instructions for agents. Each finding appears once, in the section where it fits
 best, with links to related findings elsewhere.
 
-## What is new (changes V1-V10)
+## What is new (changes V1-V11)
 
 | Change | What you get |
 |---|---|
@@ -63,12 +65,15 @@ best, with links to related findings elsewhere.
 | **V8 Post briefs, drafts, calendar** | 5-8 post briefs whose key points cite real posts; full drafts for the first 3 (labelled "Draft - review before posting"; unsupported numbers and guardrail phrases are removed in code); a 4-week calendar as a Notion CSV. |
 | **V9 Revised pack page and hand-off** | Summary / Understand your audience / Act on it / The research; plain-language strength labels ("good enough to: test a post / brief creative / commit budget"); a generic AI answer checked point by point against the posts; hand-off options described by purpose and length. |
 | **V10 Ask this pack** | A read-only chat over one pack: answers cite real posts, invented references are removed, and "no evidence" is said plainly. Limited per pack per day without a run key. |
+| **V11 Understand the brief** | The agent reads the brief for the five things only you know (goals, offer, who, markets, key question), each tied to your own words. It never guesses your goal or offer: when the brief does not say them, it asks (goals ranked, main first; "no offer of my own" is an answer), then only the other gaps that would change the research. One editable "Here's what I understood" box shows where each item came from. A "How to write a brief" guide and template sit next to the brief box. |
 
 ## How the agent chooses sources and stays within limits
 
-- One planning call reads the brief and proposes hypotheses, research questions and 3-6 starting
-  sources with reasons and queries per language. A vague brief gets up to 3 clarifying questions; no
-  platform may take more than half of the starting sources unless the plan says why.
+- One planning call reads the brief, records what it understood of the five inputs only the user knows
+  (each tied to the brief's exact words, checked in code - never a guess), and proposes hypotheses,
+  research questions and 3-6 starting sources with reasons and queries per language. A missing goal or
+  offer is always asked (up to 4 questions in all); no platform may take more than half of the starting
+  sources unless the plan says why.
 - The **agent loop** (Claude Sonnet, plain tool use) then picks the next call itself, with a reason:
   Reddit, TikTok, YouTube, Instagram, LinkedIn and X (keyword search only, no login of ours) through
   Apify, the open web through web search and fetch, and Google Trends. It sees only short summaries
@@ -102,7 +107,8 @@ best, with links to related findings elsewhere.
   Notion, formula-safe cells), JSON.
 - **MCP** (read-only, no key): `claude mcp add --transport http signal https://signal-l2w5.onrender.com/mcp`.
   Tools: `list_packs`, `get_pack_view`, `get_insight`, `search_evidence`, `get_post_briefs`, `get_calendar`;
-  with the run key also `create_context_pack`, `get_pack_status` and `ask_pack`.
+  with the run key also `create_context_pack` (agents are never asked questions, so `goals` is required,
+  main goal first, e.g. `["positioning", "content_plan"]`), `get_pack_status` and `ask_pack`.
 
 ## Data handling and privacy
 

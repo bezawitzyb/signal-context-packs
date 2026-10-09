@@ -1,5 +1,5 @@
 {
- "schema_version": "1.1",
+ "schema_version": "1.2",
  "pack_id": "pk_i4iFso1HnLWR",
  "generated_at": "2026-10-06T13:15:20.478111Z",
  "mode": "standard",
@@ -36,7 +36,7 @@
     "Zoute Popcorn Joe & Seph's",
     "Borrelnootjes Duyvis"
    ],
-   "intent": "launch a snack brand",
+   "intent": "",
    "time_window_days": 180,
    "assumed": [
     "audience",
@@ -46,13 +46,50 @@
     "competitors",
     "time_window_days",
     "topic"
-   ]
+   ],
+   "understanding": {
+    "goal": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
+    },
+    "goals": [],
+    "offer": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
+    },
+    "offer_stage": null,
+    "who": {
+     "value": "Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "assumed"
+    },
+    "markets": {
+     "value": "NL",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "assumed"
+    },
+    "key_question": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
+    }
+   }
   },
   "brand_voice": null,
   "intake": {
    "audience_roles": [],
-   "goal": null,
+   "goals": [],
+   "goal_note": null,
    "offer": null,
+   "offer_stage": null,
+   "key_question": null,
    "channels_in_use": [],
    "competitors_user": [],
    "timeframe": null,
@@ -94,6 +131,58 @@
     ]
    }
   ],
+  "findings": [
+   {
+    "text": "I can't find the product I want in my local shops.",
+    "item_ids": [
+     "PAIN-01"
+    ],
+    "quote": {
+     "evidence_id": "EV-0024",
+     "text": "moeilijk te krijgen meestal uitverkocht"
+    },
+    "quote_en": "The natural (salt only) from Albert Heijn Basic without ridges (difficult to get usually out of stock or the ridge variant that is quite hard)",
+    "label": "strong",
+    "people": 8,
+    "communities": 3,
+    "strength_text": "Strong - 8 people in 3 communities",
+    "good_enough_to": "brief creative"
+   },
+   {
+    "text": "We still miss snacks that got discontinued, like the Winner taco and the Yes bar.",
+    "item_ids": [
+     "THM-01"
+    ],
+    "quote": {
+     "evidence_id": "EV-0001",
+     "text": "belachelijk dat die eruit is gegaan"
+    },
+    "quote_en": "The Winner Taco definitely, it's ridiculous that it's been discontinued. Now they think the Magnum stick is a replacement but it will never be the same as before. Those great ads. Why on earth were they so stupid to kill off the Winner Taco!!",
+    "label": "strong",
+    "people": 9,
+    "communities": 2,
+    "strength_text": "Strong - 9 people in 2 communities",
+    "good_enough_to": "brief creative"
+   },
+   {
+    "text": "Posters say they buy or miss snacks and flavours from abroad that they can't get in the Netherlands.",
+    "item_ids": [
+     "THM-09"
+    ],
+    "quote": {
+     "evidence_id": "EV-0029",
+     "text": "Ik koop altijd van alles juist omdát ik het in Nederland niet kan krijgen."
+    },
+    "quote_en": "I always buy all sorts of things precisely because I can't get them in the Netherlands. Smoked salt from Denmark, Haribo ginger sweets in Germany, smoked sheep cheese in the Canaries, passion fruit soda from the Azores, etc. If I miss those in the Netherlands? If you could buy them here, I wouldn't buy them here and not there either. Precisely the exclusivity makes something more fun.",
+    "label": "moderate",
+    "people": 5,
+    "communities": 3,
+    "strength_text": "Moderate - 5 people in 3 communities",
+    "good_enough_to": "brief creative"
+   }
+  ],
+  "represents": "233 public posts, mostly on forums and YouTube. This is what vocal people say online, not a survey of the whole market.",
+  "position": null,
   "top_opportunity": {
    "item_id": "OPP-01",
    "text": "Show the real protein and fibre"
@@ -102,7 +191,8 @@
    "item_id": "RSK-01",
    "text": "Health positioning invites push-back. Posts check calories and sugar and question the word 'gezond', so unproven claims could draw sceptical replies."
   },
-  "coverage_grade": "a",
+  "coverage_grade": "c",
+  "grade_note": "Capped at c: the sources are broad (grade a), but too few findings met the minimum bar.",
   "generic_vs_found": {
    "generic_points": [
     "Dutch consumers aged 18-40 increasingly want healthier snacks with less sugar, less salt, and natural, recognisable ingredients.",
@@ -149,7 +239,8 @@
       "OPP-06"
      ]
     }
-   ]
+   ],
+   "comparison": []
   }
  },
  "do_first": [
@@ -166,7 +257,8 @@
    ],
    "effort": "low",
    "impact": "high",
-   "owner_hint": "Community manager"
+   "owner_hint": "Community manager",
+   "success_measure": ""
   },
   {
    "id": "DO-02",
@@ -182,7 +274,8 @@
    ],
    "effort": "medium",
    "impact": "high",
-   "owner_hint": "Partnerships / influencer lead"
+   "owner_hint": "Partnerships / influencer lead",
+   "success_measure": ""
   },
   {
    "id": "DO-03",
@@ -198,7 +291,8 @@
    ],
    "effort": "medium",
    "impact": "high",
-   "owner_hint": "Social video producer + product/QA team"
+   "owner_hint": "Social video producer + product/QA team",
+   "success_measure": ""
   }
  ],
  "landscape": {
@@ -3652,7 +3746,8 @@
     "Dutch/Netherlands subreddits where snacks, food and supermarkets come up"
    ],
    "tone_note": "Plain and relatable, short verdicts, no brand speak.",
-   "timing": []
+   "timing": [],
+   "posts_per_week": null
   },
   {
    "id": "CHN-02",
@@ -3692,7 +3787,8 @@
      "source_url": null,
      "item_id": null
     }
-   ]
+   ],
+   "posts_per_week": null
   },
   {
    "id": "CHN-03",
@@ -3718,7 +3814,8 @@
     "#gym"
    ],
    "tone_note": "Dutch: sceptical, numbers-first. English cut: label-reading, family-focused.",
-   "timing": []
+   "timing": [],
+   "posts_per_week": null
   },
   {
    "id": "CHN-04",
@@ -3741,7 +3838,8 @@
     "Dutch food and snack forum threads on chips and snack-bar favourites"
    ],
    "tone_note": "Short verdicts, jokes, the odd slang word; never stiff.",
-   "timing": []
+   "timing": [],
+   "posts_per_week": null
   }
  ],
  "playbook": {
@@ -4089,6 +4187,9 @@
    }
   ]
  },
+ "post_briefs": [],
+ "drafts": [],
+ "content_calendar": [],
  "hypotheses": [
   {
    "id": "HYP-01",

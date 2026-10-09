@@ -39,7 +39,8 @@ def test_briefs_file_has_the_f5_briefs_plus_the_v2_brief():
                                                "Heat pumps for homeowners in Germany", "snacks"]
     assert briefs[4]["id"] == "eu_manufacturing" and briefs[4]["expect"]["languages"] == ["de", "pl"]
     assert [b["mode"] for b in briefs[2:4]] == ["standard", "quick"]
-    assert briefs[3]["source_diversity_exempt"] and briefs[3]["expect"]["questions_fill"] == ["market", "audience_roles"]
+    assert briefs[3]["source_diversity_exempt"] and briefs[3]["expect"]["questions_fill"] == ["goal", "offer", "market",
+                                                                                         "audience_roles"]
 
 
 def test_groundedness_and_claims_with_evidence(pack):

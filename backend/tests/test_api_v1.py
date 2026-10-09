@@ -40,6 +40,9 @@ def api(offline, monkeypatch):  # noqa: F811
 
 
 KEY = {"X-API-Key": TEST_KEY}
+TOLD = {"goals": ["content_plan"], "offer_stage": "no_offer"}   # V11: goal and offer given -> no questions about them
+GOAL_OFFER = [{"id": "Q1", "chosen": ["Positioning", "Content plan"], "text": "a clear message"},  # click order = rank
+              {"id": "Q2", "chosen": ["Launching soon"], "text": "oat bars"}]
 
 
 # --- packs (public) -------------------------------------------------------------------
@@ -86,7 +89,8 @@ def test_starting_runs_needs_the_key(api, monkeypatch):
 
 
 def test_plan_then_start_then_the_queue(api):
-    made = client.post("/api/v1/runs", json={"brief": "Gen Z and meal prep", "mode": "quick"}, headers=KEY)
+    made = client.post("/api/v1/runs", json={"brief": "Gen Z and meal prep", "mode": "quick", "intake": TOLD},
+                       headers=KEY)
     assert made.status_code == 201
     run = made.json()
     assert run["status"] == "awaiting_approval" and run["plan"] and run["estimate"]["max_usd"] > 0
@@ -94,7 +98,8 @@ def test_plan_then_start_then_the_queue(api):
     started = client.post(f"/api/v1/runs/{run['run_id']}/start", json={"disabled_units": [0]}, headers=KEY).json()
     assert started["status"] == "queued" and started["queue_position"] == 1
     assert started["plan"]["starting_units"][0]["enabled"] is False
-    second = client.post("/api/v1/runs", json={"brief": "snacks", "auto_approve": True}, headers=KEY).json()
+    second = client.post("/api/v1/runs", json={"brief": "snacks", "auto_approve": True, "intake": TOLD},
+                         headers=KEY).json()
     assert second["status"] == "queued" and second["queue_position"] == 2            # never "busy": it queues
     again = client.post(f"/api/v1/runs/{run['run_id']}/start", headers=KEY)
     assert again.status_code == 400                                                   # already queued
@@ -105,9 +110,10 @@ def test_queue_full_and_daily_cap_refuse_politely(api, monkeypatch):
     from ctxpack.config import load_yaml
 
     monkeypatch.setattr("ctxpack.guards.load_yaml", lambda name: {**load_yaml(name), "queue_max": 1})
-    assert client.post("/api/v1/runs", json={"brief": "a", "auto_approve": True}, headers=KEY).status_code == 422
-    assert client.post("/api/v1/runs", json={"brief": "Gen Z", "auto_approve": True}, headers=KEY).status_code == 201
-    full = client.post("/api/v1/runs", json={"brief": "Gen Z", "auto_approve": True}, headers=KEY)
+    agent = {"auto_approve": True, "intake": TOLD}
+    assert client.post("/api/v1/runs", json={"brief": "a", **agent}, headers=KEY).status_code == 422
+    assert client.post("/api/v1/runs", json={"brief": "Gen Z", **agent}, headers=KEY).status_code == 201
+    full = client.post("/api/v1/runs", json={"brief": "Gen Z", **agent}, headers=KEY)
     assert full.status_code == 429 and "queue full" in full.json()["detail"]
     monkeypatch.setenv("DAILY_SPEND_CAP_USD", "1")
     get_settings.cache_clear()
@@ -118,8 +124,8 @@ def test_queue_full_and_daily_cap_refuse_politely(api, monkeypatch):
 
 
 async def test_two_queued_runs_start_by_themselves_one_after_the_other(api):
-    first = await service.create_run("Gen Z and meal prep", auto_approve=True)
-    second = await service.create_run("Gen Z and meal prep", auto_approve=True)
+    first = await service.create_run("Gen Z and meal prep", auto_approve=True, intake=TOLD)
+    second = await service.create_run("Gen Z and meal prep", auto_approve=True, intake=TOLD)
     assert (first["queue_position"], second["queue_position"]) == (1, 2)
     assert await worker.run_next() == first["run_id"]
     assert service.run_status(second["run_id"])["queue_position"] == 1
@@ -130,31 +136,55 @@ async def test_two_queued_runs_start_by_themselves_one_after_the_other(api):
 
 
 async def test_questions_then_answers_fill_the_intake_and_plan(api):
-    """V3: 0-3 questions with chips; answers fill brief.intake; a market answer sets the markets."""
-    run = await service.create_run("snacks")                     # fake mode: a market and a role question
+    """V3 + V11: goal and offer first (fixed chips, required), then the brief's own questions; answers fill
+    brief.intake (ranked goals, offer and stage); a market answer sets the markets."""
+    run = await service.create_run("snacks")                     # fake mode: + a market and a role question
     qs = run["clarifying_questions"]
-    assert run["status"] == "needs_clarification" and [q["fills"] for q in qs] == ["market", "audience_roles"]
-    assert all(q["why_it_helps"] and 3 <= len(q["options"]) <= 5 for q in qs)
+    assert run["status"] == "needs_clarification"
+    assert [q["fills"] for q in qs] == ["goal", "offer", "market", "audience_roles"]
+    assert [q["required"] for q in qs] == [True, True, False, False]
+    assert all(q["why_it_helps"] and 3 <= len(q["options"]) <= 8 for q in qs)
     with pytest.raises(ValueError):
         service.start_run(run["run_id"])
-    planned = await service.answer_questions(run["run_id"], [
-        {"id": "Q1", "chosen": ["Netherlands"]},
-        {"id": "Q2", "chosen": ["Parents buying for kids"], "text": "school lunch boxes"}])
+    planned = await service.answer_questions(run["run_id"], GOAL_OFFER + [
+        {"id": "Q3", "chosen": ["Netherlands"]},
+        {"id": "Q4", "chosen": ["Parents buying for kids"], "text": "school lunch boxes"}])
     assert planned["status"] == "awaiting_approval" and planned["plan"] and planned["clarifying_questions"] == []
     assert planned["interpretation"]["market"] == "NL"
-    assert planned["intake"]["audience_roles"] == ["Parents buying for kids", "school lunch boxes"]
-    assert [q["id"] for q in planned["intake"]["questions_asked"]] == ["Q1", "Q2"]
+    i = planned["intake"]
+    assert i["audience_roles"] == ["Parents buying for kids", "school lunch boxes"]
+    assert (i["goals"], i["goal_note"], i["offer"], i["offer_stage"]) == (
+        ["positioning", "content_plan"], "a clear message", "oat bars", "launching")
+    assert [q["id"] for q in i["questions_asked"]] == ["Q1", "Q2", "Q3", "Q4"]
+    u = planned["interpretation"]["understanding"]
+    assert u["goals"] == ["positioning", "content_plan"] and u["goal"]["source"] == "answer"
+    assert (u["offer"]["value"], u["offer_stage"], u["markets"]["source"]) == ("oat bars", "launching", "answer")
+    assert planned["interpretation"]["intent"] == "Positioning, then Content plan (a clear message)"
 
 
-async def test_skip_all_still_plans(api):
+async def test_skip_all_skips_only_the_optional_questions(api):
     run = await service.create_run("snacks")
-    planned = await service.answer_questions(run["run_id"], [], skip_all=True)
+    with pytest.raises(ValueError, match="cannot be skipped"):
+        await service.answer_questions(run["run_id"], [], skip_all=True)
+    with pytest.raises(ValueError, match="pick at least one goal"):
+        await service.answer_questions(run["run_id"], [{"id": "Q1", "skipped": True}, GOAL_OFFER[1]])
+    with pytest.raises(ValueError, match="pick one stage"):          # own words alone are not a stage
+        await service.answer_questions(run["run_id"], [GOAL_OFFER[0], {"id": "Q2", "text": "oat bars"}])
+    planned = await service.answer_questions(run["run_id"], GOAL_OFFER, skip_all=True)
     assert planned["status"] == "awaiting_approval" and planned["plan"]
-    assert planned["intake"]["audience_roles"] == [] and planned["intake"]["questions_asked"]
+    assert planned["intake"]["audience_roles"] == [] and planned["intake"]["goals"] == ["positioning", "content_plan"]
+
+
+async def test_no_offer_of_my_own_is_an_answer(api):
+    run = await service.create_run("snacks")
+    planned = await service.answer_questions(run["run_id"], [
+        {"id": "Q1", "chosen": ["Just understand the audience"]},
+        {"id": "Q2", "chosen": ["No offer of my own (agency, client work or exploring)"]}], skip_all=True)
+    assert planned["intake"]["offer_stage"] == "no_offer" and planned["intake"]["offer"] is None
 
 
 async def test_editing_chips_replans_in_place_and_keeps_added_competitors(api):
-    run = await service.create_run("Gen Z and meal prep")
+    run = await service.create_run("Gen Z and meal prep", intake=TOLD)
     assert run["status"] == "awaiting_approval"
     edited = await service.replan(run["run_id"], {"markets": ["NL"], "competitors": ["Hello Fresh NL"],
                                                   "audience_roles": ["students"]})
@@ -166,8 +196,40 @@ async def test_editing_chips_replans_in_place_and_keeps_added_competitors(api):
 
 
 async def test_an_intake_given_upfront_means_no_questions(api):
-    run = await service.create_run("snacks", intake={"goal": "content calendar", "audience_roles": ["parents"]})
-    assert run["status"] == "awaiting_approval" and run["intake"]["goal"] == "content calendar"
+    run = await service.create_run("snacks", intake={**TOLD, "audience_roles": ["parents"]})
+    assert run["status"] == "awaiting_approval" and run["intake"]["goals"] == ["content_plan"]
+
+
+async def test_a_goal_given_upfront_still_asks_the_offer_and_keeps_the_goal(api):
+    run = await service.create_run("snacks", intake={"goals": ["sales_enablement"]})
+    assert [q["fills"] for q in run["clarifying_questions"]][0] == "offer"
+    assert "goal" not in [q["fills"] for q in run["clarifying_questions"]]
+    planned = await service.answer_questions(run["run_id"], [{"id": "Q1", "chosen": ["Already selling"]}],
+                                             skip_all=True)
+    assert planned["intake"]["goals"] == ["sales_enablement"] and planned["intake"]["offer_stage"] == "selling"
+
+
+async def test_editing_goals_offer_key_question_and_topic_replans(api):
+    run = await service.create_run("Gen Z and meal prep", intake=TOLD)
+    edited = await service.replan(run["run_id"], {"goals": ["brand_perception", "positioning"], "offer": "meal kits",
+                                                  "offer_stage": "selling", "key_question": "why do they quit?",
+                                                  "topic": "batch cooking"})
+    i, interp = edited["intake"], edited["interpretation"]
+    assert i["goals"] == ["brand_perception", "positioning"] and (i["offer"], i["offer_stage"]) == ("meal kits", "selling")
+    assert interp["topic"] == "batch cooking" and interp["understanding"]["key_question"]["value"] == "why do they quit?"
+    with pytest.raises(ValueError, match="at least one goal"):
+        await service.replan(run["run_id"], {"goals": []})
+    with pytest.raises(ValueError, match="unknown goal"):
+        await service.replan(run["run_id"], {"goals": ["world_domination"]})
+
+
+async def test_agents_must_pass_goals(api):
+    with pytest.raises(ValueError, match="goals are required"):
+        await service.create_run("snacks", auto_approve=True)
+    refused = client.post("/api/v1/runs", json={"brief": "snacks", "auto_approve": True}, headers=KEY)
+    assert refused.status_code == 400 and "content_plan" in refused.json()["detail"]
+    old = await service.create_run("snacks", auto_approve=True, intake={"goal": "Positioning", "offer_stage": "idea"})
+    assert old["intake"]["goals"] == ["positioning"]                 # an old single goal is still understood
 
 
 def test_events_replay_from_the_pack_when_the_run_is_gone(api):
@@ -222,6 +284,11 @@ async def test_mcp_over_http_reads_freely_and_checks_the_key_header(api):
         names = {t["name"] for t in tools.json()["result"]["tools"]}
         assert names == {"list_packs", "get_pack_view", "get_insight", "search_evidence", "create_context_pack",
                          "get_pack_status", "get_post_briefs", "get_calendar", "ask_pack"}
+        create = next(t for t in tools.json()["result"]["tools"] if t["name"] == "create_context_pack")
+        assert "goals" in create["inputSchema"]["required"]            # V11: agents must say what it is for
+        no_goal = await c.post("/mcp/", json=rpc("tools/call", {"name": "create_context_pack", "arguments": {
+            "brief": "snacks", "goals": []}}, 7), headers={**HEADERS, "X-API-Key": TEST_KEY})
+        assert no_goal.json()["result"]["isError"] is True and "goals are required" in no_goal.text
         listed = await c.post("/mcp/", json=rpc("tools/call", {"name": "list_packs", "arguments": {}}, 3),
                               headers=HEADERS)
         assert api.pack_id in listed.text
@@ -318,22 +385,24 @@ def test_options_come_from_config(api):
 
 def test_snacks_gets_questions_in_fake_mode_and_agents_never_do(api):
     run = client.post("/api/v1/runs", json={"brief": "snacks"}, headers=KEY).json()
-    assert run["status"] == "needs_clarification" and len(run["clarifying_questions"]) == 2
+    assert run["status"] == "needs_clarification" and len(run["clarifying_questions"]) == 4
     answered = client.post(f"/api/v1/runs/{run['run_id']}/answer",
-                           json={"answers": [{"id": "Q1", "chosen": ["Netherlands"]}, {"id": "Q2", "skipped": True}]},
+                           json={"answers": GOAL_OFFER + [{"id": "Q3", "chosen": ["Netherlands"]},
+                                                          {"id": "Q4", "skipped": True}]},
                            headers=KEY).json()
     assert answered["status"] == "awaiting_approval" and answered["plan"]
     replanned = client.post(f"/api/v1/runs/{run['run_id']}/replan", json={"languages": ["nl"]}, headers=KEY).json()
     assert replanned["interpretation"]["languages"] == ["nl"]
     assert client.post(f"/api/v1/runs/{run['run_id']}/replan", json={}, headers={"X-API-Key": "nope"}).status_code == 401
-    agent = client.post("/api/v1/runs", json={"brief": "snacks", "auto_approve": True}, headers=KEY).json()
+    agent = client.post("/api/v1/runs", json={"brief": "snacks", "auto_approve": True, "intake": TOLD},
+                        headers=KEY).json()
     assert agent["status"] == "queued" and agent["clarifying_questions"] == []   # agents: never a question
     wrong = client.post("/api/v1/runs", json={"brief": "snacks"}, headers={"X-API-Key": "nope"})
     assert wrong.status_code == 401 and "run key" in wrong.json()["detail"]
 
 
 async def test_run_status_shows_the_agents_verdicts_once_collection_is_done(api):
-    run = await service.create_run("Gen Z and meal prep", auto_approve=True)
+    run = await service.create_run("Gen Z and meal prep", auto_approve=True, intake=TOLD)
     assert service.run_status(run["run_id"])["collection"] is None          # nothing collected yet
     await worker.run_next()
     status = client.get(f"/api/v1/runs/{run['run_id']}").json()
@@ -432,7 +501,8 @@ def test_run_again_inputs_keep_the_answers(api):
                                              "brand_voice": "dry Dutch humour"}, headers=KEY).json()
     assert made["status"] == "needs_clarification"
     answered = client.post(f"/api/v1/runs/{made['run_id']}/answer",
-                           json={"answers": [{"id": "Q2", "chosen": ["Parents buying for kids"]}]}, headers=KEY).json()
+                           json={"answers": GOAL_OFFER + [{"id": "Q4", "chosen": ["Parents buying for kids"]}]},
+                           headers=KEY).json()
     inputs = answered["inputs"]
     assert {k: inputs[k] for k in ("brief", "mode", "time_window_days", "brand_voice")} == {
         "brief": "snacks", "mode": "quick", "time_window_days": 90, "brand_voice": "dry Dutch humour"}

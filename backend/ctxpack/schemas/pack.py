@@ -1,4 +1,4 @@
-"""Context Pack schema 1.1 (PRD Section 6; 1.0 packs are migrated, schemas/migrate.py).
+"""Context Pack schema 1.2 (PRD Section 6; 1.0 and 1.1 packs are migrated, schemas/migrate.py).
 
 One object behind every deliverable (web page, JSON, MCP, skill, Markdown).
 Every field has a description; docs/SCHEMA.md is generated from them by
@@ -45,8 +45,8 @@ from ctxpack.schemas.enums import (
 )
 from ctxpack.schemas.plan import Intake, Interpretation
 
-SCHEMA_VERSION = "1.1"
-OLDER_VERSIONS = ("1.0",)  # read and migrated (schemas/migrate.py); never written
+SCHEMA_VERSION = "1.2"
+OLDER_VERSIONS = ("1.0", "1.1")  # read and migrated (schemas/migrate.py); never written
 
 # PRD 6.5 - same IDs in JSON, UI and every export.
 ID_PREFIXES: dict[str, str] = {
@@ -202,7 +202,7 @@ class Brief(Strict):
     interpreted: Interpretation = Field(description="How the brief was understood.")
     brand_voice: str | None = Field(default=None, max_length=200,
                                     description="Optional brand voice (used only by the playbook).")
-    intake: Intake = Field(default_factory=Intake, description="What the user told us before planning (1.1, V3).")
+    intake: Intake = Field(default_factory=Intake, description="What the user told us before planning (1.1 V3; goals, offer stage and key question since 1.2).")
 
 
 class Truth(Strict):
@@ -830,9 +830,9 @@ class Evidence(Strict):
 
 
 class ContextPack(Strict):
-    """Context Pack 1.1 - the canonical object (context_pack.json). 1.0 packs are migrated when read."""
+    """Context Pack 1.2 - the canonical object (context_pack.json). Older packs are migrated when read."""
 
-    schema_version: Literal["1.1"] = Field(default=SCHEMA_VERSION, description="Always 1.1 (1.0 packs are migrated).")
+    schema_version: Literal["1.2"] = Field(default=SCHEMA_VERSION, description="Always 1.2 (1.0 and 1.1 packs are migrated).")
 
     @model_validator(mode="before")
     @classmethod

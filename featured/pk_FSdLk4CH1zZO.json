@@ -1,5 +1,5 @@
 {
- "schema_version": "1.1",
+ "schema_version": "1.2",
  "pack_id": "pk_FSdLk4CH1zZO",
  "generated_at": "2026-10-06T13:12:08.327416Z",
  "mode": "standard",
@@ -29,7 +29,7 @@
     "Tupperware",
     "Prep Dish"
    ],
-   "intent": "understand the audience and how they talk about meal prep",
+   "intent": "",
    "time_window_days": 180,
    "assumed": [
     "market",
@@ -38,15 +38,51 @@
     "category",
     "compliance_category",
     "competitors",
-    "intent",
     "time_window_days"
-   ]
+   ],
+   "understanding": {
+    "goal": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
+    },
+    "goals": [],
+    "offer": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
+    },
+    "offer_stage": null,
+    "who": {
+     "value": "Gen Z adults aged 18-27, students and early-career, cooking for themselves on a budget",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "assumed"
+    },
+    "markets": {
+     "value": "global",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "assumed"
+    },
+    "key_question": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
+    }
+   }
   },
   "brand_voice": null,
   "intake": {
    "audience_roles": [],
-   "goal": null,
+   "goals": [],
+   "goal_note": null,
    "offer": null,
+   "offer_stage": null,
+   "key_question": null,
    "channels_in_use": [],
    "competitors_user": [],
    "timeframe": null,
@@ -88,6 +124,58 @@
     ]
    }
   ],
+  "findings": [
+   {
+    "text": "I find cooking for one challenging and need simple meals that suit just me.",
+    "item_ids": [
+     "MOT-06"
+    ],
+    "quote": {
+     "evidence_id": "EV-0045",
+     "text": "I find cooking for 1 challenging"
+    },
+    "quote_en": null,
+    "label": "emerging",
+    "people": 3,
+    "communities": 3,
+    "strength_text": "Emerging - 3 people in 3 communities",
+    "good_enough_to": "test a post"
+   },
+   {
+    "text": "I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating.",
+    "item_ids": [
+     "SEG-01"
+    ],
+    "quote": {
+     "evidence_id": "EV-0025",
+     "text": "I am a college student wanting to meal prep lunches for the week"
+    },
+    "quote_en": null,
+    "label": "emerging",
+    "people": 3,
+    "communities": 1,
+    "strength_text": "Emerging - 3 people in 1 community",
+    "good_enough_to": "test a post"
+   },
+   {
+    "text": "I prep components, not whole meals, so I keep room to change things.",
+    "item_ids": [
+     "SEG-03"
+    ],
+    "quote": {
+     "evidence_id": "EV-0023",
+     "text": "I always prep the ingredients and components, not whole meals."
+    },
+    "quote_en": null,
+    "label": "emerging",
+    "people": 2,
+    "communities": 2,
+    "strength_text": "Emerging - 2 people in 2 communities",
+    "good_enough_to": "test a post"
+   }
+  ],
+  "represents": "76 public posts, mostly on Reddit and review sites. This is what vocal people say online, not a survey of the whole market.",
+  "position": null,
   "top_opportunity": {
    "item_id": "OPP-01",
    "text": "Freeze-and-reheat cheat sheet"
@@ -97,6 +185,7 @@
    "text": "Kit complaints are about delivery problems, produce, missing items and small portions in specific reviews. Brands should not read them as a verdict on the whole category, and the web reviews are not necessarily Gen Z."
   },
   "coverage_grade": "c",
+  "grade_note": "",
   "generic_vs_found": {
    "generic_points": [
     "Gen Z wants to save money on food, and meal prep is seen as a cheaper alternative to takeout and delivery apps.",
@@ -143,7 +232,8 @@
       "MOM-03"
      ]
     }
-   ]
+   ],
+   "comparison": []
   }
  },
  "do_first": [
@@ -160,7 +250,8 @@
    ],
    "effort": "low",
    "impact": "high",
-   "owner_hint": "Content lead with a home cook for testing"
+   "owner_hint": "Content lead with a home cook for testing",
+   "success_measure": ""
   },
   {
    "id": "DO-02",
@@ -175,7 +266,8 @@
    ],
    "effort": "medium",
    "impact": "high",
-   "owner_hint": "Community manager or a student creator"
+   "owner_hint": "Community manager or a student creator",
+   "success_measure": ""
   },
   {
    "id": "DO-03",
@@ -190,7 +282,8 @@
    ],
    "effort": "low",
    "impact": "medium",
-   "owner_hint": "Community manager"
+   "owner_hint": "Community manager",
+   "success_measure": ""
   }
  ],
  "landscape": {
@@ -3049,7 +3142,8 @@
      "source_url": null,
      "item_id": null
     }
-   ]
+   ],
+   "posts_per_week": null
   },
   {
    "id": "CHN-02",
@@ -3074,7 +3168,8 @@
     "Meal kit review pages"
    ],
    "tone_note": "Plain verdicts. Don't assume kits are either great or bad: credit the taste and acknowledge the portions, price and missing items.",
-   "timing": []
+   "timing": [],
+   "posts_per_week": null
   },
   {
    "id": "CHN-03",
@@ -3097,7 +3192,8 @@
     "Budget cooking sites"
    ],
    "tone_note": "Short, plain steps. Use ingredients people already own, with no long shopping lists.",
-   "timing": []
+   "timing": [],
+   "posts_per_week": null
   }
  ],
  "playbook": {
@@ -3462,6 +3558,9 @@
    }
   ]
  },
+ "post_briefs": [],
+ "drafts": [],
+ "content_calendar": [],
  "hypotheses": [
   {
    "id": "HYP-01",

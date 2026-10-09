@@ -17,7 +17,8 @@ def test_research_with_fixtures_runs_the_whole_loop(monkeypatch, tmp_path):
     get_settings.cache_clear()
     try:
         result = CliRunner().invoke(app, ["research", "Gen Z and meal prep", "--fixtures", "--auto-approve",
-                                          "--brand-voice", "Warm, never preachy"], terminal_width=200)
+                                          "--goal", "content_plan", "--brand-voice", "Warm, never preachy"],
+                                    terminal_width=200)
     finally:
         get_settings.cache_clear()
     out = result.output
@@ -38,3 +39,12 @@ def test_units_overlap():
     report = units_overlap([a, b, c])
     assert report["shared"] == 1 and report["total"] == 4 and report["share"] == 0.25
     assert round(report["max_pairwise"], 2) == 0.33
+
+
+def test_research_auto_approve_needs_a_goal_and_rejects_unknown_ones():
+    """V11: nobody is asked with --auto-approve, so the goal must be given; nothing is planned or paid."""
+    no_goal = CliRunner().invoke(app, ["research", "snacks", "--fixtures", "--auto-approve"], terminal_width=200)
+    assert no_goal.exit_code == 1 and "--auto-approve needs --goal" in no_goal.output
+    wrong = CliRunner().invoke(app, ["research", "snacks", "--fixtures", "--auto-approve", "--goal", "fame"],
+                               terminal_width=200)
+    assert wrong.exit_code == 1 and "unknown goal" in wrong.output

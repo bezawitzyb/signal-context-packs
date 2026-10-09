@@ -1,6 +1,7 @@
 // S1 ASK + PLAN (PRD 10.2, guide Step 4.2): brief, mode, window, brand voice, masked run key ->
-// 0-3 clarifying questions (answer chips, own words, skip) or the plan to review, with editable chips
-// that re-plan in place (V3) -> Start (the run joins the queue).
+// 0-4 clarifying questions (goal and offer first and required, V11; answer chips, own words, skip for the
+// rest) or the plan to review, with one editable "Here's what I understood" box that re-plans in place
+// (V3, V11) -> Start (the run joins the queue).
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { ArrowRight, CircleHelp, KeyRound, Loader2, Plus, RefreshCw, X } from "lucide-react";
@@ -19,11 +20,6 @@ const EXAMPLES = [
   "Protein supplements for women in the Netherlands",
   "Bouldering gyms for beginners",
 ];
-
-const FIELD_LABELS: Record<string, string> = {
-  topic: "Topic", market: "Markets", languages: "Languages", audience: "Audience", category: "Category",
-  intent: "Goal", time_window_days: "Time window", competitors: "Brands named", compliance_category: "Rules area",
-};
 
 function useRotatingExample(paused: boolean) {
   const [n, setN] = useState(0);
@@ -192,32 +188,43 @@ function QuestionBox({ q, value, onChange, disabled }: {
     const chosen = q.multi_select ? (has ? value.chosen.filter((x) => x !== o) : [...value.chosen, o]) : (has ? [] : [o]);
     onChange({ ...value, chosen, skipped: false });
   };
+  const ranked = !!(q.required && q.multi_select);  // V11: the goal chips are ranked in click order
   return (
     <fieldset className={`rounded-lg border p-4 ${value.skipped ? "border-dashed border-line-strong opacity-70" : "border-line-strong"}`}
               disabled={disabled}>
-      <legend className="px-1 font-medium text-ink">{q.question}</legend>
+      <legend className="px-1 font-medium text-ink">
+        {q.question}{q.required && <span className="ml-2 text-xs font-normal text-ink-3">(required)</span>}
+      </legend>
       {q.why_it_helps && <p className="text-sm text-ink-3">{q.why_it_helps}</p>}
+      {ranked && <p className="mt-1 text-xs text-ink-3">Pick one or more - the first one you pick is your main goal.</p>}
       <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={q.multi_select ? "Pick one or more" : "Pick one"}>
-        {q.options.map((o) => (
-          <button key={o} type="button" aria-pressed={value.chosen.includes(o)} onClick={() => pick(o)}
-                  className={`rounded-full border px-3 py-1.5 text-sm ${value.chosen.includes(o) ? "border-ink bg-ink text-paper" : "border-line-strong text-ink hover:border-ink"}`}>
-            {o}
-          </button>
-        ))}
+        {q.options.map((o) => {
+          const rank = value.chosen.indexOf(o) + 1;
+          return (
+            <button key={o} type="button" aria-pressed={rank > 0} onClick={() => pick(o)}
+                    aria-label={ranked && rank > 0 ? `${o} (goal ${rank})` : undefined}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm ${rank > 0 ? "border-ink bg-ink text-paper" : "border-line-strong text-ink hover:border-ink"}`}>
+              {ranked && rank > 0 && <span aria-hidden="true" className="font-mono text-xs">{rank}</span>}
+              {o}
+            </button>
+          );
+        })}
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         {q.allow_free_text !== false && (
           <>
-            <label htmlFor={`own-${q.id}`} className="sr-only">Or in your own words</label>
-            <input id={`own-${q.id}`} value={value.text} placeholder="Or in your own words"
+            <label htmlFor={`own-${q.id}`} className="sr-only">{q.placeholder || "Or in your own words"}</label>
+            <input id={`own-${q.id}`} value={value.text} placeholder={q.placeholder || "Or in your own words"}
                    onChange={(e) => onChange({ ...value, text: e.target.value, skipped: false })}
                    className="w-full max-w-sm rounded-lg border border-line px-3 py-1.5 text-sm" />
           </>
         )}
-        <button type="button" onClick={() => onChange({ chosen: [], text: "", skipped: !value.skipped })}
-                aria-pressed={value.skipped} className="text-sm text-ink-2 underline">
-          {value.skipped ? "Answer this after all" : "Skip - let the agent decide"}
-        </button>
+        {!q.required && (
+          <button type="button" onClick={() => onChange({ chosen: [], text: "", skipped: !value.skipped })}
+                  aria-pressed={value.skipped} className="text-sm text-ink-2 underline">
+            {value.skipped ? "Answer this after all" : "Skip - let the agent decide"}
+          </button>
+        )}
       </div>
     </fieldset>
   );
@@ -229,13 +236,19 @@ export function QuestionCards({ run, onPlanned }: { run: RunStatus; onPlanned: (
     Object.fromEntries(qs.map((q) => [q.id, { chosen: [], text: "", skipped: false }])));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const optional = qs.some((q) => !q.required);
   const send = async (skipAll: boolean) => {
+    const missing = qs.filter((q) => q.required && !drafts[q.id].chosen.length);
+    if (missing.length) {
+      return setError(`Please pick an answer for: ${missing.map((q) => q.question).join(" / ")}. ` +
+                      "These decide what the pack focuses on, so they cannot be skipped.");
+    }
     setBusy(true);
     setError(null);
     const answers: QuestionAnswer[] = qs.map((q) => {
       const d = drafts[q.id];
       const empty = !d.chosen.length && !d.text.trim();
-      return { id: q.id, chosen: d.chosen, text: d.text.trim() || undefined, skipped: d.skipped || empty };
+      return { id: q.id, chosen: d.chosen, text: d.text.trim() || undefined, skipped: !q.required && (d.skipped || empty) };
     });
     try {
       onPlanned(await answerQuestions(readRunKey(), run.run_id, { answers, skip_all: skipAll }));
@@ -260,16 +273,18 @@ export function QuestionCards({ run, onPlanned }: { run: RunStatus; onPlanned: (
           {busy ? <Loader2 aria-hidden="true" size={15} className="animate-spin" /> : <ArrowRight aria-hidden="true" size={15} />}
           Plan with my answers
         </button>
-        <button type="button" onClick={() => send(true)} disabled={busy} className="text-sm text-ink underline">
-          Skip all and plan
-        </button>
+        {optional && (
+          <button type="button" onClick={() => send(true)} disabled={busy} className="text-sm text-ink underline">
+            {qs.some((q) => q.required) ? "Skip the optional ones and plan" : "Skip all and plan"}
+          </button>
+        )}
       </div>
       {error && <p role="alert" className="text-sm text-ink">{error}</p>}
     </section>
   );
 }
 
-// --- editable chips on the plan (V3): any edit re-plans in place ---------------------------------
+// --- the understood box (V3, V11): any edit re-plans in place ------------------------------------
 
 function ChipList({ label, hint, items, onRemove, onAdd, addLabel, options }: {
   label: string; hint?: string; items: { key: string; text: string }[]; onRemove: (key: string) => void;
@@ -309,11 +324,37 @@ function ChipList({ label, hint, items, onRemove, onAdd, addLabel, options }: {
   );
 }
 
-function EditablePlan({ run, onReplanned }: { run: RunStatus; onReplanned: (run: RunStatus) => void }) {
+type Input = { value?: string; brief_quote?: string; status?: string; source?: string } | undefined;
+
+/** Where an understood input came from (V11): the brief's own words (serif: their words), their answer, or an
+ * assumption. Goals and offer are never assumed: without an answer they read "not given". */
+function Source({ inp, never_assumed = false }: { inp: Input; never_assumed?: boolean }) {
+  const src = inp?.source;
+  if (src === "brief") return <p className="text-xs text-ink-3">from your brief: <q className="font-serif text-ink-2">{inp?.brief_quote}</q></p>;
+  if (src === "answer") return <p className="text-xs text-ink-3">your answer</p>;
+  if (src === "assumed" && !never_assumed) {
+    return <p className="text-xs text-ink-3"><span title="Not in your brief: my assumption" className="rounded border border-line-strong px-1 py-px text-[0.65rem] text-ink-2">assumed</span> - change it if it is wrong</p>;
+  }
+  return <p className="text-xs text-ink-3">not given</p>;
+}
+
+const cellLabel = "text-xs font-medium uppercase tracking-wide text-ink-3";
+const textInput = "mt-1 w-full rounded-lg border border-line px-3 py-1.5 text-sm text-ink";
+
+/** "Here's what I understood" (V11): the five inputs only the user knows plus topic, markets and languages,
+ * competitors and the rules area - one editable box; any edit re-plans in place. */
+function Understood({ run, onReplanned }: { run: RunStatus; onReplanned: (run: RunStatus) => void }) {
   const interp = run.interpretation!;
+  const u = interp.understanding;
+  const told = run.intake ?? {};
   const original = {
+    goals: (told.goals?.length ? told.goals : u?.goals ?? []) as string[],
+    offer: told.offer ?? u?.offer?.value ?? "",
+    offer_stage: told.offer_stage ?? u?.offer_stage ?? "",
+    key_question: told.key_question ?? (u?.key_question?.source === "brief" ? u.key_question.value ?? "" : ""),
+    topic: interp.topic,
     markets: interp.markets.map((m) => m.code), languages: interp.languages, audience: interp.audience,
-    audience_roles: run.intake?.audience_roles ?? [], competitors: interp.competitors ?? [],
+    audience_roles: told.audience_roles ?? [], competitors: interp.competitors ?? [],
   };
   const [edits, setEdits] = useState(original);
   const [options, setOptions] = useState<Options | null>(null);
@@ -326,6 +367,7 @@ function EditablePlan({ run, onReplanned }: { run: RunStatus; onReplanned: (run:
     const cs = interp.markets.find((x) => x.code === code)?.countries ?? [];
     return cs.length > 1 ? `${code.toUpperCase()} (${cs.slice(0, 4).join(", ")}${cs.length > 4 ? ", …" : ""})` : code;
   };
+  const goalName = (g: string) => options?.goals[g] ?? g.replace(/_/g, " ");
   const replan = async () => {
     setBusy(true);
     setError(null);
@@ -343,29 +385,88 @@ function EditablePlan({ run, onReplanned }: { run: RunStatus; onReplanned: (run:
   };
   const langOptions = Object.entries(options?.languages ?? {})
     .filter(([code]) => !edits.languages.includes(code)).map(([value, text]) => ({ value, text }));
+  const goalOptions = Object.entries(options?.goals ?? {})
+    .filter(([id]) => !edits.goals.includes(id)).map(([value, text]) => ({ value, text }));
+  const rules = interp.compliance_category && interp.compliance_category !== "other"
+    ? interp.compliance_category.replace(/_/g, " ") : null;
   return (
-    <section aria-labelledby="adjust" className="space-y-2">
-      <h3 id="adjust" className="text-sm font-semibold text-ink">Adjust before you start</h3>
-      <div className="grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
-        <ChipList label="Markets" items={edits.markets.map((c) => ({ key: c, text: marketText(c) }))}
-                  onRemove={(k) => set("markets", edits.markets.filter((x) => x !== k))}
-                  onAdd={(v) => set("markets", [...edits.markets, v])} addLabel="Add a country or region" />
-        <ChipList label="Languages" items={edits.languages.map((c) => ({ key: c, text: languageName(c) }))}
-                  onRemove={(k) => set("languages", edits.languages.filter((x) => x !== k))}
-                  onAdd={(v) => set("languages", [...edits.languages, v])} addLabel="Add a language" options={langOptions} />
-        <ChipList label="Who to reach" hint="Roles or groups, e.g. plant managers who sign off budgets"
-                  items={edits.audience_roles.map((r) => ({ key: r, text: r }))}
-                  onRemove={(k) => set("audience_roles", edits.audience_roles.filter((x) => x !== k))}
-                  onAdd={(v) => set("audience_roles", [...edits.audience_roles, v])} addLabel="Add a role" />
-        <ChipList label="Competitors" hint="Starter list - edit or add yours (yours are always searched)"
-                  items={edits.competitors.map((c) => ({ key: c, text: c }))}
-                  onRemove={(k) => set("competitors", edits.competitors.filter((x) => x !== k))}
-                  onAdd={(v) => set("competitors", [...edits.competitors, v])} addLabel="Add a competitor" />
-        <div className="bg-paper px-4 py-3 sm:col-span-2">
-          <label htmlFor="edit-audience" className="text-xs font-medium uppercase tracking-wide text-ink-3">Audience</label>
-          <input id="edit-audience" value={edits.audience} onChange={(e) => set("audience", e.target.value)}
-                 className="mt-1 w-full rounded-lg border border-line px-3 py-1.5 text-sm text-ink" />
+    <section aria-labelledby="understood" className="space-y-2">
+      <h2 id="understood" className="text-lg font-semibold text-ink">Here's what I understood</h2>
+      <p className="text-sm text-ink-2">Check it and change anything that is wrong - the plan is updated to match.</p>
+      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
+        <div className="bg-paper">
+          <ChipList label="Goals" hint="Main goal first" items={edits.goals.map((g, n) => ({ key: g, text: `${n + 1}. ${goalName(g)}` }))}
+                    onRemove={(k) => set("goals", edits.goals.filter((x) => x !== k))}
+                    onAdd={(v) => set("goals", [...edits.goals, v])} addLabel="Add a goal" options={goalOptions} />
+          <div className="px-4 pb-3"><Source inp={u?.goal} never_assumed /></div>
         </div>
+        <div className="bg-paper px-4 py-3">
+          <label htmlFor="edit-offer" className={cellLabel}>Offer</label>
+          <input id="edit-offer" value={edits.offer} onChange={(e) => set("offer", e.target.value)}
+                 placeholder="What you sell or plan to sell" className={textInput} />
+          <label htmlFor="edit-stage" className="sr-only">Stage of your offer</label>
+          <select id="edit-stage" value={edits.offer_stage} onChange={(e) => set("offer_stage", e.target.value)}
+                  className="mt-1.5 w-full max-w-sm rounded-lg border border-line bg-paper px-2 py-1 text-sm">
+            <option value="" disabled>Stage…</option>
+            {Object.entries(options?.offer_stages ?? {}).map(([id, text]) => <option key={id} value={id}>{text}</option>)}
+          </select>
+          <Source inp={u?.offer} never_assumed />
+        </div>
+        <div className="bg-paper">
+          <ChipList label="Who" hint="Roles or groups, e.g. plant managers who sign off budgets"
+                    items={edits.audience_roles.map((r) => ({ key: r, text: r }))}
+                    onRemove={(k) => set("audience_roles", edits.audience_roles.filter((x) => x !== k))}
+                    onAdd={(v) => set("audience_roles", [...edits.audience_roles, v])} addLabel="Add a role" />
+          <div className="px-4 pb-3">
+            <label htmlFor="edit-audience" className="sr-only">Audience</label>
+            <input id="edit-audience" value={edits.audience} onChange={(e) => set("audience", e.target.value)}
+                   className={textInput} />
+            <Source inp={u?.who} />
+          </div>
+        </div>
+        <div className="bg-paper">
+          <ChipList label="Markets" items={edits.markets.map((c) => ({ key: c, text: marketText(c) }))}
+                    onRemove={(k) => set("markets", edits.markets.filter((x) => x !== k))}
+                    onAdd={(v) => set("markets", [...edits.markets, v])} addLabel="Add a country or region" />
+          <div className="px-4 pb-1"><Source inp={u?.markets} /></div>
+          <ChipList label="Languages" hint="Chosen from your markets" items={edits.languages.map((c) => ({ key: c, text: languageName(c) }))}
+                    onRemove={(k) => set("languages", edits.languages.filter((x) => x !== k))}
+                    onAdd={(v) => set("languages", [...edits.languages, v])} addLabel="Add a language" options={langOptions} />
+          {(interp.languages_excluded ?? []).length > 0 && (
+            <div className="px-4 pb-3 text-sm">
+              <p className={cellLabel}>Languages left out</p>
+              <ul className="mt-1 space-y-0.5 text-ink-2">
+                {interp.languages_excluded!.map((e) => (
+                  <li key={e.language}><span className="text-ink">{languageName(e.language)}</span>: {e.reason}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+        <div className="bg-paper px-4 py-3">
+          <label htmlFor="edit-key" className={cellLabel}>Key question and timing</label>
+          <input id="edit-key" value={edits.key_question} onChange={(e) => set("key_question", e.target.value)}
+                 placeholder="The decision this research should help with, and by when" className={textInput} />
+          <Source inp={u?.key_question} />
+        </div>
+        <div className="bg-paper px-4 py-3">
+          <label htmlFor="edit-topic" className={cellLabel}>Topic</label>
+          <input id="edit-topic" value={edits.topic} onChange={(e) => set("topic", e.target.value)} className={textInput} />
+          <p className="mt-1 text-xs text-ink-3">Looking back {interp.time_window_days} days</p>
+        </div>
+        <div className="bg-paper">
+          <ChipList label="Competitors to watch" hint="Yours are always searched; the research finds the others"
+                    items={edits.competitors.map((c) => ({ key: c, text: c }))}
+                    onRemove={(k) => set("competitors", edits.competitors.filter((x) => x !== k))}
+                    onAdd={(v) => set("competitors", [...edits.competitors, v])} addLabel="Add a competitor" />
+        </div>
+        {rules && (
+          <div className="bg-paper px-4 py-3">
+            <p className={cellLabel}>Rules area</p>
+            <p className="mt-0.5 text-ink">{rules}</p>
+            <p className="text-xs text-ink-3">Risky claims in this area are flagged in the pack</p>
+          </div>
+        )}
       </div>
       {changed && (
         <button type="button" onClick={replan} disabled={busy}
@@ -413,14 +514,12 @@ function UnitCard({ unit, on, onToggle, last }: { unit: PlanUnit; on: boolean; o
 export function PlanReview({ run, onReplanned }: { run: RunStatus; onReplanned: (run: RunStatus) => void }) {
   const navigate = useNavigate();
   const plan = run.plan!;
-  const interp = run.interpretation!;
   const [off, setOff] = useState<Set<number>>(new Set());
   const [removed, setRemoved] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const questions = plan.research_questions.filter((q) => !removed.has(q.id));
   const onCount = plan.starting_units.length - off.size;
-  const assumed = new Set(interp.assumed ?? []);
   const est = run.estimate;
 
   const toggle = (n: number) => setOff((s) => { const t = new Set(s); if (t.has(n)) t.delete(n); else t.add(n); return t; });
@@ -436,45 +535,9 @@ export function PlanReview({ run, onReplanned }: { run: RunStatus; onReplanned: 
     }
   };
 
-  const fields: [string, string][] = [
-    ["topic", interp.topic], ["market", interp.market ?? ""], ["languages", interp.languages.map(languageName).join(", ")],
-    ["audience", interp.audience], ["intent", interp.intent],
-    ["time_window_days", `last ${interp.time_window_days} days`],
-    ...(interp.competitors?.length ? [["competitors", interp.competitors.join(", ")] as [string, string]] : []),
-  ];
-
   return (
     <div className="space-y-8">
-      <section aria-labelledby="understood">
-        <h2 id="understood" className="mb-3 text-lg font-semibold text-ink">Here's what I understood</h2>
-        <dl className="grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
-          {fields.map(([k, v]) => (
-            <div key={k} className="bg-paper px-4 py-3">
-              <dt className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-ink-3">
-                {FIELD_LABELS[k] ?? k}
-                {assumed.has(k as never) && (
-                  <span title="Not in your brief: my assumption" className="rounded border border-line-strong px-1 py-px text-[0.65rem] normal-case tracking-normal text-ink-2">
-                    assumed
-                  </span>
-                )}
-              </dt>
-              <dd className="mt-0.5 text-ink">{v}</dd>
-            </div>
-          ))}
-        </dl>
-        {(interp.languages_excluded ?? []).length > 0 && (
-          <div className="mt-3 rounded-lg border border-line px-4 py-3 text-sm">
-            <p className="text-xs font-medium uppercase tracking-wide text-ink-3">Languages left out</p>
-            <ul className="mt-1 space-y-0.5 text-ink-2">
-              {interp.languages_excluded!.map((e) => (
-                <li key={e.language}><span className="text-ink">{languageName(e.language)}</span>: {e.reason}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </section>
-
-      <EditablePlan run={run} onReplanned={onReplanned} />
+      <Understood run={run} onReplanned={onReplanned} />
 
       <section aria-labelledby="start-here">
         <h2 id="start-here" className="mb-1 text-lg font-semibold text-ink">Here's where I'll start</h2>

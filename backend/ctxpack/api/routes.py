@@ -158,11 +158,14 @@ async def get_export(pack_id: str, kind: Literal["json", "md", "prompt", "skill"
 
 @router.get("/options")
 async def get_options() -> dict[str, Any]:
-    """What the Ask form offers, from modes.yaml: modes with time and cost estimates, time windows."""
+    """What the Ask form offers, from modes.yaml and goals.yaml: modes with time and cost estimates, time
+    windows, and the goal and offer-stage chips (V11)."""
     from ctxpack.agent.interpret import estimate
 
-    cfg = load_yaml("modes")
-    return {"modes": {m: estimate(m).model_dump(mode="json") for m in ("quick", "standard")},
+    cfg, goals = load_yaml("modes"), load_yaml("goals")
+    return {"goals": {g: v["chip"] for g, v in goals["goals"].items()},
+            "offer_stages": {st: v["chip"] for st, v in goals["offer_stages"].items()},
+            "modes": {m: estimate(m).model_dump(mode="json") for m in ("quick", "standard")},
             "default_mode": cfg["default_mode"], "time_window_days_options": cfg["time_window_days_options"],
             "languages": cfg["languages"]["supported"], "max_languages": cfg["languages"]["max_per_mode"],
             "default_time_window_days": cfg["default_time_window_days"], "brand_voice_max_chars": 200}
@@ -202,25 +205,35 @@ class RunRequest(BaseModel):
     time_window_days: Literal[30, 90, 180, 365] | None = None
     brand_voice: str | None = Field(default=None, max_length=200)
     auto_approve: bool = False
-    intake: dict[str, Any] | None = Field(default=None, description="What you already know (V3): audience_roles, "
-                                          "goal, offer, channels_in_use, competitors_user, timeframe. Given -> "
-                                          "no clarifying questions.")
+    intake: dict[str, Any] | None = Field(default=None, description="What you already know (V3, V11): goals "
+                                          "(list, main first; REQUIRED with auto_approve), goal_note, offer, "
+                                          "offer_stage, key_question, audience_roles, channels_in_use, "
+                                          "competitors_user, timeframe. Goals and offer given -> no questions "
+                                          "about them.")
 
 
 class OneAnswer(BaseModel):
-    id: str = Field(description="Question id (Q1, Q2, Q3).")
-    chosen: list[str] = Field(default_factory=list, max_length=10, description="Answer chips chosen.")
+    id: str = Field(description="Question id (Q1-Q4).")
+    chosen: list[str] = Field(default_factory=list, max_length=10, description="Answer chips chosen (goal chips "
+                              "in priority order).")
     text: str | None = Field(default=None, max_length=300, description="Your own words.")
-    skipped: bool = Field(default=False, description="Skip - let the agent decide.")
+    skipped: bool = Field(default=False, description="Skip - let the agent decide (not for goal and offer).")
 
 
 class AnswerRequest(BaseModel):
     answers: list[OneAnswer] = Field(default_factory=list, max_length=5)
-    skip_all: bool = Field(default=False, description="Skip all questions and plan.")
+    skip_all: bool = Field(default=False, description="Skip the optional questions and plan (goal and offer "
+                           "must still be answered).")
     answer: str | None = Field(default=None, max_length=500, description="Before V3: one free-text answer.")
 
 
 class EditsRequest(BaseModel):
+    goals: list[str] | None = Field(default=None, max_length=8, description="Goal ids, main first (V11).")
+    goal_note: str | None = Field(default=None, max_length=300, description="The goal in your own words.")
+    offer: str | None = Field(default=None, max_length=300, description="What you offer.")
+    offer_stage: str | None = Field(default=None, description="idea, launching, selling or no_offer.")
+    key_question: str | None = Field(default=None, max_length=300, description="The decision or question, by when.")
+    topic: str | None = Field(default=None, max_length=200, description="What the conversation is about.")
     markets: list[str] | None = Field(default=None, max_length=10, description="Country codes or regions.")
     languages: list[str] | None = Field(default=None, max_length=12, description="ISO 639-1 codes.")
     audience: str | None = Field(default=None, max_length=300)
@@ -254,7 +267,8 @@ async def answer(run_id: str, body: AnswerRequest, x_api_key: str | None = Heade
 
 @router.post("/runs/{run_id}/replan")
 async def replan(run_id: str, body: EditsRequest, x_api_key: str | None = Header(default=None)) -> Any:
-    """Edited markets, languages, audience, roles or competitors -> a new plan in place (one paid call)."""
+    """Edited goals, offer, key question, topic, markets, languages, audience, roles or competitors -> a new
+    plan in place (one paid call)."""
     _key(x_api_key)
     return await _call(service.replan, run_id, body.model_dump(exclude_none=True))
 

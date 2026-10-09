@@ -133,15 +133,20 @@ async def search_evidence(pack_id: str, query: str, limit: int = 10) -> dict[str
 
 
 @mcp.tool()
-async def create_context_pack(brief: str, ctx: Context, mode: Literal["quick", "standard"] = "quick",
+async def create_context_pack(brief: str, goals: list[str], ctx: Context,
+                              mode: Literal["quick", "standard"] = "quick",
                               intake: dict[str, Any] | None = None) -> dict:
     """Start new research for a brief (e.g. "Launching a snack brand in the Netherlands"). The plan is
     approved automatically and the run joins the queue; poll get_pack_status(run_id) until status is
     complete or partial, then read the pack. Quick takes ~7 minutes. Needs the run key (X-API-Key).
-    Agents are never asked questions; pass what you know in intake (optional): audience_roles, goal,
-    offer, channels_in_use, competitors_user, timeframe."""
+    goals (required, main goal first): what the research is for - content_plan, campaign_launch,
+    positioning, product_validation, market_entry, brand_perception, sales_enablement or
+    understand_audience. Agents are never asked questions; pass what else you know in intake
+    (optional): offer, offer_stage (idea, launching, selling, no_offer), key_question, audience_roles,
+    channels_in_use, competitors_user, timeframe."""
     _key(ctx)
-    return await _run(service.create_run, brief, mode, None, None, True, Requester.mcp, intake)
+    known = {**(intake or {}), "goals": goals}
+    return await _run(service.create_run, brief, mode, None, None, True, Requester.mcp, known)
 
 
 @mcp.tool()
@@ -153,7 +158,7 @@ async def get_pack_status(run_id: str, ctx: Context) -> dict[str, Any]:
 
 
 @mcp.resource("schema://context-pack", name="context-pack-schema", mime_type="application/json",
-              description="JSON schema of Context Pack 1.1.")
+              description="JSON schema of Context Pack 1.2.")
 def schema_resource() -> str:
     from ctxpack.schemas.pack import ContextPack
 

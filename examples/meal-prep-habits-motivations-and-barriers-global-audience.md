@@ -8,51 +8,27 @@
 
 ## Summary
 
-### Do first
+*Who this represents:* 76 public posts, mostly on Reddit and review sites. This is what vocal people say online, not a survey of the whole market.
+
+### What we heard most clearly
+- **I find cooking for one challenging and need simple meals that suit just me.** *[MOT-06; Emerging - 3 people in 3 communities; good enough to: test a post]*
+  > I find cooking for 1 challenging (EV-0045)
+- **I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating.** *[SEG-01; Emerging - 3 people in 1 community; good enough to: test a post]*
+  > I am a college student wanting to meal prep lunches for the week (EV-0025)
+- **I prep components, not whole meals, so I keep room to change things.** *[SEG-03; Emerging - 2 people in 2 communities; good enough to: test a post]*
+  > I always prep the ingredients and components, not whole meals. (EV-0023)
+
+### Your plan: do this first
 1. **Publish a freeze-and-reheat cheat sheet for enchiladas and fajitas (can it be frozen, how to reheat, how long reheating takes), and post it in a Reddit meal-prep or college-cooking community as a reply-friendly guide.** - Students are asking whether these dishes freeze and how to reheat them, and slow reheating is a stated reason prep feels pointless. *[DO-01; effort low, impact high; Content lead with a home cook for testing; based on OPP-04, OPP-01, SEG-01, THM-06, PAIN-02]*
 1. **Post a 'College student mealprep for the week' on Reddit that lists every dish, the recipes and the total spent, built on pantry staples such as rice, pasta, eggs, beans and potatoes.** - Posts that show a full week with a cost figure and a student framing are the ones that read as practical and copyable. *[DO-02; effort medium, impact high; Community manager or a student creator; based on OPP-02, PERF-02, PERF-04, CUL-02, MOT-01]*
 1. **Post a short make-ahead breakfast reply or post (freezer breakfast sandwiches and overnight oats) in a thread where someone wants to stop buying breakfast, with a simple how-to.** - People who start work early want a filling breakfast they don't have to buy each day, and a concrete cheap swap is what worked in replies. *[DO-03; effort low, impact medium; Community manager; based on MOT-07, MOM-03, OPP-03, PERF-01, THM-04]*
 
-### Five truths
-- I find cooking for one challenging and need simple meals that suit just me. *[MOT-06]*
-- I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating. *[SEG-01]*
-- I prep components, not whole meals, so I keep room to change things. *[SEG-03]*
-- I prep ingredients and components, not whole meals, so I can still switch things around. *[THM-09]*
-- I start work early and need breakfast I don't have to buy each day. *[MOM-03]*
-
 **Top opportunity:** Freeze-and-reheat cheat sheet *[OPP-01]*  
 **Top risk:** Kit complaints are about delivery problems, produce, missing items and small portions in specific reviews. Brands should not read them as a verdict on the whole category, and the web reviews are not necessarily Gen Z. *[RSK-01]*
 
-### A generic AI answer vs. what people actually say
-| Generic answer | What we found |
-|---|---|
-| Gen Z wants to save money on food, and meal prep is seen as a cheaper alternative to takeout and delivery apps. | I find cooking for one challenging and need simple meals that suit just me. [MOT-06] |
-| Time is a major barrier, since busy class, work and social schedules make planning and batch cooking hard. | I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating. [SEG-01] |
-| Health and fitness goals, such as eating more protein, losing weight or building muscle, motivate many to meal prep. | I prep components, not whole meals, so I keep room to change things. [SEG-03] |
-| TikTok, Instagram Reels and YouTube are the main sources of recipe inspiration, with quick, aesthetic, easy-to-follow videos. | I prep ingredients and components, not whole meals, so I can still switch things around. [THM-09] |
-| Small kitchens, shared student housing, and limited storage or equipment make prepping difficult. | I start work early and need breakfast I don't have to buy each day. [MOM-03] |
-| Many lack cooking skills and confidence, so they want simple recipes with few ingredients and minimal cleanup. |  |
+## Understand your audience
 
-## Channels and this week
-
-1. **reddit** - Reddit is the deepest source in the pack (39 posts). People share what they cooked, ask how to freeze or reheat, and trade cheap recipes, and the posts that perform carry a cost figure or a narrow practical question. All the evidence comes from Reddit and web reviews, so TikTok, YouTube and Instagram are untested; treat them as tests only. HYP-02 about TikTok is inconclusive. *[CHN-01; based on PLT-01, PERF-02, PERF-04, PERF-08, PERF-09, PERF-10, SEG-01]*  
-   Formats: Weekly prep post with dishes and total cost, How-to question (freeze or reheat, microwave or air fryer), Short helpful reply with a make-ahead swap, Component breakdown post with cooking details. Where: r/MealPrep, r/EatCheapAndHealthy, r/budgetfood, College cooking communities. Tone: Practical, casual, budget-aware. Light self-deprecating humour ('I'm broke') and the occasional emoji. Share what you made and ask direct questions. No hype or pressure.
-   When: Weekday lunches and dinners (Weekdays, seen in posts EV-0025, EV-0016, EV-0037); Sunday or weekend prep session (Sunday or weekend, seen in posts EV-0054, EV-0023, EV-0036); Early morning work breakfast (Mornings, seen in posts EV-0014, EV-0007); Mornings (named in 3 posts, seen in posts EV-0007, EV-0014, EV-0035)
-2. **web_review** - Review sites are the second-largest source (26 posts). They show how people judge meal kits: praise for taste next to complaints about portions, price, missing items and subscriptions. The best-performing review ties convenience to a lower grocery bill. This channel is for listening and for positioning cheap DIY prep against kits, not for posting brand content. The evidence is mixed, so treat it as an observation. *[CHN-02; based on PLT-02, BRD-01, THM-01, PERF-06, OBJ-01, OBJ-03, OBJ-05]*  
-   Formats: Listening and review mining, Comparison content on cost per meal and portions (observation only). Where: Meal kit review pages. Tone: Plain verdicts. Don't assume kits are either great or bad: credit the taste and acknowledge the portions, price and missing items.
-3. **web_editorial** - Budget Bytes is a named reference (8 posts): one commenter loves its sheet pan fajitas and freezes half of a double batch. A durable freeze-and-reheat guide fits this recipe-and-guide space. The evidence is one reference, so treat it as a test. *[CHN-03; based on CUL-01, OPP-01, THM-02, OPP-04]*  
-   Formats: Freeze-and-reheat cheat sheet, Cheap-week prep guide with cost per week. Where: Recipe blogs, Budget cooking sites. Tone: Short, plain steps. Use ingredients people already own, with no long shopping lists.
-
-| Day | Platform | Format | Hook | Angle | Why now |
-|---|---|---|---|---|---|
-| monday | reddit | Weekly prep post with dishes, recipes and total cost | College student mealprep for the week: every dish, every recipe, and exactly what I spent. [HOOK-01] | Student week of weekday lunches and dinners, listed dish by dish with the total spent. | Start of the week, when people plan lunches and dinners. Posts with a cost figure and a student framing are the ones that work. |
-| tuesday | reddit | Either/or how-to question | Reheating took so long that meal prep felt pointless. Microwave or air fryer, and I'm on a budget? [HOOK-04] | Ask the community: microwave or air fryer for reheating prepped meals on a budget. Then share what worked. | Clear either/or questions with a budget limit invite replies, and they surface the reheating barrier in the audience's own words. |
-| wednesday | web_editorial | Freeze-and-reheat cheat sheet | Can you freeze enchiladas? And how do you reheat them without ruining them? [HOOK-06] | Short guide for freezing and reheating enchiladas and fajitas, with simple steps for beginners. | Students are asking whether these dishes freeze. A published guide can be linked back in Reddit replies. |
-| thursday | reddit | Short helpful reply or post | I'm broke and I want to stop buying McMuffins. Freezer breakfast sandwiches, here's how. [HOOK-08] | Freezer breakfast sandwiches and overnight oats as a make-ahead swap for buying breakfast. | Midweek is when buying breakfast on early work mornings adds up, and a concrete cheap swap is what works in replies. |
-| sunday | reddit | Component prep breakdown | I don't want to spend my whole weekend in the kitchen, so Sunday prep day is just ingredients and components. [HOOK-05] | Sunday prep day with ingredients and components only (what's cooked, how, and how to mix it up through the week). | Sunday is the usual prep session. Showing a lighter option answers the 'my weekend in the kitchen' objection. |
-
-## Voice
-
+### Their words
 **Tone:** Practical, casual and budget-aware. Posters share what they made and ask direct how-to questions. There is light self-deprecating humour ("I'm broke") and occasional emoji. Meal kit reviews read as plain verdicts.  
 **What they call the category:** meal prep, mealprep, macros, freeze, reheat, meal plan, meal kit, batch
 
@@ -82,28 +58,7 @@
 - Recipes needing long ingredient lists the reader doesn't own
 - Hype or pressure about perfect prep
 
-## Pain points
-
-- Stocking random things is a good way for food to go bad before you use it, so I plan a week ahead and only buy what I need. *[PAIN-01; emerging, 5 of 75 posts, observed]*
-  > Stocking random things is a good way for those things to go bad before you use them. (EV-0042)
-- The reheating was taking so much time that meal prep felt like a waste of time. *[PAIN-02; emerging, 3 of 75 posts, observed]*
-  > the reheating was taking so much time, that meal prep felt waste of time (EV-0017)
-
-## Tensions and motivations
-
-- **I want to save money by cooking at home, but prepping takes hours of my time.** *[TEN-01; emerging, 5 of 75 posts, inferred]*
-  - Want: $60 worth of food for the next week. (EV-0016, EV-0015, EV-0034)
-  - But: Took around 4 hours in total. (EV-0035, EV-0034, EV-0019)
-  > $60 worth of food for the next week. (EV-0016)
-- **I want meals prepped for the week, but some of us get tired of eating the same leftovers.** *[TEN-02; emerging, 5 of 75 posts, inferred]*
-  - Want: 6x dinners and lunches for the week (EV-0036, EV-0037, EV-0023)
-  - But: I rarely enjoy leftovers, so meal prepping didn’t work for me either. (EV-0038, EV-0020)
-  > 6x dinners and lunches for the week (EV-0036)
-- **I want easy meal kits, but one reviewer finds them too expensive for what they get.** *[TEN-03; speculative, 5 of 75 posts, inferred]*
-  - Want: I love the ease and variety of meals we get from hello fresh. (EV-0039, EV-0040, EV-0032)
-  - But: I think they're very expensive for what I get. (EV-0004)
-  > I love the ease and variety of meals we get from hello fresh. (EV-0039)
-
+### What they want
 **Needs**
 - I need to eat on a tight budget, so I cook cheap food at home. *[MOT-01; emerging, 6 of 75 posts, observed]*
   > $60 worth of food for the next week. (EV-0016)
@@ -117,16 +72,14 @@
 - You are going to eat healthier if you do your own shopping and cooking. *[MOT-05; emerging, 3 of 75 posts, observed]*
   > You are going to eat healthier if you do your own shopping and cooking. (EV-0044)
 
-## Segments
+### What stops them
+**What gets in their way**
+- Stocking random things is a good way for food to go bad before you use it, so I plan a week ahead and only buy what I need. *[PAIN-01; emerging, 5 of 75 posts, observed]*
+  > Stocking random things is a good way for those things to go bad before you use them. (EV-0042)
+- The reheating was taking so much time that meal prep felt like a waste of time. *[PAIN-02; emerging, 3 of 75 posts, observed]*
+  > the reheating was taking so much time, that meal prep felt waste of time (EV-0017)
 
-- **Budget college meal preppers** - I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating. *[SEG-01; emerging, 5 of 75 posts, observed]*
-  > I am a college student wanting to meal prep lunches for the week (EV-0025)
-- **Flexible planners who avoid full prep** - I prep components, not whole meals, so I keep room to change things. *[SEG-03; emerging, 2 of 75 posts, observed]*
-  > I always prep the ingredients and components, not whole meals. (EV-0023)
-- *Also seen (weaker evidence, speculative):* Meal kit users [SEG-02]
-
-## Objections and competitors
-
+**Why they would say no**
 - *Also seen (weaker evidence, speculative):* The kit arrives with something missing or the wrong thing in the box. [OBJ-01]; Sometimes the veggies in the kit aren't the freshest, or arrive bad. [OBJ-02]; The portions are really small, and one reviewer thinks the kit is very expensive for what they get. [OBJ-03]; Meal prepping stresses me out and I don't want to spend my weekend in the kitchen. [OBJ-04]; I like the meals but I don't like being required to use a subscription. [OBJ-05]
 
 **How to answer them:**
@@ -136,12 +89,38 @@
 - OBJ-04: Prep doesn't have to eat your weekend. Prep a few ingredients and components, or make a double batch and freeze half, then reheat later.
 - OBJ-05: Liking the meals without the subscription is fair. Cook the same kind of meal yourself, freeze half, and there's nothing to cancel.
 
-| Brand | Mentions | Share | How they talk about it | Praised | Mocked |
-|---|---|---|---|---|---|
-| Hello Fresh | 10 | 34% | Mixed: reviewers praise the food and ease, then raise complaints about delivery, produce, portions and subscription terms. | has the best food, love the meals, ease and variety, cancelling without calling, refunded first delivery | very small portions, soft and rotten potatoes, late delivery, required subscription model, premium meal pricing, can't remove ingredients |
+### Tensions: where wanting meets what stops them
+- **I want to save money by cooking at home, but prepping takes hours of my time.** *[TEN-01; emerging, 5 of 75 posts, inferred]*
+  - Want: $60 worth of food for the next week. (EV-0016, EV-0015, EV-0034)
+  - But: Took around 4 hours in total. (EV-0035, EV-0034, EV-0019)
+  > $60 worth of food for the next week. (EV-0016)
+- **I want meals prepped for the week, but some of us get tired of eating the same leftovers.** *[TEN-02; emerging, 5 of 75 posts, inferred]*
+  - Want: 6x dinners and lunches for the week (EV-0036, EV-0037, EV-0023)
+  - But: I rarely enjoy leftovers, so meal prepping didn’t work for me either. (EV-0038, EV-0020)
+  > 6x dinners and lunches for the week (EV-0036)
+- **I want easy meal kits, but one reviewer finds them too expensive for what they get.** *[TEN-03; speculative, 5 of 75 posts, inferred]*
+  - Want: I love the ease and variety of meals we get from hello fresh. (EV-0039, EV-0040, EV-0032)
+  - But: I think they're very expensive for what I get. (EV-0004)
+  > I love the ease and variety of meals we get from hello fresh. (EV-0039)
 
-## Landscape and platform lens
+### Segments
+- **Budget college meal preppers** - I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating. *[SEG-01; emerging, 5 of 75 posts, observed]*
+  > I am a college student wanting to meal prep lunches for the week (EV-0025)
+- **Flexible planners who avoid full prep** - I prep components, not whole meals, so I keep room to change things. *[SEG-03; emerging, 2 of 75 posts, observed]*
+  > I always prep the ingredients and components, not whole meals. (EV-0023)
+- *Also seen (weaker evidence, speculative):* Meal kit users [SEG-02]
 
+### A generic AI answer vs. what people actually say
+| Generic answer | What we found |
+|---|---|
+| Gen Z wants to save money on food, and meal prep is seen as a cheaper alternative to takeout and delivery apps. | I find cooking for one challenging and need simple meals that suit just me. [MOT-06] |
+| Time is a major barrier, since busy class, work and social schedules make planning and batch cooking hard. | I'm a college student prepping meals for the week on a budget and I want advice on freezing and reheating. [SEG-01] |
+| Health and fitness goals, such as eating more protein, losing weight or building muscle, motivate many to meal prep. | I prep components, not whole meals, so I keep room to change things. [SEG-03] |
+| TikTok, Instagram Reels and YouTube are the main sources of recipe inspiration, with quick, aesthetic, easy-to-follow videos. | I prep ingredients and components, not whole meals, so I can still switch things around. [THM-09] |
+| Small kitchens, shared student housing, and limited storage or equipment make prepping difficult. | I start work early and need breakfast I don't have to buy each day. [MOM-03] |
+| Many lack cooking skills and confidence, so they want simple recipes with few ingredients and minimal cleanup. |  |
+
+### Landscape
 - **Meal kits are tasty but small, pricey or error-prone** - The meal kit food is good, but the portions are small, it gets spendy, things go missing from the bag and veggies aren't always fresh. *[THM-01; emerging, 9 of 75 posts, observed]*
   > the amount of food received per serving is very small and often not filling (EV-0003)
 - **Freeze it now, reheat it later** - I make a double batch, freeze half, and reheat it when I need a meal. *[THM-02; emerging, 8 of 75 posts, observed]*
@@ -162,6 +141,14 @@
 
 **web_review** (26 posts) [PLT-02]: Evaluative and mixed: praise for taste sits next to complaints about portions, price and missing items. What is unique: The topic appears as meal kits judged on portion size, price, missing ingredients and freshness, not as DIY prep.
 
+**When it matters**
+- **Weekday lunches and dinners** - I prep so I have lunches and dinners ready for the week. *[MOM-01; emerging, 5 of 75 posts, observed]*
+  > College student mealprep for weekday dinners (EV-0016)
+- **Sunday or weekend prep session** - I prep on the weekend for easy meals through the week. *[MOM-02; emerging, 3 of 75 posts, observed]*
+  > I want to get into meal prepping a casserole on the weekend (EV-0054)
+- **Early morning work breakfast** - I start work early and need breakfast I don't have to buy each day. *[MOM-03; emerging, 3 of 75 posts, observed]*
+  > I start work at 6:30 with my first break at 10:00. (EV-0014)
+
 **Culture and codes**
 - **College student prep posts with budget** - Student prep posts list the dishes and the total spent for the week. *[CUL-02; emerging, 5 of 75 posts, observed]*
   > Dinner for 6 days, \~$50 (EV-0015)
@@ -169,8 +156,31 @@
   > I love Budget Bytes sheet pan fajitas (EV-0005)
 - *Also seen (weaker evidence, speculative):* Weekly numbered prep log posts [CUL-03]
 
-## What performs
+| Brand | Mentions | Share | How they talk about it | Praised | Mocked |
+|---|---|---|---|---|---|
+| Hello Fresh | 10 | 34% | Mixed: reviewers praise the food and ease, then raise complaints about delivery, produce, portions and subscription terms. | has the best food, love the meals, ease and variety, cancelling without calling, refunded first delivery | very small portions, soft and rotten potatoes, late delivery, required subscription model, premium meal pricing, can't remove ingredients |
 
+## Act on it
+
+### Your plan: this week
+| Day | Platform | Format | Hook | Angle | Why now |
+|---|---|---|---|---|---|
+| monday | reddit | Weekly prep post with dishes, recipes and total cost | College student mealprep for the week: every dish, every recipe, and exactly what I spent. [HOOK-01] | Student week of weekday lunches and dinners, listed dish by dish with the total spent. | Start of the week, when people plan lunches and dinners. Posts with a cost figure and a student framing are the ones that work. |
+| tuesday | reddit | Either/or how-to question | Reheating took so long that meal prep felt pointless. Microwave or air fryer, and I'm on a budget? [HOOK-04] | Ask the community: microwave or air fryer for reheating prepped meals on a budget. Then share what worked. | Clear either/or questions with a budget limit invite replies, and they surface the reheating barrier in the audience's own words. |
+| wednesday | web_editorial | Freeze-and-reheat cheat sheet | Can you freeze enchiladas? And how do you reheat them without ruining them? [HOOK-06] | Short guide for freezing and reheating enchiladas and fajitas, with simple steps for beginners. | Students are asking whether these dishes freeze. A published guide can be linked back in Reddit replies. |
+| thursday | reddit | Short helpful reply or post | I'm broke and I want to stop buying McMuffins. Freezer breakfast sandwiches, here's how. [HOOK-08] | Freezer breakfast sandwiches and overnight oats as a make-ahead swap for buying breakfast. | Midweek is when buying breakfast on early work mornings adds up, and a concrete cheap swap is what works in replies. |
+| sunday | reddit | Component prep breakdown | I don't want to spend my whole weekend in the kitchen, so Sunday prep day is just ingredients and components. [HOOK-05] | Sunday prep day with ingredients and components only (what's cooked, how, and how to mix it up through the week). | Sunday is the usual prep session. Showing a lighter option answers the 'my weekend in the kitchen' objection. |
+
+### Channels
+1. **reddit** - Reddit is the deepest source in the pack (39 posts). People share what they cooked, ask how to freeze or reheat, and trade cheap recipes, and the posts that perform carry a cost figure or a narrow practical question. All the evidence comes from Reddit and web reviews, so TikTok, YouTube and Instagram are untested; treat them as tests only. HYP-02 about TikTok is inconclusive. *[CHN-01; based on PLT-01, PERF-02, PERF-04, PERF-08, PERF-09, PERF-10, SEG-01]*  
+   Formats: Weekly prep post with dishes and total cost, How-to question (freeze or reheat, microwave or air fryer), Short helpful reply with a make-ahead swap, Component breakdown post with cooking details. Where: r/MealPrep, r/EatCheapAndHealthy, r/budgetfood, College cooking communities. Tone: Practical, casual, budget-aware. Light self-deprecating humour ('I'm broke') and the occasional emoji. Share what you made and ask direct questions. No hype or pressure.
+   When: Weekday lunches and dinners (Weekdays, seen in posts EV-0025, EV-0016, EV-0037); Sunday or weekend prep session (Sunday or weekend, seen in posts EV-0054, EV-0023, EV-0036); Early morning work breakfast (Mornings, seen in posts EV-0014, EV-0007); Mornings (named in 3 posts, seen in posts EV-0007, EV-0014, EV-0035)
+2. **web_review** - Review sites are the second-largest source (26 posts). They show how people judge meal kits: praise for taste next to complaints about portions, price, missing items and subscriptions. The best-performing review ties convenience to a lower grocery bill. This channel is for listening and for positioning cheap DIY prep against kits, not for posting brand content. The evidence is mixed, so treat it as an observation. *[CHN-02; based on PLT-02, BRD-01, THM-01, PERF-06, OBJ-01, OBJ-03, OBJ-05]*  
+   Formats: Listening and review mining, Comparison content on cost per meal and portions (observation only). Where: Meal kit review pages. Tone: Plain verdicts. Don't assume kits are either great or bad: credit the taste and acknowledge the portions, price and missing items.
+3. **web_editorial** - Budget Bytes is a named reference (8 posts): one commenter loves its sheet pan fajitas and freezes half of a double batch. A durable freeze-and-reheat guide fits this recipe-and-guide space. The evidence is one reference, so treat it as a test. *[CHN-03; based on CUL-01, OPP-01, THM-02, OPP-04]*  
+   Formats: Freeze-and-reheat cheat sheet, Cheap-week prep guide with cost per week. Where: Recipe blogs, Budget cooking sites. Tone: Short, plain steps. Use ingredients people already own, with no long shopping lists.
+
+### What performs
 - reddit Short Reddit reply suggesting a make-ahead breakfast (overnight oats or freezer McMuffins) (engagement percentile 99): Inferred: it gives a concrete, cheap swap for a breakfast the original poster wanted to stop buying. *(inferred)* [PERF-01, EV-0007]
 - reddit Reddit post titled as a college-student weekly meal prep with a cost figure and recipes (engagement percentile 97): Inferred: a stated price for a full week and a student framing make it practical and relatable for budget cooks. *(inferred)* [PERF-02, EV-0015]
 - reddit Reddit personal-story post about a potatoes, rice and pasta method during a tight-money period (engagement percentile 96): Inferred: the personal money-tight story makes the method credible. *(inferred)* [PERF-03, EV-0041]
@@ -182,17 +192,7 @@
 - reddit Reddit help request on what foods to buy for a fridge that has always been empty (engagement percentile 73): Inferred: a candid beginner request invites advice from readers with more experience. *(inferred)* [PERF-09, EV-0053]
 - reddit Reddit question about which vegetables can go into a casserole without pre-cooking (engagement percentile 67): Inferred: a narrow, practical question about weekend prep is easy to answer. *(inferred)* [PERF-10, EV-0054]
 
-## Moments
-
-- **Weekday lunches and dinners** - I prep so I have lunches and dinners ready for the week. *[MOM-01; emerging, 5 of 75 posts, observed]*
-  > College student mealprep for weekday dinners (EV-0016)
-- **Sunday or weekend prep session** - I prep on the weekend for easy meals through the week. *[MOM-02; emerging, 3 of 75 posts, observed]*
-  > I want to get into meal prepping a casserole on the weekend (EV-0054)
-- **Early morning work breakfast** - I start work early and need breakfast I don't have to buy each day. *[MOM-03; emerging, 3 of 75 posts, observed]*
-  > I start work at 6:30 with my first break at 10:00. (EV-0014)
-
-## Opportunities
-
+### Opportunities
 - **Freeze-and-reheat cheat sheet: Publish short freezing and reheating guidance for popular prep dishes such as enchiladas and fajitas, for college students who are new to meal prep.** *[OPP-01; product idea; Early signal - check before acting; speculative; 0 people in 0 communities]*
   - Not checked: made before the existing-solution search.
 - **Own the cheap-week prep: Share budget meal-prep weeks built on pantry staples (rice, pasta, eggs, beans, potatoes) with a total cost per week. Aim it at students and early-career cooks on a tight budget.** *[OPP-02; product idea; Early signal - check before acting; emerging; 5 people in 2 communities]*
@@ -202,9 +202,20 @@
 - **Students ask whether cooked dishes like fajitas and enchiladas can be frozen and how best to reheat them.** *[OPP-04; content idea; Early signal - check before acting; speculative; 1 people in 1 community]*
   - Not checked: made before the existing-solution search.
 
-## Playbook
+### Guardrails
+- **Never claim:** stop buying McMuffins ... freezer sandwiches; a cheap week; portions were small, something was missing; Macro-friendly prep; Own the cheap-week prep; Make-ahead filling breakfasts
+- **Sensitivities:** Kit complaints are about delivery problems, produce, missing items and small portions in specific reviews. Brands should not read them as a verdict on the whole category, and the web reviews are not necessarily Gen Z.; Much of the evidence is Reddit and review text from posters whose age is unknown, and several cluster points rest on only a few posts. Present findings as signals, not as the voice of all Gen Z.; Pushing meal prep as the answer could backfire with people who say it stresses them out or who dislike leftovers. Flexible planning (prepping components) may fit them better.; Food-storage and reheating advice touches on food safety. Any guidance given on freezing or storing prepped food should be accurate and sourced.
+- **Quotes:** Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.
 
-### Hooks
+**Compliance flags (check with legal - not legal advice)**
+- CMP-01 on HOOK-08 (other): Names a competitor's branded product and implies a cheaper, better alternative without showing the numbers. Safer: I want to spend less on takeaway breakfast. Here's how I make freezer breakfast sandwiches at home, with what they cost me.
+- CMP-02 on HOOK-09 (other): 'Cheap' is a price claim that depends on local prices and what is already in the pantry, so it could mislead. Safer: A week of meals from rice, pasta, eggs, beans and potatoes. Here's what it cost me.
+- CMP-03 on HOOK-10 (other): Makes a negative comparison with meal-kit products, which could be read as disparaging them, and gives no basis for it. Safer: I liked the kit food, but for my appetite and budget I tried making my own version. Here's what I cooked and what it cost.
+- CMP-04 on HOOK-13 (food_nutrition): 'Macro-friendly' implies a nutritional benefit or suitability for a diet without defined values. Safer: Meal prep with a variety of flavours, so it doesn't feel like the same box every day. Nutrition info is in the recipe.
+- CMP-05 on OPP-02 (other): 'Own' implies market leadership, and a promised weekly total could be read as a guaranteed saving. Safer: Share budget meal-prep weeks built on pantry staples, showing what each week cost me. Prices vary by store and region.
+- CMP-06 on OPP-03 (food_nutrition): 'Filling' is an implied satiety claim, and 'cheaper' is an unsubstantiated savings comparison. Safer: Make-ahead breakfasts: freezer breakfast sandwiches and overnight oats as a homemade alternative to buying breakfast, with what they cost to make.
+
+### Hooks, creative brief and keywords
 *Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.*
 - College student mealprep for the week: every dish, every recipe, and exactly what I spent. *[HOOK-01; TEN-01, PHR-02, CUL-02, PERF-04]*
 - I made a double batch, froze half, and now future me doesn't have to cook. Frozen anything is my whole personality. *[HOOK-02; TEN-01, THM-02, LEX-08, CUL-01]*
@@ -221,7 +232,7 @@
 - Macro-friendly prep that doesn't taste like the same box every day. *[HOOK-13; TEN-02, THM-08, LEX-02, PERF-07]* **[check with legal: food_nutrition, CMP-04]**
 - Another week, another meal prep. Here's week 41 and what I'd change. *[HOOK-14; TEN-01, CUL-03, LEX-01]*
 
-### Creative brief
+**Creative brief**
 - **Objective:** Show cheap, flexible meal prep as something that fits a student or early-career life, and understand how Gen Z talks about it.
 - **Audience:** Gen Z adults, 18-27, students and early-career, cooking for themselves (often just for one) on a tight budget. They say 'I'm broke', ask direct how-to questions, and share what they made and what it cost.
 - **Insight:** They want to save money by cooking at home but resent the hours it takes, and they get tired of the same leftovers. Meal prep only feels worth it if it's cheap, flexible, and fast to reheat.
@@ -230,28 +241,21 @@
 - **Mandatories:** State dishes and total cost for any week shown; Use pantry staples and ingredients people already own; Include freezing and reheating guidance; Offer a components-not-whole-meals option; Frame findings as observations: the pack has no claim marked safe to assert
 - **Avoid:** Pushing a full Sunday of filling containers as the only way to prep; Assuming meal kits are either great or bad; Recipes with long ingredient lists the reader doesn't own; Hype or pressure about perfect prep; Health or savings claims not in the research
 
-### Keywords
+**Keywords**
 - **SEO:** college student meal prep, meal prep on a budget, cheap meals for the week, can you freeze enchiladas, how to reheat fajitas, freezer breakfast sandwiches, overnight oats make ahead, meal prep for one, meal prep ingredients not whole meals, cheap pantry staple meals, macro-friendly meal prep, meal prep for weight loss
 - **Paid:** college student mealprep, cheap dinners for the week, make ahead breakfast, freezer meals, meal prep for one, quick lunch under 5 minutes, budget meal prep
 - **Negatives:** meal kit coupon, meal kit discount code, subscription, hello fresh promo, free trial, diet pills, perfect prep
 - **Hashtags:** #mealprep, #collegemealprep, #budgetmealprep, #freezermeals, #cheapmeals, #mealprepforone, #overnightoats, #sundayprep
 
-### Public communities and creators
+**Public communities and creators**
 - r/MealPrep (community, reddit) https://www.reddit.com/r/MealPrep/
 - r/EatCheapAndHealthy (community, reddit) https://www.reddit.com/r/EatCheapAndHealthy/
 - r/budgetfood (community, reddit) https://www.reddit.com/r/budgetfood/
 - Budget Bytes (creator, web_editorial) https://www.budgetbytes.com
 
-### Compliance flags (check with legal - not legal advice)
-- CMP-01 on HOOK-08 (other): Names a competitor's branded product and implies a cheaper, better alternative without showing the numbers. Safer: I want to spend less on takeaway breakfast. Here's how I make freezer breakfast sandwiches at home, with what they cost me.
-- CMP-02 on HOOK-09 (other): 'Cheap' is a price claim that depends on local prices and what is already in the pantry, so it could mislead. Safer: A week of meals from rice, pasta, eggs, beans and potatoes. Here's what it cost me.
-- CMP-03 on HOOK-10 (other): Makes a negative comparison with meal-kit products, which could be read as disparaging them, and gives no basis for it. Safer: I liked the kit food, but for my appetite and budget I tried making my own version. Here's what I cooked and what it cost.
-- CMP-04 on HOOK-13 (food_nutrition): 'Macro-friendly' implies a nutritional benefit or suitability for a diet without defined values. Safer: Meal prep with a variety of flavours, so it doesn't feel like the same box every day. Nutrition info is in the recipe.
-- CMP-05 on OPP-02 (other): 'Own' implies market leadership, and a promised weekly total could be read as a guaranteed saving. Safer: Share budget meal-prep weeks built on pantry staples, showing what each week cost me. Prices vary by store and region.
-- CMP-06 on OPP-03 (food_nutrition): 'Filling' is an implied satiety claim, and 'cheaper' is an unsubstantiated savings comparison. Safer: Make-ahead breakfasts: freezer breakfast sandwiches and overnight oats as a homemade alternative to buying breakfast, with what they cost to make.
+## The research
 
-## Blind spots
-
+### Blind spots
 - Source dropped: web:forums.anandtech.com - Threads are old and out of window; nothing kept.
 - Source dropped: web:knissen.substack.com - Single post, out of window.
 - Source dropped: web:summerthedietitian.substack.com - Single post, out of window.
@@ -275,14 +279,7 @@
 - Minimum content bar not met: lexicon 8 of 15, tensions 2 of 3, unmet needs 1 of 2.
 - Public posts only: private groups, messaging apps and offline talk are not covered.
 
-## Guardrails
-
-- **Never claim:** stop buying McMuffins ... freezer sandwiches; a cheap week; portions were small, something was missing; Macro-friendly prep; Own the cheap-week prep; Make-ahead filling breakfasts
-- **Sensitivities:** Kit complaints are about delivery problems, produce, missing items and small portions in specific reviews. Brands should not read them as a verdict on the whole category, and the web reviews are not necessarily Gen Z.; Much of the evidence is Reddit and review text from posters whose age is unknown, and several cluster points rest on only a few posts. Present findings as signals, not as the voice of all Gen Z.; Pushing meal prep as the answer could backfire with people who say it stresses them out or who dislike leftovers. Flexible planning (prepping components) may fit them better.; Food-storage and reheating advice touches on food safety. Any guidance given on freezing or storing prepped food should be accurate and sourced.
-- **Quotes:** Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.
-
-## Method
-
+### Method
 Collected 256, duplicates 0, spam 1, out of window 114, kept 141 (undated 73), relevant 76. Research moves: 23, finished by finish; more evidence was collected from sources already working.
 
 **Hypotheses from the plan**
@@ -324,6 +321,6 @@ Collected 256, duplicates 0, spam 1, out of window 114, kept 141 (undated 73), r
 
 **Privacy:** authors are stored only as salted hashes; personal details are redacted. Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material. Collected posts are deleted after 30 days. Author names are never stored.
 
-**Confidence labels:** strong, moderate, emerging, speculative. "Safe to state" = strong, observed and confirmed by the claim check. Evidence ids (EV-...) point to the posts in context_pack.json.
+**How to read the strength labels:** Strong - many different people in several communities say this. Moderate - a clear pattern, from a fair number of people. Emerging - a few people say this; worth testing. Early signal - only one or two people; check before acting. Evidence ids (EV-...) point to the posts in context_pack.json.
 
 *AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.*

@@ -2,61 +2,35 @@
 
 *Brief:* Heat pumps for homeowners in Germany  
 *Audience:* Hausbesitzer in Deutschland (ca. 35-65 Jahre), Eigentümer von Ein- und Zweifamilienhäusern, die Heizungstausch oder Neubau erwägen oder bereits eine Wärmepumpe betreiben | *Languages:* de | *Mode:* standard | *Window:* 180 days
-*Pack:* pk_WPKWWfPABYxN | *Generated:* 2026-10-06T09:24:45.191502Z | *Coverage grade:* a | *Relevant posts:* 101
+*Pack:* pk_WPKWWfPABYxN | *Generated:* 2026-10-06T09:24:45.191502Z | *Coverage grade:* c (Capped at c: the sources are broad (grade a), but too few findings met the minimum bar.) | *Relevant posts:* 101
 
 > **Thin evidence.** This pack does not meet the minimum content bar; see Blind spots for what is short. Treat its findings as early signals.
 
 ## Summary
 
-### Do first
+*Who this represents:* 101 public posts, mostly on Reddit and YouTube. This is what vocal people say online, not a survey of the whole market.
+
+### What we heard most clearly
+- **I wonder whether PV and storage really help a heat pump, since solar is weakest in winter when heat is needed.** *[THM-01; Emerging - 6 people in 3 communities; good enough to: test a post]*
+  > die PV liefert halt ziemlich genau dann am wenigsten bzw. fast nichts wenn die Wärmepumpe am meisten braucht: im Winter (EV-0001)
+  > *In English (the post):* I suspect the benefit of combining PV and heat pump is overestimated by many. But PV delivers pretty much the least or almost nothing when the heat pump needs the most: in winter. The combination of PV and air conditioning is better, but solves the opposite problem.
+- **I want help setting the heating curve and flow temperature correctly.** *[MOT-02; Emerging - 4 people in 3 communities; good enough to: test a post]*
+  > Einer der wichtigsten Parameter, die den Stromverbrauch beeinflussen, dürfte tatsächlich die Heizkurve sein. (EV-0026)
+  > *In English (the post):* Hi, we also have ground-source heat. The installation was great—the adjustment by the specialist, well, not so much. The first nights in winter we sweated quite a bit. One of the most important parameters influencing electricity consumption is probably the heating curve. I found 
+- **I want honest numbers on what the heat pump really uses and costs compared to my old heating.** *[MOT-01; Emerging - 5 people in 2 communities; good enough to: test a post]*
+  > etwa ein Viertel der Energie in kWh wie die Gasheizung (EV-0035)
+
+### Your plan: do this first
 1. **Publish a YouTube video titled along the lines of 'Wärmepumpe nach 1 Jahr: meine echte Rechnung gegen die Gas-Abrechnung'. Show annual kWh and euro for the heat pump next to the baseline gas year, including the unflattering lines, and state house type and Vorlauftemperatur.** - One-year bill reviews are a recurring format and moment, and the 'before' figure is the gap the audience keeps pointing at. *[DO-01; effort high, impact high; Video producer with a real operator, or a customer who shares their bills; based on OPP-01, MOM-01, CUL-04, PERF-02, MOT-01, THM-03]*
 1. **Post a Reddit thread in a German heat pump or home-owner community that follows the house-data format: year built, current heating, windows, insulation, radiators vs FBH, Heizlast estimate, real consumption. Ask 'Reicht eine WP hier, und bei welcher VL Temperatur?' and answer every reply with numbers.** - Old-house owners post data blocks before asking for advice, and house-data questions invite community answers on the doubt about uninsulated buildings. *[DO-02; effort low, impact high; Community manager with an installer or energy consultant as technical backup; based on TEN-01, CUL-01, PERF-05, PERF-08, THM-02, HYP-02]*
 1. **Film a short TikTok that shows how to check and adjust Heizkurve and Vorlauftemperatur after commissioning, using a handover checklist for the Heizungsbauer as the on-screen prop. Name one common fault and its cause in a few lines.** - Owners say the setup after installation was weak and they had to tune it themselves, and short troubleshooting tips are what performs on TikTok. *[DO-03; effort medium, impact high; Technical expert or installer on camera, social editor; based on OPP-02, THM-07, MOT-02, PERF-07, PERF-04, PLT-03]*
 
-### Five truths
-- I wonder whether PV and storage really help a heat pump, since solar is weakest in winter when heat is needed. *[THM-01]*
-- I want help setting the heating curve and flow temperature correctly. *[MOT-02]*
-- I want honest numbers on what the heat pump really uses and costs compared to my old heating. *[MOT-01]*
-- People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most. *[TEN-02]*
-- After a year we look at the first annual electricity bill and compare it with gas. *[MOM-01]*
-
 **Top opportunity:** Publish real running-cost comparisons *[OPP-01]*  
 **Top risk:** Promising specific savings or efficiency without showing the baseline will trigger the 'fake numbers' reaction and disbelief. *[RSK-01]*
 
-### A generic AI answer vs. what people actually say
-| Generic answer | What we found |
-|---|---|
-| Homeowners are mainly worried about high upfront costs of heat pumps and look for subsidies such as the BEG/KfW grants to reduce them. | I wonder whether PV and storage really help a heat pump, since solar is weakest in winter when heat is needed. [THM-01] |
-| Uncertainty around the Gebäudeenergiegesetz (Heizungsgesetz) and changing political rules creates confusion and hesitation about when and what to buy. | I want help setting the heating curve and flow temperature correctly. [MOT-02] |
-| Many fear that heat pumps do not work efficiently in older, poorly insulated buildings and ask whether radiators or insulation must be upgraded first. | I want honest numbers on what the heat pump really uses and costs compared to my old heating. [MOT-01] |
-| Running costs and electricity prices are a key concern, including heat pump tariffs, photovoltaics combinations and comparison with gas and oil heating. | People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most. [TEN-02] |
-| Trust in installers is a pain point: long waiting times, shortage of skilled craftspeople, differing quotes and fear of poor installation. | After a year we look at the first annual electricity bill and compare it with gas. [MOM-01] |
-| Noise from outdoor units and neighbour disputes, plus space requirements, come up as practical worries. |  |
+## Understand your audience
 
-## Channels and this week
-
-1. **reddit** - The densest evidence is on Reddit (40 posts): practical, question-driven posts with house data, plus warnings about quotes and providers. It is the best place for the Altbau and KfW process questions. *[CHN-01; based on PLT-01, CUL-01, PERF-05, PERF-08, PERF-10, TEN-01, THM-04]*  
-   Formats: House-data thread with a numbers-based answer, Quote-breakdown post (equipment, labour, extras), Step-by-step KfW process explainer as a text post. Where: German-language heat pump and home-owner subreddits (check rules before posting), Energy-efficiency and Altbau renovation threads. Tone: Practical, a bit weary, no sales talk. Give house data and kWh/euro figures, and admit where a heat pump does not fit.
-   When: Year-end subsidy rush (Year-end, seen in posts EV-0004, EV-0015)
-2. **youtube** - YouTube (32 posts) rewards honest, personal bill reviews, and the comment sections are sceptical and argumentative with operator figures. A one-year review answers the main cost question directly. *[CHN-02; based on PLT-02, PERF-02, PERF-06, CUL-04, MOM-01, OPP-01]*  
-   Formats: One-year real bill review (long), Altbau case study with Vorlauftemperatur and JAZ, Pinned comment with the full figures table. Where: #WärmepumpeNach1Jahr, #Altbau, #Wärmepumpe. Tone: Sober, number-driven, dry humour. Expect sharp one-liners in the comments and answer them with figures.
-   When: One-year bill review (After 1 year, seen in posts EV-0048, EV-0023, EV-0035); Cold-season peak (Winter, seen in posts EV-0062, EV-0045, EV-0036); First winter after installation (First winter / Heizperiode, seen in posts EV-0026, EV-0036); Evenings (named in 2 posts, seen in posts EV-0045, EV-0059)
-3. **tiktok** - TikTok (16 posts) works for short technical explainers, myth-busting and troubleshooting tips. It suits tuning content for new operators. Evidence is smaller here, so treat reach as a test. *[CHN-03; based on PLT-03, PERF-04, PERF-07, PERF-09, OPP-02, THM-07]*  
-   Formats: Troubleshooting tip (e.g. cycling and its cause), Heizkurve and Vorlauftemperatur in 30 seconds, Myth-check on running costs, without using the 'Stromfresser' label as our own framing. Where: #Wärmepumpe, #WP, #Heizkurve, #Altbau, #Heizungstausch. Tone: Short, technical and concrete. A dry joke is fine, but the tip has to carry information.
-4. **web_forum** - Only one item (CUL-02) points to forum threads where users swap tariff and consumption numbers as 'Forumsfreund'. The evidence is thin, so treat this channel as a test. It is useful for listening and for benchmark data. *[CHN-04; based on CUL-02, CUL-03, OPP-06, OPP-04]*  
-   Formats: Answer in existing threads with figures, Consumption benchmark table by house type and heated area. Where: Public heat pump forums (read the rules; no hidden promotion). Tone: Informal forum register, 'Forumsfreund', figures first. Disclose who you are.
-   When: One-year bill review (After 1 year, seen in posts EV-0048, EV-0023, EV-0035); First winter after installation (First winter / Heizperiode, seen in posts EV-0026, EV-0036); Winter (named in 2 posts, seen in posts EV-0001, EV-0026)
-
-| Day | Platform | Format | Hook | Angle | Why now |
-|---|---|---|---|---|---|
-| monday | reddit | House-data thread | Altbau, nicht gedämmt, normale Heizkörper, keine FBH. Hier sind meine Vorlauftemperatur und meine JAZ. Ob das reicht, entscheidet ihr. [HOOK-02] | Post a data block for a non-insulated house with radiators: Baujahr, Heizlast estimate, Vorlauftemperatur and the question of whether a WP is enough. Reply to every answer with figures. | The house-data format is what Reddit answers best, and it starts the week with listening and conversation. |
-| tuesday | youtube | One-year bill review video | Wärmepumpe nach 1 Jahr: meine Rechnung neben der Gas-Abrechnung vom Vorjahr. Mit kWh und Euro, auch die unschönen Zeilen. [HOOK-01] | Annual WP electricity bill in kWh and euro next to the gas baseline year, with the full table in a pinned comment. | A first annual bill is the moment owners compare with gas, and this review is the format with the clearest pull in the pack. |
-| wednesday | tiktok | 30-second tuning tip | Die Einstellung vom Fachbetrieb, naja. Heizkurve und VL Temperatur nach der Inbetriebnahme: So gehe ich Schritt für Schritt vor. [HOOK-05] | Heizkurve and VL Temperatur: what to check after the Heizungsbauer has left, shown on the controller display. | The first heating season is when flaws in the setup show, and tips on concrete faults perform on TikTok. |
-| thursday | reddit | Text explainer | KfW Ablauf, Schritt für Schritt. Und die Stellen, an denen selbst Bank und Heizungsbauer ins Schwimmen kommen. [HOOK-10] | KfW Ablauf in steps, with the points where people say they are unsure marked as open questions and a link to the official rules. | If the year-end subsidy rush seen in the data applies, owners are asking now. We frame it as an observation, not as a deadline. |
-| saturday | tiktok | Short explainer | Springt bei Kälte der Heizstab an? Ich zeige die kältesten Tage und was der Zähler dazu sagt. [HOOK-12] | The coldest days: what the meter shows, and how often the Heizstab ran, in a single case with its house data. | Cold weather is when owners see whether a WP is comfortable and efficient. The evidence for this moment is speculative, so we treat it as a test. |
-
-## Voice
-
+### Their words
 **Tone:** Sober, number-driven and sceptical, in an informal forum register. Humour is dry and sarcastic, emoji are rare (at most a single smiley), and kWh, euro and temperature figures carry the arguments.  
 **Code-switching:** German throughout, with technical abbreviations (WP, JAZ, PV, FBH, LWWP) and some English terms (Bat., BEV, V2H, worst-case) mixed in. One commenter wrote in German while saying they were Dutch.  
 **What they call the category:** Wärmepumpe, WP, Luft-Wasser-Wärmepumpe, Heizungsbauer, Förderung, KfW, Angebot, Vorlauftemperatur, JAZ, Heizlast, Heizstab, Altbau, Stromtarif, Photovoltaik
@@ -96,23 +70,7 @@
 - Treating all Altbau as the same: posters say each building is individual
 - Hype without numbers
 
-## Pain points
-
-- I want less paperwork; pre-filled forms would even be a reason to buy. *[PAIN-01; emerging, 3 of 101 posts, observed]*
-  > Es wäre gut wenn die Anbieter die Formulare für ihre Anlage gleich vor ausgefüllt mit beilegen. (EV-0057)
-- *Also seen (weaker evidence, speculative):* I'm afraid a heat pump won't keep my rooms properly warm. [PAIN-02]
-
-## Tensions and motivations
-
-- **Owners of old houses want to replace the old heating with a heat pump, but poor insulation and radiators leave efficiency and cost uncertain.** *[TEN-01; emerging, 5 of 101 posts, inferred]*
-  - Want: Wir wollen aktuell in die Planung für den Umstieg von Gasheizung auf Wärmepumpe zu machen. (EV-0033)
-  - But: Das Haus ist leider nicht außen gedämmt und wir haben normale Heizkörper, also keine Fußbodenheizung. (EV-0009, EV-0006, EV-0008)
-  > Wir wollen aktuell in die Planung für den Umstieg von Gasheizung auf Wärmepumpe zu machen. (EV-0033)
-- **People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most.** *[TEN-02; emerging, 3 of 101 posts, inferred]*
-  - Want: PV + WP kosten einen Bruchteil und sind damit wirtschaftlicher. (EV-0003)
-  - But: die PV liefert halt ziemlich genau dann am wenigsten bzw. fast nichts wenn die Wärmepumpe am meisten braucht: im Winter (EV-0001, EV-0002)
-  > PV + WP kosten einen Bruchteil und sind damit wirtschaftlicher. (EV-0003)
-
+### What they want
 **Needs**
 - I want honest numbers on what the heat pump really uses and costs compared to my old heating. *[MOT-01; emerging, 5 of 101 posts, inferred]*
   > etwa ein Viertel der Energie in kWh wie die Gasheizung (EV-0035)
@@ -124,16 +82,13 @@
 - I want to get away from oil and gas because their prices keep jumping. *[MOT-03; emerging, 5 of 101 posts, observed]*
   > Ob er jemals wieder auf 1.20 oder drunter sinkt wissen die Götter (EV-0054)
 
-## Segments
+### What stops them
+**What gets in their way**
+- I want less paperwork; pre-filled forms would even be a reason to buy. *[PAIN-01; emerging, 3 of 101 posts, observed]*
+  > Es wäre gut wenn die Anbieter die Formulare für ihre Anlage gleich vor ausgefüllt mit beilegen. (EV-0057)
+- *Also seen (weaker evidence, speculative):* I'm afraid a heat pump won't keep my rooms properly warm. [PAIN-02]
 
-- **Old-house owners weighing a switch** - We own an older oil or gas house and are weighing a heat pump against interim options. *[SEG-01; emerging, 6 of 101 posts, observed]*
-  > Einfamilienhaus Baujahr 1965 (EV-0049)
-- **Operators tuning and checking results** - We already run a heat pump and compare our bills and settings with the old gas heating. *[SEG-03; emerging, 2 of 101 posts, observed]*
-  > 4.500 kWh Strom vs. 18.000 kWh Gas (EV-0035)
-- *Also seen (weaker evidence, speculative):* PV-first energy-independence builders [SEG-02]
-
-## Objections and competitors
-
+**Why they would say no**
 - A heat pump costs too much to buy. *[OBJ-02; emerging, 4 of 101 posts, observed]*
   > massiv über den Preisen seriöser Online-Fachhändler (EV-0020)
 - *Also seen (weaker evidence, speculative):* The yearly savings are too small to ever pay back the investment. [OBJ-01]; Heat pumps don't work well in old, uninsulated houses. [OBJ-03]; The heat pump push is politics and subsidies, not sound economics. [OBJ-04]; Electricity is so expensive that running a heat pump doesn't pay. [OBJ-05]; Air-water heat pumps fall back on electric heating when it gets cold. [OBJ-06]; Enpal and Thermondo have a bad reputation, so I'd steer clear. [OBJ-07]; The grid operator can throttle my heat pump under §14a. [OBJ-08]
@@ -148,13 +103,34 @@
 - OBJ-07: Jeder soll nach eigener Erfahrung entscheiden. Wir nennen keine Anbieter, sondern eine Checkliste für Angebote und Fachbetrieb: aufgeschlüsselte Positionen, Heizlastberechnung, Einweisung bei der Übergabe.
 - OBJ-08: Das Thema §14a ist uns als Sorge begegnet. Wir geben keine Rechtsauskunft. Wir verweisen auf die offiziellen Regeln und fragen den Netzbetreiber, was für euren Anschluss gilt.
 
-| Brand | Mentions | Share | How they talk about it | Praised | Mocked |
-|---|---|---|---|---|---|
-| KfW | 7 | 19% | Practical and uncertain: people ask how the process works and doubt they will qualify. | cheap 0.1 % KfW loan, funding as a way to afford a heat pump | loan that few people get, unclear occupancy rules for the bonus |
-| Samsung | 3 | 8% | Matter-of-fact model comparison between sizes, with some irritation at service conditions. | small differences between model sizes | repairs only via factory service, extra service charge |
+### Tensions: where wanting meets what stops them
+- **Owners of old houses want to replace the old heating with a heat pump, but poor insulation and radiators leave efficiency and cost uncertain.** *[TEN-01; emerging, 5 of 101 posts, inferred]*
+  - Want: Wir wollen aktuell in die Planung für den Umstieg von Gasheizung auf Wärmepumpe zu machen. (EV-0033)
+  - But: Das Haus ist leider nicht außen gedämmt und wir haben normale Heizkörper, also keine Fußbodenheizung. (EV-0009, EV-0006, EV-0008)
+  > Wir wollen aktuell in die Planung für den Umstieg von Gasheizung auf Wärmepumpe zu machen. (EV-0033)
+- **People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most.** *[TEN-02; emerging, 3 of 101 posts, inferred]*
+  - Want: PV + WP kosten einen Bruchteil und sind damit wirtschaftlicher. (EV-0003)
+  - But: die PV liefert halt ziemlich genau dann am wenigsten bzw. fast nichts wenn die Wärmepumpe am meisten braucht: im Winter (EV-0001, EV-0002)
+  > PV + WP kosten einen Bruchteil und sind damit wirtschaftlicher. (EV-0003)
 
-## Landscape and platform lens
+### Segments
+- **Old-house owners weighing a switch** - We own an older oil or gas house and are weighing a heat pump against interim options. *[SEG-01; emerging, 6 of 101 posts, observed]*
+  > Einfamilienhaus Baujahr 1965 (EV-0049)
+- **Operators tuning and checking results** - We already run a heat pump and compare our bills and settings with the old gas heating. *[SEG-03; emerging, 2 of 101 posts, observed]*
+  > 4.500 kWh Strom vs. 18.000 kWh Gas (EV-0035)
+- *Also seen (weaker evidence, speculative):* PV-first energy-independence builders [SEG-02]
 
+### A generic AI answer vs. what people actually say
+| Generic answer | What we found |
+|---|---|
+| Homeowners are mainly worried about high upfront costs of heat pumps and look for subsidies such as the BEG/KfW grants to reduce them. | I wonder whether PV and storage really help a heat pump, since solar is weakest in winter when heat is needed. [THM-01] |
+| Uncertainty around the Gebäudeenergiegesetz (Heizungsgesetz) and changing political rules creates confusion and hesitation about when and what to buy. | I want help setting the heating curve and flow temperature correctly. [MOT-02] |
+| Many fear that heat pumps do not work efficiently in older, poorly insulated buildings and ask whether radiators or insulation must be upgraded first. | I want honest numbers on what the heat pump really uses and costs compared to my old heating. [MOT-01] |
+| Running costs and electricity prices are a key concern, including heat pump tariffs, photovoltaics combinations and comparison with gas and oil heating. | People want PV to cut heat pump running costs, but PV delivers least in winter when the heat pump needs the most. [TEN-02] |
+| Trust in installers is a pain point: long waiting times, shortage of skilled craftspeople, differing quotes and fear of poor installation. | After a year we look at the first annual electricity bill and compare it with gas. [MOM-01] |
+| Noise from outdoor units and neighbour disputes, plus space requirements, come up as practical worries. |  |
+
+### Landscape
 - **Does solar plus storage make a heat pump pay off?** - I wonder whether PV and storage really help a heat pump, since solar is weakest in winter when heat is needed. *[THM-01; emerging, 6 of 101 posts, observed]*
   > die PV liefert halt ziemlich genau dann am wenigsten bzw. fast nichts wenn die Wärmepumpe am meisten braucht: im Winter (EV-0001)
 - **Does a heat pump even work in my old, poorly insulated house?** - Owners of old houses doubt that a heat pump heats an unrenovated building well and cheaply. *[THM-02; emerging, 5 of 101 posts, observed]*
@@ -182,6 +158,15 @@
 
 **tiktok** (16 posts) [PLT-03]: Short explainer, myth-busting and technical. What is unique: Framed as correcting myths about power use and as installation details, such as where to place a Mikroblasenabscheider.
 
+**When it matters**
+- **One-year bill review** - After a year we look at the first annual electricity bill and compare it with gas. *[MOM-01; emerging, 3 of 101 posts, observed]*
+  > Nach 12 Monaten ziehe ich die ehrliche Bilanz (EV-0048)
+- **First winter after installation** - We judge the heat pump in our first heating season, when the setup shows its flaws. *[MOM-03; emerging, 2 of 101 posts, observed]*
+  > Die ersten Nächte haben wir ordentlich im Winter geschwitzt. (EV-0026)
+- **Year-end subsidy rush** - We want to get the work done and the application in before the year ends. *[MOM-04; emerging, 2 of 101 posts, observed]*
+  > zum Jahresende möchte ich mir gerne noch eine PV Anlage installieren lassen (EV-0004)
+- *Also seen (weaker evidence, speculative):* Cold-season peak [MOM-02]
+
 **Culture and codes**
 - **House data post asking for advice** - Old-house owners post a block of house data (year built, heating, windows) before asking for advice. *[CUL-01; emerging, 6 of 101 posts, observed]*
   > *Baujahr 1978 (EV-0050)
@@ -192,8 +177,36 @@
 - **Online Heizlast calculation versus real consumption** - Owners use an online tool, heizreport.de, for a room-by-room load calculation and then compare it with their real consumption. *[CUL-03; emerging, 3 of 101 posts, observed]*
   > raumweise Heizlastberechnung (EV-0033)
 
-## What performs
+| Brand | Mentions | Share | How they talk about it | Praised | Mocked |
+|---|---|---|---|---|---|
+| KfW | 7 | 19% | Practical and uncertain: people ask how the process works and doubt they will qualify. | cheap 0.1 % KfW loan, funding as a way to afford a heat pump | loan that few people get, unclear occupancy rules for the bonus |
+| Samsung | 3 | 8% | Matter-of-fact model comparison between sizes, with some irritation at service conditions. | small differences between model sizes | repairs only via factory service, extra service charge |
 
+## Act on it
+
+### Your plan: this week
+| Day | Platform | Format | Hook | Angle | Why now |
+|---|---|---|---|---|---|
+| monday | reddit | House-data thread | Altbau, nicht gedämmt, normale Heizkörper, keine FBH. Hier sind meine Vorlauftemperatur und meine JAZ. Ob das reicht, entscheidet ihr. [HOOK-02] | Post a data block for a non-insulated house with radiators: Baujahr, Heizlast estimate, Vorlauftemperatur and the question of whether a WP is enough. Reply to every answer with figures. | The house-data format is what Reddit answers best, and it starts the week with listening and conversation. |
+| tuesday | youtube | One-year bill review video | Wärmepumpe nach 1 Jahr: meine Rechnung neben der Gas-Abrechnung vom Vorjahr. Mit kWh und Euro, auch die unschönen Zeilen. [HOOK-01] | Annual WP electricity bill in kWh and euro next to the gas baseline year, with the full table in a pinned comment. | A first annual bill is the moment owners compare with gas, and this review is the format with the clearest pull in the pack. |
+| wednesday | tiktok | 30-second tuning tip | Die Einstellung vom Fachbetrieb, naja. Heizkurve und VL Temperatur nach der Inbetriebnahme: So gehe ich Schritt für Schritt vor. [HOOK-05] | Heizkurve and VL Temperatur: what to check after the Heizungsbauer has left, shown on the controller display. | The first heating season is when flaws in the setup show, and tips on concrete faults perform on TikTok. |
+| thursday | reddit | Text explainer | KfW Ablauf, Schritt für Schritt. Und die Stellen, an denen selbst Bank und Heizungsbauer ins Schwimmen kommen. [HOOK-10] | KfW Ablauf in steps, with the points where people say they are unsure marked as open questions and a link to the official rules. | If the year-end subsidy rush seen in the data applies, owners are asking now. We frame it as an observation, not as a deadline. |
+| saturday | tiktok | Short explainer | Springt bei Kälte der Heizstab an? Ich zeige die kältesten Tage und was der Zähler dazu sagt. [HOOK-12] | The coldest days: what the meter shows, and how often the Heizstab ran, in a single case with its house data. | Cold weather is when owners see whether a WP is comfortable and efficient. The evidence for this moment is speculative, so we treat it as a test. |
+
+### Channels
+1. **reddit** - The densest evidence is on Reddit (40 posts): practical, question-driven posts with house data, plus warnings about quotes and providers. It is the best place for the Altbau and KfW process questions. *[CHN-01; based on PLT-01, CUL-01, PERF-05, PERF-08, PERF-10, TEN-01, THM-04]*  
+   Formats: House-data thread with a numbers-based answer, Quote-breakdown post (equipment, labour, extras), Step-by-step KfW process explainer as a text post. Where: German-language heat pump and home-owner subreddits (check rules before posting), Energy-efficiency and Altbau renovation threads. Tone: Practical, a bit weary, no sales talk. Give house data and kWh/euro figures, and admit where a heat pump does not fit.
+   When: Year-end subsidy rush (Year-end, seen in posts EV-0004, EV-0015)
+2. **youtube** - YouTube (32 posts) rewards honest, personal bill reviews, and the comment sections are sceptical and argumentative with operator figures. A one-year review answers the main cost question directly. *[CHN-02; based on PLT-02, PERF-02, PERF-06, CUL-04, MOM-01, OPP-01]*  
+   Formats: One-year real bill review (long), Altbau case study with Vorlauftemperatur and JAZ, Pinned comment with the full figures table. Where: #WärmepumpeNach1Jahr, #Altbau, #Wärmepumpe. Tone: Sober, number-driven, dry humour. Expect sharp one-liners in the comments and answer them with figures.
+   When: One-year bill review (After 1 year, seen in posts EV-0048, EV-0023, EV-0035); Cold-season peak (Winter, seen in posts EV-0062, EV-0045, EV-0036); First winter after installation (First winter / Heizperiode, seen in posts EV-0026, EV-0036); Evenings (named in 2 posts, seen in posts EV-0045, EV-0059)
+3. **tiktok** - TikTok (16 posts) works for short technical explainers, myth-busting and troubleshooting tips. It suits tuning content for new operators. Evidence is smaller here, so treat reach as a test. *[CHN-03; based on PLT-03, PERF-04, PERF-07, PERF-09, OPP-02, THM-07]*  
+   Formats: Troubleshooting tip (e.g. cycling and its cause), Heizkurve and Vorlauftemperatur in 30 seconds, Myth-check on running costs, without using the 'Stromfresser' label as our own framing. Where: #Wärmepumpe, #WP, #Heizkurve, #Altbau, #Heizungstausch. Tone: Short, technical and concrete. A dry joke is fine, but the tip has to carry information.
+4. **web_forum** - Only one item (CUL-02) points to forum threads where users swap tariff and consumption numbers as 'Forumsfreund'. The evidence is thin, so treat this channel as a test. It is useful for listening and for benchmark data. *[CHN-04; based on CUL-02, CUL-03, OPP-06, OPP-04]*  
+   Formats: Answer in existing threads with figures, Consumption benchmark table by house type and heated area. Where: Public heat pump forums (read the rules; no hidden promotion). Tone: Informal forum register, 'Forumsfreund', figures first. Disclose who you are.
+   When: One-year bill review (After 1 year, seen in posts EV-0048, EV-0023, EV-0035); First winter after installation (First winter / Heizperiode, seen in posts EV-0026, EV-0036); Winter (named in 2 posts, seen in posts EV-0001, EV-0026)
+
+### What performs
 - tiktok Short TikTok comment (joke) (engagement percentile 99): Humorous, easily shared aside; it carries no information, so reach likely came from the tone. *(inferred)* [PERF-01, EV-0068]
 - youtube YouTube video title: one-year real bill review (engagement percentile 98): Promises an honest, personal bill and a curiosity hook ('glaubt mir keiner') on a question many have: real electricity cost. *(inferred)* [PERF-02, EV-0048]
 - reddit Reddit comment with a pointed brand warning (engagement percentile 96): Short, confident warning against a known provider confirms existing distrust. *(inferred)* [PERF-03, EV-0063]
@@ -205,18 +218,7 @@
 - tiktok TikTok myth-busting explainer (engagement percentile 82): Counters the 'Stromfresser' label with a simple 1 kW to 4 kW ratio that is easy to remember. *(inferred)* [PERF-09, EV-0037]
 - reddit Reddit warning post with price comparison (engagement percentile 81): Uses specific euro differences to expose inflated quotes, which gives readers a tool to check their own. *(inferred)* [PERF-10, EV-0020]
 
-## Moments
-
-- **One-year bill review** - After a year we look at the first annual electricity bill and compare it with gas. *[MOM-01; emerging, 3 of 101 posts, observed]*
-  > Nach 12 Monaten ziehe ich die ehrliche Bilanz (EV-0048)
-- **First winter after installation** - We judge the heat pump in our first heating season, when the setup shows its flaws. *[MOM-03; emerging, 2 of 101 posts, observed]*
-  > Die ersten Nächte haben wir ordentlich im Winter geschwitzt. (EV-0026)
-- **Year-end subsidy rush** - We want to get the work done and the application in before the year ends. *[MOM-04; emerging, 2 of 101 posts, observed]*
-  > zum Jahresende möchte ich mir gerne noch eine PV Anlage installieren lassen (EV-0004)
-- *Also seen (weaker evidence, speculative):* Cold-season peak [MOM-02]
-
-## Opportunities
-
+### Opportunities
 - **Publish real running-cost comparisons: For owners and prospects, show actual annual kWh and euro bills against the previous gas or oil consumption, including the baseline year, so the 'before' figure is never missing.** *[OPP-01; product idea; Early signal - check before acting; emerging; 5 people in 2 communities]*
   - Not checked: made before the existing-solution search.
 - **Tuning guides for heating curve and flow temperature: For new operators, offer simple step-by-step content and installer handover checklists for setting Heizkurve and Vorlauftemperatur.** *[OPP-02; product idea; Early signal - check before acting; emerging; 4 people in 3 communities]*
@@ -236,9 +238,25 @@
 - **Owners can't find independent energy consultants who really understand the subject.** *[OPP-09; product idea; Early signal - check before acting; speculative; 1 people in 1 community]*
   - Not checked: made before the existing-solution search.
 
-## Playbook
+### Guardrails
+- **Never claim:** Wärmepumpe-Rechnung neben Gas-Abrechnung; Die Einstellung vom Fachbetrieb, naja; bis sich die Anlage amortisiert hat; Was kostet eine kWh Wärme; Bank und Heizungsbauer kommen ins Schwimmen; Geschwindigkeitsbonus bekommen, Einzug im Haus; meine echte Rechnung gegen die Gas-Abrechnung; WP-Stromrechnung neben Gas-Basisjahr; actual annual bills against previous gas or oil; Fair benchmarks for consumption
+- **Sensitivities:** Promising specific savings or efficiency without showing the baseline will trigger the 'fake numbers' reaction and disbelief.; Messaging that sounds like government-backed pressure to switch can fuel the sense of a politically forced change and a backlash against subsidies.; Promoting heat pumps for old unrenovated houses without caveats risks credibility, because many see that as a cold and expensive combination.; Naming or comparing Enpal, Thermondo or other providers could draw legal or reputation issues, since the criticism rests on a few forum opinions.; Giving subsidy advice (occupancy, split trades, advance payment) as fact is risky because even advisors disagree and rules may change.; Selling PV plus heat pump as a cost cure ignores the winter shortfall that the audience already points out.
+- **Quotes:** Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.
 
-### Hooks
+**Compliance flags (check with legal - not legal advice)**
+- CMP-01 on HOOK-01 (energy_environmental): A one-household cost comparison can imply general savings versus gas, and it depends on tariffs, house and year. Safer: Wärmepumpe nach 1 Jahr: meine Rechnung und die Gas-Abrechnung vom Vorjahr, mit kWh und Euro. Gilt nur für mein Haus und meine Tarife.
+- CMP-02 on HOOK-05 (other): It belittles installers as a group and implies their work is poor, which could count as denigration. Safer: Nach der Inbetriebnahme lohnt ein Check: Heizkurve und VL-Temperatur Schritt für Schritt prüfen.
+- CMP-03 on HOOK-07 (finance): Payback claims depend on prices, usage and subsidies and could be read as a general promise. Safer: Wann rechnet sich die Anlage? Meine Beispielrechnung mit altem Gasverbrauch, auch mit dem Fall, dass es sich nicht lohnt. Gilt nur für mein Haus.
+- CMP-04 on HOOK-08 (energy_environmental): A cost-per-kWh figure based on one JAZ and tariff may be taken as typical for all heat pumps. Safer: Beispielrechnung: Bei 50 ct/kWh Strom und meiner JAZ von X kostet eine kWh Wärme bei mir Y ct. Ihr Ergebnis kann abweichen.
+- CMP-05 on HOOK-10 (finance): It presents subsidy rules as authoritative while belittling banks and installers, and the rules change. Safer: KfW-Ablauf Schritt für Schritt, mit Stand und Link zu den offiziellen Förderbedingungen. Bei Unklarheiten: Förderstelle oder Energieberatung fragen.
+- CMP-06 on HOOK-11 (finance): Eligibility for the Geschwindigkeitsbonus is rule-bound and a wrong answer could mislead viewers about funding. Safer: Wer bekommt den Geschwindigkeitsbonus? Das sagen die offiziellen Förderbedingungen (Stand: …). Im Zweifel bei der KfW oder einer Energieberatung nachfragen.
+- CMP-07 on DO-01 (energy_environmental): Showing the heat pump bill against the gas bill implies savings, and 'echte' suggests it is representative. Safer: Wärmepumpe nach 1 Jahr: meine Rechnung im Vergleich zur Gas-Abrechnung. Ein Einzelfall, Ergebnis je nach Haus, Tarif und Nutzung.
+- CMP-08 on PLN-02 (energy_environmental): The side-by-side bills may be read as a general savings promise, and the baseline year's price and weather differences could mislead. Safer: Ein-Jahres-Rechnung: WP-Strom in kWh und Euro neben dem Gas-Vorjahr, mit Hinweis auf Preis- und Wetterunterschiede. Einzelfall.
+- CMP-09 on OPP-01 (energy_environmental): Comparisons with the old fuel can imply general savings and need context on prices, weather and the building. Safer: Reale Verbrauchsbeispiele: Jahres-kWh und Euro vor und nach dem Umstieg, mit Haustyp, Tarifen und Hinweis, dass die Ergebnisse variieren.
+- CMP-10 on OPP-04 (other): Calling a benchmark 'fair' implies it is objective and accurate, which needs a clear data basis. Safer: Orientierungswerte für den Verbrauch nach Haustyp, Wohnfläche und Anlage, mit Angabe der Datenbasis. Keine verbindliche Bewertung.
+- CMP-11 on OPP-05 (finance): Plain-language eligibility explanations may be wrong or outdated and could be taken as binding funding advice. Safer: Allgemeine Hinweise zum Geschwindigkeitsbonus mit Stand und Link zu den offiziellen Förderrichtlinien. Keine Rechts- oder Förderberatung.
+
+### Hooks, creative brief and keywords
 *Drafts written by AI from the research. Review before use; items marked CHECK WITH LEGAL need sign-off.*
 - Wärmepumpe nach 1 Jahr: meine Rechnung neben der Gas-Abrechnung vom Vorjahr. Mit kWh und Euro, auch die unschönen Zeilen. *[HOOK-01; TEN-01, MOM-01, CUL-04, PERF-02, MOT-01, PHR-05]* **[check with legal: energy_environmental, CMP-01]**
 - Altbau, nicht gedämmt, normale Heizkörper, keine FBH. Hier sind meine Vorlauftemperatur und meine JAZ. Ob das reicht, entscheidet ihr. *[HOOK-02; TEN-01, CUL-01, LEX-13, LEX-07, LEX-03, HYP-02]*
@@ -255,7 +273,7 @@
 - Erstes Heizjahr, erste Rechnung. Mein Verbrauch in kWh, aber ist das normal? Wer hat Vergleichswerte für ähnliche Fläche und Haustyp? *[HOOK-13; TEN-01, OPP-06, OPP-04, MOM-03, SEG-03]*
 - Das Dach liefert im Sommer Überschuss, die WP braucht ihn im Winter. Wer hat das gelöst, oder war es nur eine hübsche Excel-Tabelle? *[HOOK-14; TEN-02, OPP-08, SEG-02, THM-01]*
 
-### Creative brief
+**Creative brief**
 - **Objective:** Understand the audience and build credibility with German homeowners by publishing transparent, number-based content on real heat pump costs, tuning and subsidy process. The aim is trust and conversation, not hype.
 - **Audience:** Hausbesitzer in Deutschland, ca. 35-65, with an Ein- oder Zweifamilienhaus. Some are weighing an Heizungstausch from Gas or Öl, often in an Altbau. Others already run a WP and compare their Rechnung with the old gas heating. They talk in WP, JAZ, Vorlauftemperatur, Heizlast, Heizungsbauer and Fachbetrieb.
 - **Insight:** Owners don't distrust the technology as such. They distrust claims without their own numbers. They want the 'before' and 'after' in kWh and euro for a house like theirs, and they feel left alone with the subsidy process and with the tuning after installation. This is an observation from emerging, not yet safe-to-assert, evidence.
@@ -264,34 +282,22 @@
 - **Mandatories:** Always show kWh and euro figures with the baseline year (gas or oil) and the house type; Name Vorlauftemperatur, JAZ or Heizlast where operators are the audience; Treat each building as individual (Baujahr, Dämmung, Heizkörper or FBH); Explain Förderung and KfW Ablauf step by step, and point to the current official rules; Speak of Heizungsbauer and Fachbetrieb, and say clearly where the result is a single case
 - **Avoid:** Stromfresser or Stromheizung as our own framing; Blanket claims that heat pumps always save money; Vague subsidy promises; Treating all Altbau as the same; Hype without numbers; Presenting unverified observations as facts
 
-### Keywords
+**Keywords**
 - **SEO:** Wärmepumpe Altbau, Wärmepumpe nach 1 Jahr, Wärmepumpe Erfahrungen, Wärmepumpe Stromverbrauch Kosten, Wärmepumpe Heizkurve einstellen, Wärmepumpe Vorlauftemperatur, Heizlast berechnen Wärmepumpe, KfW Förderung Wärmepumpe Ablauf, Geschwindigkeitsbonus Wärmepumpe, JAZ Wärmepumpe, Wärmepumpe PV Speicher Winter, Wärmepumpe Angebot vergleichen
 - **Paid:** Wärmepumpe Altbau Erfahrungen, Wärmepumpe Kosten Rechnung, Wärmepumpe Förderung KfW, Wärmepumpe Heizungsbauer finden, Luft-Wasser-Wärmepumpe Verbrauch, Wärmepumpe Heizkurve, Wärmepumpe Angebot Aufschlüsselung
 - **Negatives:** Stromfresser, Stromheizung, gratis, Ausbildung, Jobs, gebraucht, Mietwohnung
 - **Hashtags:** #Wärmepumpe, #WP, #Altbau, #Heizkurve, #Vorlauftemperatur, #JAZ, #KfW, #Heizungstausch, #WärmepumpeNach1Jahr
 
-### Public communities and creators
+**Public communities and creators**
 - Reddit: German-language threads on heat pumps in Altbau (house-data questions) (community, reddit)
 - Reddit: threads warning about quotes and providers (price comparison posts) (community, reddit)
 - YouTube: comment sections of one-year heat pump bill review videos (community, youtube)
 - TikTok: German heat pump explainer and troubleshooting hashtags (#Wärmepumpe, #Heizkurve) (community, tiktok)
 - Public heat pump forums with 'Forumsfreund' threads on tariffs and consumption (community, web_forum)
 
-### Compliance flags (check with legal - not legal advice)
-- CMP-01 on HOOK-01 (energy_environmental): A one-household cost comparison can imply general savings versus gas, and it depends on tariffs, house and year. Safer: Wärmepumpe nach 1 Jahr: meine Rechnung und die Gas-Abrechnung vom Vorjahr, mit kWh und Euro. Gilt nur für mein Haus und meine Tarife.
-- CMP-02 on HOOK-05 (other): It belittles installers as a group and implies their work is poor, which could count as denigration. Safer: Nach der Inbetriebnahme lohnt ein Check: Heizkurve und VL-Temperatur Schritt für Schritt prüfen.
-- CMP-03 on HOOK-07 (finance): Payback claims depend on prices, usage and subsidies and could be read as a general promise. Safer: Wann rechnet sich die Anlage? Meine Beispielrechnung mit altem Gasverbrauch, auch mit dem Fall, dass es sich nicht lohnt. Gilt nur für mein Haus.
-- CMP-04 on HOOK-08 (energy_environmental): A cost-per-kWh figure based on one JAZ and tariff may be taken as typical for all heat pumps. Safer: Beispielrechnung: Bei 50 ct/kWh Strom und meiner JAZ von X kostet eine kWh Wärme bei mir Y ct. Ihr Ergebnis kann abweichen.
-- CMP-05 on HOOK-10 (finance): It presents subsidy rules as authoritative while belittling banks and installers, and the rules change. Safer: KfW-Ablauf Schritt für Schritt, mit Stand und Link zu den offiziellen Förderbedingungen. Bei Unklarheiten: Förderstelle oder Energieberatung fragen.
-- CMP-06 on HOOK-11 (finance): Eligibility for the Geschwindigkeitsbonus is rule-bound and a wrong answer could mislead viewers about funding. Safer: Wer bekommt den Geschwindigkeitsbonus? Das sagen die offiziellen Förderbedingungen (Stand: …). Im Zweifel bei der KfW oder einer Energieberatung nachfragen.
-- CMP-07 on DO-01 (energy_environmental): Showing the heat pump bill against the gas bill implies savings, and 'echte' suggests it is representative. Safer: Wärmepumpe nach 1 Jahr: meine Rechnung im Vergleich zur Gas-Abrechnung. Ein Einzelfall, Ergebnis je nach Haus, Tarif und Nutzung.
-- CMP-08 on PLN-02 (energy_environmental): The side-by-side bills may be read as a general savings promise, and the baseline year's price and weather differences could mislead. Safer: Ein-Jahres-Rechnung: WP-Strom in kWh und Euro neben dem Gas-Vorjahr, mit Hinweis auf Preis- und Wetterunterschiede. Einzelfall.
-- CMP-09 on OPP-01 (energy_environmental): Comparisons with the old fuel can imply general savings and need context on prices, weather and the building. Safer: Reale Verbrauchsbeispiele: Jahres-kWh und Euro vor und nach dem Umstieg, mit Haustyp, Tarifen und Hinweis, dass die Ergebnisse variieren.
-- CMP-10 on OPP-04 (other): Calling a benchmark 'fair' implies it is objective and accurate, which needs a clear data basis. Safer: Orientierungswerte für den Verbrauch nach Haustyp, Wohnfläche und Anlage, mit Angabe der Datenbasis. Keine verbindliche Bewertung.
-- CMP-11 on OPP-05 (finance): Plain-language eligibility explanations may be wrong or outdated and could be taken as binding funding advice. Safer: Allgemeine Hinweise zum Geschwindigkeitsbonus mit Stand und Link zu den offiziellen Förderrichtlinien. Keine Rechts- oder Förderberatung.
+## The research
 
-## Blind spots
-
+### Blind spots
 - Source dropped: reddit:search:wärmepumpe lohnt sich erfahrung - Hauptsächlich PV-Planungsthemen, relevant nur 7 %.
 - Source dropped: web:heizungsforum.de - Alle Beiträge liegen außerhalb des 180-Tage-Fensters.
 - Source dropped: reddit:r/Finanzen - 60 Treffer, keiner relevant.
@@ -306,14 +312,7 @@
 - Minimum content bar not met: tensions 2 of 3.
 - Public posts only: private groups, messaging apps and offline talk are not covered.
 
-## Guardrails
-
-- **Never claim:** Wärmepumpe-Rechnung neben Gas-Abrechnung; Die Einstellung vom Fachbetrieb, naja; bis sich die Anlage amortisiert hat; Was kostet eine kWh Wärme; Bank und Heizungsbauer kommen ins Schwimmen; Geschwindigkeitsbonus bekommen, Einzug im Haus; meine echte Rechnung gegen die Gas-Abrechnung; WP-Stromrechnung neben Gas-Basisjahr; actual annual bills against previous gas or oil; Fair benchmarks for consumption
-- **Sensitivities:** Promising specific savings or efficiency without showing the baseline will trigger the 'fake numbers' reaction and disbelief.; Messaging that sounds like government-backed pressure to switch can fuel the sense of a politically forced change and a backlash against subsidies.; Promoting heat pumps for old unrenovated houses without caveats risks credibility, because many see that as a cold and expensive combination.; Naming or comparing Enpal, Thermondo or other providers could draw legal or reputation issues, since the criticism rests on a few forum opinions.; Giving subsidy advice (occupancy, split trades, advance payment) as fact is risky because even advisors disagree and rules may change.; Selling PV plus heat pump as a cost cure ignores the winter shortfall that the audience already points out.
-- **Quotes:** Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material.
-
-## Method
-
+### Method
 Collected 372, duplicates 1, spam 5, out of window 58, kept 308 (undated 13), relevant 101. Research moves: 11, finished by finish; more evidence was collected from sources already working.
 
 **Hypotheses from the plan**
@@ -346,6 +345,6 @@ Collected 372, duplicates 1, spam 5, out of window 58, kept 308 (undated 13), re
 
 **Privacy:** authors are stored only as salted hashes; personal details are redacted. Quoted excerpts are for internal research and briefs only. Do not use them in ads, social posts or other public material. Collected posts are deleted after 30 days. Author names are never stored.
 
-**Confidence labels:** strong, moderate, emerging, speculative. "Safe to state" = strong, observed and confirmed by the claim check. Evidence ids (EV-...) point to the posts in context_pack.json.
+**How to read the strength labels:** Strong - many different people in several communities say this. Moderate - a clear pattern, from a fair number of people. Emerging - a few people say this; worth testing. Early signal - only one or two people; check before acting. Evidence ids (EV-...) point to the posts in context_pack.json.
 
 *AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.*

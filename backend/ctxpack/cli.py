@@ -232,8 +232,13 @@ def _print_plan(out) -> None:
     i = res.interpretation
     assumed = {a.value for a in i.assumed}
     console.print("[bold]Here's what I understood[/bold]")
-    for name in ("topic", "market", "languages", "audience", "category", "compliance_category",
-                 "competitors", "intent", "time_window_days"):
+    u = i.understanding
+    for name, inp, extra in (("goals", u.goal, ""), ("offer", u.offer, f" [{u.offer_stage.value}]" if u.offer_stage else ""),
+                             ("who", u.who, ""), ("markets", u.markets, ""), ("key question", u.key_question, "")):
+        where = {"brief": f'from your brief: "{inp.brief_quote}"', "answer": "your answer", "assumed": "assumed",
+                 "none": inp.status.value}[inp.source.value]
+        console.print(f"  {name:<20}{(inp.value or '-') + extra} [dim]({where})[/dim]", highlight=False)
+    for name in ("topic", "languages", "category", "compliance_category", "competitors", "time_window_days"):
         value = getattr(i, name)
         value = ", ".join(value) if isinstance(value, list) else getattr(value, "value", value)
         tag = " [yellow](assumed)[/yellow]" if name in assumed else ""
@@ -245,7 +250,8 @@ def _print_plan(out) -> None:
         console.print(f"\n[bold]{len(res.clarifying_questions)} question(s)[/bold]")
         for q in res.clarifying_questions:
             console.print(f"  [bold]{q.id}[/bold] {q.question} [dim]({q.fills.value}"
-                          f"{', pick several' if q.multi_select else ''})[/dim]", highlight=False)
+                          f"{', pick several' if q.multi_select else ''}{', required' if q.required else ''})[/dim]",
+                          highlight=False)
             if q.why_it_helps:
                 console.print(f"      [dim]why: {q.why_it_helps}[/dim]", highlight=False)
             for n, option in enumerate(q.options, 1):
@@ -269,13 +275,43 @@ def _print_plan(out) -> None:
                   f"at most {est.max_tool_calls} tool calls in {est.collection_secs // 60} min of collection")
 
 
-def _intake_from(questions, answers):
+def _intake_from(questions, answers, before=None):
     """(Intake, edits) from CLI answers - the same rules as the web app (service.intake_from_answers)."""
     from ctxpack.api.service import intake_from_answers
     from ctxpack.schemas.plan import Intake
 
-    raw, edits = intake_from_answers([q.model_dump(mode="json") for q in questions], answers, skip_all=False)
+    raw, edits = intake_from_answers([q.model_dump(mode="json") for q in questions], answers, skip_all=False,
+                                     before=before.model_dump(mode="json") if before else None)
     return Intake.model_validate(raw), edits or None
+
+
+def _given_intake(goals: list[str], offer: str, offer_stage: str):
+    """--goal / --offer / --offer-stage as an intake (None when nothing was given); a plain error otherwise."""
+    from ctxpack.schemas.plan import Intake
+
+    if not (goals or offer or offer_stage):
+        return None
+    try:
+        return Intake.model_validate({"goals": goals, "offer": offer or None, "offer_stage": offer_stage or None})
+    except ValueError as exc:
+        console.print(f"{BAD} {exc}", highlight=False)
+        raise typer.Exit(1) from None
+
+
+def _ask_cli(q) -> dict:
+    """One answer typed in the terminal; the goal and offer questions are asked again until answered (V11)."""
+    hint = ("number(s) in priority order like 3,1" if q.multi_select else "a number") + ", plus your own words"
+    while True:
+        raw = typer.prompt(f"{q.id}: {hint}" + ("" if q.required else ", or Enter to skip"), default="",
+                           show_default=False).strip()
+        head, _, rest = raw.partition(" ")
+        picks = [int(x) for x in head.split(",") if x.isdigit()]
+        if picks and all(1 <= n <= len(q.options) for n in picks):
+            return {"id": q.id, "chosen": [q.options[n - 1] for n in picks], "text": rest.strip() or None}
+        if q.required:
+            console.print("  this one cannot be skipped: pick at least one number first", highlight=False)
+            continue
+        return {"id": q.id, "text": raw} if raw else {"id": q.id, "skipped": True}
 
 
 @app.command()
@@ -284,7 +320,8 @@ def plan(
     mode: str = typer.Option("quick", help="quick or standard (for the estimate)"),
     window: int = typer.Option(0, help="Time window in days (default from modes.yaml)"),
     agent: bool = typer.Option(False, "--agent", help="Act like an agent: never a clarifying question"),
-    answer: str = typer.Option("", help="Your own words for the first question (others skipped)"),
+    answer: str = typer.Option("", help="Your own words for the first optional question (goal and offer: their "
+                                       "first chip; others skipped)"),
     as_json: bool = typer.Option(False, "--json", help="Print the raw result as JSON"),
     fixtures: bool = typer.Option(False, "--fixtures", help="LLM_FAKE: no network, no cost"),
 ) -> None:
@@ -307,8 +344,12 @@ def plan(
     with tracking() as t:
         out = asyncio.run(go())
         qs = out.result.clarifying_questions
-        if qs and answer:
-            intake, edits = _intake_from(qs, [{"id": qs[0].id, "text": answer}])
+        if qs and answer:  # chips for the required goal and offer questions (first chip), the text for the first
+            answers = [{"id": q.id, "chosen": [q.options[0]]} for q in qs if q.required]
+            free = next((q for q in qs if not q.required), None)
+            if free:
+                answers.append({"id": free.id, "text": answer})
+            intake, edits = _intake_from(qs, answers)
             out = asyncio.run(go(intake, edits))
     if as_json:
         console.print_json(json.dumps({"result": out.result.model_dump(mode="json"),
@@ -439,6 +480,11 @@ def research(
     record: bool = typer.Option(False, "--record", help="Save the agent's tool calls as a fake-mode transcript"),
     no_apify: bool = typer.Option(False, "--no-apify", help="No Apify tools this run: web sources only"),
     apify_max: float = typer.Option(-1.0, "--apify-max", help="Lower Apify cap (USD) for this run"),
+    goal: list[str] = typer.Option([], "--goal", help="What the research is for, main goal first (repeatable): "
+                                   "content_plan, campaign_launch, positioning, product_validation, market_entry, "
+                                   "brand_perception, sales_enablement, understand_audience"),
+    offer: str = typer.Option("", "--offer", help="What you offer, in a few words"),
+    offer_stage: str = typer.Option("", "--offer-stage", help="idea, launching, selling or no_offer"),
 ) -> None:
     """Plan -> show it and wait for Enter -> the agent loop, printed live -> counters, sources, cost."""
     import asyncio
@@ -451,6 +497,13 @@ def research(
 
     if mode not in ("quick", "standard"):
         console.print(f"{BAD} mode must be quick or standard")
+        raise typer.Exit(1)
+    from ctxpack.config import load_yaml
+
+    given = _given_intake(goal, offer, offer_stage)
+    if auto_approve and not (given and given.goals):  # V11: nobody is asked, so the goal must be given
+        console.print(f"{BAD} --auto-approve needs --goal (main goal first): "
+                      + ", ".join(load_yaml("goals")["goals"]), highlight=False)
         raise typer.Exit(1)
     if fixtures:
         os.environ["USE_FIXTURES"] = "true"
@@ -475,22 +528,12 @@ def research(
             return await interpret(brief, mode=mode, window_days=window or None, allow_question=not auto_approve,
                                    intake=intake, edits=edits)
 
-    out = asyncio.run(plan())
-    intake = None
+    out = asyncio.run(plan(given))
+    intake = given
     if out.result.clarifying_questions:
         _print_plan(out)
-        answers = []
-        for q in out.result.clarifying_questions:
-            raw = typer.prompt(f"{q.id}: number(s) like 1,3, your own words, or Enter to skip", default="",
-                               show_default=False).strip()
-            picks = [int(x) for x in raw.replace(" ", "").split(",") if x.isdigit()]
-            if raw and picks and all(1 <= n <= len(q.options) for n in picks):
-                answers.append({"id": q.id, "chosen": [q.options[n - 1] for n in picks]})
-            elif raw:
-                answers.append({"id": q.id, "text": raw})
-            else:
-                answers.append({"id": q.id, "skipped": True})
-        intake, edits = _intake_from(out.result.clarifying_questions, answers)
+        answers = [_ask_cli(q) for q in out.result.clarifying_questions]
+        intake, edits = _intake_from(out.result.clarifying_questions, answers, given)
         out = asyncio.run(plan(intake, edits))
     _print_plan(out)
     db.update_run(run.id, interpretation=out.result.interpretation.model_dump(mode="json"),
@@ -868,7 +911,7 @@ def pack(
         show("TEST HOOKS (not in the pack)", [
             f"{h} -> " + (f"[{flagged[h]['category']}] {flagged[h]['rule_area']}: {flagged[h]['safer_wording']}"
                           if h in flagged else "no flag") for h in test_hook])
-    console.print(f"\n[bold]PACK[/bold] {out.pack_id} | valid schema 1.1 | thin evidence "
+    console.print(f"\n[bold]PACK[/bold] {out.pack_id} | valid schema 1.2 | thin evidence "
                   f"{p['coverage']['thin_evidence']}{': ' + ', '.join(out.bar_short) if out.bar_short else ''}",
                   highlight=False)
     console.print(f"[bold]PLAYBOOK CHECK[/bold] hooks {len(p['playbook']['hooks'])} | hooks without a tension "
@@ -1009,6 +1052,18 @@ def _eval_pack(spec: dict, reuse: bool):
     return row.pack, (db.get_run(row.run_id) if row.run_id else None)
 
 
+def _eval_answer(q, given: dict) -> dict:
+    """An eval run's answer: the brief's goals (in order) and offer stage from briefs.yaml, else the first chip."""
+    from ctxpack.config import load_yaml
+
+    cfg = load_yaml("goals")
+    if q.fills.value == "goal" and given.get("goals"):
+        return {"id": q.id, "chosen": [cfg["goals"][g]["chip"] for g in given["goals"]]}
+    if q.fills.value == "offer" and given.get("offer_stage"):
+        return {"id": q.id, "chosen": [cfg["offer_stages"][given["offer_stage"]]["chip"]], "text": given.get("offer")}
+    return {"id": q.id, "chosen": [q.options[0]]}
+
+
 def _questions_record(questions) -> dict:
     return {"questions": [{"id": q.id, "question": q.question, "fills": q.fills.value, "options": q.options}
                           for q in questions]}
@@ -1110,9 +1165,11 @@ def eval_cmd(
         intake = None
         if out.result.clarifying_questions:
             _print_plan(out)
-            console.print("eval answers every question with its first chip", highlight=False)
+            console.print("eval answers goal and offer from the brief's answers, the rest with the first chip",
+                          highlight=False)
             intake, edits = _intake_from(out.result.clarifying_questions,
-                                         [{"id": q.id, "chosen": [q.options[0]]} for q in out.result.clarifying_questions])
+                                         [_eval_answer(q, spec.get("answers") or {})
+                                          for q in out.result.clarifying_questions])
             out = asyncio.run(plan(intake, edits))
         _print_plan(out)
         db.update_run(run.id, interpretation=out.result.interpretation.model_dump(mode="json"),

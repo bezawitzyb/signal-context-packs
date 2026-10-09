@@ -17,6 +17,7 @@ from typing import Any
 
 from ctxpack.config import load_yaml
 from ctxpack.schemas import pack as P
+from ctxpack.schemas.plan import confirmed_goal, offer_text
 from ctxpack.synthesis import news as news_mod
 from ctxpack.synthesis import posts as posts_mod
 from ctxpack.synthesis.confidence import LEVELS
@@ -463,12 +464,15 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
         out.reused_playbook = True
     else:
         intake = run.intake or {}
+        goal, offer = confirmed_goal(intake), offer_text(intake)
         brief = (f"Brief: {run.brief_text}\nTopic: {interp.topic}\nMarket: {interp.market}\nAudience: "
-                 f"{interp.audience}\nLanguages: {', '.join(interp.languages)}\nIntent: {interp.intent}"
-                 + (f"\nGoal (the user's words): {intake['goal']}" if intake.get("goal") else "")
-                 + (f"\nWhat the user offers: {intake['offer']} - tailor the objection answers to it"
-                    if intake.get("offer") else "\nWhat the user offers: not given - end each objection answer "
-                                                  "with how to adapt it to your offer"))
+                 f"{interp.audience}\nLanguages: {', '.join(interp.languages)}"
+                 + (f"\nThe user's goals (main first): {goal}" if goal else "\nThe user's goals: not given")
+                 + (f"\nTheir key question: {intake['key_question']}" if intake.get("key_question") else "")
+                 + (f"\nWhat the user offers: {offer} - tailor the objection answers to it"
+                    if offer and intake.get("offer_stage") != "no_offer" else
+                    "\nWhat the user offers: not given - end each objection answer with how to adapt it to "
+                    "your offer"))
         parts, stats, usd = await playbook.write_playbook(s, brief, voice, news["hooks"], intake,
                                                           draft["verified"].get("evidence", []))
         out.calls += 1

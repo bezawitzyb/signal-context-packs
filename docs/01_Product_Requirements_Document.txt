@@ -674,6 +674,28 @@ EPIC A - BRIEF AND PLAN
        user | consumer | other | unknown) when a post shows it. Agents
        (API, MCP) are never asked; they may pass the intake fields.
        "Run again" restores the answers.
+ FR-A2d [P0] Understand the brief, ask what is missing (change V11,
+       schema 1.2; supersedes the question limits of FR-A2c). The same
+       call records an understanding of the five inputs only the user
+       knows - goals, offer, who, markets, key question (and by when) -
+       each with its value, the exact words of the brief it rests on and
+       a status (stated, unclear, missing). It never fills one from a
+       guess; code checks every quote is in the brief, else the input is
+       missing. Goals (ranked list from config/goals.yaml; the first is
+       the main goal) and offer (with a stage: idea, launching, selling,
+       no_offer) are always asked when missing and cannot be skipped;
+       code adds the fixed goal and offer questions if the model left
+       them out. Other gaps (who, markets, key question, channels in use,
+       competitors to watch) are asked only when they would change the
+       research; never what the research finds (competitors in general,
+       new channels, hashtags, pains, trends). At most
+       clarifying.max_questions (modes.yaml, 4). The plan screen shows one
+       editable "Here's what I understood" box (goals, offer, who,
+       markets and languages, key question, topic, competitors to watch,
+       rules area) with where each came from (your brief, your answer,
+       assumed - never for goals or offer). Agents (API with
+       auto_approve, MCP) must pass goals; the CLI takes --goal. Later
+       stages use only confirmed goals, never a guessed intent.
  FR-A3 [P0] Starting plan: 3-5 hypotheses, 5-8 research questions,
        starting source units (platform + subreddit / hashtag / channel /
        domain / query) each with a one-line reason.
@@ -1307,8 +1329,9 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
  #    Decision                                                       See
  ---  -------------------------------------------------------------  --------
  D1   Confidence: four lowercase labels + 0-1 score + counts         5.4
- D2   0-3 brief-specific clarifying questions (V3); agents never       FR-A2c
-      get one
+ D2   0-4 brief-specific clarifying questions (V3, V11); goals and     FR-A2c/d
+      offer always asked when missing; agents never get one (they
+      pass goals)
  D3   Plan review with a Start button; agents auto-approve           FR-A4
  D4   Modes: Quick and Standard; both adaptive                       8.5
  D5   Time window default 180 days (30/90/180/365)                   FR-A1

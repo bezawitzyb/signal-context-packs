@@ -24,7 +24,7 @@ def example() -> dict:
 def test_example_pack_is_valid(example):
     assert example["schema_version"] == "1.0"                    # the fixture stays 1.0: it tests the migration
     pack = ContextPack.model_validate(example)
-    assert pack.schema_version == "1.1"
+    assert pack.schema_version == "1.2"
     assert pack.brief.interpreted.markets[0].code == example["brief"]["interpreted"]["market"]
     assert len(pack.do_first) == 3
     assert len(pack.playbook.this_week) == 5
@@ -125,3 +125,28 @@ def test_generated_docs_are_up_to_date():
     js = (REPO_DIR / "docs" / "schema" / "context-pack.schema.json").read_text(encoding="utf-8")
     assert md == build_markdown()
     assert js == build_json_schema()
+
+
+def test_a_1_1_pack_is_migrated_to_1_2_without_a_guessed_goal():
+    """V11: the old free-text goal becomes goals or a goal note; the understanding is built in code; a guessed
+    intent is dropped."""
+    import json as _json
+
+    from ctxpack.schemas.migrate import migrate
+    from ctxpack.schemas.pack import ContextPack
+
+    old = _json.loads(EXAMPLE.read_text(encoding="utf-8"))
+    old["schema_version"] = "1.1"
+    old["brief"]["interpreted"].pop("understanding", None)
+    old["brief"]["interpreted"]["intent"] = "launch a snack"
+    old["brief"]["intake"] = {"goal": "Positioning", "offer": "oat bars", "audience_roles": ["parents"]}
+    new = ContextPack.model_validate(migrate(old)).model_dump(mode="json")
+    b = new["brief"]
+    assert new["schema_version"] == "1.2" and b["intake"]["goals"] == ["positioning"]
+    assert b["interpreted"]["intent"] == "Positioning"
+    u = b["interpreted"]["understanding"]
+    assert (u["goal"]["source"], u["offer"]["source"], u["who"]["source"]) == ("answer", "answer", "answer")
+    old["brief"]["intake"] = {"goal": "a content calendar"}
+    again = ContextPack.model_validate(migrate(old)).model_dump(mode="json")["brief"]
+    assert again["intake"]["goals"] == [] and again["intake"]["goal_note"] == "a content calendar"
+    assert again["interpreted"]["understanding"]["offer"]["source"] == "none"      # never assumed

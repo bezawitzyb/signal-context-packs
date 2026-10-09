@@ -1,9 +1,12 @@
-"""Interpret the brief and build the starting plan in one call (F4-1, PRD FR-A2/A3).
+"""Interpret the brief and build the starting plan in one call (F4-1, PRD FR-A2/A3, FR-A2d).
 
-ONE reasoner call returns the interpretation and EITHER one clarifying
-question (only if allowed: never for agents, never twice) OR the plan.
-The cost/time estimate is computed here from modes.yaml, never by the
-model. Unit kinds per platform come from catalog.yaml (unit_types).
+ONE reasoner call returns the interpretation (with its understanding of
+the five inputs only the user knows) and EITHER clarifying questions
+(only if allowed: never for agents) OR the plan. Code checks that every
+understood input rests on the brief's own words, merges the user's
+answers, and makes sure the goal and offer questions are asked when
+missing (V11). The cost/time estimate is computed here from modes.yaml,
+never by the model. Unit kinds per platform come from catalog.yaml.
 """
 
 from __future__ import annotations
@@ -17,11 +20,14 @@ from pydantic import Field, ValidationError, model_validator
 
 from ctxpack.config import load_yaml, mode_limits
 from ctxpack.llm.client import load_prompt, structured
-from ctxpack.schemas.enums import CollectionPlatform, IntakeFill, Mode
+from ctxpack.schemas.enums import CollectionPlatform, InputSource, InputStatus, IntakeFill, InterpretationField, Mode
 from ctxpack.schemas.plan import (
     ClarifyingQuestion,
     Intake,
     Interpretation,
+    UnderstoodInput,
+    Understanding,
+    goals_text,
     Plan,
     PlanHypothesis,
     PlanResult,
@@ -32,6 +38,7 @@ from ctxpack.schemas.plan import (
 )
 
 TOOL = "record_plan"
+REQUIRED = (IntakeFill.goal, IntakeFill.offer)  # V11: always asked when missing, never skipped
 _MARKET = re.compile(r"^([A-Z]{2}|global)$")
 _LANG = re.compile(r"^[a-z]{2}$")
 # Target formats per unit kind. Reddit names are ASCII only (seen live: "r/Wärmepumpe").
@@ -55,9 +62,12 @@ def unit_kinds() -> dict[CollectionPlatform, set[str]]:
 def _check(interp: Interpretation, plan: Plan | None, questions: list[ClarifyingQuestion] = ()) -> None:
     """Rules the model must follow; a violation triggers the client's one retry with the error."""
     errors = []
-    most = load_yaml("modes")["clarifying"]["max_questions"]
+    clar = load_yaml("modes")["clarifying"]
+    most = clar["max_questions"]
     if len(questions) > most:
         errors.append(f"ask at most {most} clarifying questions, not {len(questions)}")
+    errors += [f"{q.id}: give {clar['options_min']}-{clar['options_max']} answer chips, not {len(q.options)}"
+               for q in questions if q.fills not in REQUIRED and len(q.options) > clar["options_max"]]
     ids = [q.id for q in questions]
     if len(set(ids)) != len(ids):
         errors.append(f"duplicate question ids: {ids}")
@@ -199,11 +209,17 @@ def _user_message(brief: str, window_days: int, allow_question: bool, intake: In
         parts.append("The user edited your interpretation; keep these exactly and plan for them:\n"
                      + json.dumps(edits, ensure_ascii=False, indent=1))
     parts.append(f"Default time_window_days: {window_days} (allowed: {options}).")
-    parts.append(f"Clarifying questions ARE allowed: 0 to {cfg['clarifying']['max_questions']}, only the gaps that "
-                 "would most change this research; none if the brief is specific enough."
+    goals = load_yaml("goals")
+    parts.append("Goal list (ids for understanding.goals): " + "; ".join(
+        f"{gid} = {g['description']}" for gid, g in goals["goals"].items())
+        + ". Offer stages: " + ", ".join(goals["offer_stages"]) + ".")
+    parts.append(f"Clarifying questions ARE allowed: 0 to {cfg['clarifying']['max_questions']}. Ask about the goal "
+                 "and the offer whenever the brief does not state them, then only the other gaps that would most "
+                 "change this research; none if the brief states everything that matters."
                  if allow_question else
-                 "Clarifying questions are NOT allowed: make your best assumptions, list them in assumed, "
-                 "and give the plan.")
+                 "Clarifying questions are NOT allowed: give the plan. Fill the understanding only from the "
+                 "brief's own words and what the user told you; for the other interpretation fields make your "
+                 "best assumptions and list them in assumed.")
     parts.append("Sources the tools can search:\n" + _sources_block())
     return "\n\n".join(parts)
 
@@ -243,7 +259,8 @@ async def interpret(brief: str, *, mode: Mode | str = Mode.quick, window_days: i
     none is left, one plan-only call follows. Edits (markets, languages, audience, competitors) win.
     """
     window = window_days or load_yaml("modes")["default_time_window_days"]
-    ask = allow_question and (intake is None or intake.empty()) and not edits
+    told_required = intake is not None and bool(intake.goals) and bool(intake.offer or intake.offer_stage)
+    ask = allow_question and not edits and (intake is None or intake.empty() or not told_required)
     usd = 0.0
     for attempt in ((True, False) if ask else (False,)):
         schema = PlanAnswer if attempt else PlanOnlyAnswer
@@ -253,15 +270,22 @@ async def interpret(brief: str, *, mode: Mode | str = Mode.quick, window_days: i
                                max_tokens=6000, fake=lambda user, a=attempt: _fake_answer(brief, a))
         usd += res.usd
         result = res.data.to_result()
-        if result.clarifying_questions:
-            result.clarifying_questions = drop_answered(result.clarifying_questions, brief)
-            if not result.clarifying_questions:
+        if attempt:
+            settle_understanding(result.interpretation, brief, intake, edits)
+            asked = ensure_required(drop_answered(result.clarifying_questions, brief,
+                                                  result.interpretation.understanding),
+                                    result.interpretation.understanding)
+            if asked:  # V11: the goal and offer are asked even if the model planned straight away
+                result = PlanResult(interpretation=result.interpretation, clarifying_questions=asked)
+                break
+            if result.plan is None:
                 continue  # every question was already answered by the brief: plan straight away
         break
     if window_days:  # a window the user chose wins over the model's reading (V1: inputs are never lost)
         result.interpretation.time_window_days = window_days
     settle_markets(result, brief, str(mode), edits)
     _apply_edits(result, intake, edits)
+    settle_understanding(result.interpretation, brief, intake, edits)
     if result.plan is not None:
         balance_sources(result.plan)
     return Interpreted(result=result, estimate=estimate(mode), usd=usd)
@@ -285,23 +309,125 @@ def balance_sources(plan: Plan) -> list[str]:
     return off
 
 
-def drop_answered(questions: list[ClarifyingQuestion], brief: str) -> list[ClarifyingQuestion]:
-    """Never ask what the brief already says (V3): a market question when the brief names a place."""
+def drop_answered(questions: list[ClarifyingQuestion], brief: str,
+                  understood: Understanding | None = None) -> list[ClarifyingQuestion]:
+    """Never ask what the brief already says (V3, V11): a market question when the brief names a place (and
+    it is not unclear), a goal, offer or key-question question when the brief states it."""
     from ctxpack.agent.markets import places_in
 
+    u = understood or Understanding()
     places = places_in(brief)
-    named = bool(places["regions"] or places["countries"])
-    kept = [q for q in questions if not (q.fills == IntakeFill.market and named)]
+    named = bool(places["regions"] or places["countries"]) and u.markets.status != InputStatus.unclear
+    stated = {IntakeFill.goal: bool(u.goals) and u.goal.status == InputStatus.stated,
+              IntakeFill.offer: u.offer.status == InputStatus.stated,
+              IntakeFill.key_question: u.key_question.status == InputStatus.stated,
+              IntakeFill.timeframe: u.key_question.status == InputStatus.stated}
+    kept = [q for q in questions if not ((q.fills == IntakeFill.market and named) or stated.get(q.fills))]
     for n, q in enumerate(kept, 1):
         q.id = f"Q{n}"
     return kept
 
 
+def missing_required(u: Understanding) -> list[IntakeFill]:
+    """The goal and offer when neither the brief (stated, quote checked) nor the user gave them (V11)."""
+    out = []
+    if not u.goals or u.goal.status != InputStatus.stated:
+        out.append(IntakeFill.goal)
+    if u.offer.status != InputStatus.stated:
+        out.append(IntakeFill.offer)
+    return out
+
+
+def fixed_question(fill: IntakeFill, model_q: ClarifyingQuestion | None = None) -> ClarifyingQuestion:
+    """The goal or offer question, built from config/goals.yaml (chips fixed so code can read the answer)."""
+    cfg = load_yaml("goals")
+    text = cfg["questions"][fill.value]
+    if fill == IntakeFill.goal:
+        return ClarifyingQuestion(question=text["question"], why_it_helps=text["why_it_helps"], fills=fill,
+                                  options=[g["chip"] for g in cfg["goals"].values()], multi_select=True,
+                                  allow_free_text=True, required=True,
+                                  placeholder="Optional: the goal in your own words")
+    placeholder = (model_q.placeholder if model_q and model_q.placeholder else "") or text["placeholder"]
+    return ClarifyingQuestion(question=text["question"], why_it_helps=text["why_it_helps"], fills=fill,
+                              options=[st["chip"] for st in cfg["offer_stages"].values()], multi_select=False,
+                              allow_free_text=True, required=True, placeholder=placeholder)
+
+
+def ensure_required(questions: list[ClarifyingQuestion], u: Understanding) -> list[ClarifyingQuestion]:
+    """Goal first, then offer (fixed questions, required), then the model's other questions; at most
+    clarifying.max_questions in all (V11). A goal or offer question the model wrote is replaced."""
+    rest = list(questions)
+    first: list[ClarifyingQuestion] = []
+    for fill in missing_required(u):
+        own = next((q for q in rest if q.fills == fill), None)
+        rest = [q for q in rest if q.fills != fill]
+        first.append(fixed_question(fill, own))
+    rest = [q for q in rest if q.fills not in REQUIRED]  # already stated: never asked again
+    out = (first + rest)[:load_yaml("modes")["clarifying"]["max_questions"]]
+    for n, q in enumerate(out, 1):
+        q.id = f"Q{n}"
+    return out
+
+
+def _norm(text: str) -> str:
+    return " ".join(str(text).casefold().split())
+
+
+def settle_understanding(interp: Interpretation, brief: str, intake: Intake | None = None,
+                         edits: dict | None = None) -> None:
+    """V11, in code: an understood input stays only if its quote is in the brief; the user's answers and
+    edits win; who and markets may show the model's assumption, goals and offer never. Idempotent."""
+    u = interp.understanding
+    text = _norm(brief)
+    for name in ("goal", "offer", "who", "markets", "key_question"):
+        inp: UnderstoodInput = getattr(u, name)
+        quote = _norm(inp.brief_quote)
+        if inp.status != InputStatus.missing and quote and quote in text:
+            inp.source = InputSource.brief
+        else:
+            setattr(u, name, UnderstoodInput())
+    if u.goal.status == InputStatus.missing:
+        u.goals = []
+    elif not u.goals:
+        u.goal.status = InputStatus.unclear  # words about a goal that is not in the list
+    if u.offer.status == InputStatus.missing:
+        u.offer_stage = None
+    if intake is not None:
+        if intake.goals:
+            u.goals = list(intake.goals)
+            u.goal = UnderstoodInput(value=goals_text(intake.goals, intake.goal_note), status=InputStatus.stated,
+                                     source=InputSource.answer)
+        if intake.offer or intake.offer_stage:
+            u.offer = UnderstoodInput(value=intake.offer or u.offer.value, status=InputStatus.stated,
+                                      source=InputSource.answer)
+            u.offer_stage = intake.offer_stage or u.offer_stage
+        if intake.audience_roles:
+            u.who = UnderstoodInput(value="; ".join(intake.audience_roles), status=InputStatus.stated,
+                                    source=InputSource.answer)
+        if intake.key_question or intake.timeframe:
+            words = "; ".join(x for x in (intake.key_question, f"by {intake.timeframe}" if intake.timeframe else "")
+                              if x)
+            u.key_question = UnderstoodInput(value=words, status=InputStatus.stated, source=InputSource.answer)
+    edits = edits or {}
+    if edits.get("markets"):
+        u.markets = UnderstoodInput(value=interp.market, status=InputStatus.stated, source=InputSource.answer)
+    if edits.get("audience") and not (intake and intake.audience_roles):
+        u.who = UnderstoodInput(value=interp.audience, status=InputStatus.stated, source=InputSource.answer)
+    if u.who.source == InputSource.none and interp.audience:
+        u.who.value, u.who.source = interp.audience, InputSource.assumed
+    if u.markets.source == InputSource.none and interp.market:
+        u.markets.value, u.markets.source = interp.market, InputSource.assumed
+    interp.intent = goals_text(u.goals, intake.goal_note if intake else None)  # never a model's guess
+    interp.assumed = [a for a in interp.assumed if a != InterpretationField.intent]
+
+
 def _apply_edits(result: PlanResult, intake: Intake | None, edits: dict | None) -> None:
-    """The user's own words win: edited audience, and competitors (user ones first, always kept)."""
+    """The user's own words win: edited audience and topic, and competitors (user ones first, always kept)."""
     interp = result.interpretation
     if edits and edits.get("audience"):
         interp.audience = str(edits["audience"]).strip()
+    if edits and edits.get("topic"):
+        interp.topic = str(edits["topic"]).strip()
     names = list((intake.competitors_user if intake else []))
     if edits and "competitors" in edits:
         names += [str(c).strip() for c in edits["competitors"] if str(c).strip()]

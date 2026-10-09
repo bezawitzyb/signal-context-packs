@@ -18,7 +18,7 @@ class Baseline(BaseModel):
 
 def _brief(interp: Interpretation) -> str:
     return (f"Topic: {interp.topic}\nMarket: {interp.market}\nLanguages: {', '.join(interp.languages)}\n"
-            f"Audience: {interp.audience}\nCategory: {interp.category}\nIntent: {interp.intent}")
+            f"Audience: {interp.audience}\nCategory: {interp.category}\nGoals: {interp.intent or 'not given'}")
 
 
 def _fake(user: str) -> dict:

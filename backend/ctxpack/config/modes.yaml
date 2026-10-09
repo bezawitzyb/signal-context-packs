@@ -31,9 +31,11 @@ modes:
 
 default_mode: quick
 
-# Clarifying questions (change V3, PRD FR-A2c): asked before planning, never of agents.
+# Clarifying questions (change V3, PRD FR-A2c; V11 FR-A2d): asked before planning, never of agents.
+# Goals and offer count towards max_questions; options_max is for the model's own questions
+# (the fixed goal chips come from goals.yaml).
 clarifying:
-  max_questions: 3
+  max_questions: 4
   options_min: 3
   options_max: 5
 

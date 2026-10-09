@@ -112,6 +112,8 @@ Polish; left-out languages show a reason; eval brief 5 passes.
 --------------------------------------------------------------------------
 V3. SMART CLARIFYING QUESTIONS                            (value rank 2)
 --------------------------------------------------------------------------
+  [Superseded in part by V11 (docs/05_Brief_Understanding_Plan.md, PRD FR-A2d): goals and offer are
+  always asked when missing and cannot be skipped; max_questions is 4; agents must pass goals.]
 Replaces PRD FR-A2's "at most one clarifying question" and decision D2.
 The goal: before planning, the agent asks the few questions that will
 most improve THIS research, based on what the user already typed - not a

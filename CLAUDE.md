@@ -107,7 +107,8 @@ Read the relevant step before working. Do only that step.
   [--replaces OLD_ID], redact-run, overlap, export-schema, eval [--reuse] [--only ID] [--recheck],
   demo-check [--no-paid], version)
 - Research run: ... research "<brief>" --mode quick|standard [--fixtures]
-  [--auto-approve] [--no-apify] [--apify-max USD] [--record]
+  [--auto-approve] [--goal ID ...] [--offer TEXT] [--offer-stage STAGE]
+  [--no-apify] [--apify-max USD] [--record] (--auto-approve needs --goal)
 - Analysis on a saved corpus: ... extract --from-run RUN_ID, then
   ... cluster --from-run RUN_ID [--redo], then write, verify and pack --from-run RUN_ID
   [--redo] (estimate shown first); pack [--brand-voice] [--test-hook] writes

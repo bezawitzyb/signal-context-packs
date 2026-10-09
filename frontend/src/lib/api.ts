@@ -2,7 +2,7 @@
 // this file never stores, logs or shows it.
 import type {
   ConfidenceLabel,
-  ContextPack11,
+  ContextPack12,
   Evidence1,
   Interpretation,
 } from "./types";
@@ -12,7 +12,7 @@ import type { RunInputs } from "./rerun";
 type DeepRequired<T> = T extends (infer U)[] ? DeepRequired<U>[]
   : T extends object ? { [K in keyof T]-?: DeepRequired<T[K]> } : T;
 
-export type ContextPack = DeepRequired<ContextPack11>;
+export type ContextPack = DeepRequired<ContextPack12>;
 export type Evidence = DeepRequired<Evidence1>;
 export type Label = ConfidenceLabel;
 
@@ -62,19 +62,22 @@ export interface RunStatus {
   estimate: Estimate;
 }
 
-/** A clarifying question written for this brief (V3): answer chips, free text, or skip. */
+/** A clarifying question written for this brief (V3): answer chips, free text, or skip. Goal and offer (V11)
+ * are required: fixed chips from goals.yaml, never skipped. */
 export interface Question {
   id: string; question: string; why_it_helps?: string; fills: string; options: string[];
-  multi_select?: boolean; allow_free_text?: boolean;
+  multi_select?: boolean; allow_free_text?: boolean; placeholder?: string; required?: boolean;
 }
 /** What the user told us before planning (brief.intake). */
 export interface IntakeData {
-  audience_roles?: string[]; goal?: string | null; offer?: string | null; channels_in_use?: string[];
+  audience_roles?: string[]; goals?: string[]; goal_note?: string | null; offer?: string | null;
+  offer_stage?: string | null; key_question?: string | null; channels_in_use?: string[];
   competitors_user?: string[]; timeframe?: string | null; other_answers?: { question: string; answer: string }[];
   questions_asked?: Question[];
 }
 export interface QuestionAnswer { id: string; chosen?: string[]; text?: string; skipped?: boolean }
 export interface PlanEdits {
+  goals?: string[]; goal_note?: string; offer?: string; offer_stage?: string; key_question?: string; topic?: string;
   markets?: string[]; languages?: string[]; audience?: string; audience_roles?: string[]; competitors?: string[];
 }
 
@@ -179,7 +182,8 @@ export const exportUrl = (packId: string, kind: ExportKind) => MIRROR
 
 export interface Estimate { mode: string; max_usd: number; typical_usd_low: number; typical_usd_high: number;
   typical_minutes: number; collection_secs: number; max_tool_calls: number }
-export interface Options { modes: Record<"quick" | "standard", Estimate>; default_mode: "quick" | "standard";
+export interface Options { goals: Record<string, string>; offer_stages: Record<string, string>;
+  modes: Record<"quick" | "standard", Estimate>; default_mode: "quick" | "standard";
   time_window_days_options: number[]; default_time_window_days: number; brand_voice_max_chars: number;
   languages: Record<string, string>; max_languages: Record<"quick" | "standard", number> }
 export const getOptions = () => request<Options>("/options");

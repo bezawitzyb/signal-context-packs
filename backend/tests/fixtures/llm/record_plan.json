@@ -16,15 +16,41 @@
   "category": "food and cooking",
   "compliance_category": "food_nutrition",
   "competitors": [],
-  "intent": "understand an audience",
+  "intent": "",
   "time_window_days": 180,
   "assumed": [
    "market",
    "languages",
    "category",
-   "intent",
    "time_window_days"
-  ]
+  ],
+  "understanding": {
+   "goal": {
+    "value": "",
+    "brief_quote": "",
+    "status": "missing"
+   },
+   "offer": {
+    "value": "",
+    "brief_quote": "",
+    "status": "missing"
+   },
+   "who": {
+    "value": "Gen Z",
+    "brief_quote": "Gen Z",
+    "status": "stated"
+   },
+   "markets": {
+    "value": "",
+    "brief_quote": "",
+    "status": "missing"
+   },
+   "key_question": {
+    "value": "",
+    "brief_quote": "",
+    "status": "missing"
+   }
+  }
  },
  "hypotheses": [
   {

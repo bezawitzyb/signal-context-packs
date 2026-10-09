@@ -63,7 +63,7 @@
         },
         "intake": {
           "$ref": "#/$defs/Intake",
-          "description": "What the user told us before planning (1.1, V3)."
+          "description": "What the user told us before planning (1.1 V3; goals, offer stage and key question since 1.2)."
         }
       },
       "required": [
@@ -255,11 +255,11 @@
     },
     "ClarifyingQuestion": {
       "additionalProperties": false,
-      "description": "One of 0-3 questions that would most improve THIS research (change V3). Never asked of agents.",
+      "description": "One of 0-4 questions that would most improve THIS research (change V3, V11). Never asked of agents.",
       "properties": {
         "id": {
           "default": "Q1",
-          "description": "Q1, Q2, Q3.",
+          "description": "Q1, Q2, Q3, Q4.",
           "examples": [
             "Q1"
           ],
@@ -290,11 +290,11 @@
           "description": "Which intake field the answer fills."
         },
         "options": {
-          "description": "3-5 answer chips written for THIS brief.",
+          "description": "3-5 answer chips written for THIS brief (the goal and offer chips are set in code).",
           "items": {
             "type": "string"
           },
-          "maxItems": 5,
+          "maxItems": 8,
           "minItems": 3,
           "title": "Options",
           "type": "array"
@@ -309,6 +309,19 @@
           "default": true,
           "description": "True if the user may answer in their own words.",
           "title": "Allow Free Text",
+          "type": "boolean"
+        },
+        "placeholder": {
+          "default": "",
+          "description": "A short example answer for the own-words box, written for THIS brief (e.g. 'e.g. booking software for venues').",
+          "maxLength": 120,
+          "title": "Placeholder",
+          "type": "string"
+        },
+        "required": {
+          "default": false,
+          "description": "Set in code: the goal and offer questions cannot be skipped. Leave it false.",
+          "title": "Required",
           "type": "boolean"
         }
       },
@@ -1648,6 +1661,21 @@
       "title": "GenericVsFound",
       "type": "object"
     },
+    "Goal": {
+      "description": "What the research is for (change V11; chips and descriptions in config/goals.yaml).",
+      "enum": [
+        "content_plan",
+        "campaign_launch",
+        "positioning",
+        "product_validation",
+        "market_entry",
+        "brand_perception",
+        "sales_enablement",
+        "understand_audience"
+      ],
+      "title": "Goal",
+      "type": "string"
+    },
     "Guardrails": {
       "additionalProperties": false,
       "description": "Never trimmed from any view.",
@@ -1796,9 +1824,30 @@
       "title": "HypothesisStatus",
       "type": "string"
     },
+    "InputSource": {
+      "description": "Where an understood input came from (change V11). Goals and offer are never assumed.",
+      "enum": [
+        "brief",
+        "answer",
+        "assumed",
+        "none"
+      ],
+      "title": "InputSource",
+      "type": "string"
+    },
+    "InputStatus": {
+      "description": "How clearly the brief states one of the five inputs (change V11).",
+      "enum": [
+        "stated",
+        "unclear",
+        "missing"
+      ],
+      "title": "InputStatus",
+      "type": "string"
+    },
     "Intake": {
       "additionalProperties": false,
-      "description": "What the user told us before planning (change V3; brief.intake in schema 1.1). Empty = agent decides.",
+      "description": "What the user told us before planning (change V3, V11; brief.intake in schema 1.2). Empty = not told.",
       "properties": {
         "audience_roles": {
           "description": "Who exactly to reach (e.g. plant managers who sign off budgets; operators on the shop floor).",
@@ -1808,7 +1857,21 @@
           "title": "Audience Roles",
           "type": "array"
         },
-        "goal": {
+        "goals": {
+          "description": "What the research is for, main goal first (ids in config/goals.yaml).",
+          "examples": [
+            [
+              "positioning",
+              "content_plan"
+            ]
+          ],
+          "items": {
+            "$ref": "#/$defs/Goal"
+          },
+          "title": "Goals",
+          "type": "array"
+        },
+        "goal_note": {
           "anyOf": [
             {
               "type": "string"
@@ -1818,8 +1881,8 @@
             }
           ],
           "default": null,
-          "description": "What the research is for (content calendar, campaign, positioning, product research, sales).",
-          "title": "Goal"
+          "description": "The goal in the user's own words.",
+          "title": "Goal Note"
         },
         "offer": {
           "anyOf": [
@@ -1833,6 +1896,31 @@
           "default": null,
           "description": "What the user offers.",
           "title": "Offer"
+        },
+        "offer_stage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OfferStage"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "idea, launching, selling or no_offer."
+        },
+        "key_question": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The decision or question the research must help with, in the user's words.",
+          "title": "Key Question"
         },
         "channels_in_use": {
           "description": "Channels the user already uses.",
@@ -1893,6 +1981,7 @@
         "market",
         "competitors",
         "timeframe",
+        "key_question",
         "other"
       ],
       "title": "IntakeFill",
@@ -1980,9 +2069,10 @@
           "type": "array"
         },
         "intent": {
-          "description": "What the marketer wants to achieve.",
+          "default": "",
+          "description": "Filled in code from the confirmed goals (V11). Leave it empty.",
           "examples": [
-            "launch a brand"
+            "Positioning, then content plan"
           ],
           "title": "Intent",
           "type": "string"
@@ -2002,6 +2092,10 @@
           },
           "title": "Assumed",
           "type": "array"
+        },
+        "understanding": {
+          "$ref": "#/$defs/Understanding",
+          "description": "The five inputs only the user knows, each with the brief's own words and a status (V11, 1.2)."
         }
       },
       "required": [
@@ -2011,7 +2105,6 @@
         "audience",
         "category",
         "compliance_category",
-        "intent",
         "time_window_days"
       ],
       "title": "Interpretation",
@@ -3160,6 +3253,17 @@
         "trust_marker"
       ],
       "title": "ObjectionKind",
+      "type": "string"
+    },
+    "OfferStage": {
+      "description": "How far the user's offer is (change V11).",
+      "enum": [
+        "idea",
+        "launching",
+        "selling",
+        "no_offer"
+      ],
+      "title": "OfferStage",
       "type": "string"
     },
     "Opportunity": {
@@ -5680,6 +5784,84 @@
       "title": "Truth",
       "type": "object"
     },
+    "Understanding": {
+      "additionalProperties": false,
+      "description": "The five inputs only the user knows (change V11, schema 1.2): goals, offer, who, markets, key question.\nEach rests on the brief's own words or on the user's answer; code checks every quote is in the brief.",
+      "properties": {
+        "goal": {
+          "$ref": "#/$defs/UnderstoodInput",
+          "description": "What the research is for."
+        },
+        "goals": {
+          "description": "Goal ids the brief or the user states, main first (ids in the goal list). Empty unless stated - never guessed.",
+          "items": {
+            "$ref": "#/$defs/Goal"
+          },
+          "title": "Goals",
+          "type": "array"
+        },
+        "offer": {
+          "$ref": "#/$defs/UnderstoodInput",
+          "description": "What the user sells or plans to sell."
+        },
+        "offer_stage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OfferStage"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "idea, launching, selling or no_offer - only when stated."
+        },
+        "who": {
+          "$ref": "#/$defs/UnderstoodInput",
+          "description": "Whose conversations to listen to, and their roles (buyer, influencer, user)."
+        },
+        "markets": {
+          "$ref": "#/$defs/UnderstoodInput",
+          "description": "Where these people are."
+        },
+        "key_question": {
+          "$ref": "#/$defs/UnderstoodInput",
+          "description": "The decision or question the research must help with, and by when."
+        }
+      },
+      "title": "Understanding",
+      "type": "object"
+    },
+    "UnderstoodInput": {
+      "additionalProperties": false,
+      "description": "One of the five inputs only the user knows, as read from the brief (change V11). Never a guess.",
+      "properties": {
+        "value": {
+          "default": "",
+          "description": "What you understood, in plain words. Empty when missing.",
+          "title": "Value",
+          "type": "string"
+        },
+        "brief_quote": {
+          "default": "",
+          "description": "The exact words of the brief it rests on, copied character for character. Empty when missing.",
+          "title": "Brief Quote",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/InputStatus",
+          "default": "missing",
+          "description": "stated (the brief says it clearly), unclear (named but too vague to research well) or missing."
+        },
+        "source": {
+          "$ref": "#/$defs/InputSource",
+          "default": "none",
+          "description": "Filled in code: brief, answer, assumed or none. Leave it as none."
+        }
+      },
+      "title": "UnderstoodInput",
+      "type": "object"
+    },
     "Voice": {
       "additionalProperties": false,
       "properties": {
@@ -5913,12 +6095,12 @@
     }
   },
   "additionalProperties": false,
-  "description": "Context Pack 1.1 - the canonical object (context_pack.json). 1.0 packs are migrated when read.",
+  "description": "Context Pack 1.2 - the canonical object (context_pack.json). Older packs are migrated when read.",
   "properties": {
     "schema_version": {
-      "const": "1.1",
-      "default": "1.1",
-      "description": "Always 1.1 (1.0 packs are migrated).",
+      "const": "1.2",
+      "default": "1.2",
+      "description": "Always 1.2 (1.0 and 1.1 packs are migrated).",
       "title": "Schema Version",
       "type": "string"
     },
@@ -6196,7 +6378,7 @@
     "instructions_for_agents",
     "coverage"
   ],
-  "title": "Context Pack 1.1",
+  "title": "Context Pack 1.2",
   "type": "object",
   "$schema": "https://json-schema.org/draft/2020-12/schema"
 }

@@ -45,6 +45,7 @@ Quotes: Quoted excerpts are for internal research and briefs only. Do not use th
 - references/tensions.md: what they want and what holds them back, with quotes - open when choosing an angle
 - references/objections.md: objections, myths and how to answer them - open when handling doubts or comparisons
 - references/channels.md: where to show up, how each platform sounds, public communities - open when planning channels
+- references/posts.md: post briefs, drafts and the 4-week content calendar - open when writing or scheduling posts
 - references/evidence.json: the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim
 
 Pack pk_FSdLk4CH1zZO, generated 2026-10-06T13:12:08.327416Z. AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.

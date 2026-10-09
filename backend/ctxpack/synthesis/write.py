@@ -33,6 +33,7 @@ from ctxpack.collect.relevance import BriefContext, brief_block
 from ctxpack.config import load_yaml
 from ctxpack.llm.client import batched, load_prompt, structured, untrusted
 from ctxpack.schemas.enums import ClusterKind, CultureKind, HypothesisStatus
+from ctxpack.schemas.plan import confirmed_goal
 
 log = logging.getLogger(__name__)
 
@@ -792,7 +793,7 @@ async def write_run(run_id: str, ctx: BriefContext, *, redo: bool = False) -> Wr
     rep = await consolidate(sections, meta)
     outcome.calls += rep.calls
     outcome.usd += rep.usd
-    goal = (run.intake or {}).get("goal") or interp.intent
+    goal = confirmed_goal(run.intake) or "not given - say what each section means for marketing this topic"
     so_what, takeaways, usd = await section_notes(sections, goal)
     outcome.calls += 1
     outcome.usd += usd

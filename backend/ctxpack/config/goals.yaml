@@ -1,0 +1,49 @@
+# Goals and offer stages (change V11, PRD FR-A2d). What the research is FOR and how far the user's
+# offer is. Ids are the enum values in schemas/enums.py (Goal, OfferStage); chips are the answer
+# chips shown to the user, in this order. The goal and offer questions are built in code from this
+# file when the planning call leaves them out. No sources, markets or numbers live here.
+
+goals:
+  content_plan:
+    chip: Content plan
+    description: post ideas, drafts and a content calendar
+  campaign_launch:
+    chip: Campaign launch
+    description: a campaign or launch message and its timing
+  positioning:
+    chip: Positioning
+    description: a clear message and how you compare with competitors
+  product_validation:
+    chip: Product validation
+    description: whether there is real demand or an unserved need
+  market_entry:
+    chip: Market entry
+    description: how a new country or region talks, buys and decides
+  brand_perception:
+    chip: Brand perception
+    description: how people see your brand and tell it apart
+  sales_enablement:
+    chip: Sales
+    description: objections and buyer language for sales conversations
+  understand_audience:
+    chip: Just understand the audience
+    description: a broad picture of the audience with no specific output in mind
+
+offer_stages:
+  idea:
+    chip: An idea - testing demand
+  launching:
+    chip: Launching soon
+  selling:
+    chip: Already selling
+  no_offer:
+    chip: No offer of my own (agency, client work or exploring)
+
+questions:
+  goal:
+    question: What will you use this research for?
+    why_it_helps: "Your goal decides what the pack focuses on: a message, post ideas, a go/no-go, or sales answers."
+  offer:
+    question: What do you offer, and how far along is it?
+    why_it_helps: We look for the doubts and objections that matter to your offer, and the advice changes with its stage.
+    placeholder: What you sell or plan to sell, in a few words

@@ -5,7 +5,7 @@ description: "Real audience research on Dutch snackers aged 18-40 buying everyda
 
 # snacking habits, preferences and attitudes toward new snack brands - NL audience context
 
-Who: Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers. Market NL, languages nl, en. Built from 233 real public posts (coverage grade a; thin evidence - treat findings as early signals).
+Who: Dutch snackers aged 18-40 buying everyday sweet and savoury snacks, including health-conscious and young adult consumers. Market NL, languages nl, en. Built from 233 real public posts (coverage grade c; thin evidence - treat findings as early signals).
 
 ## Do first
 - Post a nostalgia question in a Dutch snack/Netherlands subreddit and a snack forum thread: 'Which snack do you still miss (Winner taco, Yes bar...) and what did it taste like?'. Reply to every answer and log the flavours and textures people name. (DO-01)
@@ -46,6 +46,7 @@ Quotes: Quoted excerpts are for internal research and briefs only. Do not use th
 - references/tensions.md: what they want and what holds them back, with quotes - open when choosing an angle
 - references/objections.md: objections, myths and how to answer them - open when handling doubts or comparisons
 - references/channels.md: where to show up, how each platform sounds, public communities - open when planning channels
+- references/posts.md: post briefs, drafts and the 4-week content calendar - open when writing or scheduling posts
 - references/evidence.json: the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim
 
 Pack pk_i4iFso1HnLWR, generated 2026-10-06T13:15:20.478111Z. AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.

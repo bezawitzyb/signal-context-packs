@@ -30,7 +30,7 @@ from ctxpack.config import load_yaml, mode_limits
 from ctxpack.guards import BudgetExceeded, StopRequested
 from ctxpack.llm.client import tracking
 from ctxpack.schemas.enums import EventType, FinishReason, RunStage, RunStatus
-from ctxpack.schemas.plan import Interpretation, Plan
+from ctxpack.schemas.plan import Interpretation, Plan, confirmed_goal, offer_text
 
 log = logging.getLogger(__name__)
 
@@ -177,8 +177,11 @@ def loop_state(run_id: str, record: bool = False, no_apify: bool = False,
     ctx.llm_usd = run.cost_llm_usd
     ctx.apify_unavailable, ctx.apify_usd_cap = no_apify, apify_usd_cap
     ctx.must_search = list((run.intake or {}).get("competitors_user") or [])  # V3: always searched
-    ctx.intake = {k: v for k, v in (run.intake or {}).items()          # V6: roles, goal, channels guide where
-                  if k in ("audience_roles", "goal", "channels_in_use") and v}
+    known = run.intake or {}                                            # V6, V11: the user's goals, offer, key
+    ctx.intake = {k: v for k, v in {"goals": confirmed_goal(known),      # question, roles and channels guide where
+                                    "offer": offer_text(known), "key_question": known.get("key_question"),
+                                    "audience_roles": known.get("audience_roles"),
+                                    "channels_in_use": known.get("channels_in_use")}.items() if v}
     return LoopState(ctx=ctx, interp=interp, plan=plan, check_stop=lambda: check_stop(run_id))
 
 

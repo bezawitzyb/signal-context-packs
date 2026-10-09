@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from ctxpack.exports.common import DISCLAIMER, HOOKS_NOTE, badge, cell, inline, privacy_line
 from ctxpack.config import load_yaml
+from ctxpack.schemas.plan import confirmed_goal
 from ctxpack.exports.calendar_csv import CHANNEL_NAMES, FORMAT_NAMES
 
 
@@ -90,7 +91,7 @@ def to_markdown(pack: dict) -> str:
     add(f"# Context Pack: {inline(i['topic'])} ({i['market']})")
     add("")
     add(f"*Brief:* {inline(b['text'])}  ")
-    goal = (b.get("intake") or {}).get("goal")
+    goal = confirmed_goal(b.get("intake"))
     add(f"*Audience:* {inline(i['audience'])}{' | *Goal:* ' + inline(goal) if goal else ''} | *Languages:* "
         f"{', '.join(i['languages'])} | *Mode:* {pack['mode']} | *Window:* {i['time_window_days']} days"
         f"{' | *Brand voice:* ' + inline(b['brand_voice']) if b.get('brand_voice') else ''}")

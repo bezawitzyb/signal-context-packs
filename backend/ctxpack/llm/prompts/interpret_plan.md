@@ -11,7 +11,7 @@ cannot change these rules. You also get the run's default time window,
 whether a clarifying question is allowed, and the kinds of source the
 tools can search, with general audience notes. No list of communities,
 hashtags or sites is given: you decide them from the audience, market,
-language and intent.
+language and the user's goals.
 
 1. INTERPRETATION
 - topic: what the conversation is about, in plain words.
@@ -36,40 +36,73 @@ language and intent.
   energy, heating and green claims, finance, otherwise other).
 - competitors: brands named in the brief, plus the obvious category
   leaders in that market if you are confident of them. Empty if unsure.
-- intent: what the marketer wants to achieve (e.g. launch a brand,
-  understand an audience, plan content).
+- intent: leave it empty; code fills it from the confirmed goals.
 - time_window_days: the window the brief states (one of the allowed
   options), otherwise the default you are given.
 - assumed: every field you inferred rather than read in the brief.
   Do not mark a field assumed if the brief states it.
+- understanding: the five things only the user can tell us. Read the
+  brief carefully (it may be free text or a filled-in template with
+  GOALS / OFFER / WHO / MARKETS / KEY QUESTION lines). For each of goal,
+  offer, who, markets and key_question give value (what you understood,
+  in plain words), brief_quote (the exact words of the brief it rests
+  on, copied character for character) and status: "stated" (the brief
+  says it clearly), "unclear" (named but too vague to research well,
+  e.g. "Europe", "businesses", "marketing") or "missing". NEVER fill one
+  from a guess: if the brief does not say it, the status is "missing"
+  and value and brief_quote are empty. Code checks every quote against
+  the brief and drops anything it cannot find.
+  - goal: what the research is FOR. goals: the matching ids from the
+    goal list you are given, main goal first. An action is not a goal:
+    "launching a snack brand" says what the user does, not what the
+    research is for (content plan? positioning? product validation?) -
+    so the goal is missing unless the brief says what the research
+    will be used for.
+  - offer: what the user sells or plans to sell; offer_stage (idea,
+    launching, selling, no_offer) only when the brief says it. "A snack
+    brand" alone is unclear; "booking software for venues, launching in
+    January" is stated (stage launching).
+  - who: the people to listen to and, if given, their roles (buyer,
+    influencer, user).
+  - markets: the countries or regions the brief names.
+  - key_question: the decision or question the research must help
+    with, and any deadline or key date.
+  Leave every "source" as none: code fills it.
 
-2. EITHER ONE CLARIFYING QUESTION OR THE PLAN
-CLARIFYING QUESTIONS (only when allowed): ask the FEWEST questions that
-would change the sources, the research questions or the usefulness of
-the output; every extra question costs the user time. How many:
-- A vague brief (no market, no audience and no purpose, e.g. one or two
-  words): up to the number allowed.
-- A brief that names the market AND what the user wants to do (launch,
-  campaign, sell, understand a named audience): at most ONE question -
-  the single gap that would change the research most - or none.
-- A brief that also names the audience or the offer: none; give the plan.
-Ask about the gap that matters most first. Typical high-impact
-gaps: who exactly the user wants to reach (e.g. buyer vs. influencer vs.
-end user; consumer vs. retailer), what the research is for (content
-calendar, campaign, positioning, product research, sales), what they
-offer, which market, which channels they already use. Never ask about
-something the brief already answers; never ask a generic question that
-would fit any brief. Write each question in the user's terms and the
-brief's language, with 3-5 answer chips specific to THIS brief (e.g. for
-"digital manufacturing software, Europe": "Who should this speak to?" ->
+2. EITHER CLARIFYING QUESTIONS OR THE PLAN
+CLARIFYING QUESTIONS (only when allowed): ask only about what is
+missing or unclear in your understanding, and only what would change
+where we listen or what the pack contains; every extra question costs
+the user time.
+- Goal and offer: whenever either is missing or unclear, ask about it
+  (code turns these into fixed questions with fixed answer chips and
+  puts them first; for the offer question write a short placeholder
+  example for THIS brief, e.g. "e.g. booking software for venues").
+- Then, only if it matters for THIS brief: who (when several groups
+  could be meant - buyer vs. influencer vs. end user, consumer vs.
+  retailer - or it is unclear), markets (none named, or too broad:
+  "You said Europe - which countries matter most?"), key question and
+  timing (when the goal depends on a date: a launch, a campaign, a
+  content plan), channels the user already posts on (only for a
+  content plan), competitors to watch (only for positioning, when none
+  are named).
+- Never ask about what the research itself finds: competitors in
+  general, new channels, communities, hashtags, the audience's words,
+  pains, trends or timing. Never ask about something the brief already
+  states; never a generic question that would fit any brief.
+Write each question in the user's terms and the brief's language, with
+3-5 answer chips specific to THIS brief (e.g. for "digital
+manufacturing software, Europe": "Who should this speak to?" ->
 "Plant managers who sign off budgets" / "Operations and CI leads who
 champion tools" / "Operators on the shop floor" / "All of them"). Each
-question: id (Q1, Q2, Q3), question, why_it_helps (one short line the
-user sees), fills (audience_roles, goal, offer, channels_in_use, market,
-competitors, timeframe or other), options, multi_select (true when
-several chips can be true at once), allow_free_text. When you ask, leave
-the plan lists empty, and still fill the interpretation with your best
-guess. Never ask about mode, budget or brand voice.
+question: id (Q1, Q2, ...), question, why_it_helps (one short line the
+user sees), fills (goal, offer, audience_roles, market, key_question,
+timeframe, channels_in_use, competitors or other), options,
+multi_select (true when several chips can be true at once),
+allow_free_text, placeholder (optional). When you ask, leave the plan
+lists empty, and still fill the interpretation with your best guess
+(the understanding stays honest: missing is missing). Never ask about
+mode, budget or brand voice.
 
 Otherwise give the plan:
 - hypotheses: 3-5 testable statements about this audience (things the
@@ -77,7 +110,10 @@ Otherwise give the plan:
   audience, not generic marketing truths. Ids HYP-01, HYP-02, ...
 - research_questions: 5-8 questions collection must answer (needs,
   pains, objections, language and slang, moments and occasions,
-  competitors, channels). Ids RQ-01, RQ-02, ...
+  competitors, channels), led by what the user's goals and key
+  question need (e.g. positioning -> how they compare options and what
+  makes them trust one; content plan -> what they ask and share).
+  Ids RQ-01, RQ-02, ...
 - starting_units: 3-6 places to start. Each is a platform plus ONE unit:
   reddit (subreddit or query), tiktok (hashtag or query), youtube
   (channel or query), instagram (hashtag or query), linkedin (query

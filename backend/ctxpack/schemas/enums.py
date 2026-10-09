@@ -269,7 +269,47 @@ class IntakeFill(StrEnum):
     market = "market"
     competitors = "competitors"
     timeframe = "timeframe"
+    key_question = "key_question"
     other = "other"
+
+
+class Goal(StrEnum):
+    """What the research is for (change V11; chips and descriptions in config/goals.yaml)."""
+
+    content_plan = "content_plan"
+    campaign_launch = "campaign_launch"
+    positioning = "positioning"
+    product_validation = "product_validation"
+    market_entry = "market_entry"
+    brand_perception = "brand_perception"
+    sales_enablement = "sales_enablement"
+    understand_audience = "understand_audience"
+
+
+class OfferStage(StrEnum):
+    """How far the user's offer is (change V11)."""
+
+    idea = "idea"
+    launching = "launching"
+    selling = "selling"
+    no_offer = "no_offer"
+
+
+class InputStatus(StrEnum):
+    """How clearly the brief states one of the five inputs (change V11)."""
+
+    stated = "stated"
+    unclear = "unclear"
+    missing = "missing"
+
+
+class InputSource(StrEnum):
+    """Where an understood input came from (change V11). Goals and offer are never assumed."""
+
+    brief = "brief"
+    answer = "answer"
+    assumed = "assumed"
+    none = "none"
 
 
 class EvidenceRole(StrEnum):

@@ -8,13 +8,14 @@ modes.yaml exports.quick_brief_max_words; the quote rule always stays.
 from __future__ import annotations
 
 from ctxpack.exports.common import cfg, inline
+from ctxpack.schemas.plan import confirmed_goal
 
 
 def to_quick_brief(pack: dict) -> str:
     i = pack["brief"]["interpreted"]
     g = pack["guardrails"]
     snap = pack["snapshot"]
-    goal = (pack["brief"].get("intake") or {}).get("goal")
+    goal = confirmed_goal(pack["brief"].get("intake"))
     sizes = {"words": 8, "say": 3, "not": 3, "findings": 3}
 
     def build() -> str:

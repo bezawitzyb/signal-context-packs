@@ -283,9 +283,10 @@ async def _plan(run_id: str, allow_question: bool, intake: dict | None = None,
         out = await interpret(run.brief_text, mode=str(run.mode), allow_question=allow_question, intake=known,
                               edits=edits, window_days=(run.interpretation or {}).get("time_window_days"))
     res = out.result
-    if res.clarifying_questions:
+    if res.clarifying_questions:  # what the user already told us is kept for the answers (V11)
         db.update_run(run.id, interpretation=res.interpretation.model_dump(mode="json"),
-                      clarifying_questions=[q.model_dump(mode="json") for q in res.clarifying_questions])
+                      clarifying_questions=[q.model_dump(mode="json") for q in res.clarifying_questions],
+                      intake=known.model_dump(mode="json") if known else None)
         db.set_status(run.id, RunStatus.needs_clarification)
     else:
         db.update_run(run.id, interpretation=res.interpretation.model_dump(mode="json"),
@@ -304,6 +305,9 @@ async def create_run(brief: str, mode: str = "quick", time_window_days: int | No
 
     guards.check_can_queue()
     known = Intake.model_validate(intake).model_dump(mode="json") if intake else None
+    if auto_approve and not (known or {}).get("goals"):  # V11: an agent is never asked, so it must say why
+        raise ValueError("goals are required when the plan is approved automatically: pass intake.goals, main "
+                         "goal first, from: " + ", ".join(load_yaml("goals")["goals"]))
     run = db.create_run(brief.strip(), mode=Mode(mode), requester=requester)
     fields: dict[str, Any] = {}
     if brand_voice and brand_voice.strip():
@@ -318,31 +322,56 @@ async def create_run(brief: str, mode: str = "quick", time_window_days: int | No
     return status
 
 
-def intake_from_answers(questions: list[dict], answers: list[dict], skip_all: bool) -> tuple[dict, dict]:
-    """(intake, edits) from the answers. Chips and free text fill the question's intake field; a market
-    answer becomes edited markets when it names a place; skipped questions stay "agent decides"."""
+def intake_from_answers(questions: list[dict], answers: list[dict], skip_all: bool,
+                        before: dict | None = None) -> tuple[dict, dict]:
+    """(intake, edits) from the answers, on top of what the user told us before. Chips and free text fill
+    the question's intake field; goal chips become ranked goals (click order); offer chips the stage; a
+    market answer becomes edited markets when it names a place. Skipped questions stay unanswered; the
+    goal and offer questions cannot be skipped (V11) - ValueError with a plain message."""
     from ctxpack.agent.markets import places_in
+    from ctxpack.schemas.plan import goal_from_text, stage_from_text
 
     by_id = {a.get("id"): a for a in answers}
-    intake: dict[str, Any] = {"audience_roles": [], "channels_in_use": [], "competitors_user": [], "other_answers": [],
-                              "questions_asked": questions}
+    base = dict(before or {})
+    intake: dict[str, Any] = {**base, "audience_roles": list(base.get("audience_roles") or []),
+                              "channels_in_use": list(base.get("channels_in_use") or []),
+                              "competitors_user": list(base.get("competitors_user") or []),
+                              "other_answers": list(base.get("other_answers") or []),
+                              "questions_asked": list(base.get("questions_asked") or []) + questions}
     edits: dict[str, Any] = {}
+    unanswered = []
     for q in questions:
         a = by_id.get(q["id"]) or {}
+        chosen = [str(v).strip() for v in a.get("chosen", []) if str(v).strip()]
+        text = str(a.get("text") or "").strip()[:300]
+        fills = q.get("fills", "other")
+        if fills == "goal" and q.get("required"):
+            goals = [g.value for g in (goal_from_text(c) for c in chosen) if g is not None]
+            if not goals:
+                unanswered.append("what you will use this research for (pick at least one goal)")
+                continue
+            intake["goals"] = list(dict.fromkeys(goals))
+            intake["goal_note"] = text or None
+            continue
+        if fills == "offer" and q.get("required"):
+            stage = next((st.value for st in (stage_from_text(c) for c in chosen) if st is not None), None)
+            if stage is None:
+                unanswered.append("how far your offer is (pick one stage)")
+                continue
+            intake["offer_stage"] = stage
+            intake["offer"] = text or None
+            continue
         if skip_all or a.get("skipped"):
             continue
-        values = [str(v).strip() for v in a.get("chosen", []) if str(v).strip()]
-        if str(a.get("text") or "").strip():
-            values.append(str(a["text"]).strip()[:300])
+        values = chosen + ([text] if text else [])
         if not values:
             continue
-        fills = q.get("fills", "other")
         if fills in ("audience_roles", "channels_in_use"):
             intake[fills] += values
         elif fills == "competitors":
             intake["competitors_user"] += [c.strip() for v in values for c in v.split(",") if c.strip()]
-        elif fills in ("goal", "offer", "timeframe"):
-            intake[fills] = "; ".join(values)
+        elif fills in ("goal", "offer", "timeframe", "key_question"):
+            intake["goal_note" if fills == "goal" else fills] = "; ".join(values)
         elif fills == "market":
             places = places_in(" ".join(values))
             codes = places["regions"] + [c for c in places["countries"]]
@@ -352,6 +381,8 @@ def intake_from_answers(questions: list[dict], answers: list[dict], skip_all: bo
                 intake["other_answers"].append({"question": q["question"], "answer": "; ".join(values)})
         else:
             intake["other_answers"].append({"question": q["question"], "answer": "; ".join(values)})
+    if unanswered:
+        raise ValueError("Please answer " + " and ".join(unanswered) + " - these cannot be skipped.")
     return intake, edits
 
 
@@ -367,7 +398,7 @@ async def answer_questions(run_id: str, answers: list[dict] | None = None, skip_
     guards.check_can_queue()
     if answer and not answers:
         answers = [{"id": questions[0]["id"], "text": answer}]
-    intake, edits = intake_from_answers(questions, answers or [], skip_all)
+    intake, edits = intake_from_answers(questions, answers or [], skip_all, before=run.intake)
     return await _plan(run_id, allow_question=False, intake=intake, edits=edits or None)
 
 
@@ -377,8 +408,9 @@ async def answer_question(run_id: str, answer: str) -> dict[str, Any]:
 
 
 async def replan(run_id: str, edits: dict[str, Any]) -> dict[str, Any]:
-    """Edited chips on the interpretation screen (markets, languages, audience, roles, competitors) ->
-    a new plan in place (one call). Competitors the user adds are kept in intake and always searched."""
+    """Edits on the "Here's what I understood" box (goals, offer and stage, key question, topic, markets,
+    languages, audience, roles, competitors) -> a new plan in place (one call). Competitors the user adds
+    are kept in intake and always searched; goals, offer and key question are the user's answers (V11)."""
     run = db.get_run(run_id)
     if run is None:
         raise NotFound(f"run {run_id} not found")
@@ -410,6 +442,18 @@ async def replan(run_id: str, edits: dict[str, Any]) -> dict[str, Any]:
         intake["competitors_user"] = keep_user
     if "audience_roles" in clean:
         intake["audience_roles"] = clean["audience_roles"]
+    if "goals" in edits:  # an empty list is refused below, never silently ignored
+        clean.pop("goals", None)
+        intake["goals"] = edits["goals"] or []
+    for name in ("goal_note", "offer", "offer_stage", "key_question"):
+        if name in edits:  # an empty value clears it
+            clean.pop(name, None)
+            intake[name] = (str(edits[name]).strip() or None) if edits[name] is not None else None
+    from ctxpack.schemas.plan import Intake
+
+    intake = Intake.model_validate(intake).model_dump(mode="json")  # unknown goals or stages: a plain error
+    if "goals" in edits and not intake.get("goals"):
+        raise ValueError("keep at least one goal: it decides what the pack focuses on")
     return await _plan(run_id, allow_question=False, intake=intake, edits=clean)
 
 

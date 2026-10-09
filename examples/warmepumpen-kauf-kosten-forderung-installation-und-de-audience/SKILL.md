@@ -5,7 +5,7 @@ description: "Real audience research on Hausbesitzer in Deutschland (ca. 35-65 J
 
 # Wärmepumpen: Kauf, Kosten, Förderung, Installation und Erfahrungen bei Hausbesitzern - DE audience context
 
-Who: Hausbesitzer in Deutschland (ca. 35-65 Jahre), Eigentümer von Ein- und Zweifamilienhäusern, die Heizungstausch oder Neubau erwägen oder bereits eine Wärmepumpe betreiben. Market DE, languages de. Built from 101 real public posts (coverage grade a; thin evidence - treat findings as early signals).
+Who: Hausbesitzer in Deutschland (ca. 35-65 Jahre), Eigentümer von Ein- und Zweifamilienhäusern, die Heizungstausch oder Neubau erwägen oder bereits eine Wärmepumpe betreiben. Market DE, languages de. Built from 101 real public posts (coverage grade c; thin evidence - treat findings as early signals).
 
 ## Do first
 - Publish a YouTube video titled along the lines of 'Wärmepumpe nach 1 Jahr: meine echte Rechnung gegen die Gas-Abrechnung'. Show annual kWh and euro for the heat pump next to the baseline gas year, including the unflattering lines, and state house type and Vorlauftemperatur. (DO-01)
@@ -44,6 +44,7 @@ Quotes: Quoted excerpts are for internal research and briefs only. Do not use th
 - references/tensions.md: what they want and what holds them back, with quotes - open when choosing an angle
 - references/objections.md: objections, myths and how to answer them - open when handling doubts or comparisons
 - references/channels.md: where to show up, how each platform sounds, public communities - open when planning channels
+- references/posts.md: post briefs, drafts and the 4-week content calendar - open when writing or scheduling posts
 - references/evidence.json: the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim
 
 Pack pk_WPKWWfPABYxN, generated 2026-10-06T09:24:45.191502Z. AI-assisted analysis of public online conversations; it may contain errors. Compliance flags are not legal advice.

@@ -11,6 +11,13 @@ async function noSeriousA11yIssues(page: Page, where: string) {
   expect(serious, `${where}:\n${summary}`).toEqual([]);
 }
 
+/** V11: the goal and offer questions come first and cannot be skipped; answer them like a user would. */
+async function answerGoalAndOffer(page: Page) {
+  const cards = page.locator("section[aria-labelledby=clarify] fieldset");
+  await cards.nth(0).getByRole("button", { name: "Content plan" }).click();
+  await cards.nth(1).getByRole("button", { name: /No offer of my own/ }).click();
+}
+
 test("brief to pack, with the evidence drawer and accessibility checks", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "See an example pack" })).toBeVisible();
@@ -20,6 +27,8 @@ test("brief to pack, with the evidence drawer and accessibility checks", async (
   await page.getByLabel("Your brief").fill("Gen Z and meal prep");   // enough recorded posts for a pack
   await page.getByLabel("Run key").fill(KEY);
   await page.getByRole("button", { name: "Plan the research" }).click();
+  await answerGoalAndOffer(page);
+  await page.getByRole("button", { name: "Plan with my answers" }).click();
   await expect(page.getByRole("heading", { name: "Here's what I understood" })).toBeVisible();
   expect(await page.content()).not.toContain(KEY); // never in the page
 
@@ -66,7 +75,7 @@ test("a featured pack: summary, drawer with real posts, agent view, handoff, rep
   await page.keyboard.press("Escape");
 
   await page.getByRole("button", { name: "View as agent" }).click();
-  await expect(page.getByText(/context_pack\.json · schema 1\.1/).first()).toBeVisible();
+  await expect(page.getByText(/context_pack\.json · schema 1\.2/).first()).toBeVisible();
   await page.getByRole("button", { name: "View as agent" }).click();
 
   await page.getByRole("button", { name: "Strong only" }).click();
@@ -85,6 +94,8 @@ test("too few posts ends on the thin screen with one-click re-plans (V1)", async
   await page.getByLabel("Your brief").fill("Launching a snack brand in the Netherlands");  // 0 recorded posts
   await page.getByLabel("Run key").fill(KEY);
   await page.getByRole("button", { name: "Plan the research" }).click();
+  await answerGoalAndOffer(page);
+  await page.getByRole("button", { name: "Plan with my answers" }).click();
   await page.getByRole("button", { name: "Start research" }).click();
   await expect(page.getByRole("heading", { name: "Not enough to build a pack this time" })).toBeVisible({ timeout: 90_000 });
   await expect(page.getByRole("link", { name: "Run Standard (more sources)" })).toBeVisible();
@@ -94,20 +105,35 @@ test("too few posts ends on the thin screen with one-click re-plans (V1)", async
   await expect(page.getByLabel("Your brief")).toHaveValue("Launching a snack brand in the Netherlands");
 });
 
-test("a vague brief gets brief-specific questions with chips, then an editable plan (V3)", async ({ page }) => {
+test("a vague brief gets goal, offer and brief-specific questions, then one editable understood box (V3, V11)", async ({ page }) => {
   await page.goto("/");
   await page.getByLabel("Your brief").fill("snacks");
   await page.getByLabel("Run key").fill(KEY);
   await page.getByRole("button", { name: "Plan the research" }).click();
   const cards = page.locator("section[aria-labelledby=clarify] fieldset");
-  await expect(cards).toHaveCount(2);
+  await expect(cards).toHaveCount(4);
   await noSeriousA11yIssues(page, "Clarifying questions");
-  await cards.nth(0).getByRole("button", { name: "Netherlands" }).click();
-  await cards.nth(1).getByRole("button", { name: "Skip - let the agent decide" }).click();
+  await expect(cards.nth(0).getByRole("button", { name: /Skip/ })).toHaveCount(0);       // required: no skip
+  await page.getByRole("button", { name: "Skip the optional ones and plan" }).click();
+  await expect(page.getByRole("alert")).toContainText("cannot be skipped");               // nothing sent
+  await cards.nth(0).getByRole("button", { name: "Positioning" }).click();
+  await cards.nth(0).getByRole("button", { name: "Content plan" }).click();
+  await expect(cards.nth(0).getByRole("button", { name: "Positioning (goal 1)" })).toBeVisible();
+  await cards.nth(1).getByRole("button", { name: "Launching soon" }).click();
+  await cards.nth(1).getByRole("textbox").fill("oat bars");
+  await cards.nth(2).getByRole("button", { name: "Netherlands" }).click();
+  await cards.nth(3).getByRole("button", { name: "Skip - let the agent decide" }).click();
   await page.getByRole("button", { name: "Plan with my answers" }).click();
-  await expect(page.getByRole("heading", { name: "Adjust before you start" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Here's what I understood" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Adjust before you start" })).toHaveCount(0);
+  await expect(page.getByText("1. Positioning")).toBeVisible();
+  await expect(page.getByLabel("Offer", { exact: true })).toHaveValue("oat bars");
   await expect(page.getByRole("button", { name: "Remove NL" })).toBeVisible();
-  await noSeriousA11yIssues(page, "Plan with editable chips");
+  await noSeriousA11yIssues(page, "Understood box");
+  await page.getByLabel("Key question and timing").fill("What makes them trust a new brand? Launch in January.");
+  await page.getByRole("button", { name: "Update the plan with my changes" }).click();
+  await expect(page.getByLabel("Key question and timing")).toHaveValue("What makes them trust a new brand? Launch in January.");
+  await expect(page.getByText("your answer").first()).toBeVisible();
 });
 
 test("the brief guide opens from the info button and the template fills an empty box", async ({ page }) => {

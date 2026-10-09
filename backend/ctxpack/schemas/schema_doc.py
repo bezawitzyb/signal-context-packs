@@ -114,7 +114,13 @@ def _field_rows(model: type[BaseModel], names: list[str]) -> list[str]:
 
 # Hand-written per version (this file generates SCHEMA.md; never edit SCHEMA.md itself).
 CHANGELOG = [
-    "- **1.1** (changes V1-V10, in progress): `brief.interpreted.markets[]` {code, countries, weight, "
+    "- **1.2** (change V11): `brief.interpreted.understanding` - the five inputs only the user knows (goal, "
+    "offer, who, markets, key question), each with its value, the brief's own words, a status (stated, "
+    "unclear, missing) and where it came from (brief, answer, assumed, none), plus ranked `goals[]` and "
+    "`offer_stage`. `brief.intake.goals[]` (ranked goal ids) and `goal_note` replace the free-text `goal`; new "
+    "`offer_stage` and `key_question`. `brief.interpreted.intent` is filled in code from the confirmed goals, "
+    "never guessed. 1.1 packs are migrated when read.",
+    "- **1.1** (changes V1-V10): `brief.interpreted.markets[]` {code, countries, weight, "
     "assumed} replaces the single market (V2); `market` is now a short label made in code; "
     "`languages_excluded[]` lists left-out languages with the reason. V3: `brief.intake` (what the user "
     "told us before planning: audience roles, goal, offer, channels, competitors, timeframe, other answers, "

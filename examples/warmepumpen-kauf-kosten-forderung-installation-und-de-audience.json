@@ -1,5 +1,5 @@
 {
- "schema_version": "1.1",
+ "schema_version": "1.2",
  "pack_id": "pk_WPKWWfPABYxN",
  "generated_at": "2026-10-06T09:24:45.191502Z",
  "mode": "standard",
@@ -36,7 +36,7 @@
     "NIBE",
     "Panasonic"
    ],
-   "intent": "understand the audience",
+   "intent": "",
    "time_window_days": 180,
    "assumed": [
     "market",
@@ -45,15 +45,51 @@
     "category",
     "compliance_category",
     "competitors",
-    "intent",
     "time_window_days"
-   ]
+   ],
+   "understanding": {
+    "goal": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
+    },
+    "goals": [],
+    "offer": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
+    },
+    "offer_stage": null,
+    "who": {
+     "value": "Hausbesitzer in Deutschland (ca. 35-65 Jahre), Eigentümer von Ein- und Zweifamilienhäusern, die Heizungstausch oder Neubau erwägen oder bereits eine Wärmepumpe betreiben",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "assumed"
+    },
+    "markets": {
+     "value": "DE",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "assumed"
+    },
+    "key_question": {
+     "value": "",
+     "brief_quote": "",
+     "status": "missing",
+     "source": "none"
+    }
+   }
   },
   "brand_voice": null,
   "intake": {
    "audience_roles": [],
-   "goal": null,
+   "goals": [],
+   "goal_note": null,
    "offer": null,
+   "offer_stage": null,
+   "key_question": null,
    "channels_in_use": [],
    "competitors_user": [],
    "timeframe": null,
@@ -95,6 +131,58 @@
     ]
    }
   ],
+  "findings": [
+   {
+    "text": "I wonder whether PV and storage really help a heat pump, since solar is weakest in winter when heat is needed.",
+    "item_ids": [
+     "THM-01"
+    ],
+    "quote": {
+     "evidence_id": "EV-0001",
+     "text": "die PV liefert halt ziemlich genau dann am wenigsten bzw. fast nichts wenn die Wärmepumpe am meisten braucht: im Winter"
+    },
+    "quote_en": "I suspect the benefit of combining PV and heat pump is overestimated by many. But PV delivers pretty much the least or almost nothing when the heat pump needs the most: in winter. The combination of PV and air conditioning is better, but solves the opposite problem.",
+    "label": "emerging",
+    "people": 6,
+    "communities": 3,
+    "strength_text": "Emerging - 6 people in 3 communities",
+    "good_enough_to": "test a post"
+   },
+   {
+    "text": "I want help setting the heating curve and flow temperature correctly.",
+    "item_ids": [
+     "MOT-02"
+    ],
+    "quote": {
+     "evidence_id": "EV-0026",
+     "text": "Einer der wichtigsten Parameter, die den Stromverbrauch beeinflussen, dürfte tatsächlich die Heizkurve sein."
+    },
+    "quote_en": "Hi, we also have ground-source heat. The installation was great—the adjustment by the specialist, well, not so much. The first nights in winter we sweated quite a bit. One of the most important parameters influencing electricity consumption is probably the heating curve. I found that out after lots of research. Therefore the important question: What value is your heating curve set to?",
+    "label": "emerging",
+    "people": 4,
+    "communities": 3,
+    "strength_text": "Emerging - 4 people in 3 communities",
+    "good_enough_to": "test a post"
+   },
+   {
+    "text": "I want honest numbers on what the heat pump really uses and costs compared to my old heating.",
+    "item_ids": [
+     "MOT-01"
+    ],
+    "quote": {
+     "evidence_id": "EV-0035",
+     "text": "etwa ein Viertel der Energie in kWh wie die Gasheizung"
+    },
+    "quote_en": null,
+    "label": "emerging",
+    "people": 5,
+    "communities": 2,
+    "strength_text": "Emerging - 5 people in 2 communities",
+    "good_enough_to": "test a post"
+   }
+  ],
+  "represents": "101 public posts, mostly on Reddit and YouTube. This is what vocal people say online, not a survey of the whole market.",
+  "position": null,
   "top_opportunity": {
    "item_id": "OPP-01",
    "text": "Publish real running-cost comparisons"
@@ -103,7 +191,8 @@
    "item_id": "RSK-01",
    "text": "Promising specific savings or efficiency without showing the baseline will trigger the 'fake numbers' reaction and disbelief."
   },
-  "coverage_grade": "a",
+  "coverage_grade": "c",
+  "grade_note": "Capped at c: the sources are broad (grade a), but too few findings met the minimum bar.",
   "generic_vs_found": {
    "generic_points": [
     "Homeowners are mainly worried about high upfront costs of heat pumps and look for subsidies such as the BEG/KfW grants to reduce them.",
@@ -150,7 +239,8 @@
       "MOM-01"
      ]
     }
-   ]
+   ],
+   "comparison": []
   }
  },
  "do_first": [
@@ -168,7 +258,8 @@
    ],
    "effort": "high",
    "impact": "high",
-   "owner_hint": "Video producer with a real operator, or a customer who shares their bills"
+   "owner_hint": "Video producer with a real operator, or a customer who shares their bills",
+   "success_measure": ""
   },
   {
    "id": "DO-02",
@@ -184,7 +275,8 @@
    ],
    "effort": "low",
    "impact": "high",
-   "owner_hint": "Community manager with an installer or energy consultant as technical backup"
+   "owner_hint": "Community manager with an installer or energy consultant as technical backup",
+   "success_measure": ""
   },
   {
    "id": "DO-03",
@@ -200,7 +292,8 @@
    ],
    "effort": "medium",
    "impact": "high",
-   "owner_hint": "Technical expert or installer on camera, social editor"
+   "owner_hint": "Technical expert or installer on camera, social editor",
+   "success_measure": ""
   }
  ],
  "landscape": {
@@ -4061,7 +4154,8 @@
      "source_url": null,
      "item_id": "MOM-04"
     }
-   ]
+   ],
+   "posts_per_week": null
   },
   {
    "id": "CHN-02",
@@ -4139,7 +4233,8 @@
      "source_url": null,
      "item_id": null
     }
-   ]
+   ],
+   "posts_per_week": null
   },
   {
    "id": "CHN-03",
@@ -4168,7 +4263,8 @@
     "#Heizungstausch"
    ],
    "tone_note": "Short, technical and concrete. A dry joke is fine, but the tip has to carry information.",
-   "timing": []
+   "timing": [],
+   "posts_per_week": null
   },
   {
    "id": "CHN-04",
@@ -4228,7 +4324,8 @@
      "source_url": null,
      "item_id": null
     }
-   ]
+   ],
+   "posts_per_week": null
   }
  ],
  "playbook": {
@@ -4641,6 +4738,9 @@
    }
   ]
  },
+ "post_briefs": [],
+ "drafts": [],
+ "content_calendar": [],
  "hypotheses": [
   {
    "id": "HYP-01",

@@ -14,6 +14,11 @@ idempotent and also run on packs saved as 1.1 before a later step existed:
   V9  snapshot.findings (top 3 of the five truths, with a quote and plain strength words), represents
       (from the evidence) and the grade cap for thin packs, all in code; position and the generic-point
       comparison stay empty (they need the model).
+1.1 -> 1.2 (change V11):
+  V11 brief.intake.goal (free text) -> goals[] when it names goals from config/goals.yaml, else goal_note
+      (Intake's own validator); brief.interpreted.understanding built in code from what the pack holds
+      (goals and offer only from the user's answers, who and markets as "assumed"); intent is replaced by
+      the confirmed goals (a guessed intent is dropped).
 Packs are never written back in an older version.
 """
 
@@ -28,7 +33,8 @@ def needs_migration(pack: dict[str, Any]) -> bool:
     from ctxpack.schemas.pack import SCHEMA_VERSION
 
     return (pack.get("schema_version") != SCHEMA_VERSION or "pain_points" not in pack or "white_space" in pack
-            or "news_hooks" not in pack or "findings" not in (pack.get("snapshot") or {}))
+            or "news_hooks" not in pack or "findings" not in (pack.get("snapshot") or {})
+            or "understanding" not in ((pack.get("brief") or {}).get("interpreted") or {}))
 
 
 def migrate(pack: dict[str, Any]) -> dict[str, Any]:
@@ -52,7 +58,22 @@ def migrate(pack: dict[str, Any]) -> dict[str, Any]:
                                               out.get("evidence", []), [], [])}
     if "findings" not in (out.get("snapshot") or {}):
         out = _summary_v9(out)
+    if "understanding" not in ((out.get("brief") or {}).get("interpreted") or {}):
+        out = _understanding_v11(out)
     return out
+
+
+def _understanding_v11(pack: dict[str, Any]) -> dict[str, Any]:
+    """V11: the understanding from the pack's own brief and intake (no model call); no guessed goal."""
+    from ctxpack.agent.interpret import settle_understanding
+    from ctxpack.schemas.plan import Intake, Interpretation
+
+    brief = dict(pack.get("brief") or {})
+    intake = Intake.model_validate(brief.get("intake") or {})
+    interp = Interpretation.model_validate(brief.get("interpreted") or {})
+    settle_understanding(interp, brief.get("text", ""), intake)
+    brief.update(intake=intake.model_dump(mode="json"), interpreted=interp.model_dump(mode="json"))
+    return {**pack, "brief": brief}
 
 
 def _summary_v9(pack: dict[str, Any]) -> dict[str, Any]:

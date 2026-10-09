@@ -50,14 +50,14 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
   const s = pack.snapshot;
   const { onOpen } = usePack();
   const i = pack.brief.interpreted;
-  const goal = pack.brief.intake?.goal;
+  const goal = i.intent;  // V11: the confirmed goals in plain words (filled in code, never guessed)
   const findings = s.findings ?? [];
   const head = "mb-2 text-xs font-semibold uppercase tracking-wide text-ink-3";
   return (
     <div className="space-y-4">
       <div className="space-y-0.5 text-sm">
         <p className="line-clamp-1 text-ink" title={i.audience}><span className="text-ink-3">For </span>{i.audience}
-          {goal && <><span className="text-ink-3"> · goal: </span>{goal}</>}<span className="text-ink-3"> · {i.market}</span></p>
+          {goal && <><span className="text-ink-3"> · goals: </span>{goal}</>}<span className="text-ink-3"> · {i.market}</span></p>
         {s.represents && <p className="text-ink-2">{s.represents}</p>}
         <HowToRead />
       </div>
