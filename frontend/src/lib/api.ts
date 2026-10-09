@@ -42,7 +42,7 @@ export interface InsightLike {
 export interface FeaturedPack {
   pack_id: string; brief: string; topic: string; market: string; audience: string; mode: string;
   generated_at: string; coverage_grade: string; thin_evidence: boolean;
-  relevant_posts?: number; languages?: string[]; findings?: number; strong_findings?: number;
+  relevant_posts?: number; languages?: string[]; findings?: number; strong_findings?: number; top_finding?: string | null;
 }
 
 export interface RunStatus {

@@ -2,11 +2,11 @@
 // (collapsed). Sticky part nav (a menu on phones), progressive disclosure, evidence drawer, View as agent, Hand off.
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { Braces, History, Menu, MessageCircleQuestion, RotateCcw, Share2 } from "lucide-react";
+import { Braces, History, Menu, MessageCircleQuestion, RotateCcw, Share2, TextQuote, ArrowUp } from "lucide-react";
 import { friendlyError, getPack, getPackInputs, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
-import { ConfidenceBadge, IdTag } from "../components/badges";
+import { ConfidenceBadge } from "../components/badges";
 import { BrandPart } from "../components/brand";
 import { CoverageStrip, LimitationCallout } from "../components/callouts";
 import { HookCard, PackContext, SourceCard, TensionCard, usePack } from "../components/cards";
@@ -70,12 +70,32 @@ function Sub({ title, children }: { title: string; children: React.ReactNode }) 
   );
 }
 
-function IdButton({ id }: { id: string }) {
+/** UX audit: marketers see "posts" (opens the evidence); the item id stays in the accessible name and tooltip,
+ *  and in Developer view, so ids still match the JSON and exports. */
+/** UX audit: the pack is long - after a screen or two, a small button jumps back to the top (and the sections). */
+function BackToTop() {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShown(window.scrollY > 1200);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  if (!shown) return null;
+  return (
+    <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="fixed bottom-4 right-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-paper px-3 py-2 text-sm text-ink shadow-md hover:border-ink print:hidden">
+      <ArrowUp aria-hidden="true" size={14} /> Top and sections
+    </button>
+  );
+}
+
+function IdButton({ id, label = "posts" }: { id: string; label?: string }) {
   const { onOpen } = usePack();
   return (
-    <button type="button" onClick={() => onOpen?.(id)} title="Open the evidence"
-            className="rounded px-0.5 font-mono text-xs text-ink-3 underline-offset-2 hover:text-ink hover:underline">
-      {id}
+    <button type="button" onClick={() => onOpen?.(id)} title={`Open the posts behind this (${id})`}
+            aria-label={`Open the posts behind ${id}`}
+            className="inline-flex items-center gap-0.5 rounded px-0.5 text-xs text-ink-3 underline decoration-line-strong underline-offset-2 hover:text-ink">
+      <TextQuote aria-hidden="true" size={11} />{label}
     </button>
   );
 }
@@ -120,7 +140,7 @@ function Channels({ pack }: { pack: ContextPack }) {
             <p className="flex items-baseline gap-2"><span className="font-mono text-sm text-ink-3">{c.priority}.</span>
               <span className="font-medium text-ink">{CHANNEL[c.platform] ?? c.platform}</span>
               {c.posts_per_week ? <span className="text-xs text-ink-3">{c.posts_per_week} post{c.posts_per_week === 1 ? "" : "s"} a week</span> : null}
-              <IdTag id={c.id} /></p>
+              </p>
             <p className="mt-1 text-sm text-ink">{c.why}</p>
             <p className="mt-2 text-sm text-ink-2">Formats: {c.formats.join(", ") || "-"}</p>
             {c.communities_or_hashtags.length > 0 && <p className="text-sm text-ink-2">Where: {c.communities_or_hashtags.join(", ")}</p>}
@@ -161,6 +181,7 @@ function ThisWeek({ pack }: { pack: ContextPack }) {
 
 /** V9: what they want and what stops them, with tensions as the bridge between the two. */
 function WantStops({ pack, filter, meta }: { pack: ContextPack; filter: Filter; meta: (n: string) => SectionNotes | undefined }) {
+  const { claims } = usePack();
   const tensions = applyFilter(asItems(pack.tensions), filter);
   const stops = [...asItems(pack.pain_points ?? []), ...asItems(pack.objections)];
   return (
@@ -181,7 +202,9 @@ function WantStops({ pack, filter, meta }: { pack: ContextPack; filter: Filter; 
         <details className="rounded-lg border border-line p-3">
           <summary className="cursor-pointer text-sm text-ink-2">How to answer their objections ({pack.playbook.objection_handling.length})</summary>
           <ul className="mt-2 space-y-2 text-sm">
-            {pack.playbook.objection_handling.map((h) => <li key={h.objection_id} className="text-ink"><IdButton id={h.objection_id} /> {h.response}</li>)}
+            {pack.playbook.objection_handling.map((h) => <li key={h.objection_id} className="text-ink">
+              {claims?.[h.objection_id] && <span className="block font-medium">“{claims[h.objection_id]}”</span>}
+              {h.response} <IdButton id={h.objection_id} /></li>)}
           </ul>
         </details>
       )}
@@ -246,8 +269,8 @@ function Guardrails({ pack }: { pack: ContextPack }) {
         <ul className="space-y-2">
           {flags.map((f) => (
             <li key={f.id} className="rounded-lg border border-line-strong p-3 text-ink-2">
-              <span className="font-medium text-ink">Check with legal ({f.category.replace("_", " ")}) on <IdButton id={f.item_id} />.</span>{" "}
-              {f.why} <span className="text-ink">Safer: {f.safer_wording}</span>
+              <span className="font-medium text-ink">Check with legal ({f.category.replace("_", " ")}).</span>{" "}
+              {f.why} <span className="text-ink">Safer: {f.safer_wording}</span> <IdButton id={f.item_id} label="the item" />
             </li>
           ))}
         </ul>
@@ -566,8 +589,8 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                         .then((i) => navigate(rerunUrl(i))).catch(() => navigate(rerunUrl({
                           brief: pack.brief.text, mode: pack.mode, time_window_days: pack.brief.interpreted.time_window_days,
                           brand_voice: pack.brief.brand_voice ?? null, intake: pack.brief.intake ?? null })))}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong px-3 py-1.5 text-sm text-ink">
-                <RotateCcw aria-hidden="true" size={14} /> Run again
+                      title="Run again with the same brief" className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong px-3 py-1.5 text-sm text-ink">
+                <RotateCcw aria-hidden="true" size={14} /><span className="sr-only sm:not-sr-only">Run again</span>
               </button>
               <button type="button" onClick={() => setAgent(!agent)} aria-pressed={agent}
                       className={`ml-auto inline-flex items-center gap-1.5 rounded px-2 py-1.5 text-xs ${agent ? "bg-wash text-ink" : "text-ink-3 hover:text-ink"}`}>
@@ -745,6 +768,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
       <EvidenceDrawer itemId={drawer} index={index} packId={pack.pack_id} onClose={() => setDrawer(null)} onOpen={setDrawer} />
       <Handoff packId={pack.pack_id} open={handoff} onClose={() => setHandoff(false)} />
       <AskPanel pack={pack} open={asking} onClose={() => setAsking(false)} />
+      <BackToTop />
     </PackContext.Provider>
     </GuideContext.Provider>
   );

@@ -28,21 +28,23 @@ class NotFound(LookupError):
 # --------------------------------------------------------------------------
 
 
+def featured_card(p: dict[str, Any]) -> dict[str, Any]:
+    """One example-pack card (the API list and the static mirror share it)."""
+    i = p["brief"]["interpreted"]
+    items = all_items(p).values()
+    return {"pack_id": p["pack_id"], "brief": p["brief"]["text"], "topic": i["topic"], "market": i["market"],
+            "audience": i["audience"], "mode": p["mode"], "generated_at": p["generated_at"],
+            "coverage_grade": p["snapshot"]["coverage_grade"], "thin_evidence": p["coverage"]["thin_evidence"],
+            # UX audit: cards describe what a pack holds, not its codes
+            "relevant_posts": p["coverage"]["counts"]["relevant"], "languages": i["languages"],
+            "findings": sum(1 for it in items if it.get("confidence") and it.get("claim")),
+            "strong_findings": sum(1 for it in items if (it.get("confidence") or {}).get("label") == "strong"),
+            # the card's line in English (a non-English pack's audience is in its own language)
+            "top_finding": next((t["text"] for t in p["snapshot"].get("five_truths", [])), None)}
+
+
 def featured() -> list[dict[str, Any]]:
-    out = []
-    for row in db.list_featured_packs():
-        p = row.pack
-        i = p["brief"]["interpreted"]
-        out.append({"pack_id": row.id, "brief": p["brief"]["text"], "topic": i["topic"], "market": i["market"],
-                    "audience": i["audience"], "mode": p["mode"], "generated_at": p["generated_at"],
-                    "coverage_grade": p["snapshot"]["coverage_grade"],
-                    "thin_evidence": p["coverage"]["thin_evidence"],
-                    # UX audit: example cards describe what a pack holds, not its codes
-                    "relevant_posts": p["coverage"]["counts"]["relevant"], "languages": i["languages"],
-                    "findings": sum(1 for it in all_items(p).values() if it.get("confidence") and it.get("claim")),
-                    "strong_findings": sum(1 for it in all_items(p).values()
-                                           if (it.get("confidence") or {}).get("label") == "strong")})
-    return out
+    return [featured_card({**row.pack, "pack_id": row.id}) for row in db.list_featured_packs()]
 
 
 def pack(pack_id: str) -> dict[str, Any]:

@@ -51,7 +51,7 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
   return (
     <div className="space-y-4">
       <div className="space-y-0.5 text-sm">
-        <p className="line-clamp-1 text-ink" title={i.audience}><span className="text-ink-3">For </span>{i.audience}
+        <p className="line-clamp-2 text-ink sm:line-clamp-1" title={i.audience}><span className="text-ink-3">For </span>{i.audience}
           {goal && <><span className="text-ink-3"> · goals: </span>{goal}</>}<span className="text-ink-3"> · {i.market}</span></p>
         {s.represents && <p className="text-ink-2">{s.represents}</p>}
         <HowToRead />
@@ -80,13 +80,16 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                 {f.quote && (
                   <blockquote className="mt-1.5 border-l-2 border-line-strong pl-2.5">
                     <p className="line-clamp-2 font-serif text-sm text-ink" title={f.quote.text}>“{f.quote.text}”</p>
-                    {f.quote_en && <p className="line-clamp-1 text-xs text-ink-3" title={f.quote_en}>In English (the post): {f.quote_en}</p>}
+                    {f.quote_en && <p className="line-clamp-1 text-xs text-ink-3" title={f.quote_en}>In English: {f.quote_en}</p>}
                   </blockquote>
                 )}
-                <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-ink-2">
+                <p className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-2">
                   <ConfidenceBadge label={f.label} />
-                  <span>{f.people} {f.people === 1 ? "person" : "people"}, {f.communities} {f.communities === 1 ? "community" : "communities"} · good enough to: <span className="font-medium text-ink">{f.good_enough_to}</span></span>
-                  <button type="button" onClick={() => onOpen?.(f.item_ids[0])} className="underline underline-offset-2 hover:text-ink">posts</button>
+                  <span>{f.people} {f.people === 1 ? "person" : "people"}, {f.communities} {f.communities === 1 ? "community" : "communities"}</span>
+                  {/* UX audit: each piece wraps as a whole, never leaving one word alone on a line */}
+                  <span className="whitespace-nowrap">Good enough to: <span className="font-medium text-ink">{f.good_enough_to}</span></span>
+                  <button type="button" onClick={() => onOpen?.(f.item_ids[0])} aria-label={`See the posts behind ${f.item_ids[0]}`}
+                          className="ml-auto whitespace-nowrap underline underline-offset-2 hover:text-ink">See the posts</button>
                 </p>
               </li>
             ))}

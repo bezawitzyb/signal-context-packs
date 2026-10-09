@@ -60,9 +60,9 @@ function OpenEvidence({ id }: { id: string }) {
   if (!onOpen) return <IdTag id={id} />;
   return (
     <button type="button" onClick={() => onOpen(id)}
-            className="inline-flex items-center gap-1 font-mono text-xs text-ink-3 hover:text-ink">
-      {id} <ArrowRight aria-hidden="true" size={12} />
-      <span className="sr-only">open the evidence</span>
+            aria-label={`See the posts behind ${id}`} title={id}
+            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-xs text-ink-2 hover:text-ink">
+      See the posts <ArrowRight aria-hidden="true" size={12} />
     </button>
   );
 }

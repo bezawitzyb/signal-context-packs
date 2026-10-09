@@ -39,11 +39,10 @@ def featured_packs() -> list[dict]:
 
 
 def card(p: dict) -> dict:
-    """One entry of the featured list, as the API's service.featured() builds it."""
-    i = p["brief"]["interpreted"]
-    return {"pack_id": p["pack_id"], "brief": p["brief"]["text"], "topic": i["topic"], "market": i["market"],
-            "audience": i["audience"], "mode": p["mode"], "generated_at": p["generated_at"],
-            "coverage_grade": p["snapshot"]["coverage_grade"], "thin_evidence": p["coverage"]["thin_evidence"]}
+    """One entry of the featured list, exactly as the API's service.featured() builds it."""
+    from ctxpack.api.service import featured_card
+
+    return featured_card(p)
 
 
 def write_data(out: Path, packs: list[dict]) -> list[str]:

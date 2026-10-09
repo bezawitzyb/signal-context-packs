@@ -49,6 +49,9 @@ GOAL_OFFER = [{"id": "Q1", "chosen": ["Positioning", "Content plan"], "text": "a
 def test_featured_packs_and_views_need_no_key(api):
     listed = client.get("/api/v1/packs").json()
     assert [p["pack_id"] for p in listed] == [api.pack_id]
+    card = listed[0]                                             # UX audit: cards show contents, not codes
+    assert card["relevant_posts"] >= 0 and card["findings"] >= card["strong_findings"] >= 0
+    assert card["top_finding"] == api.snapshot.five_truths[0].text
     digest = client.get(f"/api/v1/packs/{api.pack_id}?view=digest").json()
     assert digest["guardrails"] and digest["instructions_for_agents"] and "five_truths" in digest
     part = client.get(f"/api/v1/packs/{api.pack_id}?fields=tensions,voice").json()

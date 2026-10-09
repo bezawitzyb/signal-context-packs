@@ -28,7 +28,9 @@ export function PackCards({ packs }: { packs: FeaturedPack[] }) {
             <Link to={`/packs/${p.pack_id}`}
                   className="group flex w-full flex-col rounded-lg border border-line p-4 hover:border-line-strong">
               <p className="font-medium text-ink">{p.brief}</p>
-              <p className="mt-1 line-clamp-2 flex-1 text-sm text-ink-2">{p.audience}</p>
+              {p.top_finding
+                ? <p className="mt-1 line-clamp-3 flex-1 text-sm text-ink-2"><span className="text-ink-3">Heard most: </span>{p.top_finding}</p>
+                : <p className="mt-1 line-clamp-2 flex-1 text-sm text-ink-2">{p.audience}</p>}
               <p className="mt-3 text-xs text-ink-3">{facts.join(" · ")}</p>
               <span className="mt-2 inline-flex items-center gap-1 text-sm text-ink group-hover:underline">
                 See the pack <ArrowRight aria-hidden="true" size={14} />
@@ -62,6 +64,8 @@ export function Home() {
           Find out what your audience really says - their words, frustrations and objections - from real public posts in
           their own market and language, with a plan you can act on. Every finding links to the posts behind it.
         </p>
+        <p className="mt-2 text-sm text-ink-2">You get a <span className="font-medium text-ink">Context Pack</span>: a
+          report to read and share, plus a file your AI tools can use to write in your audience's words.</p>
         {!MIRROR && (
           <a href="#ask" className="mt-5 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95">
             Start your research <ArrowRight aria-hidden="true" size={16} />

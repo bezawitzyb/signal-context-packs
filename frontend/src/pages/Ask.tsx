@@ -419,6 +419,15 @@ function Understood({ run, onReplanned }: { run: RunStatus; onReplanned: (run: R
     <section aria-labelledby="understood" className="space-y-2">
       <h2 id="understood" className="text-lg font-semibold text-ink">Here's what I understood</h2>
       <p className="text-sm text-ink-2">Check it and change anything that is wrong - the plan is updated to match.</p>
+      {/* UX audit: a wrong guess spoils the whole run, so every assumption is listed in one place */}
+      <p className="rounded-lg border border-line-strong bg-wash px-3 py-2 text-sm text-ink">
+        <span className="font-medium">We assumed:</span>{" "}
+        {[u?.markets?.source === "assumed" && `market: ${edits.markets.map(marketText).join(", ")}`,
+          u?.who?.source === "assumed" && `audience: ${edits.audience}`,
+          `languages: ${edits.languages.map(languageName).join(", ")}`,
+          `posts from the last ${interp.time_window_days} days`].filter(Boolean).join(" · ")}.
+        <span className="text-ink-2"> Change any of it below if it is wrong.</span>
+      </p>
       <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
         <div className="bg-paper">
           <ChipList label="Goals" hint="Main goal first" items={edits.goals.map((g, n) => ({ key: g, text: `${n + 1}. ${goalName(g)}` }))}
@@ -505,9 +514,9 @@ function Understood({ run, onReplanned }: { run: RunStatus; onReplanned: (run: R
         </div>
         {rules && (
           <div className="bg-paper px-4 py-3">
-            <p className={cellLabel}>Rules area</p>
-            <p className="mt-0.5 text-ink">{rules}</p>
-            <p className="text-xs text-ink-3">Risky claims in this area are flagged in the pack</p>
+            <p className={cellLabel}>Claims to be careful with</p>
+            <p className="mt-0.5 text-ink">{rules.charAt(0).toUpperCase() + rules.slice(1)}</p>
+            <p className="text-xs text-ink-3">Claims that may need a legal check in this area are flagged in the pack</p>
           </div>
         )}
       </div>

@@ -52,7 +52,15 @@ function resultLine(m: Move): { text: string; tone: "good" | "weak" | "none" | "
 const plainReason = (reason: string) => reason.replace(/\bRQ-\d+(?:\/\d+)*(?:\s*(?:and|,)\s*RQ-\d+)*:?\s*/g, "").trim();
 
 export function AgentLog({ moves }: { moves: Move[] }) {
-  if (!moves.length) return <p className="text-sm text-ink-3">The agent's first moves will appear here.</p>;
+  if (!moves.length) return (
+    <div className="rounded-lg border border-dashed border-line-strong p-4 text-sm text-ink-2">
+      <p className="flex items-center gap-2 text-ink">
+        <span aria-hidden="true" className="size-1.5 rounded-full bg-ink-3 motion-safe:animate-pulse" />
+        The agent is reading your plan and choosing where to look first.</p>
+      <p className="mt-1">Its first searches usually appear within a minute or two. Each one shows where it looked and
+        how many posts were on topic.</p>
+    </div>
+  );
   return (
     <ol className="space-y-2">
       {moves.map((m) => {
@@ -93,21 +101,28 @@ export function AgentLog({ moves }: { moves: Move[] }) {
   );
 }
 
-const COUNTER_LABELS: [string, string][] = [
-  ["collected", "Collected"], ["duplicates", "Duplicates"], ["spam", "Spam"], ["out_of_window", "Out of window"],
-  ["kept", "Kept"], ["relevant", "Relevant"],
+// UX audit: a three-step funnel (found -> cleaned -> on topic) instead of six zero counters; removals in one line.
+const FUNNEL: [string, string, string][] = [
+  ["collected", "Found", "posts collected"], ["kept", "After cleaning", "no copies, spam or old posts"],
+  ["relevant", "On topic", "used for the findings"],
 ];
 
 /** Posts so far; "Cost so far" only when the page is opened with the owner key (cost = null otherwise). */
 export function Counters({ counters, cost = null }: { counters: Summary["counters"]; cost?: Summary["cost"] }) {
+  const n = (k: string) => counters?.[k] ?? 0;
   return (
     <div className="grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-line bg-line">
-      {COUNTER_LABELS.map(([k, label]) => (
-        <div key={k} className="bg-paper px-3 py-2">
-          <p className="text-[0.7rem] uppercase tracking-wide text-ink-3">{label}</p>
-          <p className="font-mono text-lg text-ink">{counters?.[k] ?? 0}</p>
+      {FUNNEL.map(([k, label, hint], i) => (
+        <div key={k} className="bg-paper px-3 py-2" title={hint}>
+          <p className="text-[0.7rem] uppercase tracking-wide text-ink-3">{i > 0 && <span aria-hidden="true">→ </span>}{label}</p>
+          <p className="font-mono text-lg text-ink">{n(k)}</p>
         </div>
       ))}
+      {(n("duplicates") + n("spam") + n("out_of_window")) > 0 && (
+        <p className="col-span-3 bg-paper px-3 py-1.5 text-xs text-ink-3">
+          Removed: {n("duplicates")} copies · {n("spam")} spam · {n("out_of_window")} too old
+        </p>
+      )}
       {cost && (
         <div className="col-span-3 bg-paper px-3 py-2">
           <p className="text-[0.7rem] uppercase tracking-wide text-ink-3">Cost so far (only you see this)</p>

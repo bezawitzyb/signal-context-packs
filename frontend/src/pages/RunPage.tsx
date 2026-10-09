@@ -8,6 +8,7 @@ import { summarize } from "../lib/runSummary";
 import { useRunEvents } from "../lib/useRunEvents";
 import { AgentLog, Announcer, CoverageBars, Counters, Notices, SourcesVerdict, StageStepper } from "../components/Theatre";
 import { STEPS } from "../lib/runSummary";
+import { useDoneSignal } from "../lib/doneSignal";
 import { ReplayPage } from "./ReplayPage";
 import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
@@ -111,6 +112,8 @@ function LiveRun({ runId }: { runId: string }) {
     if (key) getOwnerRunCost(key, runId).then((c) => setOwnerCost({ apify_usd: c.apify_usd, llm_usd: c.anthropic_usd }))
       .catch(() => setOwnerCost(null));
   }, [runId, summary.packId]);
+
+  useDoneSignal(run && { brief: run.brief, finished: FINISHED.includes(run.status), ok: Boolean(summary.packId ?? run.pack_id) });
 
   if (error) return <ErrorNote message={error} />;
   if (!run) return <Skeleton lines={3} label="Loading the run" />;
