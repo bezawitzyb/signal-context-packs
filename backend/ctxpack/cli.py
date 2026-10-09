@@ -663,6 +663,9 @@ def write(
     from_run: str = typer.Option(..., "--from-run", help="Run id whose clusters are written up"),
     redo: bool = typer.Option(False, "--redo", help="Write the draft again (generic points included)"),
     show: str = typer.Option("tensions,voice,white_space", help="Draft sections to print as JSON"),
+    extra_budget: float = typer.Option(0.0, "--extra-budget", min=0.0, max=3.0,
+                                       help="Owner-approved one-off USD on top of this run's analysis budget "
+                                            "(rebuilds only; modes.yaml is unchanged)"),
     yes: bool = typer.Option(False, "--yes", help="Do not wait for Enter before the paid calls"),
 ) -> None:
     """Step 3.3 on a saved run: generic baseline, two writer calls, non_obvious -> a DRAFT pack.
@@ -683,7 +686,10 @@ def write(
     if run is None or not clusters or not run.analysis:
         console.print(f"{BAD} run {from_run} has no clusters yet: run cluster --from-run {from_run} first")
         raise typer.Exit(1)
-    limit_usd = mode_limits(run.mode)["analysis_llm_usd"]
+    limit_usd = mode_limits(run.mode)["analysis_llm_usd"] + extra_budget
+    if extra_budget:
+        console.print(f"[yellow]extra budget ${extra_budget:.2f} on top of this run's analysis budget "
+                      f"(owner-approved rebuild)[/yellow]")
     done = bool((run.draft or {}).get("sections")) and not redo
     est = 0.0 if done else wr.estimate_usd(clusters)
     console.print(f"run {run.id} ({run.brief_text[:50]}) | clusters {len(clusters)} | draft saved {done}",
@@ -728,6 +734,9 @@ def write(
 def verify(
     from_run: str = typer.Option(..., "--from-run", help="Run id whose draft is verified"),
     redo: bool = typer.Option(False, "--redo", help="Verify the draft again"),
+    extra_budget: float = typer.Option(0.0, "--extra-budget", min=0.0, max=3.0,
+                                       help="Owner-approved one-off USD on top of this run's analysis budget "
+                                            "(rebuilds only; modes.yaml is unchanged)"),
     yes: bool = typer.Option(False, "--yes", help="Do not wait for Enter before the paid calls"),
 ) -> None:
     """Step 3.4 on a saved draft: exact quotes, claim checks, confidence labels.
@@ -748,7 +757,10 @@ def verify(
     if not draft.get("sections"):
         console.print(f"{BAD} run {from_run} has no draft yet: run write --from-run {from_run} first")
         raise typer.Exit(1)
-    limit_usd = mode_limits(run.mode)["analysis_llm_usd"]
+    limit_usd = mode_limits(run.mode)["analysis_llm_usd"] + extra_budget
+    if extra_budget:
+        console.print(f"[yellow]extra budget ${extra_budget:.2f} on top of this run's analysis budget "
+                      f"(owner-approved rebuild)[/yellow]")
     est = 0.0 if draft.get("verified") and not redo else vf.estimate_usd(draft)
     console.print(f"run {run.id} ({run.brief_text[:50]}) | estimated max cost ${est:.2f} | run analysis LLM "
                   f"spend so far ${run.cost_analysis_llm_usd or 0:.2f} of ${limit_usd:.2f}", highlight=False)
@@ -790,6 +802,9 @@ def pack(
     brand_voice: str = typer.Option("", help="Brand voice for the playbook only (max 200 chars)"),
     test_hook: list[str] = typer.Option([], "--test-hook", help="Extra text for the compliance check only"),
     redo: bool = typer.Option(False, "--redo", help="Write the playbook again for this brand voice"),
+    extra_budget: float = typer.Option(0.0, "--extra-budget", min=0.0, max=3.0,
+                                       help="Owner-approved one-off USD on top of this run's analysis budget "
+                                            "(rebuilds only; modes.yaml is unchanged)"),
     yes: bool = typer.Option(False, "--yes", help="Do not wait for Enter before the paid calls"),
 ) -> None:
     """Step 3.5 on a verified draft: playbook + compliance + finalise -> a validated, saved Context Pack.
@@ -810,7 +825,10 @@ def pack(
         raise typer.Exit(1)
     voice = brand_voice.strip()[:200] or None
     saved = ((run.draft or {}).get("playbooks") or {}).get(voice or "_neutral")
-    limit_usd = mode_limits(run.mode)["analysis_llm_usd"]
+    limit_usd = mode_limits(run.mode)["analysis_llm_usd"] + extra_budget
+    if extra_budget:
+        console.print(f"[yellow]extra budget ${extra_budget:.2f} on top of this run's analysis budget "
+                      f"(owner-approved rebuild)[/yellow]")
     est = 0.0 if saved and not redo and not test_hook else 2 * (
         cost_usd(model_for("reasoner"), 9000, 7000) + cost_usd(model_for("reasoner"), 2500, 2500))
     console.print(f"run {run.id} ({run.brief_text[:50]}) | brand voice: {voice or 'none'} | estimated max cost "

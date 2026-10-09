@@ -300,6 +300,6 @@ def estimate_usd(draft: dict) -> float:
     from ctxpack.config import model_for
     from ctxpack.llm.client import cost_usd
 
-    items = sum(len(draft["sections"][n]) for n in INSIGHT_SECTIONS)
+    items = sum(len(draft["sections"].get(n, [])) for n in INSIGHT_SECTIONS)  # drafts from before V4 lack some
     calls = items / _cfg()["claim_batch_items"] + 1
     return 2 * cost_usd(model_for("worker"), int(items * 5 * 110 + calls * 700), items * 45)

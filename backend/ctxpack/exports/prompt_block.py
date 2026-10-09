@@ -14,7 +14,10 @@ def to_prompt_block(pack: dict) -> str:
     i = pack["brief"]["interpreted"]
     g = pack["guardrails"]
     pb = pack["playbook"]
-    sizes = {"lexicon": 20, "tensions": 4, "hooks": 8, "channels": 4, "do_first": 3, "week": 5, "posts": 5}
+    has_posts = bool(pack.get("post_briefs"))
+    # V9 one plan: with post briefs, the this-week list would repeat them
+    sizes = {"lexicon": 20, "tensions": 4, "hooks": 8, "channels": 4, "do_first": 3, "week": 0 if has_posts else 5,
+             "posts": 5}
     words = {x["id"]: x["term"] for x in pack["voice"]["lexicon"]}
 
     def build() -> str:
@@ -41,16 +44,16 @@ def to_prompt_block(pack: dict) -> str:
               for c in pack["channel_plan"][:sizes["channels"]]]
         L += ["", "TOP HOOKS:"]
         L += [f"- {inline(h['text'])} [{h['id']}]" for h in pb["hooks"][:sizes["hooks"]]]
-        L += ["", "THIS WEEK:"]
+        if sizes["week"]:
+            L += ["", "THIS WEEK:"]
         L += [f"- {w['day']}: {w['platform']} {inline(w['format'])} - {w['hook_id']} - {inline(w['angle'])}"
               for w in pb["this_week"][:sizes["week"]]]
-        if pack.get("post_briefs"):
+        if pack.get("post_briefs") and sizes["posts"]:
             L += ["", "POST BRIEFS (write these; facts only from the key points):"]
             for b in pack["post_briefs"][:sizes["posts"]]:
-                L.append(f"- [{b['id']}] {b['channel']} {b['format']} for {inline(b['role'])}: hook \"{inline(b['hook'])}\"; "
-                         f"angle {inline(b['angle'])}; points: {inline('; '.join(k['text'] for k in b['key_points']))}; "
-                         f"CTA {inline(b['cta'])}"
-                         + (f"; use: {inline(', '.join(words.get(w, w) for w in b['their_words_to_use']))}"
+                L.append(f"- [{b['id']}] {b['channel']} {b['format']}: hook \"{inline(b['hook'])[:140]}\"; "
+                         f"angle {inline(b['angle'])[:140]}; CTA {inline(b['cta'])[:100]}"
+                         + (f"; use: {inline(', '.join(words.get(w, w) for w in b['their_words_to_use'][:4]))}"
                             if b["their_words_to_use"] else ""))
         L += ["", "RULES FOR AI TOOLS:"] + [f"- {r}" for r in pack["instructions_for_agents"]]
         L += ["", DISCLAIMER]
@@ -58,9 +61,10 @@ def to_prompt_block(pack: dict) -> str:
 
     text = build()
     limit = cfg()["prompt_block_max_tokens"]
-    for key in ("posts", "lexicon", "hooks", "channels", "tensions", "week") * 20:
+    for key in ("lexicon", "hooks", "posts", "channels", "tensions", "week") * 20:
         if tokens(text) <= limit:
             break
-        sizes[key] = max(1, sizes[key] - 1)
+        floor = 2 if key == "posts" else 0 if key == "week" and has_posts else 1   # briefs: all in the full report
+        sizes[key] = max(floor, sizes[key] - 1)
         text = build()
     return text
