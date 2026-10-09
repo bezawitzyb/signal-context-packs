@@ -35,9 +35,33 @@ def test_a_repeated_finding_stays_once_in_the_best_section_and_links_elsewhere(f
     rep = asyncio.run(cs.consolidate(s, meta))
     assert rep.merged == [("THM-01", "OBJ-01")]                       # objections fit "why say no" better
     assert [t["id"] for t in s["themes"]] == ["THM-02"]
-    assert set(s["objections"][0]["evidence_docs"]) == {"d1", "d2", "d3"}   # evidence merged
+    assert set(s["objections"][0]["evidence_docs"]) == {"d1", "d3"}   # d2 is CL-01's post, not CL-03's
     assert meta["themes"]["see_also"] == ["OBJ-01"]
     assert s["opportunities"][0]["builds_on"] == ["OBJ-01"] and s["risks"][0]["item_ids"] == ["OBJ-01", "THM-02"]
+
+
+def test_a_merge_moves_only_posts_of_the_kept_items_cluster(fake):  # noqa: F811
+    """2026-10-09 reruns: merged posts from another cluster failed the Step 3.3 CHECK."""
+    s = sample()
+    s["themes"][0]["evidence_docs"] = ["d1", "d2", "d8"]
+    s["themes"][0]["quotes"] = [{"doc_id": "d2", "text": "q2"}, {"doc_id": "d8", "text": "q8"}]
+    members = {"CL-01": {"d1", "d2", "d8"}, "CL-03": {"d1", "d3", "d8"}}   # d8 is in both clusters
+    asyncio.run(cs.consolidate(s, {}, members=members))
+    kept = s["objections"][0]
+    assert set(kept["evidence_docs"]) == {"d1", "d3", "d8"}
+    assert [q["doc_id"] for q in kept["quotes"]] == ["d8"]
+
+
+def test_a_chain_of_merges_follows_to_the_last_keeper(fake, monkeypatch):  # noqa: F811
+    """NL rerun 2026-10-09: WSP merged into PAIN, PAIN into OBJ, then WSP's next pair crashed (StopIteration)."""
+    s = {"white_space": [item("WSP-01", "a", ["d1"], "CL-01")], "pain_points": [item("PAIN-01", "b", ["d2"], "CL-02")],
+         "objections": [item("OBJ-01", "c", ["d3"], "CL-03")], "themes": [item("THM-01", "d", ["d4"], "CL-04")],
+         "motivations": [], "tensions": []}
+    score = {("WSP-01", "PAIN-01"): 1.0, ("PAIN-01", "OBJ-01"): 0.9, ("WSP-01", "THM-01"): 0.8}
+    monkeypatch.setattr(cs, "similarity", lambda a, b: score.get((a["id"], b["id"]), score.get((b["id"], a["id"]), 0.0)))
+    rep = asyncio.run(cs.consolidate(s, {}))
+    assert rep.merged == [("WSP-01", "PAIN-01"), ("PAIN-01", "OBJ-01"), ("THM-01", "OBJ-01")]
+    assert [it["id"] for name in cs.SECTIONS for it in s[name]] == ["OBJ-01"]
 
 
 def test_no_two_sections_state_the_same_finding_afterwards(fake):  # noqa: F811

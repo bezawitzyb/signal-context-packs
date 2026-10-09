@@ -80,8 +80,11 @@ def _fake(user: str) -> dict:
     return {"items": [{"pair": p, "same": False, "keep": "a"} for p in re.findall(r"^(P\d+):", user, flags=re.M)]}
 
 
-async def consolidate(sections: dict[str, list[dict]], meta: dict[str, dict], report: Report | None = None) -> Report:
-    """Merge repeats across SECTIONS in place; record see_also in meta; add typed relations."""
+async def consolidate(sections: dict[str, list[dict]], meta: dict[str, dict], report: Report | None = None,
+                      members: dict[str, set[str]] | None = None) -> Report:
+    """Merge repeats across SECTIONS in place; record see_also in meta; add typed relations.
+    members (cluster id -> verified member doc ids): the kept item absorbs only posts of its own cluster(s),
+    so its evidence still belongs to it (without members, only posts of the same cluster move)."""
     report = report or Report()
     cfg = _cfg()
     home = {name: n for n, name in enumerate(cfg["home_order"])}
@@ -118,14 +121,19 @@ async def consolidate(sections: dict[str, list[dict]], meta: dict[str, dict], re
 
     gone: dict[str, str] = {}
     for keep_s, keep, drop_s, drop in decisions:
-        while keep["id"] in gone:  # the keeper was itself merged away: follow it
-            keep_id = gone[keep["id"]]
+        keep_id = keep["id"]
+        while keep_id in gone:  # the keeper was itself merged away: follow the whole chain (A -> B -> C)
+            keep_id = gone[keep_id]
+        if keep_id != keep["id"]:
             keep_s, keep = next((s, it) for s in SECTIONS for it in sections.get(s, []) if it["id"] == keep_id)
         if drop["id"] in gone or drop is keep:
             continue
-        keep["evidence_docs"] = list(dict.fromkeys(keep.get("evidence_docs", []) + drop.get("evidence_docs", [])))[:5]
+        own = _own_docs(keep, drop, members)
+        moved = [d for d in drop.get("evidence_docs", []) if d in own]
+        keep["evidence_docs"] = list(dict.fromkeys(keep.get("evidence_docs", []) + moved))[:5]
         have = {q["text"] for q in keep.get("quotes", [])}
-        keep["quotes"] = (keep.get("quotes", []) + [q for q in drop.get("quotes", []) if q["text"] not in have])[:3]
+        keep["quotes"] = (keep.get("quotes", []) + [q for q in drop.get("quotes", [])
+                                                    if q["text"] not in have and q.get("doc_id") in own])[:3]
         sections[drop_s] = [it for it in sections[drop_s] if it is not drop]
         meta.setdefault(drop_s, {}).setdefault("see_also", []).append(keep["id"])
         gone[drop["id"]] = keep["id"]
@@ -133,6 +141,17 @@ async def consolidate(sections: dict[str, list[dict]], meta: dict[str, dict], re
     _remap(sections, gone)
     add_relations(sections)
     return report
+
+
+def _own_docs(keep: dict, drop: dict, members: dict[str, set[str]] | None) -> set[str]:
+    """Posts of the dropped item that may move to the kept one: verified members of the kept item's cluster(s)
+    (tensions: of their pair). The 2026-10-09 reruns showed merged posts from another cluster failing the CHECK."""
+    ids = [c for c in (keep.get("cluster_id"), keep.get("but_cluster_id")) if c]
+    if members is None:
+        if drop.get("cluster_id") not in ids:
+            return set()
+        return _docs(drop) | {q.get("doc_id") for q in drop.get("quotes", [])}
+    return set().union(*(members.get(c, set()) for c in ids))
 
 
 def _remap(sections: dict[str, Any], gone: dict[str, str]) -> None:

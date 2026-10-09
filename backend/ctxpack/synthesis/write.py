@@ -822,7 +822,7 @@ async def write_run(run_id: str, ctx: BriefContext, *, redo: bool = False) -> Wr
     finish_sections(sections, analysis)
     # V4: every finding once, in its best place; links between sections; so-what lines and takeaways
     meta: dict[str, dict] = {}
-    rep = await consolidate(sections, meta)
+    rep = await consolidate(sections, meta, members={c.id: set(c.verified_member_ids) for c in clusters})
     outcome.calls += rep.calls
     outcome.usd += rep.usd
     goal = confirmed_goal(run.intake) or "not given - say what each section means for marketing this topic"
@@ -837,6 +837,9 @@ async def write_run(run_id: str, ctx: BriefContext, *, redo: bool = False) -> Wr
     outcome.evidence = len(evidence)
     draft.update(sections=sections, evidence=evidence,
                  stats={"written": outcome.written, "dropped": outcome.dropped, "evidence": len(evidence)})
+    if problems := check_draft(draft, clusters):  # the CLI's Step 3.3 CHECK, now on every run
+        log.warning("run %s writing: %d evidence ids outside their cluster: %s", run_id, len(problems), problems[:5])
+        draft["stats"]["evidence_problems"] = problems
     db.update_run(run_id, draft=draft)
     log.info("run %s writing: %s, dropped %s, %d evidence, %d calls, $%.4f", run_id, outcome.written,
              outcome.dropped, len(evidence), outcome.calls, outcome.usd)
