@@ -108,12 +108,21 @@ Read the relevant step before working. Do only that step.
   demo-check [--no-paid], actor-check, version)
 - Research run: ... research "<brief>" --mode quick|standard [--fixtures]
   [--auto-approve] [--goal ID ...] [--offer TEXT] [--offer-stage STAGE]
-  [--brand NAME] [--parent-brand NAME] [--no-apify] [--apify-max USD] [--record]
+  [--brand NAME] [--parent-brand NAME] [--brand-voice TEXT] [--window DAYS]
+  [--no-apify] [--apify-max USD] [--record]
   (--auto-approve needs --goal; the brand_perception goal needs --brand)
 - Analysis on a saved corpus: ... extract --from-run RUN_ID, then
   ... cluster --from-run RUN_ID [--redo], then write, verify and pack --from-run RUN_ID
   [--redo] (estimate shown first); pack [--brand-voice] [--test-hook] writes
-  every export to data/packs/<pack_id>/; export PACK_ID re-exports (free)
+  every export to data/packs/<pack_id>/; export PACK_ID re-exports (free).
+  write/verify/pack [--extra-budget USD] (owner-approved one-off, max 3) when a
+  run's analysis budget is spent. The daily cap (DAILY_SPEND_CAP_USD, default 25,
+  per UTC day, shared with the live site) blocks every paid call once reached;
+  Claude raises it only with the owner's OK, inline for local commands
+  (DAILY_SPEND_CAP_USD=30 uv run ...), never in .env; Render is the owner's
+- Featured swap: ... feature NEW_ID --replaces OLD_ID (privacy check), then set
+  reuse_pack in backend/evals/briefs.yaml and delete examples/ files of an old
+  slug; tests must not depend on the featured pack's words (use tests/fixtures/packs)
 - Actor health (free, public Apify API, no key): ... actor-check (health, prices, inputs vs schemas;
   thresholds in catalog.yaml health_check; weekly in .github/workflows/actor-check.yml)
 - Scripts: cd backend && uv run python -m scripts.demo_agent [--pack ID];

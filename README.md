@@ -33,7 +33,7 @@ skill, MCP) - and you can ask it questions.
    "How to write a brief" next to the box explains the five things only you know. Whatever your brief
    leaves out gets up to 4 quick questions first: always your goal and your offer, then only gaps that
    change the research (who exactly, which countries, by when).
-   A Quick run takes about 7-11 minutes; one run at a time, later ones queue.
+   A Quick run takes about 7-17 minutes; one run at a time, later ones queue.
 5. If the live app is slow to answer, the free server is waking up (about a minute). The
    [read-only mirror](https://bezawitzyb.github.io/signal-context-packs/) has every featured pack, the
    evidence drawer and all downloads.
@@ -81,6 +81,11 @@ best, with links to related findings elsewhere.
   Apify, the open web through web search and fetch, and Google Trends. It sees only short summaries
   ("collected 50, kept 43, 84% relevant"), never raw posts. Every Apify source has a tested backup actor
   ([`catalog.yaml`](backend/ctxpack/config/catalog.yaml)); if both fail, the pack says so as a blind spot.
+  A free weekly `actor-check` watches every actor's health, prices and inputs.
+- **New searches start small.** The first call of a new search takes 20 posts (Quick) or 40 (Standard) and
+  gets full size only once it proves on topic, so off-topic searches cost little. For a one-country brief,
+  TikTok (and YouTube in non-English markets) looks for local results; English joins every brief (the
+  Dutch, for example, discuss snacks in English too).
 - **Tools own the data and the limits.** Every limit lives in
   [`backend/ctxpack/config/modes.yaml`](backend/ctxpack/config/modes.yaml) and is enforced in code, never
   only in a prompt. Quick allows 15 tool calls, 5 minutes and $1.80 of Apify; Standard allows 30 calls,
@@ -88,11 +93,13 @@ best, with links to related findings elsewhere.
 - Inside every collection tool, before the agent hears back: normalise → hash authors → redact
   personal details → dates and time window → de-duplicate → spam → relevance check → store.
 - If the loop crashes, code runs the untried starting sources. If evidence is thin, it tops up from
-  sources already kept. A dropped source is never called again.
+  sources already kept. A dropped source is never called again. An agent that finishes in the very turn
+  its time runs out keeps its own source verdicts.
 - Then: extraction, clustering with a membership check, **counts computed in code** (no model writes a
   number), writing, verification (every quote must be an exact substring of its post; every claim is
   re-checked against its own evidence), confidence scoring, opportunities, news hooks, playbook with
-  post briefs and drafts, compliance flags, and a content calendar built in code.
+  post briefs and drafts, compliance flags, and a content calendar built in code. When two sections state
+  the same finding, it stays once and keeps only posts that belong to it (checked in code on every run).
 
 ## What the output means
 
@@ -130,7 +137,7 @@ best, with links to related findings elsewhere.
 
 ## Evaluation results
 
-Four test briefs, run on 2026-10-06 before changes V1-V10 (details and reasons on
+Four test briefs, run on 2026-10-06 before changes V1-V12 and on older featured packs (details and reasons on
 [/evals](https://signal-l2w5.onrender.com/evals)). A fifth brief (B2B, several markets) is added in
 [`backend/evals/briefs.yaml`](backend/evals/briefs.yaml) and needs a paid Standard run.
 
@@ -169,7 +176,8 @@ checks the setup without showing any secret.
 One **Render Free** web service (Docker, one worker, 512 MB) plus **Neon Free** Postgres, with no payment
 card anywhere. Runs are jobs in the database: no work happens inside an HTTP request, every stage
 saves to Neon, and live updates stream from the events table, so a restart loses nothing. A GitHub
-Actions job pings `/ping` to keep the service awake, and the static mirror is published to GitHub Pages.
+Actions job pings `/ping` to keep the service awake, the static mirror is published to GitHub Pages, and a
+weekly job checks every Apify actor (free, no key).
 CI runs the lint, all tests, the build with the end-to-end tests and a secrets scan on every push (no secrets
 needed: tests use recorded data). Each research run works on its own thread, so the site stays responsive.
 Only Anthropic and Apify cost money; a daily spend cap stops new runs when it is reached.
@@ -180,19 +188,18 @@ More in [docs/DEPLOY.md](docs/DEPLOY.md).
 - **Claim entailment is 81%, not 95%.** The re-check model often finds a claim slightly broader than
   its posts. Such claims are labelled "inferred", not "safe to state". Prompt sharpening raised the
   score from 70%; the heat-pump pack (63%) could not be rebuilt within its own budget.
-- **Relevance is below 60%.** The agent keeps some sources that are only a third on topic. Relevance is
-  checked per post, so off-topic posts never become evidence, but they cost collection time.
+- **Relevance is below 60%** for most runs (current featured packs: NL 46%, Gen Z 56%, heat pumps 78%;
+  single runs vary a lot with the searches the agent picks). Relevance is checked per post, so off-topic
+  posts never become evidence, but they cost collection time.
 - **Every featured pack is marked "thin evidence"** when a section falls short of the content bar (for
-  example, the NL pack has one verified tension). It says so instead of padding.
-- **Standard runs take 15-20 minutes**, not 12. Quick runs take about 11.
+  example, no verified tension). The NL and heat-pump packs are Quick runs with few relevant posts
+  (32 and 46), so their findings are "emerging" or "speculative". Each pack says so instead of padding.
+- **Standard runs take 15-20 minutes**, not 12. Quick runs take 7-17 minutes, not 7.
 - **The free server can sleep.** GitHub runs the keep-alive less often than scheduled, so the first visit
   after a quiet hour can take about a minute. The mirror is the backup.
 - One live run at a time (later runs queue, up to 3 waiting).
 - **Apify runs on the free plan ($5 a month).** When it is used up, runs continue with web search only and
   the pack says which platforms are missing.
-- **The featured packs were made before V8-V10.** They show the new page and summary, but post briefs,
-  the recommended position, success measures and the generic-answer statuses appear only in packs made
-  (or rebuilt) after those changes.
 - **Ask this pack** answers only from the pack; it cannot fill gaps with outside knowledge, by design.
 
 ## Architecture
@@ -218,7 +225,8 @@ More in [docs/DEPLOY.md](docs/DEPLOY.md).
                                    v
                  Neon Postgres (runs, events, documents, packs)
 
- GitHub Actions: CI (lint, tests, e2e, secrets scan), keep-alive ping, static mirror -> GitHub Pages
+ GitHub Actions: CI (lint, tests, e2e, secrets scan), keep-alive ping, static mirror -> GitHub Pages,
+                 weekly Apify actor-check (no secrets)
 ```
 
 ## Folder map

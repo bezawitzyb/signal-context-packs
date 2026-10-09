@@ -264,7 +264,8 @@ Definition:
 5.4 Confidence: definitions, score and labels  (defaults: config/scoring.yaml)
   Definitions
     platform   the source family: reddit, tiktok, youtube, instagram,
-               web_forum, web_review, web_editorial. All forum domains
+               linkedin, x, facebook, web_forum, web_review,
+               web_editorial. All forum domains
                together are ONE platform (web_forum); distinct domains
                count as distinct SOURCES.
     source     a distinct source unit (subreddit, hashtag, channel,
@@ -353,8 +354,12 @@ Definition:
   After writing, a consolidation step (code similarity of the claims and
   their evidence first, then one small model call only for borderline
   pairs) finds items in different sections that state the same finding:
-  the one in the best-fitting section stays, absorbs the other's
-  evidence, and the other section links to it (sections_meta.see_also).
+  the one in the best-fitting section stays, absorbs those of the
+  other's posts that are verified members of its own cluster(s) (a post
+  never moves to a finding it does not belong to), and the other section
+  links to it (sections_meta.see_also). Chains of merges (A into B, B
+  into C) end at the last kept item. Every draft is checked in code:
+  each evidence id resolves and belongs to its item's cluster.
   Items link to connected items in other sections from shared evidence
   (relations[]: comes_from, blocks, related - e.g. an objection shows the
   pain behind it and the motivation it blocks as small chips). Every
@@ -448,7 +453,12 @@ Definition:
     top 3 with one quote, its English translation, plain strength words
     "N people, M communities" and "good enough to" from scoring.yaml
     plain_labels -, snapshot.position, the plan's first 3 moves with
-    their success_measure, up to 2 news hooks); UNDERSTAND YOUR AUDIENCE
+    their success_measure, up to 2 news hooks). To fit with goals set
+    (a 1300 x 900 laptop, e2e-tested), lines are shortened, never parts
+    dropped: one line per goal, first moves on two lines with "Show the
+    full moves" (Copy copies the whole move), one news hook, full text
+    in tooltips; the English line is labelled "The post in English" (it
+    translates the quote's post, not just the quote); UNDERSTAND YOUR AUDIENCE
     (their words; what they want / what stops them with tensions as the
     bridge; segments; generic answer vs. the posts with a status per
     generic point - confirmed | contradicted | not_seen - from the
@@ -649,7 +659,8 @@ EPIC A - BRIEF AND PLAN
        code. Named regions and countries are always recognised: if the
        brief names a place, the result is never "global" (checked in
        code). Languages are chosen in code from the markets' official
-       languages (weighted) plus English, only from the supported list in
+       languages (weighted) plus English (English joins every brief -
+       owner's decision 2026-10-09), only from the supported list in
        config/modes.yaml, capped per mode (Quick 4, Standard 6). The plan
        screen shows chosen and excluded languages, each exclusion with
        its reason. Google Trends and locale choices use the countries.
@@ -838,7 +849,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
        friendly messages.
  FR-H4 [P0] Featured packs ship in the code and load at startup.
  FR-H5 [P0] Public GitHub repo; README; generated docs/SCHEMA.md;
-       examples/ (3 packs as JSON + Markdown, 1 exported skill); keyless
+       examples/ (3 packs as JSON + Markdown, each with its exported
+       skill); keyless
        local run with fixtures and recorded agent transcripts.
  FR-H6 [P0] /health (includes a database check), /ping (no database;
        keep-alive and platform health check) and a demo-check command.
@@ -882,12 +894,25 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
 
 8.3 Tools (every tool requires a "reason" argument and its description
     states its typical latency, measured on Day 1)
-  search_reddit(target, limit, reason)        subreddit or search query
+  search_reddit(target, limit, reason, query) subreddit (optionally with a
+                                              query inside it) or a search
   search_tiktok(target, limit, reason)        hashtag or query; comments
-                                              collected for top videos
-  search_youtube(query, limit, reason)        videos + comments
+                                              collected for top videos;
+                                              local results for one-country
+                                              briefs
+  search_youtube(query, limit, reason)        videos + comments; region and
+                                              language for one-country
+                                              non-English briefs
   search_instagram(hashtag, limit, reason)    only if the actor verifies
                                               (cut list item 1)
+  search_linkedin(query, limit, reason)       keywords only (V6, DH8)
+  search_x(target, limit, reason)             keywords or a #hashtag only
+                                              (DH8)
+  search_facebook(query, limit, reason)       public posts by keyword +
+                                              comments on the most-discussed
+  read_facebook_group(group, limit, reason)   a PUBLIC group that the same
+                                              run's search_facebook found;
+                                              never a group the agent names
   web_search(query, country, language, reason) returns candidate forum,
                                               review or article URLs
   fetch_and_segment(urls, reason)             reads pages, keeps posts that
@@ -896,7 +921,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
   coverage_report()                           evidence per research
                                               question and per source unit;
                                               budget, calls and time left
-  finish(summary, source_verdicts, gaps)      ends collection
+  finish(summary, source_verdicts, gaps,      ends collection
+         follow_up_queries)
 
   Typical latency (defaults; Day 1 measurements in config/catalog.yaml
   replace them): web_search ~10-20 s; fetch_and_segment ~20-60 s;
@@ -913,6 +939,15 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
   relevance + language (Haiku batch) -> store. Then return ONLY: status,
   source_unit, collected / kept / relevant counts, relevant share, top new
   terms, 2-3 short samples wrapped as untrusted content, budget left.
+  Probing (config/modes.yaml probe_items): a new search first runs small
+  (Quick 20, Standard 40 items) and gets full size only once it proved
+  relevant (>= 30%), or when its platform has been >= 70% relevant over
+  at least 2 searches. Web: only links a search returned are read; a page
+  the model cannot split fails alone; a site failing twice in a run is
+  skipped for that run; sites that refuse fetching are skipped for 30
+  days; platforms with their own tool and login-walled sites
+  (catalog.yaml web_skip_domains) are never web-searched. Actor output
+  no mapper can read counts as a failure (fallback actor, blind spot).
 
 8.5 Limits (enforced in code, never only in the prompt; values live in
     config/modes.yaml - this table mirrors it, and config wins)
@@ -922,10 +957,12 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
   Apify budget      1.80 USD     4.00 USD
   LLM budget        1.40 USD     3.50 USD (collection: plan, agent loop,
                                              tools)
-  Analysis LLM      1.00 USD     2.50 USD (after collection: extraction,
+  Analysis LLM      1.40 USD     2.50 USD (after collection: extraction,
   budget                                     clustering, writing,
                                              verifying, playbook)
   Item budget       600 raw items  2,000 raw items
+  Items per call    40           80
+  Probe size        20           40 (first call of a new search)
   Per source unit   <= 30% of the item budget
   Minimum to finish >= 60 relevant docs (quick), >= 200 (standard), or
                     budget/time exhausted
@@ -935,6 +972,9 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
     the part spent on analysis (runs.cost_analysis_llm_usd).
   - finish() is refused unless coverage_report() was called after the last
     collection call; source_verdicts must name every source unit used.
+    Once the calls or the time are used up, a fresh coverage_report() and
+    the search for user-named competitors are no longer required (the
+    loop gives no further turn; unsearched competitors become gaps).
   - The agent can only call the allowlisted tools; no general HTTP, file
     or shell access.
   - With concurrency and typical latencies, a Quick run fits roughly 6-10
@@ -944,12 +984,14 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
 8.6 Fallback and top-up
   Crash: on loop error or timeout without finish(), code runs the
   starting plan's units NOT yet tried, in order, with default limits, and
-  logs "fallback used".
+  logs "fallback used" (it may use crash_fallback_extra_secs, 90 s, past
+  the collection time).
   Low evidence: if finish() arrives (or a limit is hit) with fewer than
   min_relevant docs, code TOPS UP from units the agent marked kept: the
   next page of results, more comments, or follow-up queries the agent
   proposed in those communities, until min_relevant, the budget or the
-  time cap is reached. Logged as "top-up used".
+  time cap is reached (a top-up may run top_up_extra_secs, 90 s, past the
+  collection time; it tries new material first). Logged as "top-up used".
   Never: re-running a unit the agent dropped, or repeating an identical
   call (it would only return cached duplicates).
   If evidence is still short, the pack is a clear thin-evidence pack
@@ -978,7 +1020,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
 
  DH1  Public content (X posts and replies included), plus content
       visible to ANY logged-in user (change V6: LinkedIn posts and
-      comments); never private groups, DMs, closed
+      comments); Facebook public posts and PUBLIC groups (only groups the
+      same run's keyword search found); never private groups, DMs, closed
       profiles or membership-approved content. Maintained Apify actors
       that need no session of ours (no cookies); no circumvention.
       Evidence from such sources carries requires_login = true.
@@ -990,14 +1033,17 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
       emitted or passed to a later prompt by SIGNAL. Raw run data held
       by the scraping provider (Apify) expires under that provider's
       standard retention; the Method page says so (10.2 S3).
- DH4  Redaction of emails, phone numbers, @handles, profile URLs;
-      evidence.redacted = true when text changed.
+ DH4  Redaction of emails, phone numbers, @handles, profile URLs, and
+      the names of the post's author and of the other authors in the
+      same batch (every platform); evidence.redacted = true when text
+      changed.
  DH5  Quotes in packs <= 280 characters.
  DH6  Retention: documents deleted after 30 days (configurable); packs
       keep redacted excerpts only.
- DH7  Dates normalised (incl. relative dates in en / nl / de); posts
-      outside the window dropped; undated posts kept as evidence but
-      excluded from trends and recency.
+ DH7  Dates normalised (incl. relative dates in en / nl / de; forum
+      dates are found inside longer strings, and the raw date text is kept
+      as date_raw); posts outside the window dropped; undated posts kept
+      as evidence but excluded from trends and recency.
  DH8  Creator targets: public accounts only, by topical relevance.
       LinkedIn is searched by keyword only - never by person or profile,
       never to build a profile of an individual. The same holds for X
@@ -1030,7 +1076,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
 
 10.2 Screens
  S1 ASK + PLAN: one large input with rotating examples; mode, time window,
-    brand voice; run-key field (masked, tab session only); featured pack
+    brand voice; "Access key" field (the run key; masked, tab session
+    only); featured pack
     cards ("See a sample pack").
     Submit -> clarifying question (if any) or the plan below: "Here's what
     I understood" (assumed tags) and "Here's where I'll start" (source
@@ -1042,7 +1089,9 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
     board with relevance bars]; counters (collected, duplicates, spam, out of
     window, kept); cost ticker; "Stop and build pack now"; replay for
     finished runs; a queued run shows its position and estimated start.
- S3 PACK PAGE (one scrollable page with a sticky section nav):
+ S3 PACK PAGE (one scrollable page with a sticky section nav; since V9
+    in four parts - Summary / Understand your audience / Act on it / The
+    research - per 6.1f, which wins over the original list below):
     Summary (coverage strip, mode badge, do first, five truths, generic
     AI vs. what people actually say) - Channels & this week - Voice
     (lexicon table, say / don't say) - Tensions & motivations - Segments -
@@ -1053,8 +1102,9 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
     with reasons, funnel, privacy, limitations). The privacy note
     includes one line: "Raw run data at our scraping provider expires
     under its standard retention." Every badge shows counts.
-    Filters: All / Observed only / Strong only. Header: View as agent,
-    Handoff.
+    Filters: All / Observed only / Strong only. Header (UX audit
+    2026-10-09): title first, "Share & export" (hand-off), "Developer
+    view" (the JSON an agent reads; was "View as agent"), "Run again".
  S4 EVIDENCE DRAWER (dialog, from any claim or ID): claim, badge, type,
     strength row, quotes (serif; platform, community, date; Open source
     via permalink or text-fragment link; "redacted" note; original /
@@ -1174,9 +1224,11 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
  13. TECHNOLOGY AND MODEL ROUTING
 ================================================================================
  Reasoning         Anthropic API
- Collection        Apify (Reddit, TikTok, YouTube, Google Trends, optional
-                   Instagram) + Anthropic web search and web fetch (forums,
-                   reviews, editorial)
+ Collection        Apify (Reddit, TikTok, YouTube, LinkedIn, X, Facebook,
+                   Google Trends, optional Instagram) + Anthropic web
+                   search and web fetch (forums, reviews, editorial);
+                   actor-check: a free weekly health, price and input
+                   check of every actor (catalog.yaml health_check)
  Backend           Python 3.12, FastAPI, SQLModel, job queue in Neon
                    with a worker loop, SSE from the events table
  Database          Neon Postgres (free); dev branch locally; SQLite only
@@ -1193,11 +1245,13 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
  Model routing (names live in one config file)
    claude-sonnet-5-5 ......... interpretation + plan, collector loop,
                                clustering, generic baseline, synthesis,
-                               playbook, compliance, eval entailment check
+                               playbook, compliance
    claude-haiku-4-5-20251001 . relevance, web discovery, page segmenting,
                                extraction, membership check, claim
                                verification
-   claude-opus-5-5 ........... optional switch for synthesis only
+   claude-opus-5-5 ........... eval entailment re-check (a different,
+                               stronger model than the writer); optional
+                               switch for synthesis
 
 13.1 Deployment and job model
   - ONE Render Free web service serves the web app, /api/v1, SSE and
@@ -1316,7 +1370,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
  Keep-alive drains Neon             /ping never touches the database
  Prompt injection via scraped text  Untrusted wrappers; collector has no
                                     dangerous tools; agent instructions
- Actor breaks / zero results        Fallback actor in the tool; blind spots
+ Actor breaks / zero results        Fallback actor in the tool; blind spots;
+                                    weekly actor-check (GitHub Action)
  LinkedIn blocks the actor or        Fallback actor once, then a blind spot
  its account mid-run                 with its impact; the run continues
  Cost overrun                       Budgets inside tools; daily cap; provider

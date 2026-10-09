@@ -32,6 +32,7 @@ Set by the owner only, never in this repo, GitHub Actions or `render.yaml`:
 | `RUN_KEY` | run password (never shown anywhere) |
 | `GUEST_RUN_KEY` | optional: temporary run password for a tester (delete to revoke) |
 | `DATABASE_URL` | Neon **main** branch, pooled connection string |
+| `DAILY_SPEND_CAP_USD` | optional: all runs' Apify + Anthropic spend per UTC day (default `25`) |
 
 ## Deploy discipline
 
@@ -70,7 +71,7 @@ Claude Code to fix and push again.
 - Featured packs live in `featured/` and load into the database at startup.
   Add one with `cli feature PACK_ID` (privacy check first; costs hidden).
 
-## Saved research runs (Step 2.5, Neon dev branch)
+## Saved research runs (Step 2.5, Neon dev branch; history - newer runs are in /runs)
 
 Packs are built from these corpora without re-scraping (`--from-run`, Step 3.x).
 
@@ -87,12 +88,20 @@ Packs are built from these corpora without re-scraping (`--from-run`, Step 3.x).
 Plan divergence across the four eval briefs: 3 of 73 source units shared (4%, target < 50%).
 Memory test: both Standard runs peak below 400 MB, so Step 2.6 (Modal) is not needed.
 
-## Featured packs (Step 3.7)
+## Featured packs (since 2026-10-10)
 
-| Pack | Brief | Run | Labels |
-|------|-------|-----|--------|
-| `pk_wrvZBhDFsLR9` | Launching a snack brand in the Netherlands | `run_wOcIwOgGDnDUITS2` (fresh, 1,042 s) | strong 3, moderate 8, emerging 22, speculative 27 |
-| `pk_CamfAsJ7Zbdr` | Gen Z and meal prep | `run_bz5PBTd-Pr6Xp3f2` (thin evidence) | emerging 23, speculative 24 |
+The newest run per brief, rebuilt with the merge fix (`featured/`, also in `backend/evals/briefs.yaml`).
+Older featured packs are in the git history; the 2026-10-06 NL pack is kept as test data
+(`backend/tests/fixtures/packs/pk_i4iFso1HnLWR.json`).
+
+| Pack | Brief | Mode, goals | Relevant / kept | Labels |
+|------|-------|-------------|-----------------|--------|
+| `pk_Jeoz-fO2CzAm` | Gen Z and meal prep | standard, content plan | 263 / 471 | strong 3, moderate 10, emerging 12, speculative 6 |
+| `pk_i5JJDiXMuoDy` | Heat pumps for homeowners in Germany | quick, understand the audience | 46 / 59 (thin) | emerging 13, speculative 9 |
+| `pk_7KAp0R-njCpL` | Launching a snack brand in the Netherlands | quick, positioning + content plan | 32 / 70 (thin) | emerging 17, speculative 3 |
+
+Swap one with `cli feature NEW_ID --replaces OLD_ID` (privacy check first), then update
+`reuse_pack` in `backend/evals/briefs.yaml`.
 
 ## Run costs (owner only)
 
@@ -118,12 +127,20 @@ in no file, commit, build or page.
 
 - `.github/workflows/mirror.yml` builds a read-only copy of the web app with the featured packs
   (`backend/scripts/build_mirror.py`) and publishes it to
-  https://bezawitzyb.github.io/signal-context-packs/ on every push that changes `featured/` or the
-  frontend. It needs no secrets.
+  https://bezawitzyb.github.io/signal-context-packs/ on every push that changes `featured/`, the
+  frontend, the exports, the schemas or the card code (`api/service.py`; see the `paths` list in
+  mirror.yml). It needs no secrets.
 - One-time setup: GitHub -> the repo -> **Settings -> Pages -> Build and deployment -> Source:
   GitHub Actions**. Then GitHub -> **Actions -> mirror -> Run workflow** once.
 - Try it locally: `cd backend && uv run python -m scripts.build_mirror --base /` and open
   `mirror/index.html` through any static server.
+
+## Apify actor health (weekly, free)
+
+`.github/workflows/actor-check.yml` runs `cli actor-check` every week with the public Apify API (no key):
+each actor's health, live prices against `catalog.yaml`, and our inputs against the actor's current input
+schema. It fails on a failing actor (thresholds in `catalog.yaml` `health_check`). Run it any time with
+`cd backend && uv run python -m ctxpack.cli actor-check`.
 
 ## Before the demo: demo-check
 

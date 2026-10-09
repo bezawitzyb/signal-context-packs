@@ -3,6 +3,10 @@
  DEVELOPMENT PLAN: FIVE PHASES IN SEVEN DAYS
 ================================================================================
 
+Status (2026-10-10): Phases 1-5 are built and live; the changes after
+           them (V1-V12) are in docs/04-06. This day plan is kept as
+           history; the PRD, the guide's Part B and the README describe
+           what is built today.
 Documents: 01 PRD = WHAT to build (requirements, content model,
            schema); 02 Development Phases = WHEN (day plan, exit tests,
            cut order); 03 Implementation Guide = HOW (architecture, build

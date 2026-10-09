@@ -1,6 +1,6 @@
 # V0 plan for the ten user-value changes (docs/04_Changes.txt)
 
-Status: **approved 2026-10-07.** Decisions: plan approved; Apify key replaced (new $5 budget);
+Status: **approved 2026-10-07; V1-V10 built 2026-10-07/08** (V11 and V12 followed: files 05 and 06). Decisions: plan approved; Apify key replaced (new $5 budget);
 LinkedIn (V6) go ahead; Notion = "Copy for Notion" + CSV import only (no Notion integration).
 Estimates are working hours with
 Claude Code, tests included. Paid calls are listed per step; everything else runs on fixtures (free).

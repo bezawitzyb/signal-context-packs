@@ -1,4 +1,7 @@
 ================================================================================
+ STATUS 2026-10-10: all ten changes (V1-V10) are built; the PRD, the
+ implementation guide and the README describe them as built.
+================================================================================
  SIGNAL - TOP 10 USER-VALUE CHANGES, v2 (prompt for Claude Code)
  The ten changes that bring the end user (a marketer or content creator)
  the most value, based on the first user test. Self-contained: use this
