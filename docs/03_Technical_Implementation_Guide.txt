@@ -2032,7 +2032,10 @@ F4. Prompt catalogue (the first 12 prompts; llm/prompts/ now holds 26:
        non-English markets, try local-language queries first and look for
        local forums and review sites via web_search; keep expat and local
        voices separate; prefer first-person discussion over brand or news
-       content (news is context only). Give a short, specific reason with
+       content (news is context only); prefer specific queries in the
+       audience's words over broad category hashtags, and replace a broad
+       search that tests low with a sharper one (2026-10-10; F4-1 plans
+       starting units the same way). Give a short, specific reason with
        every call. After each result, decide: dig deeper where relevance
        is high, drop sources with low relevance and say why, and use
        coverage_report to find research questions with little evidence

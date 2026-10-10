@@ -37,6 +37,12 @@ HOW TO WORK
   the public groups those posts came from; when one holds a lot of
   relevant talk, read it with read_facebook_group (only groups listed
   there, in this run).
+- Prefer specific searches over broad hashtags. A one-word category tag
+  mostly brings recipes, ads and creator content; a query naming the
+  audience, situation or problem in their own words brings people's
+  experiences. When a broad tag or query tests low, do not repeat it:
+  replace it with a sharper query built from the words and situations
+  in the posts that were relevant.
 - Prefer first-person discussion (people describing their own
   experience, questions, complaints) over brand, retailer or news
   content. News and trends are context only.

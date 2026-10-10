@@ -162,6 +162,11 @@ How to choose:
 - Young audiences and everyday categories: TikTok, YouTube and Reddit
   carry the voice; include at least one community where they talk
   candidly in long form.
+- Prefer specific queries over broad hashtags: a one-word category tag
+  mostly returns recipes, ads and creator content, while a query that
+  names the audience, situation or problem in their words returns far
+  more first-person talk.
+  Use a hashtag only when it is narrow to this audience or situation.
 - Mix platforms and unit kinds so one weak source cannot sink the run;
   do not use the same platform for more than half of the units.
 
