@@ -31,7 +31,7 @@ briefs:
     expect: {market: DE, languages: [de], compliance_category: energy_environmental, questions_max: 4,
              questions_fill: [goal, offer]}
     answers: {goals: [content_plan, sales_enablement], offer_stage: selling, offer: heat pump installation}
-    reuse_pack: pk_i5JJDiXMuoDy   # Quick rerun 2026-10-09, merge fix, goal understand_audience (was pk_i0zai5bgIxEW)
+    reuse_pack: pk_n-QlY1xrqi0x   # Quick rerun 2026-10-10, eval goals, rebuilt with extra budget (was pk_i5JJDiXMuoDy)
                                   # (was pk_WPKWWfPABYxN)
     note: B2B-like; energy and green claims. Becomes the third example (feature it after a privacy check).
 
