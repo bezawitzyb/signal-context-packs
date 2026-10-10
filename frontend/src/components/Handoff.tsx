@@ -1,7 +1,7 @@
 // HANDOFF (guide Step 4.4, V9): options written for marketers - purpose, length and preview from the API. The run key is never shown:
 // the MCP command uses the <YOUR_KEY> placeholder.
 import { useEffect, useRef, useState } from "react";
-import { Bot, Braces, CalendarDays, Check, Copy, Download, FileText, Link2, Printer, X } from "lucide-react";
+import { Bot, Braces, CalendarDays, Check, Copy, Download, ExternalLink, FileText, Link2, Printer, X } from "lucide-react";
 import { exportUrl, getHandoff, LIVE_URL, MIRROR, type ExportKind, type HandoffOption } from "../lib/api";
 import { markdownToHtml } from "../lib/markdown";
 
@@ -126,6 +126,9 @@ export function Handoff({ packId, open, onClose }: { packId: string; open: boole
             <summary className="cursor-pointer text-sm text-ink-2">More: Claude and developers</summary>
             <div className="mt-3 space-y-2">
               {more.map((o) => <Option key={o.kind} packId={packId} o={o} onToast={say} />)}
+              <p className="text-xs text-ink-2">Programs can also read packs directly:{" "}
+                <a href={`${MIRROR ? LIVE_URL : ""}/docs`} target="_blank" rel="noopener noreferrer"
+                   className="inline-flex items-center gap-1 text-ink underline">API docs <ExternalLink aria-hidden="true" size={11} /></a></p>
               <p className="text-xs text-ink-2">Connect Claude Code (read-only, no key needed):</p>
               <CommandLine text={`claude mcp add --transport http signal ${mcp}`} />
               <p className="text-xs text-ink-2">To also start research, add your access key:</p>

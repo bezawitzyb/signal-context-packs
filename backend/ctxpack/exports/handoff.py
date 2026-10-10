@@ -51,6 +51,6 @@ def handoff_options(pack: dict) -> list[dict]:
          "purpose": "Install once and Claude remembers this audience in every chat.",
          "length": "a small file to upload", "preview": "Their words, tensions, objections, hooks, channels, posts."},
         {"kind": "json", "title": "For developers", "action": "download", "more": True,
-         "purpose": "The data file behind this page, and the API.",
+         "purpose": "Download this pack as a data file (JSON) for your own code.",
          "length": "data file", "preview": f"Pack {pack['pack_id']}, schema {pack['schema_version']}."},
     ]
