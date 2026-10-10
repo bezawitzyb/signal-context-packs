@@ -137,21 +137,27 @@ best, with links to related findings elsewhere.
 
 ## Evaluation results
 
-Four test briefs, run on 2026-10-06 before changes V1-V12 and on older featured packs (details and reasons on
-[/evals](https://signal-l2w5.onrender.com/evals)). A fifth brief (B2B, several markets) is added in
-[`backend/evals/briefs.yaml`](backend/evals/briefs.yaml) and needs a paid Standard run.
+Five test briefs, scored on 2026-10-10 on the current featured packs (details and reasons on
+[/evals](https://signal-l2w5.onrender.com/evals)): Gen Z meal prep (Standard), snack brand NL and heat pumps
+DE (both Quick), a vague "snacks" brief (pack from 2026-10-06) and a brand-perception brief (Lidl Deluxe, UK,
+Quick). A sixth brief (B2B, several markets) is in [`backend/evals/briefs.yaml`](backend/evals/briefs.yaml)
+and needs a paid Standard run.
 
 | Metric | Result | Target |
 |---|---|---|
 | Quote groundedness | **100%** | 100% |
 | Claims with evidence | **100%** | 100% |
 | Schema valid | **100%** | 100% |
-| Source diversity | **3 of 3** briefs with ≥ 3 platforms | ≥ 3 (vague brief exempt) |
-| Plan divergence | **4%** of source units shared | < 50% |
-| Allocation efficiency (SIMULATED) | **1.36×** an equal split | ≥ 1× |
-| Peak memory | **196 MB** | < 400 MB |
-| Claim entailment (Sonnet re-check; the next re-check uses Opus) | **81%** (NL pack 93%) | ≥ 95% - not met |
-| Relevance rate | **33-54%** | ≥ 60% - not met |
+| Source diversity | **3 of 4** briefs with ≥ 3 platforms (UK brand brief: 2) | all (vague brief exempt) |
+| Plan divergence | **2.7%** of source units shared | < 50% |
+| Allocation efficiency (SIMULATED) | **1.1×** an equal split | ≥ 1× |
+| Peak memory | **201 MB** | < 400 MB |
+| Claim entailment (Opus re-check of 30 claims per pack) | **87%** (heat pumps 97%, Gen Z 90%, NL 87%) | ≥ 95% - not met |
+| Relevance rate | **34-78%** (heat pumps 78%, Gen Z 56%, NL 46%) | ≥ 60% - met by 1 of 5 |
+
+The 2026-10-06 scores (older packs, Sonnet re-check): claim entailment 81%, relevance 33-54%. The NL and
+heat-pump packs are now Quick runs with few relevant posts (32 and 46), so their high scores rest on little
+evidence (coverage grade d).
 
 ## Run locally without keys
 
@@ -185,9 +191,8 @@ More in [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Known limitations
 
-- **Claim entailment is 81%, not 95%.** The re-check model often finds a claim slightly broader than
-  its posts. Such claims are labelled "inferred", not "safe to state". Prompt sharpening raised the
-  score from 70%; the heat-pump pack (63%) could not be rebuilt within its own budget.
+- **Claim entailment is 87%, not 95%.** The re-check model (Opus) often finds a claim slightly broader
+  than its posts. Such claims are labelled "inferred", not "safe to state".
 - **Relevance is below 60%** for most runs (current featured packs: NL 46%, Gen Z 56%, heat pumps 78%;
   single runs vary a lot with the searches the agent picks). Relevance is checked per post, so off-topic
   posts never become evidence, but they cost collection time.
