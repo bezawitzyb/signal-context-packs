@@ -76,6 +76,31 @@ def test_items_need_their_own_cluster_and_its_evidence():
     assert bld.outcome.dropped["wrong_or_unknown_cluster"] == 1 and bld.outcome.dropped["no_evidence_left"] == 1
 
 
+def test_a_culture_item_counts_only_the_posts_that_show_it():
+    """One hashtag or creator never carries its whole cluster's counts (eval 2026-10-10: '#GymTok' strong on 12)."""
+    texts = ["Sunday prep #GymTok", "prep with me, gymtok approved", "Prep day again", "Prep day number 4",
+             "Week prep", "Batch prep"]
+    docs = [doc(i, t) for i, t in enumerate(texts)]
+    fmt = row("CL-07", "theme", [d.id for d in docs])
+    bld = builder([fmt], docs)
+    pool = wr.select_pool([fmt], [], bld.docs_by_id, {"evidence_per_cluster_max": 6, "evidence_per_call_max": 60})
+    local = {v: k for k, v in pool.local.items()}
+    tag = wr.CultureOut(cluster_id="CL-07", claim="#GymTok is tagged on prep videos", kind="code", name="#GymTok",
+                        evidence=[local[docs[0].id]])
+    item = bld.item("culture", tag, {"theme"}, pool, kind="code", name="#GymTok")
+    assert item["counts"]["matching"] == 2                     # the two posts that say it, not the cluster's 6
+    one = wr.CultureOut(cluster_id="CL-07", claim="Posters invite you to prep with them", kind="format",
+                        name="prep with me", evidence=[local[docs[3].id]])
+    item = bld.item("culture", one, {"theme"}, pool, kind="format", name="prep with me")
+    assert item["counts"]["matching"] == 2                     # the post that says it + the cited one
+    described = wr.CultureOut(cluster_id="CL-07", claim="Weekly prep posts", kind="format",
+                              name="weekly prep posts", evidence=[local[docs[4].id]])
+    item = bld.item("culture", described, {"theme"}, pool, kind="format", name="weekly prep posts")
+    assert item["counts"]["matching"] == 6                     # no post says it word for word: the cluster's count
+    theme = wr.ThemeOut(cluster_id="CL-07", claim="c", label="l", evidence=[local[docs[0].id]])
+    assert bld.item("themes", theme, {"theme"}, pool, label="l")["counts"]["matching"] == 6   # themes: whole cluster
+
+
 def test_ids_by_rank_and_evidence_numbered_by_first_use():
     items = [{"cluster_id": "CL-02", "counts": {"matching": 3}, "evidence_docs": ["d2", "d1"]},
              {"cluster_id": "CL-01", "counts": {"matching": 9}, "evidence_docs": ["d1"]},

@@ -429,12 +429,13 @@ class Builder:
         # V6: the writer chose them all for this claim; posts anyone can open go first (stable order)
         return sorted(out, key=lambda q: requires_login(getattr(self.docs_by_id.get(q["doc_id"]), "platform", "")))
 
-    def numbers(self, cluster_ids: list[str]) -> dict[str, Any]:
-        """Counts, strength, emotion, trend, recency - code only, from verified members."""
+    def numbers(self, cluster_ids: list[str], only: set[str] | None = None) -> dict[str, Any]:
+        """Counts, strength, emotion, trend, recency - code only, from verified members (or only those in `only`)."""
         from ctxpack.db import ClusterRow
 
+        members = self.members(*cluster_ids)
         row = ClusterRow(run_id="", id="CL-00", kind="theme", label="", member_ids=[],
-                         verified_member_ids=sorted(self.members(*cluster_ids)))
+                         verified_member_ids=sorted(members if only is None else members & only))
         m = met.cluster_metrics(row, self.docs_by_id, self.total, self.today, self.window_days,
                                 self.corpus_dates, self.trends)
         min_share = load_yaml("scoring")["metrics"]["item_emotion_min_share"]
@@ -442,6 +443,15 @@ class Builder:
         return {"counts": m["counts"], "strength": strength, "trend": m["trend"], "recency": m["recency"],
                 "emotion": [e["emotion"] for e in m["emotion_mix"] if e["share"] >= min_share][:3],
                 "recency_share": m["recency_share"], "distinct_sources": m["strength"]["distinct_sources"]}
+
+    def showing(self, name: str, members: set[str], cited: list[str]) -> set[str] | None:
+        """Culture: the verified members that show this named thing (its words in the post, '#' optional), plus the
+        posts the writer cited for it - so one hashtag or one creator never carries its whole cluster's counts.
+        None (= the whole cluster) when no post has the name word for word: a descriptive format name ("taste test
+        videos") cannot be matched, and the cluster is its best count (owner's option B, 2026-10-10)."""
+        key = " ".join(name.casefold().lstrip("#@").split())
+        hit = {m for m in members if key and key in " ".join(self.docs_by_id[m].text.casefold().split())}
+        return hit | set(cited) if hit else None
 
     def item(self, section: str, out: Any, kinds: set[str], pool: Pool, **fields: Any) -> dict | None:
         cluster = self.clusters.get(out.cluster_id.strip().upper())
@@ -458,10 +468,11 @@ class Builder:
             self.outcome.drop("no_evidence_left")
             return None
         segs = [s for s in out.segment_cluster_ids if (c := self.clusters.get(s)) and c.kind == ClusterKind.segment]
+        only = self.showing(fields["name"], allowed, evidence) if section == "culture" else None
         return {"cluster_id": cluster.id, "claim": out.claim.strip(),
                 "summary_for_humans": out.summary_for_humans.strip(), "claim_type": out.claim_type,
                 "evidence_docs": evidence, "quotes": quotes, "segment_cluster_ids": segs,
-                **fields, **self.numbers([cluster.id])}
+                **fields, **self.numbers([cluster.id], only)}
 
 
 def _rank(items: list[dict], prefix: str) -> list[dict]:
