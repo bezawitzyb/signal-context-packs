@@ -705,9 +705,12 @@ async def clean(
 
     retention = timedelta(days=get_settings().retention_days)
     documents = []
+    min_score = _cfg()["relevance_min_score"]
     for key, d, posted, precision in kept:
         verdict = outcome.verdicts.get(key)
-        relevant = bool(verdict and verdict.is_relevant and not verdict.is_promotional)
+        # owner 2026-10-10: posts the worker tags promotional count too (creator recipe posts); hard ads are
+        # already dropped as spam, and is_promotional stays stored on the document
+        relevant = bool(verdict and (verdict.is_relevant or verdict.relevance >= min_score))
         stats["relevant"] += relevant
         stats["short_form"] += d.short_form
         stats["undated"] += posted is None

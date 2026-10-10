@@ -13,7 +13,8 @@ For EVERY item, by its id, return:
   questions for this audience and market.
 - is_relevant: true if relevance >= 0.5 AND it is first-person audience
   discussion, an opinion, a question or an experience. Short slang
-  ("girl dinner fr") can be relevant.
+  ("girl dinner fr") can be relevant. Score relevance honestly either
+  way: code also counts items whose score passes its own cut.
 - language: ISO 639-1 code of the item's main language (e.g. en, nl, de).
 - market_match: true if the item plausibly comes from or is about the
   brief's market; false if it is clearly about another market; null if

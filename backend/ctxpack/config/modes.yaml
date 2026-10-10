@@ -77,6 +77,9 @@ cleaning:
   spam_flood_share: 0.5         # hashtags or emoji above this share of tokens
   relevance_batch_size: 30      # docs per worker call (F4-5)
   relevance_parallel_max: 5     # worker calls at once
+  relevance_min_score: 0.35     # relevant = the worker says so OR score at least this; promotional-tagged posts count
+                                # (owner 2026-10-10; was score >= 0.5 and not promotional). Owner's 99 labels:
+                                # precision 0.98 recall 0.67 before, 0.97 / 0.85 with this rule
 
 # Extraction (guide Step 3.1, PRD FR-C3, prompt F4-6). Same for every mode.
 extraction:

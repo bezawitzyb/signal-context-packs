@@ -343,3 +343,33 @@ def test_every_recorded_forum_date_parses():
     dates = [s["date"] for p in pages.values() for s in p["segments"] if s.get("date")]
     now = datetime(2026, 10, 9, tzinfo=timezone.utc)
     assert dates and all(parse_date(d, now)[0] for d in dates)
+
+
+def test_relevance_score_cut_from_config(monkeypatch):
+    """Relevant = the worker says so OR its score reaches cleaning.relevance_min_score; promotional-tagged counts."""
+    from ctxpack.collect import cleaning
+    from ctxpack.collect.relevance import RelevanceItem, RelevanceOutcome
+    from ctxpack.config import load_yaml
+
+    cut = load_yaml("modes")["cleaning"]["relevance_min_score"]
+    answers = {  # text -> (score, worker's is_relevant, promotional)
+        "borderline audience post about my weekly lunches": (cut, False, False),
+        "just below the cut about lunches and cooking": (round(cut - 0.05, 2), False, False),
+        "creator recipe post for my weekly boxes": (0.9, False, True),
+        "clearly helpful first person meal prep story": (0.8, True, False),
+    }
+
+    async def fake_classify(texts, brief):
+        return RelevanceOutcome(verdicts={
+            key: RelevanceItem(id=key, relevance=answers[t][0], is_relevant=answers[t][1], language="en",
+                               is_promotional=answers[t][2], reason="partly_on_topic")
+            for key, t in texts.items()})
+
+    monkeypatch.setattr(cleaning, "classify", fake_classify)
+    drafts = [draft(t, author=f"a{i}") for i, t in enumerate(answers)]
+    result = asyncio.run(clean(drafts, run_id="RUN-1", window_days=180, brief=BriefContext(topic="meal prep"),
+                               deduper=Deduper()))
+    got = {d.text: d.is_relevant for d in result.documents}
+    assert got == {t: not t.startswith("just below") for t in answers}
+    assert result.stats["relevant"] == 3
+    assert {d.text: d.is_promotional for d in result.documents}["creator recipe post for my weekly boxes"]
