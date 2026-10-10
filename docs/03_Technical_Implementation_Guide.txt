@@ -421,7 +421,7 @@ B8. The agent loop (collect/loop.py, tools.py, fallback.py)
     tools.py, never only in the prompt)
                     quick      standard
   max_tool_calls    15         30
-  collection_secs   300        600
+  collection_secs   480        600    (quick 300 -> 480, 2026-10-10: runs ran out of time, not money)
   apify_usd         1.80       4.00
   llm_usd           1.40       3.50   (collection: plan, loop, tools)
   analysis_llm_usd  1.40       2.50   (extraction .. playbook, own budget; quick 1.00 -> 1.40 for V4-V7)
@@ -431,7 +431,7 @@ B8. The agent loop (collect/loop.py, tools.py, fallback.py)
   items per call    <= 40      <= 80
   web pages / call  <= 5       <= 8
   probe_items       20         40     (first call of a new search)
-  - A Quick run fits roughly 6-10 collection calls in 300 s given
+  - A Quick run fits roughly 9-13 collection calls in 480 s given
     concurrency and typical latencies; max_tool_calls is a ceiling.
   - A tool past a limit returns {"status": "limit_reached", ...} and does
     nothing.

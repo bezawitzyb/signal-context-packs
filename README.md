@@ -88,7 +88,7 @@ best, with links to related findings elsewhere.
   Dutch, for example, discuss snacks in English too).
 - **Tools own the data and the limits.** Every limit lives in
   [`backend/ctxpack/config/modes.yaml`](backend/ctxpack/config/modes.yaml) and is enforced in code, never
-  only in a prompt. Quick allows 15 tool calls, 5 minutes and $1.80 of Apify; Standard allows 30 calls,
+  only in a prompt. Quick allows 15 tool calls, 8 minutes and $1.80 of Apify; Standard allows 30 calls,
   10 minutes and $4.00. On top of that there is a daily spend cap.
 - Inside every collection tool, before the agent hears back: normalise → hash authors → redact
   personal details → dates and time window → de-duplicate → spam → relevance check → store.

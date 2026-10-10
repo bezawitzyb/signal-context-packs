@@ -4,7 +4,8 @@
 modes:
   quick:
     max_tool_calls: 15
-    collection_secs: 300
+    collection_secs: 480        # 300 -> 480 (2026-10-10): NL, DE and UK Quick runs all ran out of time with
+                                # Apify at 0.15-0.35 of 1.80 USD and calls refused for lack of seconds
     apify_usd: 1.80
     llm_usd: 1.40               # collection: plan + agent loop + tools
     analysis_llm_usd: 1.40      # after collection: extraction, clustering, writing, verifying, playbook (1.00 -> 1.40: V4-V7 steps)

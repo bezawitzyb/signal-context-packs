@@ -957,7 +957,7 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
     config/modes.yaml - this table mirrors it, and config wins)
                     Quick        Standard
   Tool calls        15           30
-  Collection time   5 min        10 min
+  Collection time   8 min        10 min
   Apify budget      1.80 USD     4.00 USD
   LLM budget        1.40 USD     3.50 USD (collection: plan, agent loop,
                                              tools)
@@ -981,8 +981,8 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
     loop gives no further turn; unsearched competitors become gaps).
   - The agent can only call the allowlisted tools; no general HTTP, file
     or shell access.
-  - With concurrency and typical latencies, a Quick run fits roughly 6-10
-    collection calls in 5 minutes; the call cap is a ceiling, not a
+  - With concurrency and typical latencies, a Quick run fits roughly 9-13
+    collection calls in 8 minutes; the call cap is a ceiling, not a
     target.
 
 8.6 Fallback and top-up

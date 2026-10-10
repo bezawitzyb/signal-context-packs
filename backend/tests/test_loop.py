@@ -313,7 +313,7 @@ async def test_timeout_gives_the_crash_fallback_a_short_grace_only(offline, monk
     assert not out.top_up_used                         # no top-up past the time cap
 
 
-# --- time cap (Step 2.4 fix: a Quick run stays within its 300 s) ----------------------
+# --- time cap (Step 2.4 fix: a Quick run stays within its collection_secs) ----------------------
 
 def ctx_with_secs_left(run_id, secs):
     state = orchestrator.loop_state(run_id)
