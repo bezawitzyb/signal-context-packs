@@ -199,3 +199,22 @@ def test_label_sheets_and_scores(tmp_path):
     claims = [{"your_label": x} for x in ("supported", "partly", "not", "supported", "")]
     assert ev.score_labels("claims", claims) == {"labelled": 4, "supported": 2, "partly": 1, "not": 1,
                                                  "entailment": 0.75, "strictly_supported": 0.5}
+
+
+@pytest.mark.parametrize("sep", [",", ";"])
+def test_label_score_reads_comma_and_semicolon_csv(tmp_path, sep):
+    """Excel/Numbers in European locales save the labelled sheet with ";" and a BOM; both must score."""
+    from typer.testing import CliRunner
+
+    from ctxpack.cli import app as cli_app
+
+    head = ["doc_id", "platform", "language", "text", "text_en", "model_says_relevant", "your_label"]
+    rows = [["D1", "reddit", "en", "a, b", "", "yes", "yes"], ["D2", "x", "en", "c", "", "yes", "no"],
+            ["D3", "x", "en", "d", "", "no", "yes"]]
+    file = tmp_path / "relevance.csv"
+    file.write_text("﻿" + "\n".join(sep.join(f'"{c}"' for c in r) for r in [head, *rows]) + "\n",
+                    encoding="utf-8")
+    result = CliRunner().invoke(cli_app, ["label-score", "relevance", str(file)])
+    assert result.exit_code == 0, result.output
+    out = json.loads(result.output)
+    assert out == {"labelled": 3, "precision": 0.5, "recall": 0.5, "agreement": 0.333}

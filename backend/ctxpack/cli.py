@@ -305,8 +305,11 @@ def label_score(kind: str = typer.Argument(..., help="relevance or claims"),
 
     from ctxpack import evaluation as ev
 
-    with open(file, encoding="utf-8", newline="") as f:
-        rows = list(csv.DictReader(f))
+    # utf-8-sig + header sniff: Excel/Numbers in European locales save with ";" (and sometimes a BOM)
+    with open(file, encoding="utf-8-sig", newline="") as f:
+        header = f.readline()
+        f.seek(0)
+        rows = list(csv.DictReader(f, delimiter=";" if header.count(";") > header.count(",") else ","))
     console.print_json(json.dumps(ev.score_labels(kind, rows)))
 
 
