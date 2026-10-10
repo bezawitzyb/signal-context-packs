@@ -248,8 +248,8 @@ class Finding(Strict):
     text: str = Field(description="The finding in one sentence.")
     item_ids: list[str] = Field(min_length=1, description="Items that back it.")
     quote: Quote | None = Field(default=None, description="One verbatim quote from its evidence.")
-    quote_en: str | None = Field(default=None, description="English translation of the quote's post, when not "
-                                 "English.")
+    quote_en: str | None = Field(default=None, description="English translation of the quoted words, when not "
+                                 "English; null if none was made.")
     label: ConfidenceLabel = Field(description="Confidence label of the item.")
     people: int = Field(ge=0, description="Distinct people behind it.")
     communities: int = Field(ge=0, description="Platforms they came from.")

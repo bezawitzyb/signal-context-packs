@@ -656,7 +656,7 @@ Used at: `snapshot.findings[]` - A finding for the summary (V9): plain strength 
 | `text` | text | yes | The finding in one sentence. |  |
 | `item_ids` | list of text | yes | Items that back it. |  |
 | `quote` | [Quote](#quote) or null | no | One verbatim quote from its evidence. |  |
-| `quote_en` | text or null | no | English translation of the quote's post, when not English. |  |
+| `quote_en` | text or null | no | English translation of the quoted words, when not English; null if none was made. |  |
 | `label` | enum [ConfidenceLabel](#enum-confidencelabel) | yes | Confidence label of the item. |  |
 | `people` | integer | yes | Distinct people behind it. |  |
 | `communities` | integer | yes | Platforms they came from. |  |

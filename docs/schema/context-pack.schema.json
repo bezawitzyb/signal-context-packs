@@ -1963,7 +1963,7 @@
             }
           ],
           "default": null,
-          "description": "English translation of the quote's post, when not English.",
+          "description": "English translation of the quoted words, when not English; null if none was made.",
           "title": "Quote En"
         },
         "label": {

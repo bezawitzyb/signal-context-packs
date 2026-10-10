@@ -88,7 +88,7 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                 {f.quote && (
                   <blockquote className="mt-1.5 border-l-2 border-line-strong pl-2.5">
                     <p className="line-clamp-1 font-serif text-sm text-ink" title={f.quote.text}>“{f.quote.text}”</p>
-                    {f.quote_en && <p className="line-clamp-1 text-xs text-ink-3" title={f.quote_en}>The post in English: {f.quote_en}</p>}
+                    {f.quote_en && <p className="line-clamp-1 text-xs text-ink-3" title={f.quote_en}>In English: {f.quote_en}</p>}
                   </blockquote>
                 )}
                 <p className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-2">

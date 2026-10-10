@@ -21,13 +21,13 @@
 ### What we heard most clearly
 - **The Lidl explosion protein bar contains beef collagen, which is a shame.** *[OBJ-03; Emerging - 2 people in 2 communities; good enough to: test a post]*
   > Jammer genoeg bevat de explosion eiwit reep van de lidl rundercollogeen. (EV-0037)
-  > *In English (the post):* Unfortunately the explosion protein bar from Lidl contains beef collagen. I made this mistake myself too.
+  > *In English:* Unfortunately, the Explosion protein bar from Lidl contains beef collagen.
 - **Nice packaging and a new flavour make me want to try it.** *[THM-05; Emerging - 2 people in 1 community; good enough to: test a post]*
   > benieuwd naar de nieuwe smaak (EV-0012)
-  > *In English (the post):* Wow how do you manage to eat all those KoRo products? The chia oats are delicious, curious about the new flavour, and definitely a nice packaging. I can handle the eating sounds well by the way. Nice vlog again😊
+  > *In English:* Curious about the new flavor
 - **Protein bars mostly let me down.** *[PAIN-02; Emerging - 2 people in 1 community; good enough to: test a post]*
   > de eiwitrepen vallen mij meestal tegen (EV-0013)
-  > *In English (the post):* Super inspiring vlog and delicious. The naan breads and little 'chips' roll are pulling me to the Jumbo, mmmmm... the protein bars usually disappoint me. What beautiful new packaging for your delicious oats👌🥰
+  > *In English:* The protein bars usually disappoint me
 
 ### Recommended position
 **Lekker, maar nét wat slimmer snacken** - for Nederlandse snackers van 18-40 die tussendoortjes willen die lekker blijven, langer vullen en niet voelen als een compromis. Ze kijken eerst naar taste tests en hauls voordat ze iets nieuws proberen., answering: 'Gezond' is vaak een label op iets suikerrijks en eiwitrepen stellen teleur. Het doubt is: kan een nieuw merk lekker én slimmer zijn zonder dat ik moet kiezen tussen genieten en me schuldig voelen? Observatie uit het onderzoek, nog geen vaststaand feit. *[TEN-02, THM-02, PAIN-02, OBJ-04, OPP-01, MOT-01]*

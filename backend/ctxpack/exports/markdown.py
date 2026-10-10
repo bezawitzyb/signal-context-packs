@@ -125,7 +125,7 @@ def to_markdown(pack: dict) -> str:
         if f.get("quote"):
             add(f"  > {inline(f['quote']['text'])} ({f['quote']['evidence_id']})")
             if f.get("quote_en"):
-                add(f"  > *In English (the post):* {inline(f['quote_en'])[:280]}")
+                add(f"  > *In English:* {inline(f['quote_en'])[:280]}")
     if not snap.get("findings"):
         L += [f"- {inline(t['text'])} *[{', '.join(t['item_ids'])}]*" for t in snap["five_truths"][:3]]
     pos = snap.get("position")

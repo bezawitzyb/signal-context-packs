@@ -339,7 +339,7 @@ export type EvidenceId = string;
  */
 export type Text3 = string;
 /**
- * English translation of the quote's post, when not English.
+ * English translation of the quoted words, when not English; null if none was made.
  */
 export type QuoteEn = string | null;
 /**

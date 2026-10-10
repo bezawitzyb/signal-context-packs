@@ -569,6 +569,12 @@ def save_pack(pack: ContextPack, run_id: str | None = None, featured: bool = Fal
     return pack.pack_id
 
 
+def get_pack_row(pack_id: str) -> PackRow | None:
+    """The stored row (run id, featured flag) without migrating the pack."""
+    with session() as s:
+        return s.get(PackRow, pack_id)
+
+
 def get_pack(pack_id: str) -> dict | None:
     """The pack as the current schema version (older stored packs are migrated on read)."""
     from ctxpack.schemas.migrate import current

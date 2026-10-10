@@ -213,8 +213,10 @@ def finding(it: dict, evidence: dict[str, dict], thin: bool = False) -> dict:
     people, communities = st.get("distinct_authors", 0), len(st.get("platforms") or [])
     quote = next((q for q in it.get("quotes", []) if q["evidence_id"] in evidence), None)
     ev = evidence.get(quote["evidence_id"]) if quote else None
+    # the post's translation fits only a quote that IS the whole post; package_run translates the others (quote_en.py)
+    whole = bool(quote and ev and quote["text"].strip() == (ev.get("text") or "").strip())
     return {"text": it["claim"], "item_ids": [it["id"]], "quote": quote,
-            "quote_en": (ev or {}).get("text_en") if (ev or {}).get("language") not in (None, "en") else None,
+            "quote_en": ev.get("text_en") if whole and ev.get("language") not in (None, "en") else None,
             "label": label, "people": people, "communities": communities,
             "strength_text": f"{plain(label)['words'].split(' - ')[0]} - {people} "
                              f"{'person' if people == 1 else 'people'} in {communities} "
@@ -590,7 +592,21 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
     pack, out.bar_short = assemble(run, interp, draft, parts, flags, clusters, docs, voice,
                                    opportunities=draft["opportunities_v5"]["items"], id_map=mapping, news=news,
                                    brand=brand)
-    out.pack_id = db.save_pack(pack, run_id=run_id)
+    # The English under a Summary quote translates the quoted words (saved per quote: a retry never pays again)
+    from ctxpack.synthesis import quote_en
+
+    data = pack.model_dump(mode="json")
+    findings, ev = data["snapshot"]["findings"], {e["id"]: e for e in data["evidence"]}
+    english = dict(draft.get("quote_en") or {})
+    if todo := [q for q in quote_en.wanted(findings, ev) if q not in english]:
+        got, usd = await quote_en.translate(todo)
+        out.usd += usd
+        out.calls += 1
+        draft["quote_en"] = {**english, **got}
+        english = draft["quote_en"]
+        db.update_run(run_id, draft=draft)
+    quote_en.apply(findings, ev, english)
+    out.pack_id = db.save_pack(P.ContextPack.model_validate(data), run_id=run_id)
     log.info("run %s packaged %s (thin: %s)", run_id, out.pack_id, out.bar_short)
     return out
 

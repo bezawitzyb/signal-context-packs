@@ -458,8 +458,10 @@ Definition:
     (a 1300 x 900 laptop, e2e-tested), lines are shortened, never parts
     dropped: one line per goal, first moves on two lines with "Show the
     full moves" (Copy copies the whole move), one news hook, full text
-    in tooltips; the English line is labelled "The post in English" (it
-    translates the quote's post, not just the quote); UNDERSTAND YOUR AUDIENCE
+    in tooltips; the English line is labelled "In English" and translates
+    the quoted words only (owner, 2026-10-10: the post's translation read
+    as an unrelated sentence under a quote from later in the post);
+    UNDERSTAND YOUR AUDIENCE
     (their words; what they want / what stops them with tensions as the
     bridge; segments; generic answer vs. the posts with a status per
     generic point - confirmed | contradicted | not_seen - from the

@@ -18,13 +18,13 @@
 ### What we heard most clearly
 - **We want control through DIY installation, measuring and doing our own maintenance.** *[SEG-03; Emerging - 5 people in 2 communities; good enough to: test a post]*
   > Nachgerechnet komme ich auf 3,7 (EV-0030)
-  > *In English (the post):* Energy Update August: AIRA Heat Pump shows 5.0 – recalculated it's X.X **Small note on the dryer:** There was a misunderstanding on my part in the video. My wife didn't clean the normal lint filter, but the heat exchanger fins in the dryer. That also explains the significant diff
+  > *In English:* When I calculate it, I get 3.7
 - **I look at DIY installation and doing the upkeep myself.** *[THM-04; Emerging - 5 people in 2 communities; good enough to: test a post]*
   > Würde auf die Pan setzen,da voll DIY tauglich. (EV-0002)
-  > *In English (the post):* Both top devices. Would go for the Pan, as it's fully DIY suitable.
+  > *In English:* I'd go for the Pan since it's totally DIY-friendly.
 - **I can't get my heat pump connected to its own electricity meter.** *[PAIN-01; Emerging - 3 people in 1 community; good enough to: test a post]*
   > nicht in der Lage die Wärmepumpe an einen eigenen Stromzähler anzuschließen (EV-0031)
-  > *In English (the post):* We have had a Bosch heat pump since January 2026. Unfortunately, the company that installed the heat pump is unable to connect the heat pump to its own electricity meter (there is no response to calls, emails or letters). Currently the heat pump is connected to a tenant's meter, 
+  > *In English:* not able to connect the heat pump to a separate meter
 
 ### Recommended position
 **Klare Positionen, echte Zahlen, ehrlich zum Altbau.** - for Hausbesitzer mit Einfamilienhaus oder Altbau, die eine WP erwägen, gerade angebotsreif sind oder schon eine haben, und Erfahrungsberichten von anderen Eigentümern mehr trauen als Herstellern., answering: Der Zweifel, dass man bei Wartung, Angebot und Effizienz nicht sieht, wofür man zahlt: Wartungsangebote ohne Aufschlüsselung, Angebote mit unklarem Leistungsumfang, und alte Heizkörper, die die Vorlauftemperatur hochtreiben. Das ist eine Beobachtung aus den Gesprächen, keine gesicherte Tatsache. *[TEN-01, TEN-02, OBJ-01, OBJ-02, OBJ-04, OBJ-05, MOT-01, MOT-03, OPP-07, HYP-02]*

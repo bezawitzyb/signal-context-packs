@@ -166,7 +166,7 @@
      "evidence_id": "EV-0030",
      "text": "Nachgerechnet komme ich auf 3,7"
     },
-    "quote_en": "Energy Update August: AIRA Heat Pump shows 5.0 – recalculated it's X.X\n\n**Small note on the dryer:** There was a misunderstanding on my part in the video. My wife didn't clean the normal lint filter, but the heat exchanger fins in the dryer. That also explains the significant difference in consumption!\n\nTwo weeks of vacation are the cleanest measurement a house gives. No cooking, no showering, no lights – and yet 13 kilowatt-hours per day. That's 41% of what an occupied house draws. You'll find all the numbers and facts in the article too: https://familie-elektrisiert.de/energie-update-august-2026/\n\nAugust was a month with two faces: 1,202 kWh from the roof across all systems, 65% autonomy on the days we were there – and three dark days after vacation, when both cars were empty and the sun wasn't playing along. At the end of the day, 38 € electricity costs.\n\nTwo things really occupied me this month. First: My heat pump shows an efficiency of 5.0 in the app. When I recalculate, I get 3.7 – because apparently whole operating modes fall out of the manufacturer's calculation, yet their electricity still runs through my meter. I asked about it and will get back to you once an answer comes.\n\nSecondly: A viewer had doubted my dryer consumption. He was right – just not for the reason he suspected. My wife cleaned the lint filter properly once. The result is more significant than I expected.\n\nAnd then there are the 550 watts base load, of which I can't explain almost 500. Those annoy me more than the electricity bill.\n\n⚡ How I work with AI: https://familie-elektrisiert.de/ki-transparenz/\n⚡ My assistants with jobs and hobbies: https://familie-elektrisiert.de/team/\n★ Smart Living Forum Solingen, 21.11., Alter Bahnhof, 10–17 hours, free admission\n\n▶ Playlist \"Energy Updates\": https://www.youtube.com/playlist?list=PLjaOwvsKbTmShXQzDHCA-nKSdmYjCVm9O\n▶ 6 weeks MG4 instead of diesel van – Susanne and Paul's conclusion: https://www.youtube.com/watch?v=X_eWupQVYws\n▶ MG4 and Enyaq on vacation: 87 euros cheaper than the diesel bus: https://www.youtube.com/watch?v=Yqfp9rQpp7E\n\nParts of this video were created with the help of AI. Which ones and how is stated openly in my AI code on the homepage.\n\n#FamilieElektrisiert #Photovoltaics #HeatPump #EnergyTransition #BalconyPowerPlant #ElectricityCosts #SmartHome #Solingen\n\nMentioned in the video\nHome-Assistant-Cookbook (free): https://s.familie-elektrisiert.de/cookbook\nMatter outlets with which I measure (advertising): https://link.amazon/B0bPN6iez\n\n⏱ Chapters in the video\n00:00 - Intro and the number of the month\n01:25 - Your comments from July\n02:37 - 1,202 kWh: production, modules and orientation\n06:17 - Two weeks empty house\n07:18 - Consumer ranking and the dryer\n09:13 - Heat pump: 5.0 according to app, 3.7 recalculated\n12:36 - 550 watts base load and the storage balance\n15:51 - Cars, green electricity share and autonomy\n18:16 - The electricity bill: 38 euros\n19:44 - Bureaucracy and an appointment in Solingen\n21:43 - Conclusion",
+    "quote_en": "When I calculate it, I get 3.7",
     "label": "emerging",
     "people": 5,
     "communities": 2,
@@ -182,7 +182,7 @@
      "evidence_id": "EV-0002",
      "text": "Würde auf die Pan setzen,da voll DIY tauglich."
     },
-    "quote_en": "Both top devices. Would go for the Pan, as it's fully DIY suitable.",
+    "quote_en": "I'd go for the Pan since it's totally DIY-friendly.",
     "label": "emerging",
     "people": 5,
     "communities": 2,
@@ -198,7 +198,7 @@
      "evidence_id": "EV-0031",
      "text": "nicht in der Lage die Wärmepumpe an einen eigenen Stromzähler anzuschließen"
     },
-    "quote_en": "We have had a Bosch heat pump since January 2026. Unfortunately, the company that installed the heat pump is unable to connect the heat pump to its own electricity meter (there is no response to calls, emails or letters). Currently the heat pump is connected to a tenant's meter, but that is not supposed to stay that way.\nWho in the Düsseldorf area can recommend a company?\nThere are also different opinions on whether a new meter box is needed. Actually there is a free space.\nWho can help?",
+    "quote_en": "not able to connect the heat pump to a separate meter",
     "label": "emerging",
     "people": 3,
     "communities": 1,

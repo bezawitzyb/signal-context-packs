@@ -1125,6 +1125,37 @@ def feature(pack_id: str = typer.Argument(..., help="A finished pack to publish 
         console.print(f"  {kind:<13} {path}", highlight=False)
 
 
+@app.command("translate-quotes")
+def translate_quotes(pack_id: str = typer.Argument(..., help="A saved pack")) -> None:
+    """English under the Summary quotes = the quoted words' translation, not the whole post's (one Haiku call,
+    under $0.01). Saves the pack under its own id; a featured pack then needs: feature PACK_ID."""
+    import asyncio
+
+    from ctxpack import db
+    from ctxpack.llm.client import tracking
+    from ctxpack.schemas.pack import ContextPack
+    from ctxpack.synthesis import quote_en
+
+    db.init_engine()
+    _ready_db()
+    pack = db.get_pack(pack_id)
+    if pack is None:
+        console.print(f"{BAD} pack {pack_id} not found")
+        raise typer.Exit(1)
+    findings, ev = pack["snapshot"]["findings"], {e["id"]: e for e in pack["evidence"]}
+    with tracking() as t:
+        english, _ = asyncio.run(quote_en.translate(quote_en.wanted(findings, ev)))
+    quote_en.apply(findings, ev, english)
+    row = db.get_pack_row(pack_id)
+    db.save_pack(ContextPack.model_validate(pack), run_id=row.run_id, featured=row.featured)
+    for f in findings:
+        if f.get("quote"):
+            console.print(f"  {f['quote']['text'][:70]}\n    -> {f.get('quote_en') or '(English quote, no line)'}",
+                          highlight=False, markup=False)
+    console.print(f"{OK} saved {pack_id} | cost ${t.spent_usd:.4f}"
+                  + ("\n   featured: run  feature " + pack_id if row.featured else ""), highlight=False)
+
+
 @app.command("redact-run")
 def redact_run_cmd(run_id: str = typer.Argument(..., help="A saved run")) -> None:
     """Re-apply the current redaction to a saved run: documents, draft and packs (free, no model calls).

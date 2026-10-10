@@ -104,7 +104,7 @@ Read the relevant step before working. Do only that step.
 ## Commands (keep updated)
 - Backend CLI: cd backend && uv run python -m ctxpack.cli <command>
   (doctor, catalog, tool, classify, plan, research, extract, cluster, write, verify, pack, export, feature
-  [--replaces OLD_ID], redact-run, overlap, export-schema, eval [--reuse] [--only ID] [--recheck],
+  [--replaces OLD_ID], redact-run, translate-quotes PACK_ID, overlap, export-schema, eval [--reuse] [--only ID] [--recheck],
   demo-check [--no-paid], actor-check, version)
 - Research run: ... research "<brief>" --mode quick|standard [--fixtures]
   [--auto-approve] [--goal ID ...] [--offer TEXT] [--offer-stage STAGE]
