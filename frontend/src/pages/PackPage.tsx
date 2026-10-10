@@ -2,13 +2,13 @@
 // (collapsed). Sticky part nav (a menu on phones), progressive disclosure, evidence drawer, View as agent, Hand off.
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { Braces, History, Menu, MessageCircleQuestion, RotateCcw, Share2, TextQuote, ArrowUp } from "lucide-react";
+import { Braces, History, Info, Menu, MessageCircleQuestion, RotateCcw, Share2, TextQuote, ArrowUp } from "lucide-react";
 import { friendlyError, getPack, getPackInputs, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
 import { ConfidenceBadge } from "../components/badges";
 import { BrandPart } from "../components/brand";
-import { CoverageStrip, LimitationCallout } from "../components/callouts";
+import { CoverageStrip } from "../components/callouts";
 import { HookCard, PackContext, SourceCard, TensionCard, usePack } from "../components/cards";
 import { applyFilter, EmptyNote, type Filter, ItemSection, SectionLead, type SectionNotes, ShowMore, TableSection } from "../components/blocks";
 import { SummaryPart } from "../components/summary";
@@ -619,7 +619,12 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                 </details>
               )}
               {pack.blind_spots[0]?.text.startsWith("Partial pack:") && (
-                <LimitationCallout title="Partial pack">{pack.blind_spots[0].text.replace("Partial pack: ", "")}</LimitationCallout>
+                // one line, not a boxed callout: the Summary must still fit one laptop screen (PRD 6.1f)
+                <p className="flex items-start gap-1.5 text-sm text-ink-2">
+                  <Info aria-hidden="true" size={14} className="mt-0.5 shrink-0 text-ink" />
+                  <span><span className="font-medium text-ink">Partial pack:</span>{" "}
+                    {pack.blind_spots[0].text.replace("Partial pack: ", "")}</span>
+                </p>
               )}
             </div>
           )}

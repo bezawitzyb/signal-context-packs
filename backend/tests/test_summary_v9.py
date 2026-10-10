@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from ctxpack.api import service
-from ctxpack.config import REPO_DIR, load_yaml
+from ctxpack.config import load_yaml
 from ctxpack.exports.handoff import handoff_options, length_label
 from ctxpack.exports.quick_brief import to_quick_brief
 from ctxpack.schemas.pack import ContextPack
@@ -13,8 +13,9 @@ from tests.test_cluster import fake  # noqa: F401  (fixture)
 from tests.test_posts import packed  # noqa: F401  (fixture)
 
 
-def featured(pack_id: str) -> dict:
-    raw = json.loads((REPO_DIR / "featured" / f"{pack_id}.json").read_text(encoding="utf-8"))
+def fixture_pack(pack_id: str) -> dict:
+    """A finished pack kept under tests/fixtures/packs: tests must not depend on the featured packs' words."""
+    raw = json.loads((Path(__file__).parent / "fixtures" / "packs" / f"{pack_id}.json").read_text(encoding="utf-8"))
     return ContextPack.model_validate(raw).model_dump(mode="json")
 
 
@@ -60,14 +61,14 @@ def test_featured_packs_are_migrated_to_the_new_summary_for_free():
 
 
 def test_quick_brief_is_half_a_page_and_keeps_the_quote_rule():
-    p = featured("pk_7KAp0R-njCpL")
+    p = fixture_pack("pk_i4iFso1HnLWR")
     text = to_quick_brief(p)
     assert len(text.split()) <= load_yaml("modes")["exports"]["quick_brief_max_words"]
     assert "WHO:" in text and "DON'T:" in text and p["guardrails"]["quote_reuse_note"] in text
 
 
 def test_handoff_options_are_written_for_marketers():
-    options = handoff_options(featured("pk_7KAp0R-njCpL"))
+    options = handoff_options(fixture_pack("pk_i4iFso1HnLWR"))
     main = [o["title"] for o in options if not o["more"]]
     assert main == ["Quick brief", "Brief for your AI writer", "Full report", "Content calendar"]
     text = json.dumps(options).lower()

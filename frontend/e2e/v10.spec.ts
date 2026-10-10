@@ -21,7 +21,7 @@ test("ask a featured pack: citations open real posts; no evidence is said plainl
   expect(await page.content()).not.toContain(KEY);                     // never on the page
   await expect(panel.getByRole("list", { name: "Suggested questions" }).getByRole("button")).toHaveCount(4);
 
-  await panel.getByLabel("Your question about this pack").fill("pistache");   // a word in the featured NL pack's posts
+  await panel.getByLabel("Your question about this pack").fill("lidl");   // a word in the featured NL pack's posts (pk_3I8-9eTZflyz)
   await panel.getByRole("button", { name: "Ask" }).click();
   const cite = panel.locator("p a[href^='http']").first();          // a numbered citation in the answer
   await expect(cite).toBeVisible();

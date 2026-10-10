@@ -33,7 +33,7 @@ from ctxpack.config import REPO_DIR, get_settings, model_for
 from ctxpack.exports.skill import references, skill_body
 from ctxpack.llm.client import call, cost_usd, load_prompt, untrusted
 
-NL_PACK = "pk_7KAp0R-njCpL"   # NL rerun 2026-10-09 (Quick, merge fix); examples/demo_agent.md was made with pk_wrvZBhDFsLR9
+NL_PACK = "pk_3I8-9eTZflyz"   # NL rerun 2026-10-10 (Quick, relevance cut 0.35); examples/demo_agent.md was made with pk_wrvZBhDFsLR9
 TASK = ("Write three TikTok scripts for a new snack brand launching in the Netherlands. "
         "The audience is Dutch snackers aged 18-40.")
 OUT = REPO_DIR / "examples" / "demo_agent.md"
