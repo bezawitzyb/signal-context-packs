@@ -1,7 +1,7 @@
 {
  "status": "ok",
  "date": "2026-10-10",
- "generated_at": "2026-10-10T11:59:35+00:00",
+ "generated_at": "2026-10-10T13:59:09+00:00",
  "targets": {
   "quote_groundedness": 1.0,
   "claim_entailment": 0.95,
@@ -22,10 +22,10 @@
    "detail": "lowest of the briefs"
   },
   "claim_entailment": {
-   "value": 0.88,
+   "value": 0.8867,
    "target": 0.95,
    "pass": false,
-   "detail": "132 of 150 sampled claims, all briefs"
+   "detail": "133 of 150 sampled claims, all briefs"
   },
   "claims_with_evidence": {
    "value": 1.0,
@@ -49,7 +49,7 @@
    "value": 0.013,
    "target": 0.5,
    "pass": true,
-   "detail": "1 of 78 distinct source units are used by more than one brief: reddit:r/thenetherlands"
+   "detail": "1 of 77 distinct source units are used by more than one brief: reddit:r/thenetherlands"
   },
   "allocation_efficiency": {
    "value": 1.11,
@@ -75,7 +75,7 @@
   "value": 0.013,
   "target": 0.5,
   "pass": true,
-  "detail": "1 of 78 distinct source units are used by more than one brief: reddit:r/thenetherlands",
+  "detail": "1 of 77 distinct source units are used by more than one brief: reddit:r/thenetherlands",
   "pairwise_jaccard": {
    "genz_meal_prep / nl_snack_brand": 0.0,
    "genz_meal_prep / de_heat_pumps": 0.0,
@@ -967,95 +967,95 @@
    "id": "de_heat_pumps",
    "brief": "Heat pumps for homeowners in Germany",
    "mode": "quick",
-   "pack_id": "pk_i5JJDiXMuoDy",
-   "run_id": "run_jTEBDLlvp_HWh4e3",
+   "pack_id": "pk_n-QlY1xrqi0x",
+   "run_id": "run_qif3EAmeJTQ5mRSX",
    "reused": true,
    "note": "B2B-like; energy and green claims. Becomes the third example (feature it after a privacy check).",
    "interpreted": {
-    "topic": "Heat pumps (Wärmepumpen) for homeowners in Germany: considering, buying, installing and living with them",
+    "topic": "Heat pump (Wärmepumpe) purchase and installation decisions by homeowners in Germany",
     "market": "DE",
     "languages": [
      "de",
      "en"
     ]
    },
-   "coverage_grade": "d",
-   "relevant_posts": 46,
-   "thin_evidence": true,
-   "thin_evidence_note": "below the content bar or the minimum relevant posts for quick (60); the pack says so instead of padding",
+   "coverage_grade": "b",
+   "relevant_posts": 171,
+   "thin_evidence": false,
+   "thin_evidence_note": "",
    "metrics": {
     "quote_groundedness": {
      "value": 1.0,
      "target": 1.0,
      "pass": true,
-     "detail": "63 of 63 quotes are exact substrings of their evidence"
+     "detail": "119 of 119 quotes are exact substrings of their evidence"
     },
     "claim_entailment": {
-     "value": 0.9667,
+     "value": 1.0,
      "target": 0.95,
      "pass": true,
-     "detail": "29 of 30 sampled claims entailed (strictly supported: 83%); not entailed: CUL-02"
+     "detail": "30 of 30 sampled claims entailed (strictly supported: 57%)"
     },
     "claims_with_evidence": {
      "value": 1.0,
      "target": 1.0,
      "pass": true,
-     "detail": "37 of 37 claims cite evidence that is in the pack"
+     "detail": "67 of 67 claims cite evidence that is in the pack"
     },
     "relevance_rate": {
-     "value": 0.78,
+     "value": 0.737,
      "target": 0.6,
      "pass": true,
-     "detail": "46 relevant of 59 kept posts"
+     "detail": "171 relevant of 232 kept posts"
     },
     "source_diversity": {
-     "value": 3,
+     "value": 5,
      "target": 3,
      "pass": true,
-     "detail": "facebook, web_forum, youtube"
+     "detail": "facebook, reddit, tiktok, x, youtube"
     },
     "allocation_efficiency": {
-     "value": 1.02,
+     "value": 1.08,
      "target": "agent >= equal split",
      "pass": true,
-     "detail": "agent 41 relevant posts vs. equal split ~40 from 56 items over 3 units; per USD 69.1 vs. 67.7",
+     "detail": "agent 171 relevant posts vs. equal split ~159 from 248 items over 10 units; per USD 149.6 vs. 138.8",
      "simulated": true,
      "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
      "relevant_per_usd": {
-      "agent": 69.1,
-      "equal_split": 67.7
+      "agent": 149.6,
+      "equal_split": 138.8
      },
-     "units": 3
+     "units": 10
     },
     "loop_health": {
      "value": {
-      "tool_calls": 9,
-      "finish_reason": "time_limit",
-      "fallback_used": true,
+      "tool_calls": 14,
+      "finish_reason": "finish",
+      "fallback_used": false,
       "top_up_used": false,
       "max_tool_calls": 15
      },
      "target": "finish, no fallback",
-     "pass": false,
-     "detail": "9 tool calls, finished by 'time_limit', fallback used - the agent did not finish on its own; the pack is still valid but collection was cut short"
+     "pass": true,
+     "detail": "14 tool calls, finished by 'finish'"
     },
     "cost_usd": {
-     "value": 3.01,
+     "value": 5.67,
      "target": 4.6,
-     "pass": true,
-     "detail": "Apify $0.15 + Anthropic $2.87; typical $1.50-3.00, hard cap $4.60 (NFR2)"
+     "pass": false,
+     "detail": "Apify $0.59 + Anthropic $5.08; typical $1.50-3.00, hard cap $4.60 (NFR2); over the cap because analysis stages were re-run on the saved corpus"
     },
     "latency_min": {
-     "value": 55.9,
+     "value": 68.7,
      "target": 7,
      "pass": false,
-     "detail": "55.9 min end to end (NFR1: about 7 min); includes a 20 min pause between 'cost' and 'cost' (stages re-run by hand later), so about 36.1 min of work"
+     "detail": "68.7 min end to end (NFR1: about 7 min); includes a 17 min pause between 'pack_ready' and 'cost' (stages re-run by hand later), so about 51.4 min of work"
     },
     "peak_mem_mb": {
-     "value": 187.5,
+     "value": 194.3,
      "target": 400,
      "pass": null,
-     "detail": "187.5 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
+     "detail": "194.3 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
     },
     "schema_valid": {
      "value": 1.0,
@@ -1078,22 +1078,22 @@
     {
      "check": "de posts in the corpus",
      "pass": true,
-     "detail": "98% of kept posts"
+     "detail": "100% of kept posts"
     },
     {
      "check": "compliance area energy_environmental",
      "pass": true,
-     "detail": "interpreted: energy_environmental; 16 compliance flag(s) in the pack"
+     "detail": "interpreted: energy_environmental; 30 compliance flag(s) in the pack"
     },
     {
      "check": "at most 4 question(s)",
      "pass": true,
-     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [audience_roles] Which homeowners matter most?; Q4 [key_question] Which decision should this research help with, and by when?"
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [audience_roles] Which homeowners matter most?; Q4 [key_question] Is there a decision or date this research should support?"
     },
     {
      "check": "asks about goal, offer",
      "pass": true,
-     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [audience_roles] Which homeowners matter most?; Q4 [key_question] Which decision should this research help with, and by when?"
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [audience_roles] Which homeowners matter most?; Q4 [key_question] Is there a decision or date this research should support?"
     },
     {
      "check": "never asks what the brief already says",
@@ -1134,21 +1134,21 @@
       "question": "Which homeowners matter most?",
       "fills": "audience_roles",
       "options": [
-       "Owners of older houses replacing oil or gas heating",
+       "Owners of older houses replacing a gas or oil boiler",
        "New-build owners and builders",
-       "Owners already running a heat pump",
-       "Landlords with rental properties",
+       "Owners who already have a heat pump",
+       "Owners comparing installers and quotes",
        "All of them"
       ]
      },
      {
       "id": "Q4",
-      "question": "Which decision should this research help with, and by when?",
+      "question": "Is there a decision or date this research should support?",
       "fills": "key_question",
       "options": [
-       "Launch in the next 3 months",
-       "Plan content for the next heating season",
-       "Decide how to price or position an offer",
+       "A launch or campaign in the next 3 months",
+       "Planning content for the coming season",
+       "Choosing our message against competitors",
        "No fixed date"
       ]
      }
@@ -1158,250 +1158,249 @@
     "checked": 30,
     "sampled": 30,
     "counts": {
-     "supported": 25,
-     "partially_supported": 5,
+     "supported": 17,
+     "partially_supported": 13,
      "not_supported": 0,
      "unchecked": 0
     },
-    "entailed": 29,
-    "rate": 0.9667,
-    "strict_rate": 0.8333,
+    "entailed": 30,
+    "rate": 1.0,
+    "strict_rate": 0.5667,
     "rows": [
      {
-      "id": "MOT-03",
-      "verdict": "supported",
-      "claim_type": "observed",
-      "entailed": true,
-      "reason": "EV-0011 demands itemised positions on a maintenance invoice and rejects lump sums because the poster wants to know what is done."
-     },
-     {
-      "id": "OBJ-01",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "Several posts call maintenance expensive, and EV-0036 describes a 240€ bill for half an hour of minimal work."
-     },
-     {
-      "id": "PHR-03",
-      "verdict": "supported",
-      "claim_type": "observed",
-      "entailed": true,
-      "reason": "EV-0023 contains 'Frage in die Runde: Welche Erfahrungen habt ihr gemacht'."
-     },
-     {
       "id": "LEX-09",
-      "verdict": "partially_supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "Heizungsmonteur is used, but this poster says the heat pump needs no maintenance, so the fitter is not shown as the one who would service it."
-     },
-     {
-      "id": "LEX-07",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0020 talks about an installation not being registered ('angemeldet') with the VNB."
-     },
-     {
-      "id": "LEX-05",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0016 asks about 'Einstellungen bzw. Heizkennlinien' right next to a remark on the poor JAZ."
-     },
-     {
-      "id": "LEX-08",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0020 mentions 14a next to the missing VNB registration."
-     },
-     {
-      "id": "PHR-02",
       "verdict": "supported",
       "claim_type": "observed",
       "entailed": true,
-      "reason": "EV-0013 warns 'Finger weg' from offers advertising a SCOP of 4.77 and a 75°C flow temperature."
-     },
-     {
-      "id": "SEG-02",
-      "verdict": "partially_supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "The posts ask for installer recommendations and experiences, but none shows anyone comparing quotes."
-     },
-     {
-      "id": "LEX-11",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0021 says 'Lass dir keine Wärmepumpe aufschwatzen!'"
-     },
-     {
-      "id": "OBJ-04",
-      "verdict": "partially_supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "The evidence warns against being talked into a heat pump and separately mentions wrong sizing and poor fit, but no single post makes this combined warning."
-     },
-     {
-      "id": "PHR-01",
-      "verdict": "supported",
-      "claim_type": "observed",
-      "entailed": true,
-      "reason": "EV-0011 says it would no longer accept a lump-sum ('Pauschale') maintenance invoice and wants individual items listed."
-     },
-     {
-      "id": "OBJ-05",
-      "verdict": "supported",
-      "claim_type": "observed",
-      "entailed": true,
-      "reason": "The post says a SCOP of up to 4.7 only holds in mild weather, winter values drop to 2.7, and nobody will tell you that."
-     },
-     {
-      "id": "CUL-02",
-      "verdict": "partially_supported",
-      "claim_type": "observed",
-      "entailed": false,
-      "reason": "The posts ask for local installer recommendations, but nothing shows they were posted in Facebook groups."
-     },
-     {
-      "id": "TEN-02",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0034 says skipping yearly maintenance voids the warranty and asks whether the warranty is worth the high cost; the other posts quote €240 to €500."
+      "reason": "EV-0017 says the Geschwindigkeitsbonus fell to 16%."
      },
      {
       "id": "LEX-03",
       "verdict": "supported",
       "claim_type": "inferred",
       "entailed": true,
-      "reason": "EV-0017 uses Vorlauftemperatur to judge whether a heat pump can run efficiently with old radiators in older buildings."
+      "reason": "Both posts use JAZ values (2.6, 4.3) to judge heat pump performance."
      },
      {
-      "id": "LEX-10",
+      "id": "MOT-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show scepticism about a quote and a request to check it, but none mentions whether the price is fair."
+     },
+     {
+      "id": "MOT-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts say a heat load calculation is needed and should come before choosing a model, but none says outright that it is for sizing the pump correctly."
+     },
+     {
+      "id": "SEG-03",
       "verdict": "supported",
       "claim_type": "inferred",
       "entailed": true,
-      "reason": "The owner says they have had a Waterkotte Sole-Wasser-WP for 13 years."
+      "reason": "EV-0056 asks about a DIY installation and EV-0057 says the poster did the installation themselves."
      },
      {
-      "id": "CUL-03",
+      "id": "PHR-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0021 answers the 41°C flow temperature question with 'Heizkurve zu hoch'."
+     },
+     {
+      "id": "MOM-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The portal closure and the rate change come from two different posts, joined as one person's concern."
+     },
+     {
+      "id": "LEX-04",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Both posts use WP in place of Wärmepumpe."
+     },
+     {
+      "id": "THM-12",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The joke and the distrust come from two different posts, joined as if one person said both."
+     },
+     {
+      "id": "THM-14",
       "verdict": "supported",
       "claim_type": "observed",
       "entailed": true,
-      "reason": "The owner names Panasonic, says it is the third year, gives a JAZ of 4.11 and says hot water is included."
+      "reason": "EV-0027 says this almost word for word."
      },
      {
-      "id": "LEX-06",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "The installer's offer for the annual maintenance uses the word Regiewartung."
-     },
-     {
-      "id": "THM-09",
+      "id": "CUL-02",
       "verdict": "supported",
       "claim_type": "observed",
       "entailed": true,
-      "reason": "The owner says they are fully satisfied, in the third year, with a JAZ of 4.11."
+      "reason": "EV-0043 says it wants to use the knowledge 'in diesem Sub' for assessing offers and devices."
      },
      {
-      "id": "TEN-01",
+      "id": "THM-06",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Cycling and odd flow temperatures appear across several posts, but no post literally asks others what to change."
+     },
+     {
+      "id": "SEG-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The post describes changing the 'Externe Pumpe' setting after the heating kept cycling, but it never says the device is a heat pump (the title mentions a Frischwasserstation)."
+     },
+     {
+      "id": "MOM-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Two different posts each report on one year of results, but neither describes judging after a year as a general practice, and only one is clearly about electricity use."
+     },
+     {
+      "id": "SEG-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The posters share quotes and ask for a review, but none literally asks whether the quote is fair."
+     },
+     {
+      "id": "OBJ-01",
       "verdict": "supported",
       "claim_type": "inferred",
       "entailed": true,
-      "reason": "An old-building owner reports their old cast-iron radiators don't work well with the heat pump, and replies say small old radiators force a high flow temperature that hurts efficiency."
+      "reason": "EV-0073 says the poster keeps hearing this statement and calls it a 'Denkfehler' (a mistaken idea)."
      },
      {
-      "id": "THM-04",
+      "id": "CUL-04",
       "verdict": "supported",
-      "claim_type": "inferred",
+      "claim_type": "observed",
       "entailed": true,
-      "reason": "The posts cover a DIY heat pump installation and owners cleaning and adjusting the unit themselves."
+      "reason": "EV-0029 says exactly this."
      },
      {
       "id": "LEX-12",
       "verdict": "supported",
       "claim_type": "inferred",
       "entailed": true,
-      "reason": "EV-0022 says the utility won't fit another meter in that Zählerschrank for the heat pump."
-     },
-     {
-      "id": "PHR-04",
-      "verdict": "supported",
-      "claim_type": "observed",
-      "entailed": true,
-      "reason": "The satisfied owner's JAZ post ends with 'Kann mich also nicht beschweren' ('So I can't complain')."
-     },
-     {
-      "id": "OBJ-02",
-      "verdict": "partially_supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "The posts say old radiators are too small and replacing them helped, but none says outright that this is a bigger job than swapping the unit."
+      "reason": "EV-0051 says the offer includes a Kombispeicher that the commenter would rather leave out."
      },
      {
       "id": "LEX-02",
       "verdict": "supported",
       "claim_type": "inferred",
       "entailed": true,
-      "reason": "JAZ is used for an owner's own yearly figure (4.11) and to criticise a poor value (2.6)."
+      "reason": "Both posts use Heizungsbauer when talking about what the installer should have said or judged."
      },
      {
-      "id": "MOM-03",
+      "id": "THM-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The deadline and rules questions come from different posters joined as one 'I', and no post states fear of losing the grant."
+     },
+     {
+      "id": "THM-09",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0031 says the balancing is needed for the grant and must actually be done, not just certified."
+     },
+     {
+      "id": "LEX-16",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0052 mentions Geizbetrieb while reading the electricity use on a wattwächter."
+     },
+     {
+      "id": "OBJ-04",
       "verdict": "supported",
       "claim_type": "observed",
       "entailed": true,
-      "reason": "After the first winter the poster feels 'ernüchtert' (let down) because the old cast-iron radiators don't seem to work well with the heat pump."
+      "reason": "EV-0077 says exactly this, citing the data sheet."
+     },
+     {
+      "id": "OBJ-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0076 says exactly this."
+     },
+     {
+      "id": "THM-11",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Responders question why such a large buffer or stratified tank is needed, but no post has the offer holder questioning their own offer."
      },
      {
       "id": "MOT-01",
       "verdict": "supported",
       "claim_type": "observed",
       "entailed": true,
-      "reason": "Replies say 60°C flow is too high for efficient heat pump use because the old radiators are too small."
+      "reason": "EV-0066 says their old gas heating has aged, leaves the house lukewarm in winter, and so they want to install a WP."
      },
      {
-      "id": "MOM-01",
+      "id": "TEN-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts call a hybrid uneconomic and a half measure, but no post states a wish for a hybrid or backup for safety; EV-0061 only mentions a generator for emergencies."
+     },
+     {
+      "id": "TEN-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0010 is a skeptic predicting 17-degree rooms, not someone wanting a heat pump and fearing cold rooms; the other posts report success."
+     },
+     {
+      "id": "MOT-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The question appears as the framing of a video description, not as a person's own wish to know what they will pay."
+     },
+     {
+      "id": "PHR-01",
       "verdict": "supported",
       "claim_type": "observed",
       "entailed": true,
-      "reason": "Posters want to replace an old gas boiler or old oil heating and are considering a heat pump."
-     },
-     {
-      "id": "LEX-01",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "WP is used for Wärmepumpe in a post about an advertised SCOP and in the dismissive comment 'WP ist scheiße'."
+      "reason": "EV-0002 quotes the myth 'Wärmepumpe im Altbau geht nicht' as one an interview claims to have cleared up."
      }
     ],
-    "usd": 0.1099
+    "usd": 0.1308
    },
    "units": [
-    "facebook:search:wärmepumpe angebot installateur",
-    "facebook:search:wärmepumpe angebot installateur erfahrungen",
+    "facebook:group:5462833997116825",
+    "facebook:search:wärmepumpe erfahrungen altbau angebot handwerker",
+    "facebook:search:wärmepumpe zu laut nachbar förderung kfw antrag",
     "facebook:wärmepumpe erfahrungen hausbesitzer",
     "reddit:r/de",
-    "web",
-    "web:akkudoktor.net",
-    "web:energiesparhaus.at",
-    "web:hausbau-forum.de",
-    "web:hausbesitzer-forum.de",
+    "reddit:r/waermepumpe",
+    "reddit:search:r/wärmepumpe",
+    "tiktok:search:wärmepumpe altbau erfahrung",
+    "web:bau.net",
     "web:haustechnikdialog.de",
     "web:heizungsforum.de",
-    "web:my-htd.de",
-    "web:search:site:energiesparhaus.at luft-wasser-wärmepumpe erfahrungen kosten",
-    "web:search:site:haustechnikdialog.de wärmepumpe altbau erfahrungen",
-    "web:search:wärmepumpe altbau erfahrungen forum",
-    "web:search:wärmepumpe bereut",
+    "web:photovoltaikforum.com",
+    "web:search:wärmepumpe altbau erfahrungen jaz stromverbrauch forum",
     "web:urbia.de",
-    "web:wärmepumpe vorteile nachteile hausbesitzer erfahrungen forum",
-    "youtube:search:wärmepumpe erfahrungen altbau test",
-    "youtube:search:wärmepumpe erfahrungsbericht jahresbilanz",
-    "youtube:wärmepumpe erfahrungen altbau test"
+    "web:wärmepumpe installateur bewertungen erfahrungen mängel",
+    "x:search:wärmepumpe heizungsgesetz förderung hausbesitzer",
+    "youtube:search:wärmepumpe altbau vorlauftemperatur heizkörper hydraulischer abgleich",
+    "youtube:search:wärmepumpe erfahrungsbericht nach einem jahr altbau",
+    "youtube:search:wärmepumpe kosten förderung einfamilienhaus lohnt sich",
+    "youtube:wärmepumpe erfahrungsbericht altbau kosten"
    ]
   },
   {
@@ -2222,7 +2221,7 @@
    ]
   }
  ],
- "eval_cost_usd": 0.3467,
+ "eval_cost_usd": 0.1684,
  "notes": [
   "Allocation efficiency is SIMULATED (see each brief's assumption).",
   "Cost and latency come from the run record; a run whose analysis was redone later includes that extra time and spend."
