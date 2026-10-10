@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { friendlyError, listPacks, LIVE_URL, MIRROR, type FeaturedPack } from "../lib/api";
 import { ErrorNote } from "../components/ErrorNote";
 import { myPacks } from "../lib/rerun";
+import { packTitle } from "../lib/title";
 import { AskFlow } from "./Ask";
 import { Skeleton } from "../components/Skeleton";
 
@@ -21,13 +22,13 @@ export function PackCards({ packs }: { packs: FeaturedPack[] }) {
         const facts = [
           p.relevant_posts != null && `${p.relevant_posts} real posts`,
           p.languages?.length && p.languages.map(languageName).join(" & "),
-          p.strong_findings ? `${p.strong_findings} strong findings` : p.findings ? `${p.findings} findings` : null,
+          p.findings ? `${p.findings} findings${p.strong_findings ? ` (${p.strong_findings} strong)` : ""}` : null,
         ].filter(Boolean) as string[];
         return (
           <li key={p.pack_id} className="flex">
             <Link to={`/packs/${p.pack_id}`}
                   className="group flex w-full flex-col rounded-lg border border-line p-4 hover:border-line-strong">
-              <p className="font-medium text-ink">{p.brief}</p>
+              <p className="font-medium text-ink">{packTitle(p.brief, p.topic)}</p>
               {p.top_finding
                 ? <p className="mt-1 line-clamp-3 flex-1 text-sm text-ink-2"><span className="text-ink-3">Heard most: </span>{p.top_finding}</p>
                 : <p className="mt-1 line-clamp-2 flex-1 text-sm text-ink-2">{p.audience}</p>}
@@ -61,13 +62,14 @@ export function Home() {
           What your audience actually says - in their words.
         </h1>
         <p className="mt-3 text-lg text-ink-2">
-          Find out what your audience really says - their words, frustrations and objections - from real public posts in
-          their own market and language, with a plan you can act on. Every finding links to the posts behind it.
+          Their frustrations, objections and the words they use - from real public posts in their own market and
+          language, with a plan you can act on. Every finding links to the posts behind it.
         </p>
         <p className="mt-2 text-sm text-ink-2">You get a <span className="font-medium text-ink">Context Pack</span>: a
           report to read and share, plus a file your AI tools can use to write in your audience's words.</p>
         {!MIRROR && (
-          <a href="#ask" className="mt-5 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95">
+          <a href="#ask" onClick={() => window.setTimeout(() => document.getElementById("brief")?.focus({ preventScroll: true }), 0)}
+             className="mt-5 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95">
             Start your research <ArrowRight aria-hidden="true" size={16} />
           </a>
         )}
@@ -88,7 +90,7 @@ export function Home() {
             {myPacks().map((p) => (
               <li key={p.pack_id}>
                 <Link to={`/packs/${p.pack_id}`} className="block rounded-lg border border-line p-3 hover:border-line-strong">
-                  <span className="font-medium text-ink">{p.brief}</span>
+                  <span className="font-medium text-ink">{packTitle(p.brief)}</span>
                   <span className="block font-mono text-xs text-ink-3">{p.at.slice(0, 10)} · made in this browser</span>
                 </Link>
               </li>

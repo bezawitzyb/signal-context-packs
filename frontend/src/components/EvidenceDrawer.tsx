@@ -7,6 +7,7 @@ import { evidenceIdsOf, type AnyItem, type PackIndex } from "../lib/packIndex";
 import { ClaimTypeTag, ConfidenceBadge, SafeTag } from "./badges";
 import { CopyButton } from "./CopyButton";
 import { Quote } from "./Quote";
+import { platformName } from "../lib/unitWords";
 
 function headline(item: AnyItem): string {
   for (const k of ["claim", "action", "text", "title", "statement", "name", "label", "term"]) {
@@ -39,6 +40,7 @@ export function EvidenceDrawer({ itemId, index, packId, onClose, onOpen }: {
     engagement_percentile_median?: number | null } | undefined;
   const quotes = (item?.quotes as { evidence_id: string; text: string }[] | undefined) ?? [];
   const evIds = item ? evidenceIdsOf(item) : [];
+  const shownQuotes = quotes.filter((q) => !evIds.includes(q.evidence_id));   // the full post below already holds it
   const basedOn = item ? [...((item.why_ids as string[]) ?? []), ...((item.builds_on as string[]) ?? []),
     ...((item.item_ids as string[]) ?? []), ...((item.segment_ids as string[]) ?? []),
     ...((item.related_ids as string[]) ?? [])].filter((id) => index.items.has(id)) : [];
@@ -70,13 +72,15 @@ export function EvidenceDrawer({ itemId, index, packId, onClose, onOpen }: {
             )}
             {strength && (
               <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line text-sm sm:grid-cols-4">
-                {[["Posts", strength.evidence_count], ["Authors", strength.distinct_authors],
-                  ["Platforms", strength.platforms.join(", ") || "-"],
-                  ["Engagement", strength.engagement_percentile_median != null ? `p${Math.round(strength.engagement_percentile_median)}` : "no data"],
-                ].map(([k, v]) => (
-                  <div key={String(k)} className="bg-paper px-3 py-2">
+                {([["Posts", strength.evidence_count, true], ["Authors", strength.distinct_authors, true],
+                  ["Platforms", strength.platforms.map(platformName).join(", ") || "-", false],
+                  // UX audit: "p28" -> plain words (the median post's engagement percentile within this run)
+                  ["Engagement", strength.engagement_percentile_median != null
+                    ? `higher than ${Math.round(strength.engagement_percentile_median)}% of posts` : "no data", false],
+                ] as [string, string | number, boolean][]).map(([k, v, num]) => (
+                  <div key={k} className="bg-paper px-3 py-2">
                     <dt className="text-[0.7rem] uppercase tracking-wide text-ink-3">{k}</dt>
-                    <dd className="font-mono text-xs text-ink">{v}</dd>
+                    <dd className={num ? "font-mono text-xs text-ink" : "text-xs text-ink"}>{v}</dd>
                   </div>
                 ))}
               </dl>
@@ -84,25 +88,33 @@ export function EvidenceDrawer({ itemId, index, packId, onClose, onOpen }: {
             {basedOn.length > 0 && (
               <div>
                 <p className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">Based on</p>
-                <div className="flex flex-wrap gap-1.5">
+                <ul className="space-y-1">
                   {basedOn.map((id) => (
-                    <button key={id} type="button" onClick={() => onOpen(id)}
-                            className="rounded border border-line px-1.5 py-0.5 font-mono text-xs text-ink hover:border-ink">{id}</button>
+                    <li key={id}>
+                      <button type="button" onClick={() => onOpen(id)}
+                              className="text-left text-sm text-ink underline decoration-line-strong underline-offset-2 hover:decoration-ink">
+                        {headline(index.items.get(id)!)}
+                      </button>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
-            {quotes.length > 0 && (
+            {shownQuotes.length > 0 && (
               <section>
                 <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">Quoted</h3>
                 <div className="space-y-3">
-                  {quotes.map((q) => <Quote key={q.evidence_id + q.text} text={q.text} evidence={index.evidence[q.evidence_id]} />)}
+                  {shownQuotes.map((q) => <Quote key={q.evidence_id + q.text} text={q.text} evidence={index.evidence[q.evidence_id]} />)}
                 </div>
               </section>
             )}
             {evIds.length > 0 && (
               <section>
-                <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">The posts behind it ({evIds.length})</h3>
+                <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">
+                  The posts behind it ({counts && counts.matching > evIds.length ? `${evIds.length} ${evIds.length === 1 ? "example" : "examples"} of ${counts.matching}` : evIds.length})</h3>
+                {counts && counts.matching > evIds.length && (
+                  <p className="-mt-1 mb-3 text-xs text-ink-3">The count covers every matching post; the pack keeps a few examples of each finding.</p>
+                )}
                 <ul className="space-y-4">
                   {evIds.map((id) => {
                     const e = index.evidence[id];

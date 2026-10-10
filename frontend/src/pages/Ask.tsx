@@ -1,10 +1,10 @@
 // S1 ASK + PLAN (PRD 10.2, guide Step 4.2): brief, mode, window, brand voice, masked run key ->
 // 0-4 clarifying questions (goal and offer first and required, V11; answer chips, own words, skip for the
-// rest) or the plan to review, with one editable "Here's what I understood" box that re-plans in place
+// rest) or the plan to review, with one editable "Here's what we understood" box that re-plans in place
 // (V3, V11) -> Start (the run joins the queue).
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { ArrowRight, CircleHelp, KeyRound, Loader2, Plus, RefreshCw, X } from "lucide-react";
+import { AlertTriangle, ArrowRight, ChevronRight, CircleHelp, KeyRound, Loader2, Plus, RefreshCw, X } from "lucide-react";
 import {
   ApiError, answerQuestions, createRun, getOptions, replanRun, startRun,
   type IntakeData, type Options, type PlanEdits, type PlanUnit, type Question, type QuestionAnswer, type RunStatus,
@@ -12,6 +12,8 @@ import {
 import { explain, readRunKey, saveRunKey } from "../lib/runKey";
 import { intakeFromParam, loadDraft, saveDraft } from "../lib/rerun";
 import { BRIEF_TEMPLATE, BriefGuide, BriefGuideButton } from "../components/BriefGuide";
+import { isEmptyTemplate } from "../lib/title";
+import { platformName } from "../lib/unitWords";
 
 const EXAMPLES = [
   "Launching a snack brand in the Netherlands",
@@ -58,7 +60,13 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
   const [guideOpen, setGuideOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorAt, setErrorAt] = useState<"brief" | "key" | null>(null);   // UX audit: the error sits by its field
   const keyRef = useRef<HTMLInputElement>(null);
+  const briefRef = useRef<HTMLTextAreaElement>(null);
+  const fieldError = (at: "brief" | "key", text: string) => {
+    setError(text); setErrorAt(at);
+    (at === "brief" ? briefRef.current : keyRef.current)?.focus();
+  };
   const example = useRotatingExample(brief.length > 0);
 
   useEffect(() => saveDraft({ brief, mode, window: windowDays, voice }), [brief, mode, windowDays, voice]);
@@ -71,9 +79,10 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const key = keyRef.current?.value.trim() ?? "";
-    setError(null);
-    if (brief.trim().length < 3) return setError("Please describe what you want to research.");
-    if (!key) return setError("Please enter your access key to start research.");
+    setError(null); setErrorAt(null);
+    if (brief.trim().length < 3) return fieldError("brief", "Please describe what you want to research.");
+    if (isEmptyTemplate(brief)) return fieldError("brief", "Fill in the template first: write your answer after each heading, or delete the headings you skip.");
+    if (!key) return fieldError("key", "Please enter your access key to start research. No key? The example packs are open to everyone.");
     saveRunKey(key);
     setBusy(true);
     try {
@@ -83,7 +92,8 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
       });
       onRun(run);
     } catch (err) {
-      setError(err instanceof ApiError ? explain(err.status, err.message) : "Could not reach the server.");
+      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) fieldError("key", explain(err.status, err.message));
+      else setError(err instanceof ApiError ? explain(err.status, err.message) : "Could not reach the server.");
     } finally {
       setBusy(false);
     }
@@ -103,13 +113,15 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
       {guideOpen && <BriefGuide onClose={() => setGuideOpen(false)} />}
       <label htmlFor="brief" className="sr-only">Your brief</label>
       <textarea
-        id="brief" value={brief} onChange={(e) => setBrief(e.target.value)} maxLength={2000}
+        id="brief" ref={briefRef} value={brief} onChange={(e) => setBrief(e.target.value)} maxLength={2000}
+        aria-invalid={errorAt === "brief" || undefined}
         rows={Math.min(10, Math.max(3, brief.split("\n").length))}
-        placeholder={`e.g. ${example}`} aria-describedby="brief-count"
+        placeholder={`e.g. ${example}`} aria-describedby={errorAt === "brief" ? "ask-error brief-count" : "brief-count"}
         className="w-full resize-y rounded-lg border border-line-strong bg-paper px-4 py-3 text-lg text-ink placeholder:text-ink-3 focus:border-ink focus:outline-none"
       />
+      {errorAt === "brief" && <FormError text={error} />}
       <p id="brief-count" className="-mt-3 text-right font-mono text-xs text-ink-3">{brief.length} / 2000</p>
-      <div className="grid gap-4 md:grid-cols-[auto_auto_1fr]">
+      <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
         <fieldset>
           <legend className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">Depth</legend>
           <div className="flex rounded-lg border border-line p-0.5">
@@ -122,6 +134,13 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
             ))}
           </div>
         </fieldset>
+        {/* UX audit: a first-time user sees only what they must decide; the rest has good defaults */}
+        <details className="group min-w-0 flex-1" open={voice.trim() !== "" || undefined}>
+          <summary className="mb-2 inline-flex cursor-pointer items-center gap-1 text-sm text-ink-2 hover:text-ink">
+            <ChevronRight aria-hidden="true" size={14} className="transition-transform group-open:rotate-90" />
+            More options <span className="text-ink-3">(time window, brand voice)</span>
+          </summary>
+          <div className="grid gap-4 md:grid-cols-[auto_1fr]">
         <div>
           <label htmlFor="window" className="mb-1 block text-xs font-medium uppercase tracking-wide text-ink-3">Time window</label>
           <select id="window" value={windowDays ?? options?.default_time_window_days ?? ""}
@@ -140,6 +159,8 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
                  className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-3" />
           <p id="voice-help" className="mt-1 text-xs text-ink-3">How your brand sounds. Used only for hooks and post ideas, never to change what the research finds.</p>
         </div>
+          </div>
+        </details>
       </div>
       <div className="grid items-end gap-4 md:grid-cols-[1fr_auto]">
         <div>
@@ -147,11 +168,13 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
             <KeyRound aria-hidden="true" size={13} /> Access key
           </label>
           <input id="runkey" ref={keyRef} type="password" autoComplete="off" spellCheck={false}
-                 aria-describedby="runkey-help" onChange={(e) => saveRunKey(e.currentTarget.value.trim())}
+                 aria-describedby={errorAt === "key" ? "ask-error runkey-help" : "runkey-help"}
+                 aria-invalid={errorAt === "key" || undefined} onChange={(e) => saveRunKey(e.currentTarget.value.trim())}
                  className="w-full rounded-lg border border-line bg-paper px-3 py-2 font-mono text-sm text-ink md:max-w-sm" />
           <p id="runkey-help" className="mt-1 text-xs text-ink-3">
             Needed to run research and to ask questions about a pack. It stays in this browser tab only.
           </p>
+          {errorAt === "key" && <div className="mt-2"><FormError text={error} /></div>}
         </div>
         <button type="submit" disabled={busy}
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
@@ -171,8 +194,17 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
           <button type="button" onClick={() => setIntake(null)} className="text-ink underline">Ask me again</button>
         </p>
       )}
-      {error && <p id="ask-error" role="alert" className="rounded-lg border border-line-strong bg-wash px-3 py-2 text-sm text-ink">{error}</p>}
+      {error && !errorAt && <FormError text={error} />}
     </form>
+  );
+}
+
+/** A form error that is seen: an icon and a dark border (never colour alone), announced to screen readers. */
+function FormError({ text }: { text: string | null }) {
+  return (
+    <p id="ask-error" role="alert" className="flex items-start gap-2 rounded-lg border border-ink bg-wash px-3 py-2 text-sm text-ink">
+      <AlertTriangle aria-hidden="true" size={15} className="mt-0.5 shrink-0" />{text}
+    </p>
   );
 }
 
@@ -366,7 +398,7 @@ function Source({ inp, never_assumed = false }: { inp: Input; never_assumed?: bo
 const cellLabel = "text-xs font-medium uppercase tracking-wide text-ink-3";
 const textInput = "mt-1 w-full rounded-lg border border-line px-3 py-1.5 text-sm text-ink";
 
-/** "Here's what I understood" (V11): the five inputs only the user knows plus topic, markets and languages,
+/** "Here's what we understood" (V11): the five inputs only the user knows plus topic, markets and languages,
  * competitors and the rules area - one editable box; any edit re-plans in place. */
 function Understood({ run, onReplanned }: { run: RunStatus; onReplanned: (run: RunStatus) => void }) {
   const interp = run.interpretation!;
@@ -417,7 +449,7 @@ function Understood({ run, onReplanned }: { run: RunStatus; onReplanned: (run: R
     ? interp.compliance_category.replace(/_/g, " ") : null;
   return (
     <section aria-labelledby="understood" className="space-y-2">
-      <h2 id="understood" className="text-lg font-semibold text-ink">Here's what I understood</h2>
+      <h2 id="understood" className="text-lg font-semibold text-ink">Here's what we understood</h2>
       <p className="text-sm text-ink-2">Check it and change anything that is wrong - the plan is updated to match.</p>
       {/* UX audit: a wrong guess spoils the whole run, so every assumption is listed in one place */}
       <p className="rounded-lg border border-line-strong bg-wash px-3 py-2 text-sm text-ink">
@@ -539,7 +571,7 @@ function UnitCard({ unit, on, onToggle, last }: { unit: PlanUnit; on: boolean; o
     <article className={`rounded-lg border p-3 ${on ? "border-line" : "border-dashed border-line-strong opacity-70"}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="font-mono text-xs text-ink-3">{unit.platform} · {unit.kind}</p>
+          <p className="text-xs text-ink-3">{platformName(unit.platform)} · {unit.kind}</p>
           <p className="truncate font-mono text-sm text-ink" title={unit.target}>{unit.target}</p>
         </div>
         <button type="button" onClick={onToggle} aria-pressed={on} disabled={on && last}

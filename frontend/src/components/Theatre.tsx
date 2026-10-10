@@ -144,11 +144,11 @@ export function CoverageBars({ questions }: { questions: Summary["coverage"] }) 
       {questions.map((q) => (
         <li key={q.id}>
           <div className="flex items-baseline justify-between gap-2 text-sm">
-            <span className="text-ink-2"><span className="mr-1 font-mono text-xs text-ink-3">{q.id}</span>{q.text}</span>
+            <span className="text-ink-2">{q.text}</span>
             <span className={`shrink-0 font-mono text-xs ${q.docs < 20 ? "text-ink-3" : "text-ink"}`}>{q.docs} posts</span>
           </div>
           <div className="mt-1 h-1.5 rounded-full bg-wash" aria-hidden="true">
-            <div className="h-1.5 rounded-full bg-ink" style={{ width: `${Math.max(3, (q.docs / max) * 100)}%` }} />
+            <div className="h-1.5 rounded-full bg-ink" style={{ width: `${q.docs ? Math.max(3, (q.docs / max) * 100) : 0}%` }} />
           </div>
         </li>
       ))}
@@ -156,8 +156,9 @@ export function CoverageBars({ questions }: { questions: Summary["coverage"] }) 
   );
 }
 
-export function SourcesVerdict({ collection }: { collection: RunStatus["collection"] }) {
+export function SourcesVerdict({ collection, questions = [] }: { collection: RunStatus["collection"]; questions?: Summary["coverage"] }) {
   if (!collection) return null;
+  const words = Object.fromEntries(questions.map((q) => [q.id, q.text]));   // UX audit: "RQ-02" -> the question itself
   return (
     <div className="space-y-3">
       <div className="grid gap-2 md:grid-cols-2">
@@ -166,9 +167,9 @@ export function SourcesVerdict({ collection }: { collection: RunStatus["collecti
       </div>
       {collection.gaps.length > 0 && (
         <div className="rounded-lg border border-line p-3">
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">Gaps the agent reported</p>
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">Questions with too few posts</p>
           <ul className="list-disc space-y-1 pl-5 text-sm text-ink-2">
-            {collection.gaps.map((g) => <li key={g}>{g}</li>)}
+            {collection.gaps.map((g) => <li key={g}>{words[g] ?? g}</li>)}
           </ul>
         </div>
       )}

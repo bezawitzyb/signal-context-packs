@@ -82,7 +82,8 @@ export function ClaimCard({ item, title, maxQuotes = 1 }: { item: InsightLike; t
     <article className="rounded-lg border border-line bg-paper p-4">
       <div className="mb-2 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          {title && <p className="mb-0.5 text-sm font-semibold text-ink">{title}</p>}
+          {/* UX audit: the label is a quiet eyebrow, the claim is what you read */}
+          {title && <p className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">{title}</p>}
           <p className="text-[0.98rem] leading-snug text-ink">{item.claim}</p>
         </div>
         <OpenEvidence id={item.id} />
@@ -178,7 +179,7 @@ export function SourceCard({ source, dropped = false }: {
   return (
     <article className={`rounded-lg border p-3 ${dropped ? "border-dashed border-line-strong" : "border-line"}`}>
       <div className="flex items-baseline justify-between gap-2">
-        <span className="truncate text-sm text-ink" title={source.source_unit}>{unitWords(source.source_unit)}</span>
+        <span className="min-w-0 break-words text-sm text-ink" title={source.source_unit}>{unitWords(source.source_unit)}</span>
         <span className="shrink-0 text-xs font-medium text-ink-2">{dropped ? "Dropped" : "Kept"}</span>
       </div>
       {!dropped && source.kept !== undefined && (
@@ -187,7 +188,7 @@ export function SourceCard({ source, dropped = false }: {
             <div className="h-1.5 rounded-full bg-ink" style={{ width: `${Math.round(share * 100)}%` }} />
           </div>
           <p className="mt-1 font-mono text-[0.72rem] text-ink-3">
-            {source.kept} kept · {Math.round(share * 100)}% relevant{source.platform ? ` · ${source.platform}` : ""}
+            {source.kept} kept · {Math.round(share * 100)}% relevant
           </p>
         </div>
       )}

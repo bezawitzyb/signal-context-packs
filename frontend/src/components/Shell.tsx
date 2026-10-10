@@ -18,7 +18,7 @@ export function Shell() {
           </Link>
           <nav aria-label="Main" className="flex items-center gap-1">
             <NavLink to="/" end className={nav}>{MIRROR ? "Home" : "New research"}</NavLink>
-            <NavLink to="/packs" className={nav}>Example packs</NavLink>
+            <NavLink to="/packs" end className={nav}>Example packs</NavLink>
           </nav>
         </div>
       </header>

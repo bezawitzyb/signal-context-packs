@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ExternalLink, Languages } from "lucide-react";
 import type { Evidence } from "../lib/api";
 import { safeUrl } from "../lib/safe";
+import { platformName, unitWords } from "../lib/unitWords";
 
 export function Quote({ text, evidence, size = "md" }: {
   text: string; evidence?: Evidence; size?: "sm" | "md";
@@ -23,12 +24,11 @@ export function Quote({ text, evidence, size = "md" }: {
         “{shown}”
       </blockquote>
       {evidence && (
-        <figcaption className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[0.72rem] text-ink-3">
-          <span>{evidence.id}</span>
-          <span>{evidence.platform}</span>
-          <span className="max-w-[18rem] truncate" title={evidence.source_unit}>{evidence.source_unit}</span>
-          {evidence.posted_at && <span>{evidence.posted_at}</span>}
-          {lang && <span>{lang}</span>}
+        // UX audit: one short line (platform, date, language); where it was found is a tooltip, the id stays (same ids everywhere)
+        <figcaption className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.72rem] text-ink-3">
+          <span title={unitWords(evidence.source_unit)}>{platformName(evidence.platform)}</span>
+          {evidence.posted_at && <span>{shortDate(evidence.posted_at)}</span>}
+          {lang && <span className="font-mono uppercase">{lang}</span>}
           {evidence.redacted && <span title="Personal details were removed">redacted</span>}
           {evidence.requires_login && <span title="You may need to log in to LinkedIn to view this">login needed</span>}
           {canTranslate && (
@@ -48,8 +48,15 @@ export function Quote({ text, evidence, size = "md" }: {
               source <ExternalLink aria-hidden="true" size={11} />
             </a>
           )}
+          <span className="font-mono">{evidence.id}</span>
         </figcaption>
       )}
     </figure>
   );
+}
+
+/** "2026-09-10" -> "10 Sep 2026"; anything else is shown as it is. */
+function shortDate(d: string): string {
+  const t = Date.parse(d.slice(0, 10));
+  return Number.isNaN(t) ? d : new Date(t).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }

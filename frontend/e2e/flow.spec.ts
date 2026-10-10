@@ -29,7 +29,7 @@ test("brief to pack, with the evidence drawer and accessibility checks", async (
   await page.getByRole("button", { name: "Plan the research" }).click();
   await answerGoalAndOffer(page);
   await page.getByRole("button", { name: "Plan with my answers" }).click();
-  await expect(page.getByRole("heading", { name: "Here's what I understood" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Here's what we understood" })).toBeVisible();
   expect(await page.content()).not.toContain(KEY); // never in the page
 
   await page.getByRole("button", { name: "Start research" }).click();
@@ -124,7 +124,7 @@ test("a vague brief gets goal, offer and brief-specific questions, then one edit
   await cards.nth(2).getByRole("button", { name: "Netherlands" }).click();
   await cards.nth(3).getByRole("button", { name: "Skip - let the agent decide" }).click();
   await page.getByRole("button", { name: "Plan with my answers" }).click();
-  await expect(page.getByRole("heading", { name: "Here's what I understood" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Here's what we understood" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Adjust before you start" })).toHaveCount(0);
   await expect(page.getByText("1. Positioning")).toBeVisible();
   await expect(page.getByLabel("Offer", { exact: true })).toHaveValue("oat bars");

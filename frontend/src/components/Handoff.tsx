@@ -1,7 +1,7 @@
 // HANDOFF (guide Step 4.4, V9): options written for marketers - purpose, length and preview from the API. The run key is never shown:
 // the MCP command uses the <YOUR_KEY> placeholder.
 import { useEffect, useRef, useState } from "react";
-import { Bot, Braces, CalendarDays, Check, Copy, Download, FileText, Printer, X } from "lucide-react";
+import { Bot, Braces, CalendarDays, Check, Copy, Download, FileText, Link2, Printer, X } from "lucide-react";
 import { exportUrl, getHandoff, LIVE_URL, MIRROR, type ExportKind, type HandoffOption } from "../lib/api";
 import { markdownToHtml } from "../lib/markdown";
 
@@ -51,8 +51,9 @@ function Option({ packId, o, onToast }: { packId: string; o: HandoffOption; onTo
   const Icon = ICON[o.kind];
   const body = (
     <>
-      <span className="flex items-center gap-2 text-sm font-medium text-ink"><Icon aria-hidden="true" size={15} />{o.title}
-        <span className="ml-auto font-normal text-xs text-ink-3">{o.length}</span></span>
+      <span className="flex flex-wrap items-center gap-x-2 text-sm font-medium text-ink"><Icon aria-hidden="true" size={15} />{o.title}
+        {/* UX audit: say what a click does */}
+        <span className="ml-auto whitespace-nowrap font-normal text-xs text-ink-3">{o.length} · {o.action === "download" ? "downloads" : "copies"}</span></span>
       <span className="mt-0.5 block text-sm text-ink-2">{error ? "Could not copy - try again" : o.purpose}</span>
       {o.preview && <span className="mt-1 block truncate text-xs text-ink-3">{o.preview}</span>}
     </>
@@ -94,19 +95,29 @@ export function Handoff({ packId, open, onClose }: { packId: string; open: boole
     <dialog ref={ref} onClose={onClose} aria-labelledby="handoff-title"
             className="m-auto w-full max-w-2xl rounded-xl border border-line bg-paper p-0 text-ink backdrop:bg-ink/30">
       <header className="flex items-center justify-between border-b border-line px-5 py-3">
-        <h2 id="handoff-title" className="text-lg font-semibold">Hand this pack off</h2>
+        <h2 id="handoff-title" className="text-lg font-semibold">Share &amp; export</h2>
         <button type="button" onClick={onClose} aria-label="Close" className="rounded p-1 text-ink-2 hover:text-ink">
           <X aria-hidden="true" size={18} />
         </button>
       </header>
       <div className="space-y-4 p-5">
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-ink p-3">
+          <span className="flex min-w-0 flex-1 items-center gap-2 text-sm text-ink"><Link2 aria-hidden="true" size={15} />
+            <span><span className="font-medium">Link to this pack</span>
+              <span className="block text-ink-2">Anyone with the link can read it. No key needed.</span></span></span>
+          <button type="button" onClick={() => {
+                    const url = window.location.href.split("#")[0];
+                    navigator.clipboard.writeText(url).then(() => say("Link copied"), () => say("Could not copy - copy the address bar instead"));
+                  }}
+                  className="rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink hover:brightness-95">Copy link</button>
+        </div>
         {options === null && <p className="text-sm text-ink-3">Loading the options…</p>}
         <div className="grid gap-2 sm:grid-cols-2">
           {main.map((o) => <Option key={o.kind} packId={packId} o={o} onToast={say} />)}
           <button type="button" onClick={() => { onClose(); setTimeout(() => window.print(), 50); }}
                   className="block w-full rounded-lg border border-line p-3 text-left hover:border-ink">
-            <span className="flex items-center gap-2 text-sm font-medium text-ink"><Printer aria-hidden="true" size={15} />Print / Save as PDF
-              <span className="ml-auto font-normal text-xs text-ink-3">summary first</span></span>
+            <span className="flex flex-wrap items-center gap-x-2 text-sm font-medium text-ink"><Printer aria-hidden="true" size={15} />Print / Save as PDF
+              <span className="ml-auto whitespace-nowrap font-normal text-xs text-ink-3">summary first · opens print</span></span>
             <span className="mt-0.5 block text-sm text-ink-2">A clean printable report: the one-page summary, then the rest.</span>
           </button>
         </div>

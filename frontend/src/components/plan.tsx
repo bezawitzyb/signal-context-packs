@@ -35,7 +35,8 @@ function CalendarGrid({ pack }: { pack: ContextPack }) {
                 <a href={`#${e.post_brief_id}`} className="text-ink underline-offset-2 hover:underline">
                   {briefs[e.post_brief_id]?.angle || briefs[e.post_brief_id]?.hook}
                 </a>
-                <p className="text-xs text-ink-3">{e.timing_reason}</p>
+                {/* UX audit: only a reason with evidence (news, seen timing); "spread" is not a reason */}
+                {e.timing_kind !== "spread" && <p className="text-xs text-ink-3">{e.timing_reason}</p>}
               </li>
             ))}
             {!pack.content_calendar.some((e) => e.week === week) && <li className="px-3 py-2 text-xs text-ink-3">Nothing planned</li>}

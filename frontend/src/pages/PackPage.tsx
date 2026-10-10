@@ -2,7 +2,7 @@
 // (collapsed). Sticky part nav (a menu on phones), progressive disclosure, evidence drawer, View as agent, Hand off.
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { Braces, History, Info, Menu, MessageCircleQuestion, RotateCcw, Share2, TextQuote, ArrowUp } from "lucide-react";
+import { Braces, History, Menu, MessageCircleQuestion, RotateCcw, Share2, TextQuote, ArrowUp } from "lucide-react";
 import { friendlyError, getPack, getPackInputs, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
@@ -22,6 +22,8 @@ import { AskPanel } from "../components/AskPanel";
 import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
 import { rerunUrl } from "../lib/rerun";
+import { packTitle } from "../lib/title";
+import { platformName } from "../lib/unitWords";
 
 const DEFAULT_ORDER = ["their-words", "want-stops", "segments", "generic", "landscape", "brand", "plan", "channels",
   "performs", "opportunities", "guardrails"];
@@ -336,14 +338,14 @@ function Landscape({ pack, filter }: { pack: ContextPack; filter: Filter }) {
           <div className={`grid gap-3 ${lens.length > 1 ? "md:grid-cols-2" : ""}`}>
             {lens.map((l) => (
               <div key={l.id} className="rounded-lg border border-line p-4">
-                <p className="flex items-baseline justify-between"><span className="font-medium text-ink">{l.platform}</span>
+                <p className="flex items-baseline justify-between"><span className="font-medium text-ink">{platformName(l.platform)}</span>
                   <span className="font-mono text-xs text-ink-3">{l.kept_posts} posts · {l.id}</span></p>
                 {l.tone && <p className="mt-2 text-sm text-ink">{l.tone}</p>}
                 {l.what_is_unique && <p className="mt-1 text-sm text-ink-2">{l.what_is_unique}</p>}
                 <ul className="mt-3 space-y-1.5">
                   {l.theme_shares.slice(0, 5).map((t) => (
                     <li key={t.theme_id} className="text-xs">
-                      <div className="flex justify-between gap-2 text-ink-2"><span className="truncate">{themes[t.theme_id] ?? t.theme_id}</span>
+                      <div className="flex justify-between gap-2 text-ink-2"><span className="min-w-0">{themes[t.theme_id] ?? t.theme_id}</span>
                         <span className="font-mono">{Math.round(t.share * 100)}%</span></div>
                       <div className="mt-0.5 h-1 rounded-full bg-wash"><div className="h-1 rounded-full bg-ink" style={{ width: `${Math.max(2, t.share * 100)}%` }} /></div>
                     </li>
@@ -420,7 +422,7 @@ function Playbook({ pack }: { pack: ContextPack }) {
             {pb.targets.map((t) => {
               const url = safeUrl(t.url);
               return <li key={t.name} className="text-ink">{url ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{t.name}</a> : t.name}
-                <span className="ml-2 font-mono text-xs text-ink-3">{t.kind} · {t.platform}</span></li>;
+                <span className="ml-2 font-mono text-xs text-ink-3">{t.kind} · {platformName(t.platform)}</span></li>;
             })}
           </ul>
         </Sub>
@@ -555,6 +557,23 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   const rank = (id: string) => (order.indexOf(id) < 0 ? order.length : order.indexOf(id));
   const ordered = (items: [string, React.ReactNode][]) =>
     [...items].sort((a, b) => rank(a[0]) - rank(b[0])).map(([id, node]) => <Fragment key={id}>{node}</Fragment>);
+  const title = packTitle(pack.brief.text, pack.brief.interpreted.topic);
+  const partial = Boolean(pack.blind_spots[0]?.text.startsWith("Partial pack:"));
+  useEffect(() => {
+    const before = document.title;
+    document.title = `${title} – SIGNAL`;
+    return () => { document.title = before; };
+  }, [title]);
+  useEffect(() => {   // UX audit: a shared link to a section (#plan) opens at that section, not at the top
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    const t = window.setTimeout(() => {
+      const el = document.getElementById(id);
+      el?.closest("details")?.setAttribute("open", "");
+      el?.scrollIntoView();
+    }, 50);
+    return () => window.clearTimeout(t);
+  }, [pack.pack_id]);
   useEffect(() => {   // printing / Save as PDF shows everything that is folded away on screen
     const open = () => document.querySelectorAll("main details").forEach((d) => d.setAttribute("open", ""));
     window.addEventListener("beforeprint", open);
@@ -568,7 +587,13 @@ export function PackBody({ pack }: { pack: ContextPack }) {
         <PartNav order={pack.section_order?.length ? pack.section_order : DEFAULT_ORDER} hasBrand={!!pack.brand_perception} />
         <div className="min-w-0 max-w-[760px] xl:max-w-[920px]">
           <header className="mb-4 space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-ink md:text-3xl">{pack.brief.text}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-ink md:text-3xl">{title}</h1>
+            {title !== pack.brief.text.trim() && (
+              <details className="text-sm text-ink-2 print:hidden">
+                <summary className="cursor-pointer underline-offset-2 hover:underline">The brief as written</summary>
+                <p className="mt-1 whitespace-pre-line font-serif text-ink">{pack.brief.text}</p>
+              </details>
+            )}
             <p className="text-sm text-ink-3 print:hidden">
               Made {new Date(pack.generated_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
               {" "}· {pack.mode === "standard" ? "Standard" : "Quick"} research
@@ -590,7 +615,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                           brief: pack.brief.text, mode: pack.mode, time_window_days: pack.brief.interpreted.time_window_days,
                           brand_voice: pack.brief.brand_voice ?? null, intake: pack.brief.intake ?? null })))}
                       title="Run again with the same brief" className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong px-3 py-1.5 text-sm text-ink">
-                <RotateCcw aria-hidden="true" size={14} /><span className="sr-only sm:not-sr-only">Run again</span>
+                <RotateCcw aria-hidden="true" size={14} /> Run again
               </button>
               <button type="button" onClick={() => setAgent(!agent)} aria-pressed={agent}
                       className={`ml-auto inline-flex items-center gap-1.5 rounded px-2 py-1.5 text-xs ${agent ? "bg-wash text-ink" : "text-ink-3 hover:text-ink"}`}>
@@ -599,14 +624,20 @@ export function PackBody({ pack }: { pack: ContextPack }) {
             </div>
           </header>
 
-          {(pack.coverage.thin_evidence || pack.blind_spots[0]?.text.startsWith("Partial pack:")) && (
-            <div className="mb-4 space-y-2">
-              {pack.coverage.thin_evidence && (
-                <details className="text-sm text-ink-2">
-                  <summary className="cursor-pointer">Early-signal pack: fewer posts than a full pack needs, so treat the findings
-                    as signals. <span className="underline">Why, and how to get more</span></summary>
-                  <p className="mt-1">{pack.snapshot.grade_note || "This pack does not meet the minimum content bar."}{" "}
-                    <a href="#research" className="underline">What's short</a></p>
+          {(pack.coverage.thin_evidence || partial) && (
+            // UX audit: one calm line, not two warnings before the Summary; the details fold inside
+            <details className="mb-4 text-sm text-ink-2">
+              <summary className="cursor-pointer">
+                {pack.coverage.thin_evidence
+                  ? "Early signals: built on fewer posts than a full pack needs. "
+                  : "Partial pack: collection stopped at its time limit. "}
+                <span className="underline">Why, and how to get more</span>
+              </summary>
+              <div className="mt-1 space-y-1 pl-5">
+                {pack.coverage.thin_evidence && <p>{pack.snapshot.grade_note || "This pack does not meet the minimum content bar."}</p>}
+                {partial && <p>{pack.blind_spots[0].text.replace("Partial pack: ", "").replace(/^./, (c) => c.toUpperCase())}</p>}
+                <p><a href="#research" className="underline">What's short</a></p>
+                {pack.coverage.thin_evidence && (
                   <span className="mt-2 flex flex-wrap gap-2 print:hidden">
                     {[["Run it as Standard", { mode: "standard" }], ["Widen the time window", { window: "365" }],
                       ["Include English discussion", { suffix: " (include English-language discussion)" }]].map(([label, o]) => {
@@ -616,17 +647,9 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                       return <Link key={label as string} to={`/?${q}`} className="rounded border border-ink px-2 py-0.5 text-xs text-ink">{label as string}</Link>;
                     })}
                   </span>
-                </details>
-              )}
-              {pack.blind_spots[0]?.text.startsWith("Partial pack:") && (
-                // one line, not a boxed callout: the Summary must still fit one laptop screen (PRD 6.1f)
-                <p className="flex items-start gap-1.5 text-sm text-ink-2">
-                  <Info aria-hidden="true" size={14} className="mt-0.5 shrink-0 text-ink" />
-                  <span><span className="font-medium text-ink">Partial pack:</span>{" "}
-                    {pack.blind_spots[0].text.replace("Partial pack: ", "")}</span>
-                </p>
-              )}
-            </div>
+                )}
+              </div>
+            </details>
           )}
 
           <Part id="summary" title="Summary">
@@ -716,17 +739,16 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                     {part.map((o) => (
                       <li key={o.id} className="rounded-lg border border-line p-4">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs ${o.status === "supported" ? "border-ink text-ink" : "border-dashed border-ink-3 text-ink-2"}`}>
-                            <span aria-hidden="true">{o.status === "supported" ? "●" : "◌"}</span>
-                            {o.status === "supported" ? "Supported" : "Early signal - check before acting"}
-                          </span>
+                          {/* UX audit: one strength scale everywhere; "supported" only meant the people/community minimum */}
+                          <ConfidenceBadge label={o.confidence.label} />
+                          {o.status !== "supported" && <span className="text-xs text-ink-2">check before acting</span>}
                           <span className="rounded border border-line px-1.5 py-0.5 text-xs text-ink-2">{o.kind.replace(/_/g, " ")}</span>
                           <span className="ml-auto"><IdButton id={o.id} /></span>
                         </div>
                         <p className="mt-2 text-ink">{o.opportunity}</p>
                         <p className="mt-1 text-xs text-ink-3">
                           {o.distinct_authors} {o.distinct_authors === 1 ? "person" : "people"} in {o.communities.length}{" "}
-                          {o.communities.length === 1 ? "community" : "communities"} · confidence {o.confidence.label}
+                          {o.communities.length === 1 ? "community" : "communities"}
                         </p>
                         {o.existing_solutions.length > 0 ? (
                           <p className="mt-2 text-sm text-ink-2">Already out there:{" "}

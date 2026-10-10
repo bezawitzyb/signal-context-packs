@@ -7,6 +7,7 @@ import { summarize } from "../lib/runSummary";
 import type { RunEvent } from "../lib/useRunEvents";
 import { TheatreLayout } from "./RunPage";
 import { ErrorNote } from "../components/ErrorNote";
+import { packTitle } from "../lib/title";
 
 const QUIET = new Set(["cost", "counters", "queue"]); // shown, but without a pause
 
@@ -62,7 +63,7 @@ export function ReplayPage({ runId, packId: packIdProp }: { runId?: string; pack
   } as RunStatus["collection"] : null;
 
   return (
-    <TheatreLayout title={pack.brief.text}
+    <TheatreLayout title={packTitle(pack.brief.text, pack.brief.interpreted.topic)}
                    status={<p>Replay of a finished run · {shown} of {events.length} events{finished ? " · done" : ""}</p>}
                    summary={summary} collection={collection}>
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Replay controls">

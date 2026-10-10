@@ -15,7 +15,7 @@ export function suggestedQuestions(pack: ContextPack): string[] {
   const who = pack.brief.intake?.audience_roles?.[0] || "they";
   const brief = pack.post_briefs?.[0];
   const out = [
-    brief ? `Turn the first post brief into a ${CHANNEL[brief.channel] ?? brief.channel} ${FORMAT[brief.format] ?? brief.format} outline`
+    brief ? `Turn the first post brief into an outline for ${CHANNEL[brief.channel] ?? brief.channel} (${FORMAT[brief.format] ?? brief.format})`
       : "Write three post ideas from the strongest finding",
     `How do ${who} describe their biggest pain point?`,
     pack.objections.length ? "What is their strongest objection, and how should we answer it?"
@@ -47,7 +47,7 @@ function AnswerText({ a }: { a: AskAnswer }) {
           {a.citations.map((c) => {
             const url = safeUrl(c.url);
             return (
-              <li key={c.n} className="truncate">{c.n}.{" "}
+              <li key={c.n} className="break-words">{c.n}.{" "}
                 {url ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">
                   {c.kind === "post" ? `Post on ${CHANNEL[c.platform ?? ""] ?? c.platform}${c.date ? `, ${c.date}` : ""}` : c.label}</a>
                   : c.label}

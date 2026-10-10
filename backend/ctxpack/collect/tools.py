@@ -223,6 +223,8 @@ def _item_limit(ctx: RunContext, unit: str, requested: int) -> tuple[int, str | 
 _STOP = set("""
 a an and are as at be but by for from has have i if in is it its me my no not of on or our so that the
 their them they this to was we were what when which who with you your just like get got can will would
+about than then there here how all one some been very really more also out up into over only other any
+these those much make made say said it's i'm don't dont im you're i've can't didn't doesn't isn't
 de het een en van in is op te dat die niet met zijn voor er maar ook als bij aan om dan wel nog naar
 ik je jij we wij ze zij hij heb hebben was waren wordt kan geen meer veel
 der die das und ist nicht mit sich auf dem den des ein eine einen zu von im für es ich du wir sie er

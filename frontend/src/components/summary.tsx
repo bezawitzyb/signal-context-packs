@@ -6,6 +6,7 @@ import type { ContextPack, Label } from "../lib/api";
 import { useGuide } from "../lib/readingGuide";
 import { safeUrl } from "../lib/safe";
 import { ConfidenceBadge } from "./badges";
+import { Clamp } from "./Clamp";
 import { IdLink, usePack } from "./cards";
 import { CopyButton } from "./CopyButton";
 
@@ -53,8 +54,8 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
   return (
     <div className="space-y-4">
       <div className="space-y-0.5 text-sm">
-        <p className="line-clamp-2 text-ink sm:line-clamp-1" title={i.audience}><span className="text-ink-3">For </span>{i.audience}
-          {goal && <><span className="text-ink-3"> · goals: </span>{goal}</>}<span className="text-ink-3"> · {i.market}</span></p>
+        <Clamp clamp="line-clamp-2 sm:line-clamp-1" className="text-ink"><span className="text-ink-3">For </span>{i.audience}
+          {goal && <><span className="text-ink-3"> · goals: </span>{goal}</>}<span className="text-ink-3"> · {i.market}</span></Clamp>
         <div className="flex flex-wrap items-baseline gap-x-3">
           {s.represents && <p className="text-ink-2">{s.represents}</p>}
           <HowToRead />
@@ -65,10 +66,10 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
         <ul className="space-y-0.5 border-l-2 border-ink pl-3" aria-label="For your goals">
           {s.for_goals.map((g, n) => (
             <li key={g.goal} className="text-sm">
-              <p className="line-clamp-1 text-ink" title={g.headline}>
+              <Clamp clamp="line-clamp-2 sm:line-clamp-1" className="text-ink">
                 <span className="font-semibold">For your {n === 0 ? "main " : ""}goal - {goalWords(g.goal)}:</span> {g.headline}
                 {g.first_moves.length > 0 && <span className="text-ink-3"> · first moves {g.first_moves.map((m) => Number(m.slice(3))).join(", ")}</span>}
-              </p>
+              </Clamp>
             </li>
           ))}
         </ul>
@@ -87,8 +88,8 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                 </div>
                 {f.quote && (
                   <blockquote className="mt-1.5 border-l-2 border-line-strong pl-2.5">
-                    <p className="line-clamp-1 font-serif text-sm text-ink" title={f.quote.text}>“{f.quote.text}”</p>
-                    {f.quote_en && <p className="line-clamp-1 text-xs text-ink-3" title={f.quote_en}>In English: {f.quote_en}</p>}
+                    <Clamp className="font-serif text-sm text-ink" subClassName="text-xs text-ink-3"
+                           sub={f.quote_en && <>In English: {f.quote_en}</>}>“{f.quote.text}”</Clamp>
                   </blockquote>
                 )}
                 <p className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-2">
@@ -111,8 +112,8 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
               <h3 className="sr-only">Recommended position</h3>
               <p className="leading-snug text-ink"><span aria-hidden="true" className="mr-1.5 text-xs font-semibold uppercase tracking-wide text-ink-3">
                 Recommended position</span><span className="font-semibold">{s.position.statement}</span></p>
-              <p className="mt-1 line-clamp-1 text-sm text-ink-2" title={`For ${s.position.for_whom} - answering: ${s.position.against_doubt}`}>
-                For {s.position.for_whom} - answering: {s.position.against_doubt}</p>
+              <div className="mt-1"><Clamp className="text-sm text-ink-2">
+                For {s.position.for_whom} - answering: {s.position.against_doubt}</Clamp></div>
             </div>
           )}
           <div>
@@ -130,10 +131,11 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                   <span className="shrink-0 font-mono text-ink-3">{n + 1}.</span>
                   <div className="min-w-0 flex-1">
                     {/* fits the first screen (PRD 6.1f); the whole move is one click away, never lost */}
-                    <p className={`text-ink ${allMoves ? "" : "line-clamp-2"}`} title={d.action}>{d.action}</p>
-                    {(d.goal || d.success_measure) && <p className="mt-0.5 line-clamp-1 text-xs text-ink-2" title={d.success_measure ?? ""}>
-                      {d.goal && <span className="text-ink-3">for: {goalWords(d.goal)}{d.success_measure ? " · " : ""}</span>}
-                      {d.success_measure && <><span className="font-medium text-ink">How you'll know:</span> {d.success_measure}</>}</p>}
+                    <Clamp clamp="line-clamp-2" open={allMoves} className="text-ink" subClassName="mt-0.5 text-xs text-ink-2"
+                           sub={(d.goal || d.success_measure) && <>
+                             {d.goal && <span className="text-ink-3">for: {goalWords(d.goal)}{d.success_measure ? " · " : ""}</span>}
+                             {d.success_measure && <><span className="font-medium text-ink">How you'll know:</span> {d.success_measure}</>}</>}>
+                      {d.action}</Clamp>
                   </div>
                   <CopyButton text={d.action} />
                 </li>
@@ -148,10 +150,10 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                   const url = safeUrl(h.source_url);
                   return (
                     <li key={h.id} className="rounded-lg border border-dashed border-ink-3 px-2.5 py-1.5 text-sm">
-                      <p className="line-clamp-1 text-ink" title={h.headline}><span className="font-medium">{h.headline}</span>
-                        <span className="text-xs text-ink-3"> · {h.date} · outside source: {url
-                          ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{new URL(url).hostname}</a>
-                          : "source"}</span></p>
+                      <Clamp className="font-medium text-ink" subClassName="text-xs text-ink-3"
+                             sub={<>{h.date} · outside source: {url
+                               ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{new URL(url).hostname}</a>
+                               : "source"}</>}>{h.headline}</Clamp>
                     </li>
                   );
                 })}

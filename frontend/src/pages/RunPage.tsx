@@ -13,6 +13,7 @@ import { ReplayPage } from "./ReplayPage";
 import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
 import { addMyPack, rerunUrl, type RunInputs } from "../lib/rerun";
+import { packTitle } from "../lib/title";
 
 const FINISHED = ["complete", "partial", "failed", "stopped"];
 
@@ -65,12 +66,12 @@ export function TheatreLayout({ title, status, summary, collection, children, ow
       <Announcer milestones={summary.milestones} />
       <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
         <section aria-labelledby="log">
-          <h2 id="log" className="mb-3 text-lg font-semibold text-ink">What the agent is doing</h2>
+          <h2 id="log" className="mb-3 text-lg font-semibold text-ink">{done ? "What the agent did" : "What the agent is doing"}</h2>
           <AgentLog moves={summary.moves} />
         </section>
         <aside className="space-y-6">
           <section aria-labelledby="funnel">
-            <h2 id="funnel" className="mb-2 text-sm font-semibold uppercase tracking-wide text-ink-3">Posts so far</h2>
+            <h2 id="funnel" className="mb-2 text-sm font-semibold uppercase tracking-wide text-ink-3">{done ? "Posts collected" : "Posts so far"}</h2>
             <Counters counters={summary.counters} cost={ownerCost} />
           </section>
           {summary.coverage.length > 0 && (
@@ -86,7 +87,7 @@ export function TheatreLayout({ title, status, summary, collection, children, ow
           <h2 id="verdicts" className="mb-1 text-lg font-semibold text-ink">Sources kept and dropped</h2>
           <p className="mb-3 text-sm text-ink-2">Dropping sources is normal: the agent keeps only places where people
             really talk about the topic.</p>
-          <SourcesVerdict collection={collection} />
+          <SourcesVerdict collection={collection} questions={summary.coverage} />
         </section>
       )}
     </div>
@@ -113,14 +114,14 @@ function LiveRun({ runId }: { runId: string }) {
       .catch(() => setOwnerCost(null));
   }, [runId, summary.packId]);
 
-  useDoneSignal(run && { brief: run.brief, finished: FINISHED.includes(run.status), ok: Boolean(summary.packId ?? run.pack_id) });
+  useDoneSignal(run && { brief: packTitle(run.brief, run.interpretation?.topic), finished: FINISHED.includes(run.status), ok: Boolean(summary.packId ?? run.pack_id) });
 
   if (error) return <ErrorNote message={error} />;
   if (!run) return <Skeleton lines={3} label="Loading the run" />;
   const finished = FINISHED.includes(run.status);
   const packId = summary.packId ?? run.pack_id;
   const thin = run.collection?.thin;
-  if (packId && finished) addMyPack({ pack_id: packId, brief: run.brief, at: run.created_at });
+  if (packId && finished) addMyPack({ pack_id: packId, brief: packTitle(run.brief, run.interpretation?.topic), at: run.created_at });
 
   const stop = async () => {
     const key = readRunKey();
@@ -144,7 +145,7 @@ function LiveRun({ runId }: { runId: string }) {
         <span className="text-ink-3"> · you can leave this page: the research keeps going</span></p>;
 
   return (
-    <TheatreLayout title={run.brief} status={status} summary={summary} collection={run.collection}
+    <TheatreLayout title={packTitle(run.brief, run.interpretation?.topic)} status={status} summary={summary} collection={run.collection}
                    ownerCost={ownerCost && (summary.cost ?? ownerCost)}>
       {finished && thin && run.inputs && <ThinScreen thin={thin} inputs={run.inputs} />}
       <div className="flex flex-wrap gap-2">
