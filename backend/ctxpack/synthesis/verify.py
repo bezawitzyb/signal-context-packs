@@ -290,6 +290,8 @@ async def verify_run(run_id: str, *, redo: bool = False) -> Report:
     quotes = [q for name in INSIGHT_SECTIONS for it in sections[name] for q in it["quotes"]]
     report.groundedness = (sum(q["text"] in kept_ev.get(q["evidence_id"], "") for q in quotes) / len(quotes)
                            if quotes else 1.0)
+    for built in ("news_v7", "brand_v12", "playbooks", "opportunities_v5"):  # made from the previous verified draft:
+        draft.pop(built, None)                                                # pack rebuilds them from this one
     draft["verified"] = {"sections": sections, "evidence": evidence,
                          "report": {k: v for k, v in report.__dict__.items() if k not in ("calls", "usd", "resumed")}}
     db.update_run(run_id, draft=draft)

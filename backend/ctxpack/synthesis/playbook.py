@@ -16,6 +16,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
+from ctxpack.config import load_yaml
 from ctxpack.llm.client import load_prompt, structured, untrusted
 from ctxpack.schemas.enums import Level, Platform, TargetKind
 from ctxpack.synthesis import posts
@@ -337,7 +338,8 @@ async def write_playbook(s: dict, brief: str, brand_voice: str | None, news: lis
     """(validated playbook parts with post briefs and drafts, stats, cost). Brand voice is used in this
     stage (this call and the drafts call) and nowhere else."""
     res = await structured("reasoner", load_prompt("playbook"), build_prompt(s, brief, brand_voice, news, intake),
-                           PlaybookOut, "record_playbook", description="Record the playbook.", max_tokens=16000,
+                           PlaybookOut, "record_playbook", description="Record the playbook.",
+                           max_tokens=load_yaml("modes")["synthesis"]["playbook_max_tokens"],
                            fake=_fake)
     stats = PlaybookStats()
     parts = validate(res.data, s, stats, news, intake)

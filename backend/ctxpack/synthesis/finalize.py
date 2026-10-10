@@ -565,6 +565,8 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
         out.usd += usd
         out.playbook_dropped, out.hooks_without_tension = stats.dropped, stats.hooks_without_tension
         saved = {"parts": parts}
+        draft.setdefault("playbooks", {})[key] = saved   # saved now: a later failure never pays for it again
+        db.update_run(run_id, draft=draft)
     if "flags" in saved and not test_hooks:
         flags = saved["flags"]
     else:  # test texts are reviewed in the same call as the pack's own items, so the pack's flags refresh too

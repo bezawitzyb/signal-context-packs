@@ -87,6 +87,25 @@ async def test_package_run_saves_a_valid_pack_and_reuses_the_playbook(fake, temp
     assert again.reused_playbook and calls == [] and again.pack_id != out.pack_id   # a new pack, no new calls
 
 
+async def test_the_playbook_is_saved_before_compliance_and_a_new_verification_clears_it(fake, temp_db, monkeypatch):
+    """DE rebuild 2026-10-10: the budget ran out at the compliance call and the paid playbook was lost; and a
+    re-verified draft must never be packed with the playbook or opportunities of the previous one."""
+    run_id = await verified_run_id()
+
+    async def no_budget(*a, **k):
+        raise RuntimeError("budget spent")
+
+    monkeypatch.setattr(compliance, "flag", no_budget)
+    with pytest.raises(RuntimeError):
+        await finalize.package_run(run_id)
+    assert db.get_run(run_id).draft["playbooks"]["_neutral"]["parts"]        # kept for the next try
+    assert "news_v7" in db.get_run(run_id).draft
+
+    await vf.verify_run(run_id, redo=True)
+    draft = db.get_run(run_id).draft
+    assert not {"playbooks", "news_v7", "opportunities_v5", "brand_v12"} & set(draft)
+
+
 async def test_brand_voice_reaches_only_the_playbook_call(offline, monkeypatch):  # noqa: F811
     from ctxpack.analysis import cluster, extract
     from ctxpack.collect import relevance

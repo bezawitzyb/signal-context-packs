@@ -106,6 +106,8 @@ synthesis:
   evidence_chars: 280           # evidence excerpt length (pack schema max)
   max_tokens: 16000             # one writer answer
   perform_max_tokens: 3000      # follow-up for top posts call B left undescribed (it skipped them in long answers)
+  playbook_max_tokens: 32000    # the playbook answer (was 16000 in code; the DE rerun 2026-10-10 needed ~18k and paid
+                                # for a cut-off first try - room is free, only written tokens are billed)
   opportunities_max: 6          # opportunity texts written (top by score)
   non_obvious_batch: 60         # items per non_obvious worker call
 
