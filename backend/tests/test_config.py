@@ -7,7 +7,7 @@ from ctxpack.config import Settings, load_yaml, mode_limits, model_for, sqlalche
 
 def test_models_have_roles_and_prices():
     models = load_yaml("models")
-    for role in ("reasoner", "worker", "evaluator", "synth"):
+    for role in ("reasoner", "worker", "verifier", "evaluator", "synth"):
         name = model_for(role)
         assert name in models["prices_usd_per_mtok"]
 

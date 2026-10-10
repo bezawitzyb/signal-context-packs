@@ -323,7 +323,9 @@ B7. LLM rules (llm/client.py)
                                           playbook, compliance
  worker    claude-haiku-4-5-20251001      relevance, web discovery, page
                                           segmenting, extraction, membership
-                                          check, claim verification
+                                          check
+ verifier  claude-sonnet-5-5              claim verification (pack + brand
+                                          section; 2026-10-10, was worker)
  evaluator claude-opus-5-5                eval-only entailment re-check (not the writer's model; 2026-10-09)
  synth     claude-sonnet-5-5 (switchable  synthesis calls only
            to claude-opus-5-5)
@@ -1162,7 +1164,7 @@ STEP 3.4  Verification and confidence                 (Day 3, ~60 min)
 WHAT  synthesis/verify.py: stage 1 (code) - every quote/example is an
       exact substring of its evidence text (same whitespace
       normalisation); failures removed; items left without evidence
-      dropped. Stage 2 (worker, F4-9 claim mode, batched): supported /
+      dropped. Stage 2 (verifier, F4-9 claim mode, batched): supported /
       partially / not_supported; drop not supported; partially -> one
       level down + "inferred". synthesis/confidence.py: score, label,
       gates and caps exactly per PRD 5.4 (weights from scoring.yaml; its
@@ -2078,18 +2080,23 @@ F4. Prompt catalogue (the first 12 prompts; llm/prompts/ now holds 26:
  F4-8  GENERIC BASELINE (reasoner, no evidence): list 8-12 points a
        generic marketing answer would make about this audience and topic.
 
- F4-9  VERIFIER (worker, batch), three modes:
-       membership - does this post express this cluster's point? yes / no
-         (lexicon and competitor members are checked in code instead)
-       claim - does this claim follow from its evidence? supported /
-         partially / not_supported + short reason
-       non_obvious - is this finding already covered by the generic
-         points? covered / not_covered
+ F4-9  VERIFIER (batch), three modes:
+       membership (worker) - does this post express this cluster's
+         point? yes / no (lexicon and competitor members are checked in
+         code instead)
+       claim (verifier) - does this claim follow from its evidence?
+         supported / partially / not_supported + short reason; partial
+         when it says "people" for one post, merges two posts into one
+         speaker, adds a detail no post states (format, place, reason,
+         feeling) or turns one event into a habit
+       non_obvious (worker) - is this finding already covered by the
+         generic points? covered / not_covered
 
  F4-10 SECTION WRITER (synth), calls A and B (Step 3.3): items in the PRD
        6.3 shape; name one provided cluster_id per item; cite provided EV
-       ids from that cluster only; exact quotes; honest claim_type; no
-       outside facts; never output counts or strength. Call A also writes
+       ids from that cluster only; exact quotes; honest claim_type
+       (observed only if one cited post says the whole claim); no
+       outside facts; no merged speakers or added details; never output counts or strength. Call A also writes
        platform-lens tone and "what is unique here" per platform; call B
        writes white space as "people want/ask X; nobody serves it because
        Y (observed) / we infer Z (inferred)" and one "why it worked" line

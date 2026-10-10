@@ -6,7 +6,8 @@
 # with --reuse the newest finished pack for the same brief text is scored instead.
 # All four now point at saved packs, so a plain `eval` never starts a paid research run.
 # answers (V11): how a new run answers the required goal and offer questions (the other questions get
-# their first chip). Since V11 every brief without a stated goal and offer is asked about both.
+# their first chip). Since V11 every brief without a stated goal and offer is asked about both, so
+# questions_max is 4 (modes.yaml clarifying.max_questions; was 3 before V11).
 
 briefs:
   - id: genz_meal_prep
@@ -20,14 +21,14 @@ briefs:
   - id: nl_snack_brand
     brief: Launching a snack brand in the Netherlands
     mode: standard
-    expect: {market: NL, languages: [nl, en], questions_max: 3, questions_fill: [goal, offer]}
+    expect: {market: NL, languages: [nl, en], questions_max: 4, questions_fill: [goal, offer]}
     answers: {goals: [positioning, content_plan], offer_stage: launching, offer: a new snack brand}
     reuse_pack: pk_7KAp0R-njCpL   # Quick rerun 2026-10-09, merge fix (was pk_i4iFso1HnLWR)
 
   - id: de_heat_pumps
     brief: Heat pumps for homeowners in Germany
     mode: standard
-    expect: {market: DE, languages: [de], compliance_category: energy_environmental, questions_max: 3,
+    expect: {market: DE, languages: [de], compliance_category: energy_environmental, questions_max: 4,
              questions_fill: [goal, offer]}
     answers: {goals: [content_plan, sales_enablement], offer_stage: selling, offer: heat pump installation}
     reuse_pack: pk_i5JJDiXMuoDy   # Quick rerun 2026-10-09, merge fix, goal understand_audience (was pk_i0zai5bgIxEW)

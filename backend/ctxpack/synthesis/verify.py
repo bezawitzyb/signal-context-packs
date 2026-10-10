@@ -4,7 +4,7 @@ Stage 1 (code): every quote must be an exact substring of its evidence text. A
 quote that matches only with different whitespace is replaced by the exact text
 from the evidence; anything else is removed. A phrase whose own text is not
 found is dropped, and so is any item left without evidence.
-Stage 2 (worker, batched): each claim against its own evidence: supported /
+Stage 2 (verifier, batched): each claim against its own evidence: supported /
 partially_supported / not_supported. not_supported claims are dropped;
 partially supported ones go one level down and become "inferred".
 Then confidence.py scores and labels every claim and sets safe_to_assert.
@@ -141,7 +141,7 @@ def _fake_verdicts(user: str) -> dict:
 
 
 async def check_claims(items: list[dict], ev_text: dict[str, str], report: Report,
-                       role: str = "worker") -> dict[str, Verdict]:
+                       role: str = "verifier") -> dict[str, Verdict]:
     """One verdict per claim (batched, one retry pass for claims without a verdict).
     The eval re-check uses role="evaluator" (PRD 14.3: not the pipeline's verifier model)."""
     cfg = _cfg()
@@ -304,4 +304,4 @@ def estimate_usd(draft: dict) -> float:
 
     items = sum(len(draft["sections"].get(n, [])) for n in INSIGHT_SECTIONS)  # drafts from before V4 lack some
     calls = items / _cfg()["claim_batch_items"] + 1
-    return 2 * cost_usd(model_for("worker"), int(items * 5 * 110 + calls * 700), items * 45)
+    return 2 * cost_usd(model_for("verifier"), int(items * 5 * 110 + calls * 700), items * 45)

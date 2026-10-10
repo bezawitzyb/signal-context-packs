@@ -253,7 +253,8 @@ Definition:
                    posts in the pack; shown as "12 of 248 posts"
   confidence       {score 0-1, label strong | moderate | emerging |
                    speculative}
-  claim_type       observed | inferred | external
+  claim_type       observed | inferred | external (observed = one cited
+                   post says the whole claim; combined posts = inferred)
   safe_to_assert   true ONLY if strong AND observed AND verified
   non_obvious      true if not covered by the generic AI answer
   emotion          list from the emotion enum (where relevant)
@@ -810,9 +811,12 @@ EPIC D - SYNTHESIS, VERIFICATION, PLAYBOOK
        other. "Check with legal - not legal advice."
  FR-D5 [P0] Verification: (1) code - every quote/example is an exact
        substring of its evidence text, else removed; items left without
-       evidence are dropped; (2) Haiku - does the claim follow from its
+       evidence are dropped; (2) Sonnet - does the claim follow from its
        evidence? not supported -> dropped; partially -> one level down
-       and "inferred".
+       and "inferred". Partial = the claim goes further than the posts:
+       "people" for one post, two posts merged into one speaker, a
+       detail no post states, or one event turned into a habit
+       (2026-10-10: moved from Haiku, which passed these).
  FR-D6 [P0] Confidence, safe_to_assert, guardrails, snapshot, digest,
        instructions_for_agents; schema validation before saving.
  FR-D7 [P0] Quote-reuse note: real people's words are for insight and
@@ -1247,8 +1251,9 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
                                clustering, generic baseline, synthesis,
                                playbook, compliance
    claude-haiku-4-5-20251001 . relevance, web discovery, page segmenting,
-                               extraction, membership check, claim
-                               verification
+                               extraction, membership check
+   claude-sonnet-5-5 ......... claim verification (verifier role;
+                               2026-10-10, was Haiku)
    claude-opus-5-5 ........... eval entailment re-check (a different,
                                stronger model than the writer); optional
                                switch for synthesis
@@ -1297,7 +1302,7 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
 14.3 Automated metrics and targets
   Quote groundedness ......... 100%
   Claim entailment ........... >= 95% (re-checked by Opus - neither the
-                               pipeline's Haiku verifier nor the Sonnet
+                               pipeline's Sonnet verifier nor the Sonnet
                                writer; owner's change 2026-10-09)
   Claims with evidence ....... 100%
   Relevance rate ............. >= 60% of kept docs

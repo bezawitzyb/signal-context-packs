@@ -1,6 +1,6 @@
 """Anthropic client wrapper: roles, forced structured output, caching, budgets (B7).
 
-- Roles from models.yaml (reasoner, worker, evaluator, synth); prompts
+- Roles from models.yaml (reasoner, worker, verifier, evaluator, synth); prompts
   from llm/prompts/*.md; scraped text only via untrusted().
 - structured(): one tool whose input schema comes from a Pydantic model,
   validated, one retry with the validation error.

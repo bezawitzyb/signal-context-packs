@@ -37,9 +37,14 @@ Rules for every item:
   other plurals when one post says it; no "often", "usually", "common",
   "a typical format" or "the go-to"; never make a feeling stronger than the post
   (no "hate" when they say "annoying"). Code adds who and how many.
-- claim_type: "observed" only if a cited post says it directly, at that
-  strength; "inferred" if it is your reading of them. Never use outside
-  facts.
+- Never join two posts into one speaker (a problem from one post, its
+  cause from another). Never add what no cited post states: a format
+  (video, hashtag), a place (a group, a forum), a reason or a feeling
+  (trust, worry). Never turn one event into a habit ("every season",
+  "always", "means").
+- claim_type: "observed" only if ONE cited post says the whole claim
+  directly, at that strength; "inferred" if it combines posts or is your
+  reading of them. Never use outside facts.
 - NEVER write counts, percentages, shares or strength words such as
   "most", "many" or "a majority": code adds the numbers.
 - segment_cluster_ids: segment clusters (from the segment list) the item
