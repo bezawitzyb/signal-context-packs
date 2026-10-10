@@ -23,6 +23,7 @@ import { Skeleton } from "../components/Skeleton";
 import { ErrorNote } from "../components/ErrorNote";
 import { rerunUrl } from "../lib/rerun";
 import { packTitle } from "../lib/title";
+import { pickQuotes } from "../lib/quotePicks";
 import { platformName } from "../lib/unitWords";
 
 const DEFAULT_ORDER = ["their-words", "want-stops", "segments", "generic", "landscape", "brand", "plan", "channels",
@@ -558,6 +559,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   const ordered = (items: [string, React.ReactNode][]) =>
     [...items].sort((a, b) => rank(a[0]) - rank(b[0])).map(([id, node]) => <Fragment key={id}>{node}</Fragment>);
   const title = packTitle(pack.brief.text, pack.brief.interpreted.topic);
+  const picks = useMemo(() => pickQuotes(pack, pack.section_order?.length ? pack.section_order : DEFAULT_ORDER), [pack]);
   const partial = Boolean(pack.blind_spots[0]?.text.startsWith("Partial pack:"));
   useEffect(() => {
     const before = document.title;
@@ -582,7 +584,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
 
   return (
     <GuideContext.Provider value={guide}>
-    <PackContext.Provider value={{ evidence: index.evidence, onOpen: setDrawer, claims }}>
+    <PackContext.Provider value={{ evidence: index.evidence, onOpen: setDrawer, claims, picks }}>
       <div className="pack-layout lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
         <PartNav order={pack.section_order?.length ? pack.section_order : DEFAULT_ORDER} hasBrand={!!pack.brand_perception} />
         <div className="min-w-0 max-w-[760px] xl:max-w-[920px]">

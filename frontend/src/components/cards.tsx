@@ -12,6 +12,7 @@ export const PackContext = createContext<{
   evidence: Record<string, Evidence>;
   onOpen?: (itemId: string) => void;
   claims?: Record<string, string>;   // item id -> claim, for linked chips (V4)
+  picks?: Record<string, { evidence_id: string; text: string }>;   // the quote each card shows (lib/quotePicks)
 }>({ evidence: {} });
 
 const LINK: Record<string, string> = { comes_from: "comes from", blocks: "blocks", related: "see also" };
@@ -77,7 +78,9 @@ export function IdLink({ id }: { id: string }) {
 }
 
 export function ClaimCard({ item, title, maxQuotes = 1 }: { item: InsightLike; title?: string; maxQuotes?: number }) {
-  const { evidence } = usePack();
+  const { evidence, picks } = usePack();
+  const pick = maxQuotes === 1 ? picks?.[item.id] : undefined;   // one quote: the one not already shown above
+  const shown = pick ? [pick] : (item.quotes ?? []).slice(0, maxQuotes);
   return (
     <article className="rounded-lg border border-line bg-paper p-4">
       <div className="mb-2 flex items-start justify-between gap-3">
@@ -90,7 +93,7 @@ export function ClaimCard({ item, title, maxQuotes = 1 }: { item: InsightLike; t
       </div>
       {item.summary_for_humans && <p className="mb-2 text-sm text-ink-2">{item.summary_for_humans}</p>}
       <Meta item={item} />
-      {(item.quotes ?? []).slice(0, maxQuotes).map((q) => (
+      {shown.map((q) => (
         <div key={q.evidence_id + q.text} className="mt-3">
           <Quote text={q.text} evidence={evidence[q.evidence_id]} size="sm" />
         </div>
@@ -103,9 +106,10 @@ export function ClaimCard({ item, title, maxQuotes = 1 }: { item: InsightLike; t
 type Side = { text: string; evidence_ids: string[] };
 
 export function TensionCard({ item }: { item: InsightLike & { want: Side; but: Side } }) {
-  const { evidence } = usePack();
-  const firstQuote = (side: Side) => {
-    const ev = side.evidence_ids.map((id) => evidence[id]).find(Boolean);
+  const { evidence, picks } = usePack();
+  const firstQuote = (side: Side, key: "want" | "but") => {
+    const picked = picks?.[`${item.id}:${key}`]?.evidence_id;
+    const ev = (picked && evidence[picked]) || side.evidence_ids.map((id) => evidence[id]).find(Boolean);
     return ev ? <Quote text={ev.text} evidence={ev} size="sm" /> : null;
   };
   return (
@@ -118,12 +122,12 @@ export function TensionCard({ item }: { item: InsightLike & { want: Side; but: S
         <div>
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-3">They want</p>
           <p className="mb-2 font-serif text-[1rem] text-ink">{item.want.text}</p>
-          {firstQuote(item.want)}
+          {firstQuote(item.want, "want")}
         </div>
         <div className="sm:border-l sm:border-line sm:pl-4">
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-3">But</p>
           <p className="mb-2 font-serif text-[1rem] text-ink">{item.but.text}</p>
-          {firstQuote(item.but)}
+          {firstQuote(item.but, "but")}
         </div>
       </div>
       <div className="mt-3"><Meta item={item} /></div>
