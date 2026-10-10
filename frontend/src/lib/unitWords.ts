@@ -1,5 +1,6 @@
 // Source units in plain words for marketers (UX audit); the technical unit stays in a tooltip.
-/** "reddit:r/MealPrepSunday" -> "r/MealPrepSunday on Reddit"; 'web:search:x' -> 'Web search: "x"'. */
+/** "reddit:r/MealPrepSunday" -> "r/MealPrepSunday on Reddit"; 'web:search:x' -> 'Web search: "x"';
+ *  "feed:forum.example.org" -> "Feed of forum.example.org". */
 export function unitWords(unit: string): string {
   const [platform, ...rest] = unit.split(":");
   const target = rest.join(":");
@@ -7,6 +8,7 @@ export function unitWords(unit: string): string {
     linkedin: "LinkedIn", x: "X", facebook: "Facebook", web: "the web", trends: "Google Trends" };
   if (target.startsWith("search:")) return `${platform === "web" ? "Web" : name[platform] ?? platform} search: "${target.slice(7)}"`;
   if (platform === "web") return target;
+  if (platform === "feed") return `Feed of ${target}`;
   if (platform === "facebook" && target.startsWith("group:")) return `Public Facebook group ${target.slice(6)}`;
   return target ? `${target} on ${name[platform] ?? platform}` : (name[platform] ?? unit);
 }

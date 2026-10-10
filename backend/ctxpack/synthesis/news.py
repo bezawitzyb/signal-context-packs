@@ -2,8 +2,9 @@
 
 News hooks: after collection, ONE worker call with web search (modes.yaml news.searches_max) in the
 brief's languages for news, regulation, trade fairs and events from the last lookback_days to the next
-lookahead_days that connect to the top themes and pain points. Code keeps an item only when its URL was
-returned by the search and its date is inside that span; at most max_hooks become news_hooks (NWS-xx).
+lookahead_days that connect to the top themes and pain points. Since V13 the call also gets dated
+headlines from Google News search feeds (free; modes.yaml feeds). Code keeps an item only when its URL was
+returned by the search or by such a feed, and its date is inside that span; at most max_hooks become news_hooks (NWS-xx).
 Calendar facts (budget cycles, deadlines) are kept only with such a URL too; they become timing chips,
 never hooks. Nothing comes from model memory alone.
 
@@ -13,6 +14,7 @@ evidence), external ones from news hooks and calendar facts (with their URL).
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import re
 from datetime import date, timedelta
@@ -97,7 +99,57 @@ def keep(items: list[NewsOut], found: set[str] | None, known: set[str], today: d
     return hooks, calendar[:cfg["max_hooks"]]
 
 
-async def find(s: dict, interp: Any, today: date | None = None) -> tuple[list[dict], list[dict], float]:
+def core_term(plan: dict | None, language: str) -> str:
+    """The brief's core term in the market language, from the plan's starting queries (code, no model): the
+    word most queries share ("wärmepumpe"), or a two-word phrase when that word nearly always comes with the
+    same next word ("meal prep"). 2026-10-10: the English category ("heat pump installation (heating)") found
+    property ads in a German news search; "Wärmepumpe" found 100 dated headlines."""
+    from collections import Counter
+
+    from ctxpack.collect.cleaning import words
+    from ctxpack.collect.tools import _STOP
+
+    queries = [[w.casefold() for w in words(q.get("query", ""))]
+               for u in (plan or {}).get("starting_units", []) for q in u.get("queries", [])
+               if q.get("language") == language]
+    counts = Counter(w for q in queries for w in set(q) if len(w) > 2 and w not in _STOP and not w.isdigit())
+    if not counts:
+        return ""
+    first = {w: sum(q.index(w) for q in queries if w in q) / counts[w] for w in counts}   # mean position
+    top = max(counts, key=lambda w: (counts[w], -first[w], len(w)))     # ties: the earlier word ("heat" pump)
+    nxt = Counter(q[q.index(top) + 1] for q in queries if top in q and q.index(top) + 1 < len(q))
+    if nxt:
+        word, n = nxt.most_common(1)[0]
+        if n >= 2 and n * 2 > counts[top] and word not in _STOP:
+            return f"{top} {word}"
+    return top
+
+
+async def feed_candidates(interp: Any, plan: dict | None = None) -> list[dict]:
+    """Dated headlines from Google News search feeds (change V13, modes.yaml feeds): the core term of the plan's
+    queries in the main language, then (English only) the category. Free; [] when off, offline or failing."""
+    cfg, look = load_yaml("modes")["feeds"], _cfg()["lookback_days"]
+    if not cfg["google_news"]:
+        return []
+    from ctxpack.agent.markets import primary_country
+    from ctxpack.collect import feeds
+
+    country = primary_country([m.model_dump() for m in interp.markets]) or "US"
+    language = interp.languages[0] if interp.languages else "en"
+    terms = [core_term(plan, language), interp.category if language == "en" else ""]
+    queries = list(dict.fromkeys(q.strip() for q in terms if q and q.strip()))
+    found = await asyncio.gather(*(feeds.google_news(q, language, country, look)
+                                   for q in queries[:cfg["google_news_queries_max"]]))
+    seen, out = set(), []
+    for h in sorted((h for hs in found for h in hs), key=lambda h: h["date"], reverse=True):
+        if h["url"] not in seen:
+            seen.add(h["url"])
+            out.append(h)
+    return out[:cfg["google_news_items_max"]]
+
+
+async def find(s: dict, interp: Any, today: date | None = None,
+               plan: dict | None = None) -> tuple[list[dict], list[dict], float]:
     """(news hooks, calendar facts, usd). A failed search gives none (the pack says so), never a crash."""
     today = today or date.today()
     cfg = _cfg()
@@ -105,10 +157,14 @@ async def find(s: dict, interp: Any, today: date | None = None) -> tuple[list[di
     if not findings:
         return [], [], 0.0
     lines = "\n".join(f"{it['id']} | {it.get('label') or ''} {it['claim']}".replace("  ", " ") for it in findings)
+    candidates = await feed_candidates(interp, plan)
     user = (f"Today: {today.isoformat()}\nLook from {(today - timedelta(days=cfg['lookback_days'])).isoformat()} "
             f"to {(today + timedelta(days=cfg['lookahead_days'])).isoformat()}\nTopic: {interp.topic}\n"
             f"Markets: {interp.market}\nLanguages: {', '.join(interp.languages)}\nAudience: {interp.audience}\n\n"
             "Findings (id | text):\n" + untrusted("findings", lines))
+    if candidates:
+        user += ("\n\nCandidate headlines from news feeds (date | headline | publisher | url):\n" + untrusted(
+            "news_feeds", "\n".join(f"{h['date']} | {h['headline']} | {h['source']} | {h['url']}" for h in candidates)))
     try:
         res = await structured("worker", load_prompt("news_hooks"), user, NewsList, "record_news",
                                description="Record the dated, cited news hooks.", max_tokens=2500,
@@ -117,7 +173,7 @@ async def find(s: dict, interp: Any, today: date | None = None) -> tuple[list[di
     except LLMError as exc:
         log.warning("news search failed (%s)", type(exc).__name__)
         return [], [], 0.0
-    found = None if get_settings().llm_fake else _search_urls(res.blocks)
+    found = None if get_settings().llm_fake else _search_urls(res.blocks) | {h["url"] for h in candidates}
     known = {it["id"] for name in ("themes", "pain_points", "motivations", "objections", "tensions")
              for it in s.get(name, [])}
     hooks, calendar = keep(res.data.items, found, known, today)

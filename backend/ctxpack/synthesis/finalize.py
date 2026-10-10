@@ -530,7 +530,7 @@ async def package_run(run_id: str, partial: bool = False, *, brand_voice: str | 
     s = draft["verified"]["sections"]
     # V7: news hooks first (saved: a retry never pays again), so this week's posts can ride them
     if "news_v7" not in draft or redo:
-        hooks, calendar, usd = await news_mod.find(s, interp)
+        hooks, calendar, usd = await news_mod.find(s, interp, plan=run.plan)
         out.usd += usd
         draft["news_v7"] = {"hooks": hooks, "calendar": calendar}
         db.update_run(run_id, draft=draft)

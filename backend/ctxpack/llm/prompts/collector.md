@@ -53,6 +53,14 @@ HOW TO WORK
   related query, more pages from the same forum, the new terms the
   result surfaced). Where relevance is low, drop the source and say why;
   never call a source you dropped again.
+- Feeds: when web_search finds an active forum, Q&A site or blog with
+  comments, read_feed on its sub-forum or category page about the topic
+  (only sites web_search returned in this run) shows its newest dated
+  threads cheaply and fast. Never pass a home page: a site-wide feed
+  mixes every subject, like browsing a subreddit without a query. Its posts
+  count like forum posts; teaser-only feeds return threads_to_read -
+  read the relevant ones with fetch_and_segment. Good for niche and
+  professional communities and for recent, dated talk.
 - If web_search says it found no recent forum, Q&A or review page,
   search once more with other words (the local word for "forum" or
   "experiences", or a known local forum or review site with site:)

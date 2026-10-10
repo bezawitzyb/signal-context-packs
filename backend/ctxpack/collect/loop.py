@@ -99,6 +99,8 @@ def call_unit(name: str, args: dict[str, Any]) -> str | None:
         return unit
     if name == "fetch_and_segment":
         return ", ".join(sorted({tools.web_unit(u) for u in args.get("urls") or []})) or None
+    if name == "read_feed":
+        return ", ".join(sorted({tools.feed_unit(u) for u in args.get("urls") or []})) or None
     if name == "web_search":
         return f"web:search:{(args.get('query') or '').strip().casefold()}"
     if name == "get_trends":
@@ -236,13 +238,14 @@ def first_message(ctx: RunContext, interp: Interpretation, plan: Plan) -> str:
         f"- collection time: {lim['collection_secs']} s\n"
         f"- raw items: {lim['item_budget']} in total, at most {lim['items_per_call_max']} per call, "
         f"at most {int(lim['unit_share_max'] * lim['item_budget'])} per source unit\n"
-        f"- web pages per fetch_and_segment call: {lim['web_pages_per_call_max']}\n"
+        f"- web pages per fetch_and_segment call: {lim['web_pages_per_call_max']}; "
+        f"sites per read_feed call: {tools.feeds_per_call()}\n"
         f"- budgets: Apify {tools.apify_cap(ctx):.2f} USD, LLM {lim['llm_usd']:.2f} USD\n"
         f"- target: at least {lim['min_relevant']} relevant documents\n"
         f"- time window: posts from the last {interp.time_window_days} days"
         + ("\n- Apify tools (search_reddit, search_tiktok, search_youtube, search_instagram, search_linkedin, "
            "search_x, search_facebook, read_facebook_group, get_trends) "
-           "are UNAVAILABLE this run: use web_search and fetch_and_segment only" if ctx.apify_unavailable else ""),
+           "are UNAVAILABLE this run: use web_search, fetch_and_segment and read_feed only" if ctx.apify_unavailable else ""),
         "Start now. Batch independent calls in one turn.",
     ])
 
@@ -327,7 +330,7 @@ def verdicts(ctx: RunContext) -> dict[str, dict[str, str]]:
 def _platform(ctx: RunContext, unit: str) -> str:
     if unit in ctx.unit_platform:
         return str(ctx.unit_platform[unit].value)
-    return "web_forum" if unit.startswith("web:") else unit.split(":", 1)[0]
+    return "web_forum" if unit.startswith(("web:", "feed:")) else unit.split(":", 1)[0]
 
 
 def collection_record(state: LoopState) -> dict[str, Any]:

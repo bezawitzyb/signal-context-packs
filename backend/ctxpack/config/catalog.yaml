@@ -19,6 +19,7 @@
 tool_latency:
   web_search: "usually 10-20 s"
   fetch_and_segment: "usually 60-90 s for 2-3 pages"
+  read_feed: "usually 2-15 s"
   search_reddit: "usually 40-70 s"
   search_youtube: "usually 60-90 s"
   search_tiktok: "usually 50-120 s"
@@ -676,6 +677,16 @@ sources:
     unit_types: [domain, query]
     audience: Review sites and retailer reviews; ratings plus objections.
     language_country_inputs: query language + country in the search prompt
+  web_feeds:                    # change V13: RSS / Atom feeds of sites web_search found in the same run
+    kind: web
+    platform: web_forum
+    tool: web_search + read_feed (+ fetch_and_segment for whole threads)
+    unit_types: [domain]
+    audience: >-
+      The newest dated threads of a forum, Q&A site or blog with comments
+      that web search found; a cheap way to see what is discussed now.
+      Teaser-only feeds point to threads to read in full.
+    language_country_inputs: none (the site's own language; filtered in the relevance step)
   web_editorial:
     kind: web
     platform: web_editorial

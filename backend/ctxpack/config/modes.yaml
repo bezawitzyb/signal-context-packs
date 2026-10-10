@@ -207,6 +207,21 @@ collection:
   probe_trusted_min_searches: 2       # ... over at least this many searches (NL rerun: one 79% search let a 16% in)
   groups_listed_max: 5          # public Facebook groups a search result lists for read_facebook_group
 
+# Forum and blog feeds (change V13, docs/07_RSS_Feeds_Plan.md). Same for every mode. read_feed reads a feed only
+# on a site this run's web_search returned; items count towards item_budget and unit_share_max like any source.
+feeds:
+  feeds_per_call_max: 3         # feeds read in one read_feed call
+  items_per_feed_max: 40        # newest items taken from one feed
+  min_item_words: 25            # shorter items (teasers) are not stored: their links come back as threads_to_read
+  threads_to_read_max: 8        # links of short items returned to the agent for fetch_and_segment
+  fetch_timeout_secs: 15        # one download, redirects included
+  max_bytes: 2000000            # a page or feed above this is skipped (memory stays below 400 MB)
+  redirects_max: 3              # each redirect target is checked again by the URL guard
+  google_news: true             # news hooks: Google News search feeds as extra dated candidates (owner 2026-10-10)
+  google_news_queries_max: 2    # search feeds per pack: the plan's core term in the main language (+ the category
+                                # for English briefs), in the main market
+  google_news_items_max: 15     # candidate headlines passed to the news call
+
 # Agent loop (guide B8a, B8e). Same for every mode.
 agent:
   turn_max_tokens: 4096         # one reasoner turn (tool calls + short reasons)

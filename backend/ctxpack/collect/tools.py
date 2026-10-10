@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from typing import Any, Awaitable, Callable
 
-from ctxpack.collect import apify, web
+from ctxpack.collect import apify, feeds, web
 from ctxpack.collect.cleaning import Deduper, Draft, clean, make_draft, name_like, words
 from ctxpack.collect.mappers import MAPPERS, map_items, sanitize_for_fixture
 from ctxpack.collect.relevance import BriefContext
@@ -183,7 +183,7 @@ def _general_limit(ctx: RunContext) -> str | None:
 
 
 NO_APIFY_CREDIT = ("social sources are unavailable for this run: Reddit, TikTok, YouTube, Instagram, "
-                   "LinkedIn, X, Facebook and Trends cannot run; use web_search and fetch_and_segment")
+                   "LinkedIn, X, Facebook and Trends cannot run; use web_search, fetch_and_segment and read_feed")
 
 
 def apify_cap(ctx: RunContext) -> float:
@@ -943,10 +943,29 @@ async def web_search(ctx: RunContext, query: str, country: str, language: str, r
         "no recent forum, Q&A or review page in these results: try ONE more web_search with other words - the "
         "local word for forum or experiences, or a known local forum or review site of this market (site:...) - "
         "before moving on")}
+    feed_sites = _feed_hint_pages(ctx, pages)
+    if feed_sites:
+        hint["feeds_hint"] = (f"forum or Q&A sites found ({', '.join(feed_sites)}): read_feed on a sub-forum or "
+                              f"category page ABOUT THE TOPIC shows its newest DATED threads in one cheap call "
+                              f"(older pages here may fall outside the window). Never pass a forum's home page: "
+                              f"a site-wide feed holds the newest posts on every subject (a test on 2026-10-10 "
+                              f"was 10% relevant). No such page in the results: skip feeds")
     return {"status": "ok", "tool": "web_search", "pages": pages, "searches": res.searches,
             "oldest_wanted": _cutoff(ctx), **hint,
             **({"blocked_sites_hidden": hidden} if hidden else {}),
             **({"unlisted_pages_dropped": res.unlisted} if res.unlisted else {}), **ctx.left()}
+
+
+def _feed_hint_pages(ctx: RunContext, pages: list[dict]) -> list[str]:
+    """One page URL per forum / Q&A site whose feed was not read yet (change V13; the 2026-10-10 heat pump
+    run found forums but spent every call on social search, and older forum pages fall out of the window)."""
+    out, seen = [], set()
+    for p in pages:
+        site = web.domain_of(p["url"])
+        if p["page_type"] in ("forum", "qa") and site not in seen and feed_unit(p["url"]) not in ctx.tried_units:
+            seen.add(site)
+            out.append(p["url"])
+    return out[:feeds_per_call()]
 
 
 def _recent_voice_page(page: dict, ctx: RunContext) -> bool:
@@ -1044,6 +1063,108 @@ async def fetch_and_segment(ctx: RunContext, urls: list[str], reason: str = "") 
     if skipped:
         summary["skipped"] = skipped
     return summary
+
+
+def feeds_per_call() -> int:
+    return _modes()["feeds"]["feeds_per_call_max"]
+
+
+def feed_unit(url: str) -> str:
+    return "feed:" + (web.domain_of(url) or "?")
+
+
+def _searched_sites(ctx: RunContext) -> set[str]:
+    """Sites this run's web_search returned (read_feed reads only these, like Facebook groups)."""
+    return {web.domain_of(u) for u in ctx.page_types}
+
+
+async def read_feed(ctx: RunContext, urls: list[str], reason: str = "") -> dict[str, Any]:
+    """Newest dated items of the RSS / Atom feed of sites web_search returned in THIS run (change V13).
+    A page URL is read once for the feed it announces; nothing is guessed. Items with enough text are
+    stored like forum posts; teasers come back as threads_to_read for fetch_and_segment."""
+    if why := _general_limit(ctx) or _time_limit(ctx, "read_feed"):
+        return _limit_reached(ctx, why)
+    cfg = _modes()["feeds"]
+    ctx.blocked_domains |= set(web.blocked_sites())
+    allowed = _searched_sites(ctx)
+    todo, refused, skipped = [], {}, []
+    for url in dict.fromkeys(u.strip() for u in urls or [] if u and u.strip()):
+        if instead := web.skipped(url):
+            refused[url] = f"use {instead}" if instead.startswith("search_") else instead
+        elif not any(feeds.same_site(url, f"https://{site}") for site in allowed):
+            refused[url] = "not a site web_search returned in this run: use web_search first"
+        elif web.domain_of(url) in ctx.blocked_domains:
+            refused[url] = "this site refuses reading"
+        elif (("read_feed", url) in ctx.call_keys or feed_unit(url) in ctx.dropped_units
+              or len(todo) >= feeds_per_call() or _item_limit(ctx, feed_unit(url), 1)[1]):
+            skipped.append(url)
+        else:
+            todo.append(url)
+    if not todo:
+        return {"status": "nothing_to_read", **({"refused": refused} if refused else {}),
+                **({"skipped": skipped} if skipped else {}), **ctx.left()}
+    ctx.calls += 1
+    ctx.call_keys.update(("read_feed", u) for u in todo)
+    ctx.tried_units.update(feed_unit(u) for u in todo)
+    fetched_at = datetime.now(timezone.utc)
+
+    async def one(url: str) -> tuple[feeds.FeedResult, list[Draft], list[str]]:
+        cached = apify.cache_get("read_feed", url, "")
+        if cached:
+            drafts = [Draft.from_cache(d) for d in cached["drafts"]]
+            return feeds.FeedResult(url, cached["feed_url"]), drafts, cached["threads"]
+        res = await feeds.read(url)
+        if ctx.record and res.items:
+            feeds.record(res)
+        drafts, threads = _feed_drafts(res, fetched_at)
+        if not res.error:
+            apify.cache_put("read_feed", url, "", {"feed_url": res.feed_url, "threads": threads,
+                                                   "drafts": [d.to_cache() for d in drafts]})
+        return res, drafts, threads
+
+    results = await asyncio.gather(*(one(u) for u in todo))
+    drafts: list[Draft] = []
+    read, threads = [], []
+    for res, ds, links in results:
+        unit = feed_unit(res.url)
+        room, _ = _item_limit(ctx, unit, min(len(ds), cfg["items_per_feed_max"]) or 1)
+        drafts += ds[:room]
+        threads += [u for u in links if u not in ctx.fetched_urls and u not in threads]
+        for u in links:                       # fetch_and_segment reads them as forum threads
+            ctx.page_types.setdefault(u, "forum")
+        read.append({"url": res.url, "posts": len(ds[:room]), "teasers": len(links),
+                     **({"error": res.error} if res.error else {})})
+    notes: dict[str, Any] = {"feeds": read}
+    if threads:
+        notes["threads_to_read"] = threads[:cfg["threads_to_read_max"]]
+        notes["threads_note"] = "these feed items are teasers: read the relevant threads with fetch_and_segment"
+    if refused:
+        notes["refused"] = refused
+    if skipped:
+        notes["skipped"] = skipped
+    units = ", ".join(sorted({feed_unit(u) for u in todo}))
+    if not drafts:
+        return {"status": "ok", "tool": "read_feed", "source_unit": units, "collected": 0, "kept": 0,
+                "relevant": 0, **notes, **ctx.left()}
+    return await _finish_collection(ctx, "read_feed", units, drafts, notes)
+
+
+def _feed_drafts(res: feeds.FeedResult, fetched_at: datetime) -> tuple[list[Draft], list[str]]:
+    """(drafts, teaser links). Authors are hashed inside make_draft; names of the feed's other authors are
+    redacted from every text too. The title leads the text when the body does not repeat it."""
+    cfg = _modes()["feeds"]
+    items = res.items[:cfg["items_per_feed_max"]]
+    names = name_like([it.author for it in items])
+    drafts, threads = [], []
+    for it in items:
+        if len(words(it.text)) < cfg["min_item_words"]:
+            threads.append(it.link)
+            continue
+        text = it.text if not it.title or it.text.startswith(it.title) else f"{it.title}\n\n{it.text}"
+        drafts.append(make_draft(platform=Platform.web_forum, source_unit=feed_unit(res.url), url=it.link,
+                                 text=text, author=it.author, date_raw=it.date, fetched_at=fetched_at,
+                                 community=web.domain_of(it.link), thread_id=it.link, page_names=names))
+    return drafts, threads
 
 
 def _record_page(r: web.PageResult) -> None:
@@ -1152,6 +1273,14 @@ def tool_definitions() -> list[dict[str, Any]]:
                               f"{max(m['web_pages_per_call_max'] for m in lim.values())} pages per call. "
                               f"Latency {_latency('fetch_and_segment')}.",
          {"urls": {"type": "array", "items": {"type": "string"}}, "reason": _reason()}, ["urls", "reason"]),
+        ("read_feed", f"The newest dated threads of a forum, Q&A site or blog with comments, from its RSS or "
+                      f"Atom feed. Only sites web_search returned in this run: pass a sub-forum or category page "
+                      f"about the topic (its own feed is found) or that feed's URL - never a home page, whose "
+                      f"feed mixes every subject. Cheap and fast; items "
+                      f"with enough text are stored as posts, teaser-only items come back as threads_to_read "
+                      f"for fetch_and_segment. At most {feeds_per_call()} sites per "
+                      f"call. Latency {_latency('read_feed')}.",
+         {"urls": {"type": "array", "items": {"type": "string"}}, "reason": _reason()}, ["urls", "reason"]),
         ("get_trends", f"Google Trends interest over time for up to 5 terms in a country (external context, "
                        f"not audience voice). Latency {_latency('get_trends')}.",
          {"terms": {"type": "array", "items": {"type": "string"}}, "geo": {"type": "string"},
@@ -1214,7 +1343,7 @@ TOOLS: dict[str, Callable[..., Awaitable[dict[str, Any]]]] = {
     "search_reddit": search_reddit, "search_tiktok": search_tiktok, "search_youtube": search_youtube,
     "search_instagram": search_instagram, "search_linkedin": search_linkedin, "search_x": search_x,
     "search_facebook": search_facebook, "read_facebook_group": read_facebook_group,
-    "web_search": web_search, "fetch_and_segment": fetch_and_segment,
+    "web_search": web_search, "fetch_and_segment": fetch_and_segment, "read_feed": read_feed,
     "get_trends": get_trends, "coverage_report": coverage_report, "finish": finish,
 }
 

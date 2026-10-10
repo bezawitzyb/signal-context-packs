@@ -139,7 +139,7 @@ def catalog() -> None:
 def tool(
     name: str = typer.Argument(..., help="search_reddit, search_tiktok, search_youtube, search_instagram, search_linkedin, search_x, "
                                          "search_facebook, "
-                                         "web_search, fetch_and_segment or get_trends"),
+                                         "web_search, fetch_and_segment, read_feed or get_trends"),
     targets: list[str] = typer.Argument(..., help="Target(s): r/name, #tag, query, URL(s) or trend terms"),
     topic: str = typer.Option("", help="Brief topic for the relevance check (default: the target)"),
     market: str = typer.Option("global", help="ISO country code, e.g. NL"),
@@ -181,6 +181,9 @@ def tool(
         args |= {"query": " ".join(targets), "country": market, "language": language}
     elif name == "fetch_and_segment":
         args |= {"urls": targets}
+    elif name == "read_feed":            # by hand the owner names the site, as web_search would in a run
+        args |= {"urls": targets}
+        ctx.page_types.update({u: "forum" for u in targets})
     elif name == "get_trends":
         args |= {"terms": targets, "geo": "" if market == "global" else market}
     else:

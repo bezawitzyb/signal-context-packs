@@ -66,6 +66,7 @@ best, with links to related findings elsewhere.
 | **V9 Revised pack page and hand-off** | Summary / Understand your audience / Act on it / The research; plain-language strength labels ("good enough to: test a post / brief creative / commit budget"); a generic AI answer checked point by point against the posts; hand-off options described by purpose and length. |
 | **V10 Ask this pack** | A read-only chat over one pack: answers cite real posts, invented references are removed, and "no evidence" is said plainly. Asking needs the access key (typed on the start page or in the Ask panel; kept only in that browser tab). |
 | **V12 A pack that follows your goals** | Up to 3 goals, main first: the pack's sections, Summary and first moves follow them ("For your goal" blocks; each action says which goal it serves). **Brand perception** gets its own analysis: your brand and its parent are searched by name, and code counts mentions, mentions made unasked (an awareness signal), share of voice, how people feel, what they praise and criticise, and whether they tell your brand apart from the parent - with 2-5 verified findings and an honest "online mentions, not a survey" label. |
+| **V13 Forum feeds** | When web search finds an active forum, the agent can read its RSS or Atom feed: the newest dated threads, cheap and fast. Teaser-only feeds point it to the threads to read in full. Only sites web search returned in the same run; every download passes a guard that allows only ordinary public websites. Google News search feeds add dated candidates for news hooks. |
 | **V11 Understand the brief** | The agent reads the brief for the five things only you know (goals, offer, who, markets, key question), each tied to your own words. It never guesses your goal or offer: when the brief does not say them, it asks (goals ranked, main first; "no offer of my own" is an answer), then only the other gaps that would change the research. One editable "Here's what I understood" box shows where each item came from. A "How to write a brief" guide and template sit next to the brief box. |
 
 ## How the agent chooses sources and stays within limits
@@ -78,7 +79,8 @@ best, with links to related findings elsewhere.
 - The **agent loop** (Claude Sonnet, plain tool use) then picks the next call itself, with a reason:
   Reddit, TikTok, YouTube, Instagram, LinkedIn, X and Facebook (keyword search only, no login of ours; on
   Facebook also public groups that a keyword search found in the same run) through
-  Apify, the open web through web search and fetch, and Google Trends. It sees only short summaries
+  Apify, the open web through web search and fetch, the feeds of forums that web search found
+  (V13), and Google Trends. It sees only short summaries
   ("collected 50, kept 43, 84% relevant"), never raw posts. Every Apify source has a tested backup actor
   ([`catalog.yaml`](backend/ctxpack/config/catalog.yaml)); if both fail, the pack says so as a blind spot.
   A free weekly `actor-check` watches every actor's health, prices and inputs.
@@ -125,6 +127,9 @@ best, with links to related findings elsewhere.
 - Facebook: keyword search of public posts, and reading a **public** group only when that same run's keyword
   search found posts in it - never a group, page or profile chosen by name, never a private group, never a
   login of ours. Links are rebuilt as `facebook.com/<post number>`, so they carry no names.
+- Forum feeds (V13): only feeds of sites the same run's web search returned. The server downloads them
+  itself through a guard: public websites only (never local or private network addresses, checked again
+  after every redirect), standard ports, web pages and feeds only, at most 2 MB and 15 seconds.
 - Author names written inside a post (signatures, people tagged in comments) are redacted too.
 - Author names are hashed (salted) in the function that receives them and are
   never stored, logged or sent to a model. Emails, phone numbers, handles and profile links are redacted.
@@ -240,7 +245,7 @@ More in [docs/DEPLOY.md](docs/DEPLOY.md).
 backend/ctxpack/      Python package
   config/             modes.yaml (limits), scoring.yaml, models.yaml, catalog.yaml (actors)
   agent/              interpret + plan, markets, ask (Ask this pack)
-  collect/            agent loop, tools, Apify, web, cleaning chain, fallback
+  collect/            agent loop, tools, Apify, web, feeds + URL guard, cleaning chain, fallback
   analysis/           extraction, clustering, metrics (code)
   synthesis/          writing, verification, confidence, opportunities, news, playbook, posts (briefs,
                       drafts, calendar), compliance, finalise

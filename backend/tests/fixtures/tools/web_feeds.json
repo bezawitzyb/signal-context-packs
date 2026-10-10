@@ -1,0 +1,28 @@
+{
+ "https://forum.example.org/t/sunday-prep-failing/101": {
+  "feed_url": "https://forum.example.org/latest.rss",
+  "items": [
+   {
+    "link": "https://forum.example.org/t/sunday-prep-failing/101",
+    "title": "Sunday prep keeps failing by Wednesday",
+    "text": "Every Sunday I cook five lunches and by Wednesday I am sick of the same rice and chicken. Does anyone rotate two recipes so the week of meal prep feels less boring?",
+    "author": "user_1",
+    "date": "2026-09-21T08:15:00+00:00"
+   },
+   {
+    "link": "https://forum.example.org/t/budget-containers/102",
+    "title": "Budget containers that survive the dishwasher",
+    "text": "I bought cheap meal prep containers twice and both sets cracked in the dishwasher within a month, so now I only buy glass even though it is heavy to carry to work.",
+    "author": "user_2",
+    "date": "2026-09-18T19:40:00+00:00"
+   },
+   {
+    "link": "https://forum.example.org/t/freezing-rice/103",
+    "title": "Quick question about freezing rice",
+    "text": "Is it safe? Read more...",
+    "author": null,
+    "date": "2026-09-17T10:00:00+00:00"
+   }
+  ]
+ }
+}

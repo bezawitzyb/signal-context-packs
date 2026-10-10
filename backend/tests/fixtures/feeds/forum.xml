@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic test feed: invented forum, invented people. -->
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel>
+ <title>Example Meal Prep Forum - newest threads</title>
+ <link>https://forum.example.org/</link>
+ <item>
+  <title>Sunday prep keeps failing by Wednesday</title>
+  <link>https://forum.example.org/t/sunday-prep-failing/101</link>
+  <dc:creator>Jane Exampleton</dc:creator>
+  <pubDate>Mon, 21 Sep 2026 08:15:00 +0000</pubDate>
+  <content:encoded><![CDATA[<p>Every Sunday I cook five lunches and by Wednesday I am sick of the same rice and chicken.</p>
+  <blockquote>Quoted reply from someone else that must not count as her words.</blockquote>
+  <p>Jane Exampleton here again, does anyone rotate two recipes so the week feels less boring? Mail me at jane@example.org</p>]]></content:encoded>
+ </item>
+ <item>
+  <title>Budget containers that survive the dishwasher</title>
+  <link>https://forum.example.org/t/budget-containers/102</link>
+  <author>pat.k_99</author>
+  <pubDate>Fri, 18 Sep 2026 19:40:00 +0000</pubDate>
+  <description>&lt;p&gt;I bought cheap containers twice and both sets cracked in the dishwasher within a month, so now I only buy glass even though it is heavy to carry to work every single day.&lt;/p&gt;</description>
+ </item>
+ <item>
+  <title>Quick question about freezing rice</title>
+  <link>https://forum.example.org/t/freezing-rice/103</link>
+  <pubDate>Thu, 17 Sep 2026 10:00:00 +0000</pubDate>
+  <description>Is it safe? Read more...</description>
+ </item>
+ <item>
+  <title>A link that is not http</title>
+  <link>javascript:alert(1)</link>
+  <description>Never kept: the link is not a web address, whatever the text says about meal prep and lunches.</description>
+ </item>
+</channel>
+</rss>

@@ -7,7 +7,7 @@ from ctxpack.config import load_yaml
 from ctxpack.schemas.enums import Platform, SourceUnitKind
 
 APIFY = {"reddit", "tiktok", "youtube", "google_trends", "instagram", "linkedin", "x", "facebook"}
-WEB = {"web_forums", "web_reviews", "web_editorial"}
+WEB = {"web_forums", "web_reviews", "web_editorial", "web_feeds"}
 
 
 def test_every_source_is_present_with_valid_unit_types():

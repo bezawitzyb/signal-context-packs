@@ -36,7 +36,7 @@ const TOOL_WORDS: Record<string, string> = {
   search_reddit: "Search Reddit", search_tiktok: "Search TikTok", search_youtube: "Search YouTube",
   search_instagram: "Search Instagram", search_linkedin: "Search LinkedIn", search_x: "Search X",
   search_facebook: "Search Facebook", read_facebook_group: "Read a Facebook group",
-  web_search: "Search the web", fetch_and_segment: "Read pages",
+  web_search: "Search the web", fetch_and_segment: "Read pages", read_feed: "Read forum feeds",
   get_trends: "Check Google Trends", coverage_report: "Check coverage", finish: "Finish collecting",
 };
 export const toolWords = (tool: string) => TOOL_WORDS[tool] ?? tool.replace(/_/g, " ");
