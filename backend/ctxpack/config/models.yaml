@@ -65,4 +65,7 @@ client:
   reserve_output_share: 0.25    # audit: a call reserves its input + this share of max_tokens before it starts;
                                 # a call whose reservation does not fit the remaining budget is refused
   chars_per_token: 3.5          # rough input estimate for the reservation (never billed on it)
-  max_tokens_cap: 32000         # a cut-off answer is retried once with twice the room, up to this
+  max_tokens_cap: 32000         # a cut-off answer is retried once with twice the room, up to this (even when it
+                                # validates: list fields default to empty, so a cut-off answer loses its last sections)
+  min_output_tokens_per_sec: 60 # a request may take max_tokens / this seconds when that beats timeout_secs
+                                # (32000 tokens -> 533 s)

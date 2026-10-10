@@ -65,6 +65,7 @@ class CallResult:
     output_tokens: int = 0
     web_searches: int = 0
     blocks: list[Any] = field(default_factory=list)  # every content block (server-tool results)
+    cut_off: bool = False  # the accepted answer still hit max_tokens after the retry (lists at its end may be short)
 
 
 @dataclass
@@ -285,6 +286,12 @@ def _cached_system(system: str) -> list[dict[str, Any]]:
     return [{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}]
 
 
+def _timeout(max_tokens: int) -> float:
+    """Per-request timeout: the configured one, or longer when a long answer needs the time to be written."""
+    cfg = _models()["client"]
+    return max(cfg["timeout_secs"], max_tokens / cfg["min_output_tokens_per_sec"])
+
+
 async def _create(role: str, name: str, **kwargs: Any) -> tuple[Any, float]:
     """One paid request: limits first (with a reservation), then the call, then cost accounting."""
     reserve = reservation_usd(kwargs["model"], kwargs)
@@ -369,7 +376,7 @@ async def structured(
     while attempts < 2:  # first try + one retry with the validation error (B7)
         resp, usd = await _create(role, tool_name, model=model, max_tokens=max_tokens,
                                   system=_cached_system(system), messages=messages,
-                                  tools=tools, tool_choice=tool_choice)
+                                  tools=tools, tool_choice=tool_choice, timeout=_timeout(max_tokens))
         result.input_tokens += resp.usage.input_tokens
         result.output_tokens += resp.usage.output_tokens
         result.usd += usd
@@ -381,8 +388,16 @@ async def structured(
             messages.append({"role": "assistant", "content": resp.content})
             continue
         attempts += 1
-        if resp.stop_reason == "max_tokens":  # cut off: the retry gets twice the room, or it fails the same way
-            max_tokens = min(max_tokens * 2, _models()["client"]["max_tokens_cap"])
+        cut = resp.stop_reason == "max_tokens"
+        grown = min(max_tokens * 2, _models()["client"]["max_tokens_cap"]) if cut else max_tokens
+        if cut and grown > max_tokens and attempts < 2:
+            # Cut off: never accepted while a retry with more room is possible - every list field defaults to
+            # empty, so a cut-off answer validates and silently loses the sections it had not reached yet
+            # (DE rerun 2026-10-10: segments, culture, moments, white space and risks all empty).
+            log.warning("llm %s/%s: answer cut off at %d tokens; retrying with %d", role, tool_name, max_tokens, grown)
+            max_tokens = grown
+            continue
+        max_tokens = grown
 
         block = next((b for b in resp.content if b.type == "tool_use" and b.name == tool_name), None)
         if block is None and no_tool_answer is not None and (answer := no_tool_answer(result.blocks)) is not None:
@@ -396,6 +411,10 @@ async def structured(
             continue
         try:
             result.data = _validate(schema, block.input)
+            if cut:
+                result.cut_off = True
+                log.warning("llm %s/%s: answer still cut off at %d tokens; kept as it is", role, tool_name,
+                            max_tokens)
             return result
         except ValidationError as exc:
             log.warning("llm %s/%s invalid answer (attempt %d): %s", role, tool_name, attempts,

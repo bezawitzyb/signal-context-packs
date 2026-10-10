@@ -537,6 +537,9 @@ async def _write_calls(ctx: BriefContext, clusters: list[Any], docs_by_id: dict,
                    max_tokens=cfg["max_tokens"], fake=_fake_b))
     outcome.calls += 2
     outcome.usd += res_a.usd + res_b.usd
+    for res, name in ((res_a, "call_a"), (res_b, "call_b")):
+        if res.cut_off:  # even the larger retry ran out of room: its last sections may be short or empty
+            outcome.drop(f"writer_{name}_cut_off")
     await describe_missing_performers(ctx, res_b.data, b_pool, perf_docs, docs_by_id, cfg, outcome)
     return res_a.data, a_pool, res_b.data, b_pool
 

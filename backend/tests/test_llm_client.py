@@ -65,6 +65,32 @@ def test_gives_up_after_one_retry(real_mode, monkeypatch):
         asyncio.run(llm.structured("worker", "sys", "user", RelevanceBatch, "record_relevance"))
 
 
+def _cut(payload):
+    resp = _resp(payload)
+    resp.stop_reason = "max_tokens"
+    return resp
+
+
+def test_a_cut_off_answer_is_retried_with_more_room_even_when_it_validates(real_mode, monkeypatch):
+    """List fields default to empty, so a cut-off answer validates; accepting it lost whole sections (2026-10-10)."""
+    create = _mock_client(monkeypatch, _cut(GOOD), _resp(GOOD))
+    res = asyncio.run(llm.structured("worker", "sys", "user", RelevanceBatch, "record_relevance", max_tokens=16000))
+    assert create.await_count == 2 and not res.cut_off
+    first, retry = (c.kwargs for c in create.await_args_list)
+    assert (first["max_tokens"], retry["max_tokens"]) == (16000, 32000)
+    assert retry["messages"] == first["messages"]                       # a fresh answer, not a continuation
+    assert retry["timeout"] > first["timeout"] >= 300                   # the longer answer gets the time it needs
+
+
+def test_an_answer_still_cut_off_at_the_cap_is_kept_and_flagged(real_mode, monkeypatch):
+    create = _mock_client(monkeypatch, _cut(GOOD), _cut(GOOD))
+    res = asyncio.run(llm.structured("worker", "sys", "user", RelevanceBatch, "record_relevance", max_tokens=16000))
+    assert create.await_count == 2 and res.cut_off and res.data.items[0].relevance == 0.9
+    create = _mock_client(monkeypatch, _cut(GOOD))                      # already at the cap: no pointless retry
+    res = asyncio.run(llm.structured("worker", "sys", "user", RelevanceBatch, "record_relevance", max_tokens=32000))
+    assert create.await_count == 1 and res.cut_off
+
+
 def test_reasoner_is_not_forced(real_mode, monkeypatch):
     create = _mock_client(monkeypatch, _resp(GOOD))
     asyncio.run(llm.structured("reasoner", "sys", "user", RelevanceBatch, "record_relevance"))
