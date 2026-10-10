@@ -122,16 +122,16 @@
   - But: eat it 4 days straight until I hate it (EV-0052, EV-0041)
   > It's basically a trade off in how much time you want to save vs how much freshness and variety you want (EV-0051)
 - **I want to eat well like an athlete, but my budget is tight.** *[TEN-02; emerging, 6 of 181 posts, inferred]*
-  - Want: eat like an athlete on a broke college student budget (EV-0004, EV-0053)
+  - Want: eat like an athlete on a broke college student budget (EV-0053, EV-0004)
   - But: I'm eating this soup because I can't afford not to (EV-0054, EV-0055)
   > eat like an athlete on a broke college student budget (EV-0004)
 - **I want to meal prep for the week, but I'm scared the food will go bad.** *[TEN-03; moderate, 5 of 181 posts, observed]*
-  - Want: I want to meal prep (EV-0056, EV-0028)
-  - But: I’m scared (EV-0056, EV-0057)
+  - Want: I want to meal prep (EV-0028, EV-0056)
+  - But: I’m scared (EV-0057, EV-0056)
   > Doesn’t the meat go bad after 3 days? I want to meal prep but I’m scared 😭 (EV-0056)
 - **I wish I could prep big meals, but I don't have the fridge space.** *[TEN-04; emerging, 4 of 181 posts, observed]*
   - Want: I wish I could store more stuff and meal prep big meals (EV-0058)
-  - But: Tips for when you have a mini fridge? (EV-0058, EV-0018)
+  - But: Tips for when you have a mini fridge? (EV-0018, EV-0058)
   > I wish I could store more stuff and meal prep big meals, but I can’t. (EV-0058)
 
 ### Segments
@@ -174,15 +174,15 @@
   > make your food budget stretch further (EV-0001)
   - *related: I prep so I spend less than I would on fast food, cafés or buying breakfast. [MOT-01]; related: There is no way I can spend four hours cooking every Sunday. [OBJ-03]; related: I don't have much time to cook between work and everything else. [PAIN-01]*
 - **Meals that freeze and reheat well** - I want to know which meals freeze and reheat without getting worse. *[THM-03; emerging, 11 of 181 posts, inferred]*
-  > they reheat way better than I expected (EV-0006)
+  > It reheats and freezes amazingly well. (EV-0007)
 - **Dorm cooking with only a microwave or rice cooker** - I need meals I can make in a dorm without a stove or oven. *[THM-04; strong, 10 of 181 posts, inferred]*
-  > No stove, no oven, just a microwave and 2 minutes. (EV-0004)
+  > BANANA BREAD IN DA RICECOOKER (EV-0012)
   - *related: There is no way I can spend four hours cooking every Sunday. [OBJ-03]; related: I want to eat well like an athlete, but my budget is tight. [TEN-02]*
 - **Lazy cooking with few dishes** - When I can't be bothered, I want food that takes minutes and leaves little washing up. *[THM-05; strong, 10 of 181 posts, inferred]*
   > full comfort food without the stress (or the pile of dishes) (EV-0014)
   - *related: There is no way I can spend four hours cooking every Sunday. [OBJ-03]; related: I'm cooking for one and need a prep system that doesn't bore me. [OPP-07]*
 - **Small kitchens limit how much I can prep** - My small kitchen setup shapes how much I can prep. *[THM-08; emerging, 5 of 181 posts, inferred]*
-  > Focused more on what would fit my kitchen setup (EV-0018)
+  > I lived in a tiny studio in a city. (EV-0017)
   - *related: I wish I could prep big meals, but I don't have the fridge space. [TEN-04]*
 - **Prep the parts, not the whole meal** - I prep ingredients and components so I can still change what I eat during the week. *[THM-09; emerging, 4 of 181 posts, observed]*
   > I prep ingredients and components, not whole meals. (EV-0019)
@@ -204,7 +204,7 @@
 - **Dorm and uni life** - My meal prep is tied to dorm or uni life. *[MOM-03; moderate, 6 of 181 posts, inferred]*
   > just what I actually eat to survive uni life (EV-0022)
 - **Early mornings before work** - I want breakfast ready for weekday mornings. *[MOM-04; moderate, 6 of 181 posts, inferred]*
-  > zero decisions on weekday mornings (EV-0081)
+  > heat them up in the morning (EV-0078)
 - **Midweek fall-off** - My prep falls apart or gets boring by Wednesday. *[MOM-05; emerging, 3 of 181 posts, inferred]*
   > Why your meal prep falls apart by Wednesday. (EV-0082)
 
@@ -212,7 +212,7 @@
 - **Meal prep with me** - One TikTok invites viewers to meal prep with me for the week. *[CUL-02; strong, 12 of 181 posts, observed, safe to state]*
   > meal prep with me for the week (EV-0031)
 - **Weekly numbered prep log** - One Reddit poster titles weekly posts Sunday (ingredient) prep day with a week number. *[CUL-04; emerging, 4 of 181 posts, observed]*
-  > Sunday (ingredient) prep day, week 35 (EV-0019)
+  > Sunday (ingredient) prep day, week 36 (EV-0020)
 - **#GymTok** - #GymTok is tagged on meal prep and dorm high-protein videos. *[CUL-01; strong, 12 of 181 posts, observed, safe to state]*
   > #GymTok (EV-0031)
 - **chefmoe** - A TikTok creator tagged #chefmoe makes dorm dinner and college cooking videos. *[CUL-05; moderate, 4 of 181 posts, observed]*

@@ -123,7 +123,7 @@
   > Im Altbau funktioniert eine Wärmepumpe nicht. (EV-0073)
   - *related: I want to heat an unrenovated old house with a heat pump, but fear cold rooms with unsuita [TEN-01]; related: I want to see that a heat pump works in an old house that has not been renovated. [THM-01]*
 - The offers for my house and for other houses nearby came in EUR 10000 above the costs named in the video. *[OBJ-02; moderate, 6 of 171 posts, observed]*
-  > die Angebote für mein Haus und auch für anderer Häuser in der Umgebung lagen EUR 10000 darüber (EV-0074)
+  > ökonomischer Unsinn (EV-0015)
   - *blocks: I want to know how much is really left to pay after the subsidy. [MOT-04]; related: I have a heat pump quote in the mid-to-high €30,000s and I wonder whether the price is jus [THM-04]*
 - No heat pump is going in at my place because of the noise it makes. *[OBJ-03; emerging, 3 of 171 posts, observed]*
   > bei mir kommt keine wärme pumpe rein nicht weil ich sie nicht mag oder will sondern wegen dem lärm den diese verursachen (EV-0076)
@@ -164,7 +164,7 @@
 ### Segments
 *So what: Segments split into subsidy seekers, quote checkers, DIY and tuning troubleshooters, each needing its own content entry point and offer.*
 - **Subsidy navigators** - I'm trying to get the KfW application, deadlines and financing right. *[SEG-01; moderate, 8 of 171 posts, inferred]*
-  > da die Auszahlungen ewig dauern (EV-0054)
+  > Wieviel Zeit bleibt um die Förderung zu erhalten? (EV-0008)
 - **Offer checkers** - I post my quote and ask whether it is fair. *[SEG-02; emerging, 7 of 171 posts, inferred]*
   > Ich habe für meinen 1954 Gebautes Haus ein Angebot für eine Wärmepumpe 19 KW erhalten. (EV-0016)
 - **DIY installers** - I'm asking about or have done a do-it-yourself heat pump installation. *[SEG-03; moderate, 4 of 171 posts, inferred]*
@@ -204,7 +204,7 @@
   > Du musst VOR Beginn der Arbeiten den Förderantrag gestellt haben. (EV-0006)
   - *related: I want to know how much is really left to pay after the subsidy. [MOT-04]; related: I applied in April and the system has run since May, with no final invoice yet. How much t [OPP-07]*
 - **Will my old radiators be enough?** - I'm unsure whether my old radiators can heat the rooms at the low flow temperature a heat pump uses. *[THM-03; emerging, 8 of 171 posts, inferred]*
-  > dann hast du im Winter Raumtemperaturen von 17 Grad (EV-0010)
+  > um ausreichend Temperatur zu bekommen (EV-0011)
   - *related: Our old gas heating is ageing and barely warms the house, so we want to put in a WP. [MOT-01]; related: I want to heat an unrenovated old house with a heat pump, but fear cold rooms with unsuita [TEN-01]*
 - **Is this €35,000+ quote actually fair?** - I have a heat pump quote in the mid-to-high €30,000s and I wonder whether the price is justified. *[THM-04; emerging, 6 of 171 posts, inferred]*
   > ~35k für WP? (EV-0014)
@@ -212,7 +212,7 @@
 - **The subsidy cuts push me to decide now** - The KfW subsidy changes from 21 July 2026 make me feel I have to act. *[THM-05; emerging, 6 of 171 posts, inferred]*
   > Seit dem 21.7. gelten diese Bedingungen nicht mehr. (EV-0017)
 - **My new heat pump runs oddly and I ask for help with the settings** - My heat pump shows an odd flow temperature or cycling and I ask others what to change. *[THM-06; moderate, 6 of 171 posts, inferred]*
-  > Warum 41 Grad VL bei 12 Grad außen. Heizkurve zu hoch (EV-0021)
+  > Die JAZ ist tatsächlich nicht ganz so gut… (EV-0023)
 - **Real owners' numbers: JAZ, savings, electricity** - Owners post their own annual figures to show what a heat pump delivers. *[THM-07; emerging, 6 of 171 posts, inferred]*
   > JAZ von 4,3 in 2025 (EV-0025)
   - *related: I want to heat an unrenovated old house with a heat pump, but fear cold rooms with unsuita [TEN-01]*

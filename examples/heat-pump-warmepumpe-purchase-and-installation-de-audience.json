@@ -682,12 +682,12 @@
     ],
     "quotes": [
      {
-      "evidence_id": "EV-0010",
-      "text": "dann hast du im Winter Raumtemperaturen von 17 Grad"
-     },
-     {
       "evidence_id": "EV-0011",
       "text": "um ausreichend Temperatur zu bekommen"
+     },
+     {
+      "evidence_id": "EV-0010",
+      "text": "dann hast du im Winter Raumtemperaturen von 17 Grad"
      },
      {
       "evidence_id": "EV-0005",
@@ -919,16 +919,16 @@
     ],
     "quotes": [
      {
+      "evidence_id": "EV-0023",
+      "text": "Die JAZ ist tatsächlich nicht ganz so gut…"
+     },
+     {
       "evidence_id": "EV-0021",
       "text": "Warum 41 Grad VL bei 12 Grad außen. Heizkurve zu hoch"
      },
      {
       "evidence_id": "EV-0022",
       "text": "ständig aus und an ging"
-     },
-     {
-      "evidence_id": "EV-0023",
-      "text": "Die JAZ ist tatsächlich nicht ganz so gut…"
      }
     ],
     "segment_ids": [
@@ -2861,12 +2861,12 @@
    ],
    "quotes": [
     {
-     "evidence_id": "EV-0054",
-     "text": "da die Auszahlungen ewig dauern"
-    },
-    {
      "evidence_id": "EV-0008",
      "text": "Wieviel Zeit bleibt um die Förderung zu erhalten?"
+    },
+    {
+     "evidence_id": "EV-0054",
+     "text": "da die Auszahlungen ewig dauern"
     }
    ],
    "segment_ids": [],
@@ -3752,12 +3752,12 @@
    ],
    "quotes": [
     {
-     "evidence_id": "EV-0074",
-     "text": "die Angebote für mein Haus und auch für anderer Häuser in der Umgebung lagen EUR 10000 darüber"
-    },
-    {
      "evidence_id": "EV-0015",
      "text": "ökonomischer Unsinn"
+    },
+    {
+     "evidence_id": "EV-0074",
+     "text": "die Angebote für mein Haus und auch für anderer Häuser in der Umgebung lagen EUR 10000 darüber"
     },
     {
      "evidence_id": "EV-0075",

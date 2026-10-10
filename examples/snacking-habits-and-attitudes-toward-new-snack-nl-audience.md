@@ -125,7 +125,7 @@
   > maar nét wat slimmer wilt snacken (EV-0005)
   - *related: I want a snack that is easy to take along. [MOT-03]*
 - **Packaging and new flavours make me curious** - Nice packaging and a new flavour make me want to try it. *[THM-05; emerging, 3 of 71 posts, inferred]*
-  > benieuwd naar de nieuwe smaak (EV-0012)
+  > Mooie verpakkingen die oats. (EV-0014)
   - *related: Protein bars mostly let me down. [PAIN-02]*
 - *Also seen (weaker evidence, speculative):* Hauls and unboxings are fun in themselves [THM-03]; Classic Dutch snacks feel special [THM-08]
 
@@ -140,7 +140,7 @@
 - **Supermarket taste test videos** - Supermarket taste-test videos are a format where creators try new products from a named chain. *[CUL-01; moderate, 7 of 71 posts, observed]*
   > Jumbo producten testen (EV-0003)
 - **Snack haul and unboxing videos** - Snack hauls and unboxings are a format of their own, with talk about what belongs in them. *[CUL-02; emerging, 4 of 71 posts, observed]*
-  > Meeega snack unboxing!!! (EV-0008)
+  > Little treat run bij de AH (EV-0010)
 - **Trainer snacktip posts** - A gym brand posts trainer snack tips under a recurring #snacktip tag. *[CUL-03; emerging, 3 of 71 posts, observed]*
   > LAURENS ZIJN SNACKTIP! (EV-0018)
 - *Also seen (weaker evidence, speculative):* YAY or NAY vote [CUL-04]

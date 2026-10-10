@@ -18,6 +18,7 @@ from typing import Any
 from ctxpack.config import load_yaml
 from ctxpack.schemas import pack as P
 from ctxpack.schemas.plan import confirmed_goal, offer_text, section_order
+from ctxpack.synthesis.quote_order import spread_quotes
 from ctxpack.synthesis import news as news_mod
 from ctxpack.synthesis import posts as posts_mod
 from ctxpack.synthesis.confidence import LEVELS
@@ -458,6 +459,7 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
     brp = {f["id"] for f in (section or {}).get("findings", [])}   # a saved playbook may predate a brand rebuild
     data["snapshot"]["for_goals"] = [{**b, "item_ids": [i for i in b["item_ids"] if not i.startswith("BRP-") or i in brp]}
                                      for b in parts.get("for_goals", [])]
+    spread_quotes(data)   # after the Summary took its quotes
     data["provenance"] = provenance()
     data["digest"] = digest(_jsonable(data), load_yaml("modes")["content_bar"]["digest_max_chars"])
     return P.ContextPack.model_validate(data), bar_short

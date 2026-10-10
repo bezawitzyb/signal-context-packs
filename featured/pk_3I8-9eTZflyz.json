@@ -697,12 +697,12 @@
     ],
     "quotes": [
      {
-      "evidence_id": "EV-0012",
-      "text": "benieuwd naar de nieuwe smaak"
-     },
-     {
       "evidence_id": "EV-0014",
       "text": "Mooie verpakkingen die oats."
+     },
+     {
+      "evidence_id": "EV-0012",
+      "text": "benieuwd naar de nieuwe smaak"
      }
     ],
     "segment_ids": [],
@@ -2389,12 +2389,12 @@
     ],
     "quotes": [
      {
-      "evidence_id": "EV-0008",
-      "text": "Meeega snack unboxing!!!"
-     },
-     {
       "evidence_id": "EV-0010",
       "text": "Little treat run bij de AH"
+     },
+     {
+      "evidence_id": "EV-0008",
+      "text": "Meeega snack unboxing!!!"
      }
     ],
     "segment_ids": [

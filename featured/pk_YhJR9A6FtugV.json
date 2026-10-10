@@ -565,12 +565,12 @@
     ],
     "quotes": [
      {
-      "evidence_id": "EV-0006",
-      "text": "they reheat way better than I expected"
-     },
-     {
       "evidence_id": "EV-0007",
       "text": "It reheats and freezes amazingly well."
+     },
+     {
+      "evidence_id": "EV-0006",
+      "text": "they reheat way better than I expected"
      },
      {
       "evidence_id": "EV-0008",
@@ -646,12 +646,12 @@
     ],
     "quotes": [
      {
-      "evidence_id": "EV-0004",
-      "text": "No stove, no oven, just a microwave and 2 minutes."
-     },
-     {
       "evidence_id": "EV-0012",
       "text": "BANANA BREAD IN DA RICECOOKER"
+     },
+     {
+      "evidence_id": "EV-0004",
+      "text": "No stove, no oven, just a microwave and 2 minutes."
      },
      {
       "evidence_id": "EV-0011",
@@ -808,12 +808,12 @@
     ],
     "quotes": [
      {
-      "evidence_id": "EV-0018",
-      "text": "Focused more on what would fit my kitchen setup"
-     },
-     {
       "evidence_id": "EV-0017",
       "text": "I lived in a tiny studio in a city."
+     },
+     {
+      "evidence_id": "EV-0018",
+      "text": "Focused more on what would fit my kitchen setup"
      }
     ],
     "segment_ids": [],
@@ -2207,8 +2207,8 @@
    "want": {
     "text": "eat like an athlete on a broke college student budget",
     "evidence_ids": [
-     "EV-0004",
-     "EV-0053"
+     "EV-0053",
+     "EV-0004"
     ]
    },
    "but": {
@@ -2278,15 +2278,15 @@
    "want": {
     "text": "I want to meal prep",
     "evidence_ids": [
-     "EV-0056",
-     "EV-0028"
+     "EV-0028",
+     "EV-0056"
     ]
    },
    "but": {
     "text": "I’m scared",
     "evidence_ids": [
-     "EV-0056",
-     "EV-0057"
+     "EV-0057",
+     "EV-0056"
     ]
    }
   },
@@ -2352,8 +2352,8 @@
    "but": {
     "text": "Tips for when you have a mini fridge?",
     "evidence_ids": [
-     "EV-0058",
-     "EV-0018"
+     "EV-0018",
+     "EV-0058"
     ]
    }
   }
@@ -3132,12 +3132,12 @@
     ],
     "quotes": [
      {
-      "evidence_id": "EV-0019",
-      "text": "Sunday (ingredient) prep day, week 35"
-     },
-     {
       "evidence_id": "EV-0020",
       "text": "Sunday (ingredient) prep day, week 36"
+     },
+     {
+      "evidence_id": "EV-0019",
+      "text": "Sunday (ingredient) prep day, week 35"
      }
     ],
     "segment_ids": [],
@@ -3777,12 +3777,12 @@
    ],
    "quotes": [
     {
-     "evidence_id": "EV-0081",
-     "text": "zero decisions on weekday mornings"
-    },
-    {
      "evidence_id": "EV-0078",
      "text": "heat them up in the morning"
+    },
+    {
+     "evidence_id": "EV-0081",
+     "text": "zero decisions on weekday mornings"
     }
    ],
    "segment_ids": [],
