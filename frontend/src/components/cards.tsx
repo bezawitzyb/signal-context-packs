@@ -1,11 +1,13 @@
 // Cards (PRD 10.3). OUR WORK (claims) in sans, THEIR WORDS (quotes, terms) in serif, ids in mono.
 import { createContext, useContext } from "react";
-import { AlertTriangle, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { unitWords } from "../lib/unitWords";
 import type { Evidence, InsightLike } from "../lib/api";
 import { ClaimTypeTag, ConfidenceBadge, IdTag, SafeTag } from "./badges";
 import { CopyButton } from "./CopyButton";
 import { Quote } from "./Quote";
+import { LegalNote } from "./legal";
+import type { FlagLike } from "../lib/legal";
 
 /** Evidence lookup + "open evidence" handler shared by every card on a pack page. */
 export const PackContext = createContext<{
@@ -149,7 +151,7 @@ export function LexiconChip({ term, meaning, language, id }: { term: string; mea
 
 export function HookCard({ hook, flags = [] }: {
   hook: { id: string; text: string; why_ids: string[] };
-  flags?: { id: string; category: string; why: string; safer_wording: string }[];
+  flags?: FlagLike[];
 }) {
   return (
     <article className="rounded-lg border border-line bg-paper p-4">
@@ -161,16 +163,7 @@ export function HookCard({ hook, flags = [] }: {
         <span>{hook.id} · builds on</span>
         {hook.why_ids.map((id) => <IdLink key={id} id={id} />)}
       </p>
-      {flags.map((f) => (
-        <div key={f.id} className="mt-2 flex gap-2 rounded-md border border-line-strong bg-paper p-2 text-xs text-ink-2">
-          <AlertTriangle aria-hidden="true" size={14} className="mt-0.5 shrink-0 text-ink" />
-          <div>
-            <span className="font-medium text-ink">Check with legal ({f.category.replace("_", " ")}).</span>{" "}
-            {f.why} <span className="text-ink">Safer: {f.safer_wording}</span>
-            <span className="ml-1 font-mono text-ink-3">{f.id}</span>
-          </div>
-        </div>
-      ))}
+      <LegalNote flags={flags} />
     </article>
   );
 }

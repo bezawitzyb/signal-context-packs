@@ -6,6 +6,7 @@ worker on $PORT. The frontend build is served here in a later step.
 
 import asyncio
 import logging
+import re
 from contextlib import asynccontextmanager
 from importlib.metadata import version as pkg_version
 
@@ -207,4 +208,32 @@ async def web_app(path: str):
     index = _app_file("index.html")
     if index is None:
         raise HTTPException(status_code=404)
+    if m := _PACK_PAGE.fullmatch(path):   # a pasted pack link previews with its own title (exports audit)
+        if html := await asyncio.to_thread(_pack_preview_html, index, m.group(1)):
+            return HTMLResponse(html, headers={"Cache-Control": "no-cache"})
     return FileResponse(index, headers={"Cache-Control": "no-cache"})
+
+
+_PACK_PAGE = re.compile(r"packs/(pk_[A-Za-z0-9_-]{6,40})")
+
+
+def _pack_preview_html(index: Path, pack_id: str) -> str | None:
+    """index.html with this pack's title and one-line description (link previews); None on any problem."""
+    from html import escape
+
+    from ctxpack.api import service
+    from ctxpack.exports.plain import pack_title, preview_line
+
+    try:
+        p = service.pack(pack_id)
+        title, desc = escape(pack_title(p)), escape(preview_line(p))
+    except Exception:  # noqa: BLE001 - an unknown or unreadable pack just gets the plain page
+        return None
+    tags = (f'<meta property="og:title" content="{title}" /><meta property="og:description" content="{desc}" />'
+            '<meta property="og:type" content="article" /><meta property="og:site_name" content="SIGNAL - Context Packs" />'
+            '<meta name="twitter:card" content="summary" />')
+    html = index.read_text(encoding="utf-8")
+    html = re.sub(r"<title>.*?</title>", f"<title>{title} - SIGNAL</title>", html, count=1, flags=re.S)
+    html = re.sub(r'<meta name="description" content="[^"]*" />', f'<meta name="description" content="{desc}" />',
+                  html, count=1)
+    return html.replace("</head>", tags + "</head>", 1)

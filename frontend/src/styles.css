@@ -55,4 +55,5 @@ body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   .pack-part ~ .pack-part { break-before: page; }                /* V9: the Summary prints as page 1 */
   article, figure, li { break-inside: avoid; }
   a.print-url::after { content: " " attr(href); font-size: 0.68rem; word-break: break-all; }
+  a.print-url[data-host]::after { content: " (" attr(data-host) ")"; word-break: normal; }   /* the site, not the link */
 }

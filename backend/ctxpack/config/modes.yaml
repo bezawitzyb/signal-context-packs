@@ -172,12 +172,12 @@ exports:
   chars_per_token: 3.0          # conservative for Dutch/German (English is nearer 4)
   digest_view_max_tokens: 1600  # PRD 11.2 says 500, but guardrails + agent rules alone are ~600 (never cut);
                                 # 1600 estimated (~1,100 real tokens) fits 5 truths, 3 actions, 3 tensions, 8 words
-  prompt_block_max_tokens: 1800
-  skill_body_max_tokens: 2000   # PRD 6.7 (Anthropic allows < 5k; ours is stricter)
+  prompt_block_max_tokens: 5400    # exports audit: the full creative brief (~2-3 pages), every post brief
+  skill_body_max_tokens: 3500   # PRD 6.7 said 2000; exports audit: room for moves, findings, words (Anthropic < 5k)
   skill_name_max_chars: 64      # Anthropic SKILL.md rules (checked 2026-10-05)
   skill_description_max_chars: 1024
   words_per_page: 450           # V9: length labels on the hand-off options ("about 2 pages")
-  quick_brief_max_words: 250    # V9: the half-page quick brief
+  quick_brief_max_words: 380    # V9 half-page quick brief; exports audit: room for 3 findings, rules, flags
 
 # Collection tools (guide Step 1.6, B8). Same for every mode.
 collection:

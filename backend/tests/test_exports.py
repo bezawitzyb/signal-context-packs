@@ -10,7 +10,9 @@ import pytest
 
 from ctxpack import db
 from ctxpack.exports import write_exports
+from ctxpack.config import load_yaml
 from ctxpack.exports.common import slug, tokens
+from ctxpack.exports.plain import PLAIN_RULES
 from ctxpack.exports.markdown import to_markdown
 from ctxpack.exports.prompt_block import to_prompt_block
 from ctxpack.exports.skill import REFERENCES, skill_body, skill_md, skill_name, skill_zip
@@ -67,8 +69,8 @@ def test_skill_body_fits_and_keeps_the_rules_even_with_a_huge_lexicon(pack):
     big["voice"]["lexicon"] = [{**big["voice"]["lexicon"][0], "term": f"woord{n}", "meaning": "x " * 60}
                                for n in range(300)]
     body = skill_body(big)
-    assert tokens(body) <= 2000
-    assert all(rule in body for rule in big["instructions_for_agents"])
+    assert tokens(body) <= load_yaml("modes")["exports"]["skill_body_max_tokens"]
+    assert all(rule in body for rule in PLAIN_RULES) and "safe_to_assert" not in body   # rules in plain words
     assert big["guardrails"]["quote_reuse_note"] in body and big["pack_id"] in body
     assert all(f"references/{f}" in body for f in REFERENCES)
 
@@ -86,9 +88,9 @@ def test_prompt_block_fits_and_never_drops_the_guardrails(pack):
                                for n in range(300)]
     big["playbook"]["hooks"] = [{**big["playbook"]["hooks"][0], "text": "z " * 100} for _ in range(15)]
     text = to_prompt_block(big)
-    assert tokens(text) <= 1800
-    assert "GUARDRAILS:" in text and all(r in text for r in big["instructions_for_agents"])
-    assert "USE:" in text
+    assert tokens(text) <= load_yaml("modes")["exports"]["prompt_block_max_tokens"]
+    assert "GUARDRAILS" in text and all(r in text for r in PLAIN_RULES) and "HOW TO USE THIS BRIEF" in text
+    assert "safe_to_assert" not in text and "voice.lexicon" not in text                  # no field names
 
 
 def test_markdown_follows_the_pack_page_and_states_confidence_in_words(pack):
@@ -97,7 +99,7 @@ def test_markdown_follows_the_pack_page_and_states_confidence_in_words(pack):
              "## Understand your audience", "### Their words", "### What they want", "### What stops them",
              "### Tensions", "### Segments", "### A generic AI answer", "### Landscape",
              "## Act on it", "### Channels", "### What performs", "### Opportunities", "### Guardrails",
-             "## The research", "### Blind spots", "### Method"]
+             "## The research", "### Blind spots", "### How the posts were collected"]
     assert "White space" not in md                                       # V5: called Opportunities
     positions = [md.index(h) for h in order]
     assert positions == sorted(positions)
@@ -105,7 +107,8 @@ def test_markdown_follows_the_pack_page_and_states_confidence_in_words(pack):
     assert f"{t['counts']['matching']} of {t['counts']['of_total']} posts" in md and t["confidence"]["label"] in md
     assert "Author names are never stored." in md and "scraping" not in md.lower()
     assert "AI-assisted analysis" in md and "not legal advice" in md
-    assert "Thin evidence" in md                                         # the fake corpus is thin
+    assert "Early signals" in md                                         # the fake corpus is thin
+    assert "EV-0" not in md and "[MOT-" not in md                        # no ids in the text (the pack keeps them)
 
 
 def test_views_always_include_guardrails_and_instructions(pack):
@@ -144,7 +147,7 @@ def test_weak_items_are_collapsed_in_markdown_but_kept_in_json(pack):
     weak = p["motivations"][0]
     weak["confidence"]["label"] = "speculative"
     md = to_markdown(p)
-    assert f"[{weak['id']}]" in md and "Also seen (weaker evidence, speculative)" in md
+    assert "Also seen (weaker evidence, speculative)" in md and weak["claim"][:40] in md
 
 
 

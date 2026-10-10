@@ -7,6 +7,8 @@ import { useGuide } from "../lib/readingGuide";
 import { safeUrl } from "../lib/safe";
 import { ConfidenceBadge } from "./badges";
 import { Clamp } from "./Clamp";
+import { LegalNote } from "./legal";
+import { flaggedWords, flagsFor } from "../lib/legal";
 import { IdLink, usePack } from "./cards";
 import { CopyButton } from "./CopyButton";
 
@@ -114,6 +116,7 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                 Recommended position</span><span className="font-semibold">{s.position.statement}</span></p>
               <div className="mt-1"><Clamp className="text-sm text-ink-2">
                 For {s.position.for_whom} - answering: {s.position.against_doubt}</Clamp></div>
+              <LegalNote folded words={flaggedWords(s.position.statement, pack.guardrails.never_claim, pack.compliance_flags)} />
             </div>
           )}
           <div>
@@ -136,6 +139,7 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
                              {d.goal && <span className="text-ink-3">for: {goalWords(d.goal)}{d.success_measure ? " · " : ""}</span>}
                              {d.success_measure && <><span className="font-medium text-ink">How you'll know:</span> {d.success_measure}</>}</>}>
                       {d.action}</Clamp>
+                    <LegalNote folded flags={flagsFor(pack, d.id)} />
                   </div>
                   <CopyButton text={d.action} />
                 </li>

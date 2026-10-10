@@ -64,7 +64,9 @@ def test_quick_brief_is_half_a_page_and_keeps_the_quote_rule():
     p = fixture_pack("pk_i4iFso1HnLWR")
     text = to_quick_brief(p)
     assert len(text.split()) <= load_yaml("modes")["exports"]["quick_brief_max_words"]
-    assert "WHO:" in text and "DON'T:" in text and p["guardrails"]["quote_reuse_note"] in text
+    assert "WHO:" in text and "DON'T SAY:" in text and "never for public material" in text   # the quote rule
+    assert "WHAT WE HEARD" in text and text.count("\n- ") >= 3                             # the 3 main findings
+    assert "safe_to_assert" not in text and "[" not in text.split("NOW WRITE")[0]          # no field names, no ids
 
 
 def test_handoff_options_are_written_for_marketers():

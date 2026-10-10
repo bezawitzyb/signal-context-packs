@@ -19,6 +19,7 @@ from ctxpack.config import load_yaml
 from ctxpack.schemas import pack as P
 from ctxpack.schemas.plan import confirmed_goal, offer_text, section_order
 from ctxpack.synthesis.quote_order import spread_quotes
+from ctxpack.synthesis.guardrail_check import clean_say_this
 from ctxpack.synthesis import news as news_mod
 from ctxpack.synthesis import posts as posts_mod
 from ctxpack.synthesis.confidence import LEVELS
@@ -417,7 +418,8 @@ def assemble(run: Any, interp: Any, draft: dict, parts: dict, flags: list[dict],
         "risks": [_fields(P.Risk, it) for it in s["risks"]],
         "blind_spots": [{"id": f"BLS-{n:02d}", "text": t}
                         for n, t in enumerate(blind_spots(run, s, analysis, interp, bar_short, extra_spots), 1)],
-        "guardrails": {"say_this": s.get("guardrails_draft", {}).get("say_this", []),
+        # exports audit: "say this" never uses wording the legal check flagged (it would contradict never_claim)
+        "guardrails": {"say_this": clean_say_this(s.get("guardrails_draft", {}).get("say_this", []), never_claim, flags),
                        "not_this": s.get("guardrails_draft", {}).get("not_this", []),
                        "never_claim": never_claim,
                        "sensitivities": [r["text"] for r in s["risks"]]},

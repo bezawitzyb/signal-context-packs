@@ -69,7 +69,7 @@ def test_items_evidence_exports_and_schema(api):
     found = client.get(f"/api/v1/packs/{api.pack_id}/evidence", params={"q": word}).json()
     assert found["total"] >= 1 and word.casefold() in found["evidence"][0]["text"].casefold()
     md = client.get(f"/api/v1/packs/{api.pack_id}/export/md")
-    assert md.status_code == 200 and md.text.startswith("# Context Pack") and "brief.md" in md.headers[
+    assert md.status_code == 200 and md.text.startswith("# ") and "brief.md" in md.headers[
         "content-disposition"]
     skill = client.get(f"/api/v1/packs/{api.pack_id}/export/skill")
     assert any(n.endswith("/SKILL.md") for n in zipfile.ZipFile(io.BytesIO(skill.content)).namelist())

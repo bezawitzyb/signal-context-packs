@@ -43,12 +43,12 @@ export function Quote({ text, evidence, size = "md" }: {
             </button>
           )}
           {link && (
-            <a href={link} target="_blank" rel="noopener noreferrer nofollow"
+            <a href={link} target="_blank" rel="noopener noreferrer nofollow" data-host={hostOf(link)}
                className="print-url inline-flex items-center gap-1 text-ink-2 underline-offset-2 hover:underline">
               source <ExternalLink aria-hidden="true" size={11} />
             </a>
           )}
-          <span className="font-mono">{evidence.id}</span>
+          <span className="font-mono print:hidden">{evidence.id}</span>
         </figcaption>
       )}
     </figure>
@@ -59,4 +59,9 @@ export function Quote({ text, evidence, size = "md" }: {
 function shortDate(d: string): string {
   const t = Date.parse(d.slice(0, 10));
   return Number.isNaN(t) ? d : new Date(t).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+/** "https://www.youtube.com/watch?v=..." -> "youtube.com" (printed after "source" instead of the whole link). */
+function hostOf(url: string): string {
+  try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; }
 }

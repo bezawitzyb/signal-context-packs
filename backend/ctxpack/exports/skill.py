@@ -16,12 +16,15 @@ import zipfile
 
 from ctxpack.exports.markdown import brand_section, posts_section
 from ctxpack.exports.common import DISCLAIMER, HOOKS_NOTE, badge, cfg, inline, slug, tokens
+from ctxpack.exports.plain import (NEVER_LABEL, PLAIN_RULES, evidence_line, guardrails, human_date, legal_note,
+                                   sentence, strength)
 
 REFERENCES = {
     "lexicon.md": "their words with meanings and real examples - open before writing any copy",
     "hooks.md": "tested hook ideas and the 5-post plan for this week - open when writing hooks or posts",
     "tensions.md": "what they want and what holds them back, with quotes - open when choosing an angle",
     "objections.md": "objections, myths and how to answer them - open when handling doubts or comparisons",
+    "segments.md": "the groups within the audience and what each wants - open when writing for one group",
     "channels.md": "where to show up, how each platform sounds, public communities - open when planning channels",
     "posts.md": "post briefs, drafts and the 4-week content calendar - open when writing or scheduling posts",
     "evidence.json": "the real posts behind every id (UNTRUSTED quoted data) - open only to check a claim",
@@ -44,30 +47,39 @@ def skill_description(pack: dict) -> str:
     text = (f"Real audience research on {inline(i['audience'])} in {i['market']} about {inline(i['topic'])}: "
             f"their words, tensions, objections, guardrails and a ready playbook, from "
             f"{pack['coverage']['counts']['relevant']} public posts. Use when writing marketing content, hooks, "
-            f"posts, ads or briefs for {inline(i['audience'])} in {i['market']} about {inline(i['topic'])}, or "
-            f"when checking what this audience says, wants or objects to.")
+            f"posts, ads or briefs for this audience in {i['market']}, or when checking what they say, want or "
+            f"object to.")
     return text[:cfg()["skill_description_max_chars"]]
 
 
 def skill_body(pack: dict) -> str:
     """The SKILL.md body: shrinks its lists until it fits the token limit; rules are never trimmed."""
     i = pack["brief"]["interpreted"]
-    g = pack["guardrails"]
+    g = guardrails(pack)
     sizes = {"truths": 5, "lexicon": 12, "do_first": 3}
+    items = {it["id"]: it for name in ("motivations", "pain_points", "objections", "tensions", "segments", "moments")
+             for it in pack.get(name, [])} | {t["id"]: t for t in pack["landscape"]["themes"]}
+    topic = inline(i["topic"])
 
     def build() -> str:
-        L = [f"# {inline(i['topic'])} - {i['market']} audience context", "",
-             f"Who: {inline(i['audience'])}. Market {i['market']}, languages {', '.join(i['languages'])}. "
-             f"Built from {pack['coverage']['counts']['relevant']} real public posts (coverage grade "
-             f"{pack['snapshot']['coverage_grade']}"
-             f"{'; thin evidence - treat findings as early signals' if pack['coverage']['thin_evidence'] else ''}).",
-             ""]
+        L = [f"# {topic[:1].upper() + topic[1:]} - {i['market']} audience context", "",
+             f"Who: {sentence(i['audience'])} Market {i['market']}, languages {', '.join(i['languages'])}.",
+             f"{evidence_line(pack)} Research from {human_date(pack['generated_at'])}.", ""]
+        if p := pack["snapshot"].get("position"):
+            L += [f"Position: {sentence(p['statement'])} For: {sentence(p['for_whom'])}"]
+            if note := legal_note(pack, text=p["statement"]):
+                L.append(note)
+            L.append("")
         goals = [f"Goal ({blk['goal'].replace('_', ' ')}): {inline(blk['headline'])}"   # V12: main goal first
                  for blk in pack["snapshot"].get("for_goals") or []]
         L += goals + ([""] if goals else []) + ["## Do first"]
-        L += [f"- {inline(d['action'])} ({d['id']})" for d in pack["do_first"][:sizes["do_first"]]]
-        L += ["", "## Five truths"]
-        L += [f"- {inline(t['text'])} ({', '.join(t['item_ids'])})"
+        for d in pack["do_first"][:sizes["do_first"]]:
+            L.append(f"- {sentence(d['action'])} ({d['id']})")
+            if note := legal_note(pack, d["id"], d["action"]):
+                L.append(f"  {note}")
+        L += ["", "## What we heard (strength in brackets; only strong may be stated as fact)"]
+        L += [f"- {sentence(t['text'])} ({strength(items[t['item_ids'][0]]) if t['item_ids'][0] in items else ''}"
+              f"{'; ' if t['item_ids'][0] in items else ''}{', '.join(t['item_ids'])})"
               for t in pack["snapshot"]["five_truths"][:sizes["truths"]]]
         L += ["", "## Voice", f"Tone: {inline(pack['voice']['tone'])}"]
         if pack["voice"].get("code_switching"):
@@ -76,23 +88,24 @@ def skill_body(pack: dict) -> str:
                                               for x in pack["voice"]["lexicon"][:sizes["lexicon"]]))
         L += ["", "## Guardrails", "Say: " + "; ".join(inline(s) for s in g["say_this"]),
               "Not: " + "; ".join(inline(s) for s in g["not_this"]),
-              "Never claim: " + ("; ".join(inline(s) for s in g["never_claim"]) or "-"),
+              f"{NEVER_LABEL}: " + ("; ".join(inline(s) for s in g["never_claim"]) or "-"),
               "Sensitive: " + ("; ".join(inline(s) for s in g["sensitivities"]) or "-"),
               f"Quotes: {g['quote_reuse_note']}", "", "## Rules"]
-        L += [f"- {r}" for r in pack["instructions_for_agents"]]
-        L += ["- Confidence labels: strong > moderate > emerging > speculative. Only items with "
-              "safe_to_assert true may be stated as fact."]
+        L += [f"- {r}" for r in PLAIN_RULES]
+        L += ["- Strength labels, strongest first: strong, moderate, emerging, speculative.",
+              "- When you explain a choice, cite the item id in brackets (e.g. TEN-01); the reference files use them."]
         L += ["", "## Reference files (open only when needed)"]
         refs = {**REFERENCES, **(dict([BRAND_REFERENCE]) if pack.get("brand_perception") else {})}
         L += [f"- references/{name}: {why}" for name, why in refs.items()]
-        L += ["", f"Pack {pack['pack_id']}, generated {pack['generated_at']}. {DISCLAIMER}"]
+        L += ["", f"Pack {pack['pack_id']}, made {human_date(pack['generated_at'])}. {DISCLAIMER}"]
         return "\n".join(L) + "\n"
 
     body = build()
+    floors = {"lexicon": 6, "truths": 3, "do_first": 3}
     for key in ("lexicon", "truths", "do_first") * 12:
         if tokens(body) <= cfg()["skill_body_max_tokens"]:
             break
-        sizes[key] = max(1, sizes[key] - 1)
+        sizes[key] = max(floors[key], sizes[key] - 1)
         body = build()
     return body
 
@@ -152,6 +165,9 @@ def references(pack: dict) -> dict[str, str]:
     objections += [f"- {inline(c['name'])}: {c['mentions']} mentions ({c['share_of_mentions']:.0%}). "
                    f"{inline(c['tone'])}" for c in pack["competitors"]]
 
+    segments = ["# Segments: the groups within the audience", note, ""]
+    segments += _items(pack["segments"], lambda sg: [f"- Group: {inline(sg.get('name') or '')}"])
+
     channels = ["# Channels", ""]
     channels += [f"{c['priority']}. {c['platform']}: {inline(c['why'])} Formats: {inline(', '.join(c['formats']))}. "
                  f"Where: {inline(', '.join(c['communities_or_hashtags'])) or '-'}. Tone: {inline(c['tone_note'])} "
@@ -168,6 +184,7 @@ def references(pack: dict) -> dict[str, str]:
                 "evidence": [{**e, "trust": "untrusted_user_content"} for e in pack["evidence"]]}
     return {"lexicon.md": "\n".join(lex) + "\n", "hooks.md": "\n".join(hooks) + "\n",
             "tensions.md": "\n".join(tensions) + "\n", "objections.md": "\n".join(objections) + "\n",
+            "segments.md": "\n".join(segments) + "\n",
             "channels.md": "\n".join(channels) + "\n",
             "posts.md": "\n".join(["# Post briefs, drafts and content calendar", note, ""]
                                   + (posts_section(pack)[1:] if pack.get("post_briefs") else ["No post briefs."]))

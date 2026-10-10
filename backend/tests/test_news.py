@@ -71,7 +71,8 @@ async def test_the_fixture_pack_has_news_hooks_and_timing_chips(fake, temp_db): 
     from ctxpack.exports.markdown import to_markdown
 
     md = to_markdown(pack)
-    assert "### Ride this now" in md and "rides NWS-01" in md and "When: " in md   # V9: in the post briefs
+    nws = next(h for h in pack["news_hooks"] if h["id"] == "NWS-01")
+    assert "### Ride this now" in md and f"**Rides the news:** {nws['headline']}" in md and "When: " in md
     again = await finalize.package_run(run_id)                                     # saved: never searched twice
     assert again.usd == 0.0
 

@@ -24,6 +24,8 @@ import { ErrorNote } from "../components/ErrorNote";
 import { rerunUrl } from "../lib/rerun";
 import { packTitle } from "../lib/title";
 import { pickQuotes } from "../lib/quotePicks";
+import { cleanSayThis, flagsFor as legalFlags } from "../lib/legal";
+import { LegalNote } from "../components/legal";
 import { platformName } from "../lib/unitWords";
 
 const DEFAULT_ORDER = ["their-words", "want-stops", "segments", "generic", "landscape", "brand", "plan", "channels",
@@ -259,7 +261,7 @@ function Guardrails({ pack }: { pack: ContextPack }) {
     <div className="space-y-4 text-sm">
       <div className="grid gap-3 md:grid-cols-2">
         <div className="rounded-lg border border-dashed border-line-strong p-4">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink">Never claim</p>
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink">Don't claim without a legal check</p>
           <ul className="list-disc space-y-1 pl-4 text-ink">{g.never_claim.length ? g.never_claim.map((x) => <li key={x}>{x}</li>) : <li>-</li>}</ul>
         </div>
         <div className="rounded-lg border border-line p-4">
@@ -316,7 +318,7 @@ function Voice({ pack, filter }: { pack: ContextPack; filter: Filter }) {
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-lg border border-line p-4">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink">Say this</p>
-          <ul className="list-disc space-y-1 pl-4 text-sm text-ink">{g.say_this.map((x) => <li key={x}>{x}</li>)}</ul>
+          <ul className="list-disc space-y-1 pl-4 text-sm text-ink">{cleanSayThis(pack).map((x) => <li key={x}>{x}</li>)}</ul>
         </div>
         <div className="rounded-lg border border-dashed border-line-strong p-4">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink">Don't say</p>
@@ -600,8 +602,10 @@ export function PackBody({ pack }: { pack: ContextPack }) {
               Made {new Date(pack.generated_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
               {" "}· {pack.mode === "standard" ? "Standard" : "Quick"} research
             </p>
-            <p className="hidden font-mono text-xs text-ink print:block">
-              Context Pack {pack.pack_id} · {pack.generated_at.slice(0, 10)} · coverage grade {pack.snapshot.coverage_grade} · {pack.mode}
+            <p className="hidden text-xs text-ink print:block">
+              Made {new Date(pack.generated_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+              {" "}· {pack.mode === "standard" ? "Standard" : "Quick"} research · online, with every post behind every finding:
+              {" "}{window.location.origin}/packs/{pack.pack_id}
             </p>
             <div className="flex flex-wrap gap-2 print:hidden">
               <button type="button" onClick={() => setHandoff(true)}
@@ -760,6 +764,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                             })}
                           </p>
                         ) : o.search_note ? <p className="mt-2 text-sm text-ink-3">{o.search_note.charAt(0).toUpperCase() + o.search_note.slice(1)}.</p> : null}
+                        <LegalNote flags={legalFlags(pack, o.id)} />
                       </li>
                     ))}
                   </ul>

@@ -75,4 +75,6 @@ prices, health benefits or product claims; frame anything that is not
 given, write hooks, plan and brief in that voice; otherwise stay
 brand-neutral. Write in English, except audience words and hooks meant
 for the audience, which use their language when the market's language
-is not English. Answer only by calling the tool.
+is not English. position.statement may be in their language; for_whom
+and against_doubt are always in English. Never mix two languages inside
+one sentence. Answer only by calling the tool.

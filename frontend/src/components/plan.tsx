@@ -5,6 +5,8 @@ import type { ContextPack } from "../lib/api";
 import { ConfidenceBadge } from "./badges";
 import { IdLink } from "./cards";
 import { CopyButton } from "./CopyButton";
+import { LegalNote } from "./legal";
+import { type Flag, flagsFor } from "../lib/legal";
 import { ShowMore } from "./blocks";
 
 type Brief = ContextPack["post_briefs"][number];
@@ -47,7 +49,7 @@ function CalendarGrid({ pack }: { pack: ContextPack }) {
   );
 }
 
-function BriefCard({ b, draft, words }: { b: Brief; draft?: Draft; words: Record<string, string> }) {
+function BriefCard({ b, draft, words, flags }: { b: Brief; draft?: Draft; words: Record<string, string>; flags: Flag[] }) {
   const text = [`${CHANNEL[b.channel] ?? b.channel} ${FORMAT[b.format] ?? b.format} for ${b.role}`, `Goal: ${b.goal}`,
     `Hook: ${b.hook}`, `Angle: ${b.angle}`, `Structure: ${b.structure}`, ...b.key_points.map((k) => `- ${k.text}`),
     `Call to action: ${b.cta}`, ...(b.avoid.length ? [`Avoid: ${b.avoid.join("; ")}`] : [])].join("\n");
@@ -71,6 +73,7 @@ function BriefCard({ b, draft, words }: { b: Brief; draft?: Draft; words: Record
       )}
       {b.avoid.length > 0 && <p className="mt-1 text-sm text-ink-2"><span className="text-ink-3">Avoid:</span> {b.avoid.join("; ")}</p>}
       {b.success_measure && <p className="mt-1 text-sm text-ink-2"><span className="text-ink-3">How you'll know it worked:</span> {b.success_measure}</p>}
+      <LegalNote flags={flags} />
       {draft && (
         <details className="group mt-3 rounded-lg border border-line bg-wash">
           <summary className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm font-medium text-ink">
@@ -100,7 +103,7 @@ export function PlanPart({ pack, fallback }: { pack: ContextPack; fallback: Reac
       <p className="text-sm text-ink-3">Drafts are written by AI from the research. Review before posting; nothing is scheduled for you.</p>
       {pack.content_calendar.length > 0 && <CalendarGrid pack={pack} />}
       <ShowMore items={briefs} limit={3} render={(part) => (
-        <div className="space-y-3">{part.map((b) => <BriefCard key={b.id} b={b} draft={drafts[b.id]} words={words} />)}</div>
+        <div className="space-y-3">{part.map((b) => <BriefCard key={b.id} b={b} draft={drafts[b.id]} words={words} flags={flagsFor(pack, b.id, drafts[b.id]?.id)} />)}</div>
       )} />
     </div>
   );

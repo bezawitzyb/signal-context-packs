@@ -82,6 +82,22 @@ def test_web_app_files_and_fallback(tmp_path, monkeypatch):
     assert client.get("/ping").text == "ok"
 
 
+def test_a_pack_link_previews_with_its_own_title_and_escapes_it(tmp_path, monkeypatch):
+    from ctxpack.api import main, service
+
+    (tmp_path / "index.html").write_text('<html><head><meta name="description" content="x" /><title>SIGNAL</title>'
+                                         '</head><body><div id=root></div></body></html>', encoding="utf-8")
+    monkeypatch.setattr(main, "DIST", tmp_path)
+    pack = {"brief": {"text": 'Snacks <script>alert(1)</script> in NL', "interpreted": {"topic": "snacks",
+            "audience": "Dutch snackers"}}, "coverage": {"counts": {"relevant": 71}}}
+    monkeypatch.setattr(service, "pack", lambda pack_id: pack if pack_id == "pk_known123" else 1 / 0)
+    page = client.get("/packs/pk_known123")
+    assert "<title>Snacks &lt;script&gt;" in page.text and 'property="og:title"' in page.text
+    assert "<script>alert" not in page.text and "71 public posts" in page.text and "id=root" in page.text
+    plain = client.get("/packs/pk_unknown99")                   # unknown pack: the plain page, never an error
+    assert plain.status_code == 200 and "og:title" not in plain.text
+
+
 def test_placeholder_page_without_a_build(tmp_path, monkeypatch):
     from ctxpack.api import main
 

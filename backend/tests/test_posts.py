@@ -2,6 +2,7 @@
 
 import csv
 import io
+import re
 from datetime import date
 
 import pytest
@@ -141,15 +142,19 @@ async def test_calendar_csv_imports_with_accents_and_safe_cells(packed):
     assert data.startswith(b"\xef\xbb\xbf")                                  # UTF-8 BOM for Excel / Notion
     rows = list(csv.reader(io.StringIO(data.decode("utf-8-sig"))))
     assert rows[0] == COLUMNS and len(rows) == len(packed["content_calendar"]) + 1
-    row = next(r for r in rows[1:] if "Właściciele" in r[4])
-    assert "één woning" in row[4] and row[5].startswith("'=HYPERLINK")
-    assert row[9] == "Idea" and row[10].endswith(f"/packs/{packed['pack_id']}#PST-01")
+    row = next(dict(zip(COLUMNS, r)) for r in rows[1:] if "Właściciele" in r[COLUMNS.index("For whom")])
+    assert "één woning" in row["For whom"] and row["Hook"].startswith("'=HYPERLINK")
+    assert row["Status"] == "Idea" and row["Pack link"].endswith(f"/packs/{packed['pack_id']}#PST-01")
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", row["Date"]) and "…" not in row["Title"][:-1]   # a real date
+    assert "Source links" not in COLUMNS                                     # no quotes or post links in planning tools
     assert all(not cell.startswith(("=", "+", "-", "@")) for r in rows for cell in r)
 
 
 async def test_briefs_reach_every_export(packed):
     md = to_markdown(packed)
-    assert "### Your plan: post briefs and content calendar" in md and DRAFT_LABEL in md and "| Week | Day |" in md
+    assert "### Your plan: post briefs and content calendar" in md and "| Week | Day |" in md
+    assert DRAFT_LABEL not in md and "Content calendar export" in md        # drafts live in the calendar export
+    assert any(r[COLUMNS.index("Draft")] for r in csv.reader(io.StringIO(to_calendar_csv(packed).decode("utf-8-sig"))))
     assert "POST BRIEFS" in to_prompt_block(packed)
     assert "PST-01" in references(packed)["posts.md"]
 

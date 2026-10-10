@@ -1,49 +1,55 @@
-"""Quick brief (change V9): half a page to paste into ChatGPT or Claude before writing.
+"""Quick brief (change V9; exports audit 2026-10-10): paste into ChatGPT or Claude to write ONE post now.
 
-Audience and goal, the position, the top 3 findings with their strength, their
-words, 3 things to say and 3 to avoid. Lists shrink until it fits
-modes.yaml exports.quick_brief_max_words; the quote rule always stays.
+Who, the main goal, the position (each part on its own labelled line, so languages never mix mid-sentence), the
+3 main findings with their strength, their words, say / don't say / don't claim without a legal check, the rules
+in plain words, and a last line to fill in. No ids and no quotes (an AI may paste a quote into a public post).
+Lists shrink until it fits modes.yaml exports.quick_brief_max_words; the 3 findings and the rules always stay.
 """
 
 from __future__ import annotations
 
 from ctxpack.exports.common import cfg, inline
+from ctxpack.exports.plain import NEVER_LABEL, QUICK_RULES, findings, guardrails, legal_note, sentence
 from ctxpack.schemas.plan import confirmed_goal
 
 
 def to_quick_brief(pack: dict) -> str:
     i = pack["brief"]["interpreted"]
-    g = pack["guardrails"]
+    g = guardrails(pack)
     snap = pack["snapshot"]
     goal = confirmed_goal(pack["brief"].get("intake"))
-    sizes = {"words": 8, "say": 3, "not": 3, "findings": 3}
+    sizes = {"words": 8, "say": 4, "not": 3, "never": 4}
 
     def build() -> str:
-        L = [f"WHO: {inline(i['audience'])} in {i['market']}, about {inline(i['topic'])}."
-             + (f" GOAL: {inline(goal)}." if goal else "")]
-        main = (snap.get("for_goals") or [None])[0]  # V12: what the pack means for the main goal
+        L = [f"WHO: {sentence(i['audience'])} Market: {i['market']}. Topic: {sentence(i['topic'])}"]
+        if goal:
+            L.append(f"GOAL: {sentence(goal)}")
+        main = (snap.get("for_goals") or [None])[0]   # what the pack means for the main goal
         if main:
-            L.append(f"FOR YOUR MAIN GOAL: {inline(main['headline'])}")
-        if snap.get("position"):
-            p = snap["position"]
-            L.append(f"POSITION: {inline(p['statement'])} - for {inline(p['for_whom'])}, answering "
-                     f"{inline(p['against_doubt'])}.")
-        L.append("WHAT WE HEARD:")
-        findings = snap.get("findings") or [{"text": t["text"], "strength_text": ""} for t in snap["five_truths"]]
-        L += [f"- {inline(f['text'])}" + (f" ({f['strength_text']})" if f.get("strength_text") else "")
-              for f in findings[:sizes["findings"]]]
-        lex = pack["voice"]["lexicon"][:sizes["words"]]
-        if lex:
+            L.append(f"WHAT THIS MEANS FOR YOUR MAIN GOAL: {sentence(main['headline'])}")
+        if p := snap.get("position"):
+            L += [f"POSITION: {sentence(p['statement'])}", f"  For: {sentence(p['for_whom'])}",
+                  f"  The doubt it answers: {sentence(p['against_doubt'])}"]
+            if note := legal_note(pack, text=p["statement"]):
+                L.append(f"  {note}")
+        L.append("WHAT WE HEARD (strength in brackets):")
+        L += [f"- {sentence(f['text'])}" + (f" ({f['strength_text']})" if f.get("strength_text") else "")
+              for f in findings(pack, 3)]
+        if lex := pack["voice"]["lexicon"][:sizes["words"]]:
             L.append("THEIR WORDS: " + "; ".join(f"{inline(x['term'])} = {inline(x['meaning'])}" for x in lex))
-        L.append("DO: " + "; ".join(inline(x) for x in g["say_this"][:sizes["say"]]))
-        L.append("DON'T: " + "; ".join(inline(x) for x in (g["not_this"] + g["never_claim"])[:sizes["not"]]))
-        L.append("State as fact only what is marked strong; say \"people tell us...\" for the rest. "
-                 + g["quote_reuse_note"])
+        if say := g["say_this"][:sizes["say"]]:
+            L.append("SAY: " + "; ".join(inline(x) for x in say))
+        if nots := g["not_this"][:sizes["not"]]:
+            L.append("DON'T SAY: " + "; ".join(inline(x) for x in nots))
+        if never := g["never_claim"][:sizes["never"]]:
+            L.append(f"{NEVER_LABEL.upper()}: " + "; ".join(inline(x) for x in never))
+        L.append(f"RULES: {QUICK_RULES}")
+        L.append("NOW WRITE: [describe the post you need - channel, format, what it should achieve]")
         return "\n".join(L) + "\n"
 
     text = build()
     limit = cfg()["quick_brief_max_words"]
-    for key in ("words", "findings", "say", "not") * 10:
+    for key in ("words", "never", "say", "not") * 10:
         if len(text.split()) <= limit:
             break
         sizes[key] = max(1, sizes[key] - 1)
