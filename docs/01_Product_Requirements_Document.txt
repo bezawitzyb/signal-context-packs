@@ -453,18 +453,20 @@ Definition:
 
 6.1f Pack page and hand-off (change V9, schema 1.1; revised after a
      marketing-director audit, docs/04_Changes_Plan.md)
-  - Page in three parts plus the research: SUMMARY (fits one laptop
-    screen: who it is for, snapshot.represents, snapshot.findings - the
+  - Page in three parts plus the research: SUMMARY (who it is for,
+    snapshot.represents, snapshot.findings - the
     top 3 with one quote, its English translation, plain strength words
     "N people, M communities" and "good enough to" from scoring.yaml
     plain_labels -, snapshot.position, the plan's first 3 moves with
-    their success_measure, up to 2 news hooks). To fit with goals set
-    (a 1300 x 900 laptop, e2e-tested), lines are shortened, never parts
-    dropped: one line per goal, first moves on two lines with "Show the
-    full moves" (Copy copies the whole move), one news hook, full text
-    in tooltips; the English line is labelled "In English" and translates
-    the quoted words only (owner, 2026-10-10: the post's translation read
-    as an unrelated sentence under a quote from later in the post);
+    their success_measure, up to 2 news hooks). Owner, 2026-10-11: the
+    Summary no longer has to fit one laptop screen; who it is for and
+    the goals sit on separate lines and every "for your goal" message is
+    shown in full, on one card. First moves stay on two lines with "Show
+    the full moves" (Copy copies the whole move), one news hook; a quote's English translates the quoted words only
+    (owner, 2026-10-10: the post's translation read as an unrelated
+    sentence under a quote from later in the post) and, like every quote
+    on the page, shows behind an "English" / "original" button (owner,
+    2026-10-11, was an always-visible "In English" line);
     UNDERSTAND YOUR AUDIENCE
     (their words; what they want / what stops them with tensions as the
     bridge; segments; landscape); ACT ON IT (the creative brief first;

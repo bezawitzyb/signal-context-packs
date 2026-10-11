@@ -27,18 +27,18 @@ function CalendarGrid({ pack }: { pack: ContextPack }) {
     <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4" aria-label="Content calendar">
       {Array.from({ length: weeks }, (_, w) => w + 1).map((week) => (
         <section key={week} aria-label={`Week ${week}`} className="rounded-lg border border-line">
-          <h4 className="border-b border-line bg-wash px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-ink-3">
+          <h4 className="t-label border-b border-line bg-wash px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-ink-3">
             {week === 1 ? "Week 1 (this week)" : `Week ${week}`}
           </h4>
           <ul className="divide-y divide-line">
             {pack.content_calendar.filter((e) => e.week === week).map((e) => (
               <li key={e.id} className="px-3 py-2 text-sm">
-                <p className="font-mono text-xs text-ink-3">{cap(e.suggested_day)} · {CHANNEL[e.channel] ?? e.channel}</p>
+                <p className="t-meta font-mono text-xs text-ink-3">{cap(e.suggested_day)} · {CHANNEL[e.channel] ?? e.channel}</p>
                 <a href={`#${e.post_brief_id}`} className="text-ink underline-offset-2 hover:underline">
                   {briefs[e.post_brief_id]?.angle || briefs[e.post_brief_id]?.hook}
                 </a>
                 {/* UX audit: only a reason with evidence (news, seen timing); "spread" is not a reason */}
-                {e.timing_kind !== "spread" && <p className="text-xs text-ink-3">{e.timing_reason}</p>}
+                {e.timing_kind !== "spread" && <p className="t-meta text-xs text-ink-3">{e.timing_reason}</p>}
               </li>
             ))}
             {!pack.content_calendar.some((e) => e.week === week) && <li className="px-3 py-2 text-xs text-ink-3">Nothing planned</li>}
@@ -55,37 +55,37 @@ function BriefCard({ b, draft, words, flags }: { b: Brief; draft?: Draft; words:
     `Call to action: ${b.cta}`, ...(b.avoid.length ? [`Avoid: ${b.avoid.join("; ")}`] : [])].join("\n");
   return (
     <article id={b.id} className="scroll-mt-24 rounded-lg border border-line p-4">
-      <header className="flex flex-wrap items-center gap-2 text-xs text-ink-2">
+      <header className="t-meta flex flex-wrap items-center gap-2 text-xs text-ink-2">
         <span className="rounded border border-line px-1.5 py-0.5 font-medium text-ink">{CHANNEL[b.channel] ?? b.channel}</span>
         <span>{FORMAT[b.format] ?? b.format}</span><span>· for {b.role}</span>
         <ConfidenceBadge label={b.confidence} />
         <span className="ml-auto"><CopyButton text={text} label="Copy brief" /></span>
       </header>
-      <p className="mt-2 font-medium text-ink">{b.hook}</p>
-      <p className="mt-1 text-sm text-ink-2">{b.angle} <span className="text-ink-3">({b.structure})</span></p>
-      <ul className="mt-2 list-disc space-y-0.5 pl-5 text-sm text-ink">
-        {b.key_points.map((k) => <li key={k.text}>{k.text} <span className="text-xs text-ink-3"><IdLink id={k.item_ids[0]} /></span></li>)}
+      <p className="t-finding mt-2 font-medium text-ink">{b.hook}</p>
+      <p className="t-explain mt-1 text-sm text-ink-2">{b.angle} <span className="text-ink-3">({b.structure})</span></p>
+      <ul className="t-body mt-2 list-disc space-y-0.5 pl-5 text-sm text-ink">
+        {b.key_points.map((k) => <li key={k.text}>{k.text} <span className="text-[0.8125rem] text-ink-3"><IdLink id={k.item_ids[0]} /></span></li>)}
       </ul>
-      <p className="mt-2 text-sm text-ink-2"><span className="text-ink-3">Call to action:</span> {b.cta}</p>
+      <p className="t-explain mt-2 text-sm text-ink-2"><span className="t-lead text-ink-3">Call to action:</span> {b.cta}</p>
       {b.their_words_to_use.length > 0 && (
-        <p className="mt-1 text-sm text-ink-2"><span className="text-ink-3">Their words:</span>{" "}
+        <p className="t-explain mt-1 text-sm text-ink-2"><span className="t-lead text-ink-3">Their words:</span>{" "}
           <span className="font-serif text-ink">{b.their_words_to_use.map((w) => words[w] ?? w).join(", ")}</span></p>
       )}
-      {b.avoid.length > 0 && <p className="mt-1 text-sm text-ink-2"><span className="text-ink-3">Avoid:</span> {b.avoid.join("; ")}</p>}
-      {b.success_measure && <p className="mt-1 text-sm text-ink-2"><span className="text-ink-3">How you'll know it worked:</span> {b.success_measure}</p>}
+      {b.avoid.length > 0 && <p className="t-explain mt-1 text-sm text-ink-2"><span className="t-lead text-ink-3">Avoid:</span> {b.avoid.join("; ")}</p>}
+      {b.success_measure && <p className="t-explain mt-1 text-sm text-ink-2"><span className="t-lead text-ink-3">How you'll know it worked:</span> {b.success_measure}</p>}
       <LegalNote flags={flags} />
       {draft && (
         <details className="group mt-3 rounded-lg border border-line bg-wash">
-          <summary className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm font-medium text-ink">
+          <summary className="flex cursor-pointer items-center gap-2 px-3 py-2 text-base font-medium text-ink">
             <ChevronDown aria-hidden="true" size={14} className="transition group-open:rotate-180" />
             {draft.label}
-            <span className="font-normal text-xs text-ink-3">({draft.voice === "brand" ? "your brand voice" : "neutral voice"}
+            <span className="t-meta font-normal text-xs text-ink-3">({draft.voice === "brand" ? "your brand voice" : "neutral voice"}
               {draft.removed_sentences ? `; ${draft.removed_sentences} unsupported sentence${draft.removed_sentences === 1 ? "" : "s"} removed` : ""})</span>
           </summary>
           <div className="border-t border-line px-3 py-3">
             <div className="mb-2 flex justify-end"><CopyButton text={[draft.title, draft.body].filter(Boolean).join("\n\n")} label="Copy draft" /></div>
             {draft.title && <p className="mb-2 font-semibold text-ink">{draft.title}</p>}
-            <p className="whitespace-pre-wrap text-sm text-ink">{draft.body}</p>
+            <p className="t-body whitespace-pre-wrap text-sm text-ink">{draft.body}</p>
           </div>
         </details>
       )}
@@ -100,7 +100,7 @@ export function PlanPart({ pack, fallback }: { pack: ContextPack; fallback: Reac
   const words = Object.fromEntries(pack.voice.lexicon.map((x) => [x.id, x.term]));
   return (
     <div className="space-y-6">
-      <p className="text-sm text-ink-3">Drafts are written by AI from the research. Review before posting; nothing is scheduled for you.</p>
+      <p className="t-explain text-sm text-ink-3">Drafts are written by AI from the research. Review before posting; nothing is scheduled for you.</p>
       {pack.content_calendar.length > 0 && <CalendarGrid pack={pack} />}
       <ShowMore items={briefs} limit={3} render={(part) => (
         <div className="space-y-3">{part.map((b) => <BriefCard key={b.id} b={b} draft={drafts[b.id]} words={words} flags={flagsFor(pack, b.id, drafts[b.id]?.id)} />)}</div>

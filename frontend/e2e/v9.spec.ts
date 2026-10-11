@@ -11,13 +11,12 @@ async function openFeatured(page: import("@playwright/test").Page) {
   await expect(page.getByRole("heading", { name: "Summary", exact: true })).toBeVisible();
 }
 
-test("the first screen on a laptop shows the whole Summary", async ({ page }) => {
+// Owner, 2026-10-11: the Summary no longer has to fit one laptop screen (PRD 6.1f); it shows every part
+test("the Summary shows who it is for, the findings and the first moves", async ({ page }) => {
   await openFeatured(page);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/v9-laptop.png` });
   const summary = page.locator("section[aria-labelledby=summary]");
-  const box = await summary.boundingBox();
-  expect(box).not.toBeNull();
-  expect(box!.y + box!.height).toBeLessThanOrEqual(900);               // 1300x900 (playwright.config.ts)
+  await expect(summary.getByText("For:", { exact: true })).toBeVisible();
   await expect(summary.getByText("What we heard most clearly")).toBeVisible();
   await expect(summary.getByText("Your plan: do this first")).toBeVisible();
 });

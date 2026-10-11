@@ -17,7 +17,7 @@ export function SectionTitle({ id, title, note, level = 2 }: { id?: string; titl
   return (
     <header className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
       <H id={id} className={`scroll-mt-20 tracking-tight ${level === 3
-        ? "text-sm font-semibold uppercase tracking-wide text-ink-3" : "font-display text-xl font-black text-ink"}`}>{title}</H>
+        ? "t-label text-sm font-semibold uppercase tracking-wide text-ink-3" : "font-display text-xl font-black text-ink"}`}>{title}</H>
       {note && <p className="text-sm text-ink-3">{note}</p>}
     </header>
   );
@@ -31,7 +31,7 @@ export function SectionLead({ meta }: { meta?: SectionNotes }) {
   if (!meta?.so_what && !meta?.see_also?.length) return null;
   return (
     <div className="mb-3 space-y-1">
-      {meta.so_what && <p className="text-sm text-ink-2"><span className="font-medium text-ink">So what:</span> {meta.so_what}</p>}
+      {meta.so_what && <p className="t-explain text-sm text-ink-2"><span className="t-lead font-medium text-ink">So what:</span> {meta.so_what}</p>}
       {meta.see_also?.length ? <LinkChips links={meta.see_also.map((id) => ({ id, kind: "related" }))} /> : null}
     </div>
   );
@@ -115,7 +115,7 @@ export interface Column<Row> {
   className?: string;
 }
 
-const KIND = { their: "font-serif text-[0.98rem]", ours: "text-sm", data: "font-mono text-xs" };
+const KIND = { their: "font-serif text-[0.98rem]", ours: "text-sm", data: "font-mono text-[0.8125rem]" };
 
 export function TableSection<Row>({ caption, columns, rows, rowKey }: {
   caption: string; columns: Column<Row>[]; rows: Row[]; rowKey: (row: Row) => string;
@@ -127,7 +127,7 @@ export function TableSection<Row>({ caption, columns, rows, rowKey }: {
         <thead className="bg-wash">
           <tr>
             {columns.map((c) => (
-              <th key={c.header} scope="col" className={`px-3 py-2 text-xs font-medium uppercase tracking-wide text-ink-3 ${c.className?.includes("whitespace-nowrap") ? "whitespace-nowrap" : ""}`}>
+              <th key={c.header} scope="col" className={`px-3 py-2 text-[0.8125rem] font-medium uppercase tracking-wide text-ink-3 ${c.className?.includes("whitespace-nowrap") ? "whitespace-nowrap" : ""}`}>
                 {c.header}
               </th>
             ))}

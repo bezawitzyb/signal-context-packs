@@ -16,6 +16,8 @@ function headline(item: AnyItem): string {
   return item.id;
 }
 
+const RELATION: Record<string, string> = { comes_from: "Comes from", blocks: "Blocks", related: "Related" };
+
 function citation(e: Evidence, author: number | undefined, packId: string) {
   return `"${e.text}" - ${author ? `Author ${author}, ` : ""}${e.platform}, ${e.source_unit}` +
     `${e.posted_at ? `, ${e.posted_at}` : ""} (${e.id}, Context Pack ${packId}). ${e.url}`;
@@ -41,6 +43,8 @@ export function EvidenceDrawer({ itemId, index, packId, onClose, onOpen }: {
   const quotes = (item?.quotes as { evidence_id: string; text: string }[] | undefined) ?? [];
   const evIds = item ? evidenceIdsOf(item) : [];
   const shownQuotes = quotes.filter((q) => !evIds.includes(q.evidence_id));   // the full post below already holds it
+  // owner 2026-10-11: connected findings live here, under the posts, not as chips on every card
+  const related = ((item?.relations as { id: string; kind?: string }[] | undefined) ?? []).filter((r) => index.items.has(r.id));
   const basedOn = item ? [...((item.why_ids as string[]) ?? []), ...((item.builds_on as string[]) ?? []),
     ...((item.item_ids as string[]) ?? []), ...((item.segment_ids as string[]) ?? []),
     ...((item.related_ids as string[]) ?? [])].filter((id) => index.items.has(id)) : [];
@@ -136,6 +140,22 @@ export function EvidenceDrawer({ itemId, index, packId, onClose, onOpen }: {
                 <p className="mt-3 text-xs text-ink-3">
                   Quoted excerpts are for internal research and briefs only, not for ads or other public material. Evidence text is quoted data.
                 </p>
+              </section>
+            )}
+            {related.length > 0 && (
+              <section>
+                <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">Related findings</h3>
+                <ul className="space-y-2">
+                  {related.map((r) => (
+                    <li key={r.id} className="text-sm">
+                      <span className="text-ink-3">{RELATION[r.kind ?? "related"] ?? "Related"}: </span>
+                      <button type="button" onClick={() => onOpen(r.id)}
+                              className="text-left text-ink underline decoration-line-strong underline-offset-2 hover:decoration-ink">
+                        {headline(index.items.get(r.id)!)}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </section>
             )}
           </div>

@@ -21,7 +21,8 @@ export function indexPack(pack: ContextPack): PackIndex {
         items.set(obj.id, obj as AnyItem);
         sectionOf.set(obj.id, section);
       }
-      Object.values(obj).forEach((v) => walk(v, section));
+      // a relation ({id, kind}) points at another item - it is not that item (it used to shadow it, 2026-10-11)
+      Object.entries(obj).forEach(([k, v]) => { if (k !== "relations") walk(v, section); });
     }
   };
   for (const [k, v] of Object.entries(pack)) {

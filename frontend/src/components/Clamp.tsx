@@ -36,7 +36,7 @@ export function Clamp({ children, sub, clamp = "line-clamp-1", className = "", s
       {!forced && (cut || open) && (
         <button type="button" onClick={() => setOpen(!open)} aria-expanded={open}
                 aria-label={open ? "Show less" : "Show the full text"}
-                className="mt-0.5 shrink-0 text-xs text-ink-2 underline underline-offset-2 hover:text-ink print:hidden">
+                className="mt-0.5 shrink-0 text-[0.8125rem] text-ink-2 underline underline-offset-2 hover:text-ink print:hidden">
           {open ? "less" : "more"}
         </button>
       )}

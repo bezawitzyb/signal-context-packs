@@ -31,15 +31,15 @@ export function CoverageStrip({ pack }: { pack: ContextPack }) {
       <dl className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3">
         {items.map(([k, v]) => (
           <div key={k} className="bg-paper px-3 py-2">
-            <dt className="text-[0.7rem] font-medium uppercase tracking-wide text-ink-3">{k}</dt>
-            <dd className="mt-0.5 font-mono text-xs text-ink">{v}</dd>
+            <dt className="t-label text-[0.7rem] font-medium uppercase tracking-wide text-ink-3">{k}</dt>
+            <dd className="mt-0.5 font-mono text-[0.8125rem] text-ink">{v}</dd>
           </div>
         ))}
         <div className="bg-paper px-3 py-2">
           <dt className="sr-only">Mode and evidence</dt>
           <dd className="flex items-center gap-2">
             <ModeBadge mode={pack.mode} />
-            {c.thin_evidence && <span className="rounded border border-line-strong px-1.5 py-0.5 text-xs text-ink">Early-signal pack</span>}
+            {c.thin_evidence && <span className="rounded border border-line-strong px-1.5 py-0.5 text-[0.8125rem] text-ink">Early-signal pack</span>}
           </dd>
         </div>
       </dl>

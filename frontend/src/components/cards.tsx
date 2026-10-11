@@ -29,7 +29,7 @@ export function LinkChips({ links }: { links: { id: string; kind?: string }[] })
       {shown.map((l) => (
         <li key={l.id}>
           <button type="button" onClick={() => onOpen?.(l.id)} title={claims[l.id]}
-                  className="max-w-full truncate rounded-full border border-line px-2.5 py-0.5 text-left text-xs text-ink-2 hover:border-ink hover:text-ink">
+                  className="max-w-full truncate rounded-full border border-line px-2.5 py-0.5 text-left text-[0.8125rem] text-ink-2 hover:border-ink hover:text-ink">
             <span className="text-ink-3">{LINK[l.kind ?? "related"] ?? "see also"}:</span> {claims[l.id].length > 60 ? claims[l.id].slice(0, 58) + "…" : claims[l.id]}
           </button>
         </li>
@@ -50,7 +50,7 @@ function Meta({ item }: { item: InsightLike }) {
       <ClaimTypeTag type={item.claim_type} />
       {item.safe_to_assert && <SafeTag />}
       {item.non_obvious && (
-        <span title="Not in what a generic AI answer says" className="rounded border border-line px-1.5 py-0.5 text-xs text-ink-2">
+        <span title="Not in what a generic AI answer says" className="rounded border border-line px-1.5 py-0.5 text-[0.8125rem] text-ink-2">
           Non-obvious
         </span>
       )}
@@ -64,7 +64,7 @@ function OpenEvidence({ id }: { id: string }) {
   return (
     <button type="button" onClick={() => onOpen(id)}
             aria-label={`See the posts behind ${id}`} title={id}
-            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-xs text-ink-2 hover:text-ink">
+            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-[0.8125rem] text-ink-2 hover:text-ink">
       See the posts <ArrowRight aria-hidden="true" size={12} />
     </button>
   );
@@ -88,19 +88,18 @@ export function ClaimCard({ item, title, maxQuotes = 1 }: { item: InsightLike; t
       <div className="mb-2 flex items-start justify-between gap-3">
         <div className="min-w-0">
           {/* UX audit: the label is a quiet eyebrow, the claim is what you read */}
-          {title && <p className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">{title}</p>}
-          <p className="text-lg font-medium leading-snug text-ink">{item.claim}</p>
+          {title && <p className="t-label mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">{title}</p>}
+          <p className="t-finding text-lg font-medium leading-snug text-ink">{item.claim}</p>
         </div>
         <OpenEvidence id={item.id} />
       </div>
-      {item.summary_for_humans && <p className="mb-3 text-base text-ink-2">{item.summary_for_humans}</p>}
+      {item.summary_for_humans && <p className="t-explain mb-3 text-base text-ink-2">{item.summary_for_humans}</p>}
       <Meta item={item} />
       {shown.map((q) => (
         <div key={q.evidence_id + q.text} className="mt-3">
           <Quote text={q.text} evidence={evidence[q.evidence_id]} size="sm" />
         </div>
       ))}
-      <LinkChips links={item.relations ?? []} />
     </article>
   );
 }
@@ -117,23 +116,22 @@ export function TensionCard({ item }: { item: InsightLike & { want: Side; but: S
   return (
     <article className="rounded-lg border border-line bg-paper p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
-        <p className="text-lg font-medium leading-snug text-ink">{item.claim}</p>
+        <p className="t-finding text-lg font-medium leading-snug text-ink">{item.claim}</p>
         <OpenEvidence id={item.id} />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-3">They want</p>
-          <p className="mb-2 font-serif text-[1.0625rem] text-ink">{item.want.text}</p>
+          <p className="t-label mb-1 text-xs font-semibold uppercase tracking-wide text-ink-3">They want</p>
+          <p className="t-quote mb-2 font-serif text-[1.0625rem] italic text-ink">{item.want.text}</p>
           {firstQuote(item.want, "want")}
         </div>
         <div className="sm:border-l sm:border-line sm:pl-4">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-3">But</p>
-          <p className="mb-2 font-serif text-[1.0625rem] text-ink">{item.but.text}</p>
+          <p className="t-label mb-1 text-xs font-semibold uppercase tracking-wide text-ink-3">But</p>
+          <p className="t-quote mb-2 font-serif text-[1.0625rem] italic text-ink">{item.but.text}</p>
           {firstQuote(item.but, "but")}
         </div>
       </div>
       <div className="mt-3"><Meta item={item} /></div>
-      <LinkChips links={item.relations ?? []} />
     </article>
   );
 }
@@ -156,10 +154,10 @@ export function HookCard({ hook, flags = [] }: {
   return (
     <article className="rounded-lg border border-line bg-paper p-4">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[1rem] leading-snug text-ink">{hook.text}</p>
+        <p className="t-finding text-[1rem] leading-snug text-ink">{hook.text}</p>
         <CopyButton text={hook.text} label="Copy hook" />
       </div>
-      <p className="mt-2 flex flex-wrap gap-x-1 font-mono text-xs text-ink-3">
+      <p className="t-meta mt-2 flex flex-wrap gap-x-1 font-mono text-xs text-ink-3">
         <span>{hook.id} · builds on</span>
         {hook.why_ids.map((id) => <IdLink key={id} id={id} />)}
       </p>
@@ -176,20 +174,20 @@ export function SourceCard({ source, dropped = false }: {
   return (
     <article className={`rounded-lg border p-3 ${dropped ? "border-dashed border-line-strong" : "border-line"}`}>
       <div className="flex items-baseline justify-between gap-2">
-        <span className="min-w-0 break-words text-sm text-ink" title={source.source_unit}>{unitWords(source.source_unit)}</span>
-        <span className="shrink-0 text-xs font-medium text-ink-2">{dropped ? "Dropped" : "Kept"}</span>
+        <span className="t-body min-w-0 break-words text-sm text-ink" title={source.source_unit}>{unitWords(source.source_unit)}</span>
+        <span className="shrink-0 text-[0.8125rem] font-medium text-ink-2">{dropped ? "Dropped" : "Kept"}</span>
       </div>
       {!dropped && source.kept !== undefined && (
         <div className="mt-2" aria-label={`${Math.round(share * 100)}% relevant`}>
           <div className="h-1.5 rounded-full bg-wash">
             <div className="h-1.5 rounded-full bg-ink" style={{ width: `${Math.round(share * 100)}%` }} />
           </div>
-          <p className="mt-1 font-mono text-[0.72rem] text-ink-3">
+          <p className="t-meta mt-1 font-mono text-[0.72rem] text-ink-3">
             {source.kept} kept · {Math.round(share * 100)}% relevant
           </p>
         </div>
       )}
-      <p className="mt-2 text-sm text-ink-2">{source.reason}</p>
+      <p className="t-explain mt-2 text-sm text-ink-2">{source.reason}</p>
     </article>
   );
 }

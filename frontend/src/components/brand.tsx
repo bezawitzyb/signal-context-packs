@@ -12,12 +12,12 @@ export function BrandPart({ bp }: { bp: BrandPerception }) {
   const own = bp.brands[0];
   return (
     <div className="space-y-4">
-      {bp.note && <p className="text-sm text-ink-2">{bp.note}</p>}
+      {bp.note && <p className="t-explain text-sm text-ink-2">{bp.note}</p>}
       {bp.brands.length > 0 && (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[34rem] text-left text-sm">
             <caption className="sr-only">Brand numbers, computed from the posts</caption>
-            <thead className="text-xs uppercase tracking-wide text-ink-3">
+            <thead className="t-label text-xs uppercase tracking-wide text-ink-3">
               <tr><th className="py-1 pr-3 font-medium">Brand</th><th className="py-1 pr-3 font-medium">Posts</th>
                 <th className="py-1 pr-3 font-medium" title="Found by a search that did not name the brand: people bringing it up unasked">Unasked</th>
                 <th className="py-1 pr-3 font-medium" title="Of unasked posts naming any brand, the share naming this one">Share of voice</th>
@@ -40,13 +40,13 @@ export function BrandPart({ bp }: { bp: BrandPerception }) {
         </div>
       )}
       {own && (own.aspects_praised.length > 0 || own.aspects_criticised.length > 0) && (
-        <p className="text-sm text-ink-2">
+        <p className="t-explain text-sm text-ink-2">
           {own.aspects_praised.length > 0 && <>Praised: <span className="text-ink">{own.aspects_praised.join(", ")}</span>. </>}
           {own.aspects_criticised.length > 0 && <>Criticised: <span className="text-ink">{own.aspects_criticised.join(", ")}</span>.</>}
         </p>
       )}
       {own && own.relation_mix.length > 0 && (
-        <p className="text-sm text-ink-2">
+        <p className="t-explain text-sm text-ink-2">
           Next to the parent brand ({own.with_parent} {own.with_parent === 1 ? "post names" : "posts name"} both):{" "}
           <span className="font-mono text-xs">{own.relation_mix.map((x) => `${words(x.relation)} ${pct(x.share)}`).join(" · ")}</span>
         </p>

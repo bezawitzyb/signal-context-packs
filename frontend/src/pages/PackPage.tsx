@@ -2,7 +2,7 @@
 // (collapsed). Sticky part nav (a menu on phones), progressive disclosure, evidence drawer, View as agent, Hand off.
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { Braces, History, Menu, MessageCircleQuestion, RotateCcw, Share2, TextQuote, ArrowUp } from "lucide-react";
+import { Braces, ChevronDown, History, Menu, MessageCircleQuestion, RotateCcw, Share2, TextQuote, ArrowUp } from "lucide-react";
 import { friendlyError, getPack, getPackInputs, type ContextPack, type InsightLike, type Label } from "../lib/api";
 import { indexPack, labelCounts } from "../lib/packIndex";
 import { safeUrl } from "../lib/safe";
@@ -50,17 +50,34 @@ const PRIVACY_LINE = "Collected posts are deleted after 30 days. Author names ar
 type Tension = InsightLike & { want: { text: string; evidence_ids: string[] }; but: { text: string; evidence_ids: string[] } };
 const asItems = (x: unknown) => x as InsightLike[];
 
-function Section({ id, title, agent, agentData, name, version, children, note }: {
+function Section({ id, title, agent, agentData, name, version, children, note, folded = false }: {
   id: string; title: string; agent: boolean; agentData: unknown; name: string; version: string;
   children: React.ReactNode; note?: React.ReactNode;
+  folded?: boolean;   // owner 2026-10-11: Guardrails opens folded; a menu link or #guardrails opens it, print shows it
 }) {
+  const heading = <h2 id={id} className="scroll-mt-24 font-display text-2xl font-black tracking-tight text-ink">{title}</h2>;
+  const body = agent ? <AgentJson name={name} data={agentData} schemaVersion={version} /> : children;
+  if (folded) return (
+    <section aria-labelledby={id} className="pack-section panel mb-10 p-5 sm:p-8">
+      <details className="group">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 [&::-webkit-details-marker]:hidden">
+          {heading}
+          <span className="inline-flex items-center gap-1 text-sm text-ink-2 group-hover:text-ink">
+            <span className="group-open:hidden">Show</span><span className="hidden group-open:inline">Hide</span>
+            <ChevronDown aria-hidden="true" size={16} className="transition-transform group-open:rotate-180" />
+          </span>
+        </summary>
+        <div className="mt-4 border-t border-line pt-4">{body}</div>
+      </details>
+    </section>
+  );
   return (
     <section aria-labelledby={id} className="pack-section panel mb-10 p-5 sm:p-8">
       <header className="mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-2">
-        <h2 id={id} className="scroll-mt-24 font-display text-2xl font-black tracking-tight text-ink">{title}</h2>
+        {heading}
         {note && <p className="text-sm text-ink-3">{note}</p>}
       </header>
-      {agent ? <AgentJson name={name} data={agentData} schemaVersion={version} /> : children}
+      {body}
     </section>
   );
 }
@@ -68,7 +85,7 @@ function Section({ id, title, agent, agentData, name, version, children, note }:
 function Sub({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-8">
-      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-3">{title}</h3>
+      <h3 className="t-label mb-3 text-sm font-semibold uppercase tracking-wide text-ink-3">{title}</h3>
       {children}
     </div>
   );
@@ -98,7 +115,7 @@ function IdButton({ id, label = "posts" }: { id: string; label?: string }) {
   return (
     <button type="button" onClick={() => onOpen?.(id)} title={`Open the posts behind this (${id})`}
             aria-label={`Open the posts behind ${id}`}
-            className="inline-flex items-center gap-0.5 rounded px-0.5 text-xs text-ink-3 underline decoration-line-strong underline-offset-2 hover:text-ink">
+            className="inline-flex items-center gap-0.5 rounded px-0.5 text-[0.8125rem] text-ink-3 underline decoration-line-strong underline-offset-2 hover:text-ink">
       <TextQuote aria-hidden="true" size={11} />{label}
     </button>
   );
@@ -117,11 +134,11 @@ function TimingChips({ timing }: { timing: ContextPack["channel_plan"][number]["
   if (!timing?.length) return null;
   return (
     <div className="mt-2">
-      <p className="text-xs font-medium uppercase tracking-wide text-ink-3">When</p>
+      <p className="t-label text-xs font-medium uppercase tracking-wide text-ink-3">When</p>
       <ul className="mt-1 flex flex-wrap gap-2">
         {timing.map((t, n) => (
           <li key={n} title={t.why}
-              className={`inline-flex flex-wrap items-center gap-1 rounded-full border px-2 py-0.5 text-xs text-ink-2 ${t.claim_type === "external" ? "border-dashed border-ink-3" : "border-line"}`}>
+              className={`inline-flex flex-wrap items-center gap-1 rounded-full border px-2 py-0.5 text-[0.8125rem] text-ink-2 ${t.claim_type === "external" ? "border-dashed border-ink-3" : "border-line"}`}>
             <span className="text-ink">{t.label}</span><span>· {t.when}</span>
             {t.claim_type === "observed"
               ? <><span>· seen in posts</span>{t.item_id && <IdButton id={t.item_id} />}</>
@@ -142,13 +159,13 @@ function Channels({ pack }: { pack: ContextPack }) {
         {part.map((c) => (
           <li key={c.id} className="rounded-lg border border-line p-4">
             <p className="flex items-baseline gap-2"><span className="font-mono text-sm text-ink-3">{c.priority}.</span>
-              <span className="font-medium text-ink">{CHANNEL[c.platform] ?? c.platform}</span>
-              {c.posts_per_week ? <span className="text-xs text-ink-3">{c.posts_per_week} post{c.posts_per_week === 1 ? "" : "s"} a week</span> : null}
+              <span className="t-finding font-medium text-ink">{CHANNEL[c.platform] ?? c.platform}</span>
+              {c.posts_per_week ? <span className="t-meta text-xs text-ink-3">{c.posts_per_week} post{c.posts_per_week === 1 ? "" : "s"} a week</span> : null}
               </p>
-            <p className="mt-1 text-sm text-ink">{c.why}</p>
-            <p className="mt-2 text-sm text-ink-2">Formats: {c.formats.join(", ") || "-"}</p>
-            {c.communities_or_hashtags.length > 0 && <p className="text-sm text-ink-2">Where: {c.communities_or_hashtags.join(", ")}</p>}
-            {c.tone_note && <p className="text-sm text-ink-2">Tone: {c.tone_note}</p>}
+            <p className="t-body mt-1 text-sm text-ink">{c.why}</p>
+            <p className="t-explain mt-2 text-sm text-ink-2"><span className="t-lead">Formats:</span> {c.formats.join(", ") || "-"}</p>
+            {c.communities_or_hashtags.length > 0 && <p className="t-explain text-sm text-ink-2"><span className="t-lead">Where:</span> {c.communities_or_hashtags.join(", ")}</p>}
+            {c.tone_note && <p className="t-explain text-sm text-ink-2"><span className="t-lead">Tone:</span> {c.tone_note}</p>}
             <TimingChips timing={c.timing} />
           </li>
         ))}
@@ -175,7 +192,7 @@ function ThisWeek({ pack }: { pack: ContextPack }) {
         { header: "Hook", cell: (r) => <>{hooks[r.hook_id]} <IdButton id={r.hook_id} /></> },
         { header: "Angle and why now", cell: (r) => {
           const n = r.news_hook_id ? news[r.news_hook_id] : undefined;
-          return <>{r.angle}<span className="block text-xs text-ink-3">{r.why_now}</span>
+          return <>{r.angle}<span className="t-meta block text-xs text-ink-3">{r.why_now}</span>
             {n && <span className="block text-xs text-ink-2">Rides the news: {n.headline} ({n.date}, <SourceLink url={n.source_url} />)</span>}</>;
         } },
       ]} />
@@ -189,14 +206,14 @@ function WantStops({ pack, filter, meta }: { pack: ContextPack; filter: Filter; 
   const tensions = applyFilter(asItems(pack.tensions), filter);
   const stops = [...asItems(pack.pain_points ?? []), ...asItems(pack.objections)];
   return (
-    <>
+    <div>
       <div className="grid gap-6 lg:grid-cols-2">
         <ItemSection level={3} title="What they want" items={asItems(pack.motivations)} filter={filter} columns={1} limit={3}
                      meta={meta("motivations")} />
         <ItemSection level={3} title="What stops them" items={stops} filter={filter} columns={1} limit={3}
                      meta={meta("pain_points")} empty="No pain points or objections stood out." />
       </div>
-      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-3">Where wanting meets what stops them</h3>
+      <h3 className="t-label mb-3 text-sm font-semibold uppercase tracking-wide text-ink-3">Where wanting meets what stops them</h3>
       <SectionLead meta={meta("tensions")} />
       <ShowMore items={tensions} limit={2} render={(part) => (
         <div className="mb-6 space-y-3">{part.map((t) => <TensionCard key={t.id} item={t as Tension} />)}</div>
@@ -204,15 +221,15 @@ function WantStops({ pack, filter, meta }: { pack: ContextPack; filter: Filter; 
       {!tensions.length && <p className="mb-6 text-sm text-ink-3">No tensions match this filter.</p>}
       {pack.playbook.objection_handling.length > 0 && (
         <details className="rounded-lg border border-line p-3">
-          <summary className="cursor-pointer text-sm text-ink-2">How to answer their objections ({pack.playbook.objection_handling.length})</summary>
+          <summary className="cursor-pointer text-base text-ink-2 hover:text-ink">How to answer their objections ({pack.playbook.objection_handling.length})</summary>
           <ul className="mt-2 space-y-2 text-sm">
-            {pack.playbook.objection_handling.map((h) => <li key={h.objection_id} className="text-ink">
+            {pack.playbook.objection_handling.map((h) => <li key={h.objection_id} className="t-body text-ink">
               {claims?.[h.objection_id] && <span className="block font-medium">“{claims[h.objection_id]}”</span>}
               {h.response} <IdButton id={h.objection_id} /></li>)}
           </ul>
         </details>
       )}
-    </>
+    </div>
   );
 }
 
@@ -237,15 +254,15 @@ function Generic({ pack }: { pack: ContextPack }) {
         ]} />
       ) : (
         <div className="rounded-lg border border-line bg-wash p-4">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">Generic answer (no research)</p>
+          <p className="t-label mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">Generic answer (no research)</p>
           <ul className="list-disc space-y-1.5 pl-4 text-sm text-ink-3">{g.generic_points.map((x) => <li key={x}>{x}</li>)}</ul>
         </div>
       )}
       {g.what_we_found.length > 0 && (
         <div className="rounded-lg border border-ink p-4">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink">New: what a generic answer misses</p>
+          <p className="mb-2 text-[0.8125rem] font-semibold uppercase tracking-wide text-ink">New: what a generic answer misses</p>
           <ul className="space-y-2">
-            {g.what_we_found.map((f) => <li key={f.text} className="text-sm text-ink">{f.text} <Ids ids={f.item_ids} /></li>)}
+            {g.what_we_found.map((f) => <li key={f.text} className="t-body text-sm text-ink">{f.text} <Ids ids={f.item_ids} /></li>)}
           </ul>
         </div>
       )}
@@ -260,20 +277,20 @@ function Guardrails({ pack }: { pack: ContextPack }) {
     <div className="space-y-4 text-sm">
       <div className="grid gap-3 md:grid-cols-2">
         <div className="rounded-lg border border-dashed border-line-strong p-4">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink">Don't claim without a legal check</p>
-          <ul className="list-disc space-y-1 pl-4 text-ink">{g.never_claim.length ? g.never_claim.map((x) => <li key={x}>{x}</li>) : <li>-</li>}</ul>
+          <p className="mb-1 text-[0.8125rem] font-semibold uppercase tracking-wide text-ink">Don't claim without a legal check</p>
+          <ul className="t-body list-disc space-y-1 pl-4 text-ink">{g.never_claim.length ? g.never_claim.map((x) => <li key={x}>{x}</li>) : <li>-</li>}</ul>
         </div>
         <div className="rounded-lg border border-line p-4">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink">Handle with care</p>
-          <ul className="list-disc space-y-1 pl-4 text-ink">{g.sensitivities.length ? g.sensitivities.map((x) => <li key={x}>{x}</li>) : <li>-</li>}</ul>
+          <p className="mb-1 text-[0.8125rem] font-semibold uppercase tracking-wide text-ink">Handle with care</p>
+          <ul className="t-body list-disc space-y-1 pl-4 text-ink">{g.sensitivities.length ? g.sensitivities.map((x) => <li key={x}>{x}</li>) : <li>-</li>}</ul>
         </div>
       </div>
-      <p className="text-ink-2">{g.quote_reuse_note}</p>
+      <p className="t-explain text-ink-2">{g.quote_reuse_note}</p>
       {flags.length > 0 && (
         <ul className="space-y-2">
           {flags.map((f) => (
-            <li key={f.id} className="rounded-lg border border-line-strong p-3 text-ink-2">
-              <span className="font-medium text-ink">Check with legal ({f.category.replace("_", " ")}).</span>{" "}
+            <li key={f.id} className="t-explain rounded-lg border border-line-strong p-3 text-ink-2">
+              <span className="t-lead font-medium text-ink">Check with legal ({f.category.replace("_", " ")}).</span>{" "}
               {f.why} <span className="text-ink">Safer: {f.safer_wording}</span> <IdButton id={f.item_id} label="the item" />
             </li>
           ))}
@@ -290,10 +307,10 @@ function Voice({ pack, filter }: { pack: ContextPack; filter: Filter }) {
   return (
     <>
       <div className="mb-6 space-y-1 text-ink">
-        <p><span className="text-sm text-ink-3">Tone: </span>{v.tone}</p>
-        {v.code_switching && <p><span className="text-sm text-ink-3">Mixing languages: </span>{v.code_switching}</p>}
+        <p className="t-body"><span className="t-lead text-sm text-ink-3">Tone: </span>{v.tone}</p>
+        {v.code_switching && <p className="t-body"><span className="t-lead text-sm text-ink-3">Mixing languages: </span>{v.code_switching}</p>}
         {v.category_words_they_use.length > 0 && (
-          <p><span className="text-sm text-ink-3">What they call it: </span>
+          <p className="t-body"><span className="t-lead text-sm text-ink-3">What they call it: </span>
             <span className="font-serif">{v.category_words_they_use.join(", ")}</span></p>
         )}
       </div>
@@ -308,7 +325,7 @@ function Voice({ pack, filter }: { pack: ContextPack; filter: Filter }) {
           <div className="mt-4 flex flex-wrap gap-2">
             {v.phrases.map((p) => (
               <span key={p.id} className="rounded-md border border-line px-2 py-1">
-                <span lang={p.language} className="font-serif text-ink">“{p.text}”</span> <IdButton id={p.id} />
+                <span lang={p.language} className="font-serif italic text-ink">“{p.text}”</span> <IdButton id={p.id} />
               </span>
             ))}
           </div>
@@ -316,12 +333,12 @@ function Voice({ pack, filter }: { pack: ContextPack; filter: Filter }) {
       </Sub>
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-lg border border-line p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink">Say this</p>
-          <ul className="list-disc space-y-1 pl-4 text-sm text-ink">{cleanSayThis(pack).map((x) => <li key={x}>{x}</li>)}</ul>
+          <p className="mb-2 text-[0.8125rem] font-semibold uppercase tracking-wide text-ink">Say this</p>
+          <ul className="t-body list-disc space-y-1 pl-4 text-sm text-ink">{cleanSayThis(pack).map((x) => <li key={x}>{x}</li>)}</ul>
         </div>
         <div className="rounded-lg border border-dashed border-line-strong p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink">Don't say</p>
-          <ul className="list-disc space-y-1 pl-4 text-sm text-ink">{g.not_this.map((x) => <li key={x}>{x}</li>)}</ul>
+          <p className="mb-2 text-[0.8125rem] font-semibold uppercase tracking-wide text-ink">Don't say</p>
+          <ul className="t-body list-disc space-y-1 pl-4 text-sm text-ink">{g.not_this.map((x) => <li key={x}>{x}</li>)}</ul>
         </div>
       </div>
     </>
@@ -340,21 +357,21 @@ function Landscape({ pack, filter }: { pack: ContextPack; filter: Filter }) {
           <div className={`grid gap-3 ${lens.length > 1 ? "md:grid-cols-2" : ""}`}>
             {lens.map((l) => (
               <div key={l.id} className="rounded-lg border border-line p-4">
-                <p className="flex items-baseline justify-between"><span className="font-medium text-ink">{platformName(l.platform)}</span>
-                  <span className="font-mono text-xs text-ink-3">{l.kept_posts} posts · {l.id}</span></p>
-                {l.tone && <p className="mt-2 text-sm text-ink">{l.tone}</p>}
-                {l.what_is_unique && <p className="mt-1 text-sm text-ink-2">{l.what_is_unique}</p>}
+                <p className="flex items-baseline justify-between"><span className="t-finding font-medium text-ink">{platformName(l.platform)}</span>
+                  <span className="t-meta font-mono text-xs text-ink-3">{l.kept_posts} posts · {l.id}</span></p>
+                {l.tone && <p className="t-body mt-2 text-sm text-ink">{l.tone}</p>}
+                {l.what_is_unique && <p className="t-explain mt-1 text-sm text-ink-2">{l.what_is_unique}</p>}
                 <ul className="mt-3 space-y-1.5">
                   {l.theme_shares.slice(0, 5).map((t) => (
-                    <li key={t.theme_id} className="text-xs">
+                    <li key={t.theme_id} className="t-meta text-xs">
                       <div className="flex justify-between gap-2 text-ink-2"><span className="min-w-0">{themes[t.theme_id] ?? t.theme_id}</span>
-                        <span className="font-mono">{Math.round(t.share * 100)}%</span></div>
+                        <span className="shrink-0 whitespace-nowrap font-mono">{Math.round(t.share * 100)}%</span></div>
                       <div className="mt-0.5 h-1 rounded-full bg-wash"><div className="h-1 rounded-full bg-ink" style={{ width: `${Math.max(2, t.share * 100)}%` }} /></div>
                     </li>
                   ))}
                 </ul>
                 {l.emotion_mix.length > 0 && (
-                  <p className="mt-2 font-mono text-xs text-ink-3">
+                  <p className="t-meta mt-2 font-mono text-xs text-ink-3">
                     {l.emotion_mix.slice(0, 4).map((e) => `${e.emotion} ${Math.round(e.share * 100)}%`).join(" · ")}
                   </p>
                 )}
@@ -389,8 +406,8 @@ function CreativeBrief({ pb }: { pb: ContextPack["playbook"] }) {
         <dl className="grid gap-3 text-sm md:grid-cols-2">
           {(["seo", "paid", "negatives", "hashtags"] as const).map((k) => (
             <div key={k} className="rounded-lg border border-line p-3">
-              <dt className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">{k === "seo" ? "SEO" : k}</dt>
-              <dd className="font-mono text-xs text-ink">{pb.keywords[k].join(", ") || "-"}</dd>
+              <dt className="t-label mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">{k === "seo" ? "SEO" : k}</dt>
+              <dd className="font-mono text-[0.8125rem] leading-relaxed text-ink">{pb.keywords[k].join(", ") || "-"}</dd>
             </div>
           ))}
         </dl>
@@ -400,8 +417,8 @@ function CreativeBrief({ pb }: { pb: ContextPack["playbook"] }) {
           <ul className="space-y-1 text-sm">
             {pb.targets.map((t) => {
               const url = safeUrl(t.url);
-              return <li key={t.name} className="text-ink">{url ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{t.name}</a> : t.name}
-                <span className="ml-2 font-mono text-xs text-ink-3">{t.kind} · {platformName(t.platform)}</span></li>;
+              return <li key={t.name} className="t-body text-ink">{url ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{t.name}</a> : t.name}
+                <span className="t-meta ml-2 font-mono text-xs text-ink-3">{t.kind} · {platformName(t.platform)}</span></li>;
             })}
           </ul>
         </Sub>
@@ -419,12 +436,12 @@ function BriefCard({ cb }: { cb: NonNullable<ContextPack["playbook"]["creative_b
       <div className="mb-2 flex justify-end"><CopyButton text={cbText} label="Copy brief" /></div>
       <dl className="space-y-2 text-sm">
         {(["objective", "audience", "insight", "message", "tone"] as const).map((k) => (
-          <div key={k}><dt className="text-xs font-medium uppercase tracking-wide text-ink-3">{k}</dt><dd className="text-ink">{cb[k]}</dd></div>
+          <div key={k}><dt className="t-label text-xs font-medium uppercase tracking-wide text-ink-3">{k}</dt><dd className="t-body text-ink">{cb[k]}</dd></div>
         ))}
-        {cb.mandatories.length > 0 && <div><dt className="text-xs font-medium uppercase tracking-wide text-ink-3">Must include</dt>
-          <dd><ul className="list-disc pl-4 text-ink">{cb.mandatories.map((m) => <li key={m}>{m}</li>)}</ul></dd></div>}
-        {cb.avoid.length > 0 && <div><dt className="text-xs font-medium uppercase tracking-wide text-ink-3">Avoid</dt>
-          <dd><ul className="list-disc pl-4 text-ink">{cb.avoid.map((m) => <li key={m}>{m}</li>)}</ul></dd></div>}
+        {cb.mandatories.length > 0 && <div><dt className="t-label text-xs font-medium uppercase tracking-wide text-ink-3">Must include</dt>
+          <dd><ul className="t-body list-disc pl-4 text-ink">{cb.mandatories.map((m) => <li key={m}>{m}</li>)}</ul></dd></div>}
+        {cb.avoid.length > 0 && <div><dt className="t-label text-xs font-medium uppercase tracking-wide text-ink-3">Avoid</dt>
+          <dd><ul className="t-body list-disc pl-4 text-ink">{cb.avoid.map((m) => <li key={m}>{m}</li>)}</ul></dd></div>}
       </dl>
     </div>
   );
@@ -439,7 +456,7 @@ function Playbook({ pack }: { pack: ContextPack }) {
   return (
     <>
       <Sub title={`Hooks (${pb.hooks.length})`}>
-        <p className="mb-3 text-sm text-ink-3">Drafts written by AI from the research. Review before use; items marked
+        <p className="t-explain mb-3 text-sm text-ink-3">Drafts written by AI from the research. Review before use; items marked
           "check with legal" need sign-off.</p>
         <div className="space-y-3">{pb.hooks.map((h) => <HookCard key={h.id} hook={h} flags={flagsFor(h.id)} />)}</div>
       </Sub>
@@ -458,13 +475,13 @@ function Method({ pack }: { pack: ContextPack }) {
         <ul className="space-y-1.5">
           {funnel.map(([k, v]) => (
             <li key={k} className="grid grid-cols-[12rem_1fr_4rem] items-center gap-3 text-sm">
-              <span className="text-ink-2">{k}</span>
+              <span className="t-explain text-ink-2">{k}</span>
               <span className="h-1.5 rounded-full bg-wash"><span className="block h-1.5 rounded-full bg-ink" style={{ width: `${n.collected ? Math.max(1, (v / n.collected) * 100) : 0}%` }} /></span>
-              <span className="text-right font-mono text-xs text-ink">{v}</span>
+              <span className="text-right font-mono text-[0.8125rem] text-ink">{v}</span>
             </li>
           ))}
         </ul>
-        <p className="mt-2 text-sm text-ink-3">
+        <p className="t-explain mt-2 text-sm text-ink-3">
           {n.undated} of {n.kept} kept posts have no date. The research agent made {c.loop.tool_calls} moves and{" "}
           {STOPPED[c.loop.finish_reason] ?? `stopped (${c.loop.finish_reason.replace(/_/g, " ")})`}
           {c.loop.fallback_used ? "; the remaining planned sources were collected automatically" : ""}{c.loop.top_up_used ? "; more evidence was collected from sources already working" : ""}.
@@ -489,13 +506,13 @@ function Method({ pack }: { pack: ContextPack }) {
         <TableSection caption="Every research move" rowKey={(r) => String(r.seq)}
                       rows={[...c.decision_log].sort((a, b) => a.seq - b.seq)} columns={[
           { header: "#", cell: (r) => r.seq, kind: "data" },
-          { header: "Move", cell: (r) => <>{r.tool.replace(/_/g, " ")}<span className="block font-mono text-xs text-ink-3 break-all">{r.source_unit ?? ""}</span></> },
+          { header: "Move", cell: (r) => <>{r.tool.replace(/_/g, " ")}<span className="block font-mono text-[0.8125rem] text-ink-3 break-all">{r.source_unit ?? ""}</span></> },
           { header: "Why", cell: (r) => r.reason },
           { header: "Result", cell: (r) => r.result_summary, kind: "data" },
         ]} />
       </Sub>
       <Sub title="Privacy and limits">
-        <div className="space-y-2 text-sm text-ink-2">
+        <div className="t-explain space-y-2 text-sm text-ink-2">
           <p>Only public posts are used, plus LinkedIn posts any logged-in user can see (never private groups, messages or closed profiles). Authors are stored as salted hashes, never names; emails, phone numbers, @handles and
             names written in posts are removed before analysis. Quoted excerpts are for internal research and briefs only,
             not for ads or other public material. {PRIVACY_LINE}</p>
@@ -551,7 +568,7 @@ function Part({ id, title, children, lead }: { id: string; title: string; childr
   return (
     <section aria-labelledby={id} className={`pack-part part-${id} mb-16 ${id === "summary" ? "" : "part-break"}`}>
       <h2 id={id} className="mb-2 scroll-mt-24 font-display text-4xl font-black leading-tight tracking-tight text-ink md:text-5xl">{title}</h2>
-      {lead && <p className="mb-6 text-sm text-ink-3">{lead}</p>}
+      {lead && <p className="t-explain mb-6 text-sm text-ink-3">{lead}</p>}
       {children}
     </section>
   );
@@ -573,8 +590,9 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   const [drawer, setDrawer] = useState<string | null>(null);
   const counts = labelCounts(pack);
   const v = pack.schema_version;
-  const sec = (id: string, title: string, name: string, data: unknown, children: React.ReactNode, note?: React.ReactNode) =>
-    <Section id={id} title={title} agent={agent} agentData={data} name={name} version={v} note={note}>{children}</Section>;
+  const sec = (id: string, title: string, name: string, data: unknown, children: React.ReactNode, note?: React.ReactNode,
+               folded = false) =>
+    <Section id={id} title={title} agent={agent} agentData={data} name={name} version={v} note={note} folded={folded}>{children}</Section>;
   const order = pack.section_order?.length ? pack.section_order : DEFAULT_ORDER;   // V12: the user's goals decide it
   // In "Act on it" the creative brief opens, Opportunities follow Channels and Guardrails close (owner, 2026-10-11),
   // whatever the goals put first
@@ -610,7 +628,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   return (
     <GuideContext.Provider value={guide}>
     <PackContext.Provider value={{ evidence: index.evidence, onOpen: setDrawer, claims, picks }}>
-      <div className="pack-layout lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
+      <div className="pack-layout typeset lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
         <PartNav order={pack.section_order?.length ? pack.section_order : DEFAULT_ORDER} hasBrand={!!pack.brand_perception}
                  hasCreative={hasCreative(pack)} />
         <div className="min-w-0 max-w-[760px] xl:max-w-[920px]">
@@ -729,7 +747,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                 <PlanPart pack={pack} fallback={<ThisWeek pack={pack} />} />
                 {/* the rest of the playbook closes Your plan (owner, 2026-10-11; was under Guardrails) */}
                 <details className="mt-6 rounded-lg border border-line p-3">
-                  <summary className="cursor-pointer text-sm text-ink-2">More from the playbook: hooks</summary>
+                  <summary className="cursor-pointer text-base text-ink-2 hover:text-ink">More from the playbook: hooks</summary>
                   <div className="mt-4"><Playbook pack={pack} /></div>
                 </details>
               </>)],
@@ -742,23 +760,23 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                   <ul className="mb-4 space-y-2">
                     {pack.performance_takeaways.map((t) => (
                       <li key={t.id} className="rounded-lg border border-ink p-4">
-                        <p className="text-lg font-medium leading-snug text-ink">{t.takeaway}</p>
-                        <p className="mt-1 text-sm text-ink-2">{t.why} <span className="text-ink-3">(our reading)</span></p>
+                        <p className="t-finding text-lg font-medium leading-snug text-ink">{t.takeaway}</p>
+                        <p className="t-explain mt-1 text-sm text-ink-2">{t.why} <span className="text-ink-3">(our reading)</span></p>
                       </li>
                     ))}
                   </ul>
                 )}
                 <details className="group" open={!(pack.performance_takeaways ?? []).length}>
-                  <summary className="cursor-pointer text-sm text-ink-2 hover:text-ink">Example posts ({pack.what_performs.length})</summary>
+                  <summary className="cursor-pointer text-base text-ink-2 hover:text-ink">Example posts ({pack.what_performs.length})</summary>
                 <ul className="mt-3 space-y-3">
                   {pack.what_performs.map((p) => {
                     const url = safeUrl(p.url);
                     return (
                       <li key={p.id} className="rounded-lg border border-line p-4">
-                        <p className="text-sm text-ink"><span className="font-medium">{p.format}</span> on {CHANNEL[p.platform] ?? p.platform} ·
-                          <span className="font-mono text-xs"> more engagement than {Math.round(p.engagement_percentile)}% of posts</span></p>
-                        <p className="mt-1 text-sm text-ink-2">{p.why_it_worked} <span className="text-ink-3">(our reading)</span></p>
-                        <p className="mt-1 flex gap-2 text-xs">{url && <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">Open the post</a>}
+                        <p className="t-body text-sm text-ink"><span className="font-medium">{p.format}</span> on {CHANNEL[p.platform] ?? p.platform} ·
+                          <span className="font-mono text-[0.8125rem]"> more engagement than {Math.round(p.engagement_percentile)}% of posts</span></p>
+                        <p className="t-explain mt-1 text-sm text-ink-2">{p.why_it_worked} <span className="text-ink-3">(our reading)</span></p>
+                        <p className="mt-1 flex gap-2 text-[0.8125rem]">{url && <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">Open the post</a>}
                           <IdButton id={p.id} /></p>
                       </li>
                     );
@@ -779,23 +797,23 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                         <div className="flex flex-wrap items-center gap-2">
                           {/* UX audit: one strength scale everywhere; "supported" only meant the people/community minimum */}
                           <ConfidenceBadge label={o.confidence.label} />
-                          {o.status !== "supported" && <span className="text-xs text-ink-2">check before acting</span>}
-                          <span className="rounded border border-line px-1.5 py-0.5 text-xs text-ink-2">{o.kind.replace(/_/g, " ")}</span>
+                          {o.status !== "supported" && <span className="t-meta text-xs text-ink-2">check before acting</span>}
+                          <span className="rounded border border-line px-1.5 py-0.5 text-[0.8125rem] text-ink-2">{o.kind.replace(/_/g, " ")}</span>
                           <span className="ml-auto"><IdButton id={o.id} /></span>
                         </div>
-                        <p className="mt-2 text-lg font-medium leading-snug text-ink">{o.opportunity}</p>
-                        <p className="mt-1 text-xs text-ink-3">
+                        <p className="t-finding mt-2 text-lg font-medium leading-snug text-ink">{o.opportunity}</p>
+                        <p className="t-meta mt-1 text-xs text-ink-3">
                           {o.distinct_authors} {o.distinct_authors === 1 ? "person" : "people"} in {o.communities.length}{" "}
                           {o.communities.length === 1 ? "community" : "communities"}
                         </p>
                         {o.existing_solutions.length > 0 ? (
-                          <p className="mt-2 text-sm text-ink-2">Already out there:{" "}
+                          <p className="t-explain mt-2 text-sm text-ink-2"><span className="t-lead">Already out there:</span>{" "}
                             {o.existing_solutions.map((x, n) => {
                               const url = safeUrl(x.url);
                               return <span key={x.url}>{n > 0 && "; "}{url ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{x.name}</a> : x.name}</span>;
                             })}
                           </p>
-                        ) : o.search_note ? <p className="mt-2 text-sm text-ink-3">{o.search_note.charAt(0).toUpperCase() + o.search_note.slice(1)}.</p> : null}
+                        ) : o.search_note ? <p className="t-meta mt-2 text-sm text-ink-3">{o.search_note.charAt(0).toUpperCase() + o.search_note.slice(1)}.</p> : null}
                         <LegalNote flags={legalFlags(pack, o.id)} />
                       </li>
                     ))}
@@ -804,7 +822,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                 </>
               ) : <EmptyNote meta={meta("opportunities")} fallback="No opportunities stood out in this evidence." />)],
               ["guardrails", sec("guardrails", "Guardrails", "guardrails", { guardrails: pack.guardrails, compliance_flags: pack.compliance_flags },
-              <Guardrails pack={pack} />)],
+              <Guardrails pack={pack} />, undefined, true)],
             ])}
           </Part>
 
@@ -817,7 +835,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
               <div className="space-y-8 px-4 pb-4">
                 <CoverageStrip pack={pack} />
                 <Sub title="Blind spots">
-                  <ul className="list-disc space-y-1.5 pl-5 text-ink">{pack.blind_spots.map((b) => <li key={b.id}>{b.text}</li>)}</ul>
+                  <ul className="t-body list-disc space-y-1.5 pl-5 text-ink">{pack.blind_spots.map((b) => <li key={b.id}>{b.text}</li>)}</ul>
                 </Sub>
                 {/* 2026-10-11: moved here from Understand your audience - a check of the method, not a finding */}
                 {sec("generic", "A generic AI answer vs. what people actually say", "generic_vs_found",

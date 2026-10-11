@@ -11,6 +11,7 @@ import { LegalNote } from "./legal";
 import { flaggedWords, flagsFor } from "../lib/legal";
 import { IdLink, usePack } from "./cards";
 import { CopyButton } from "./CopyButton";
+import { Quote } from "./Quote";
 
 const ORDER: Label[] = ["strong", "moderate", "emerging", "speculative"];
 
@@ -47,54 +48,66 @@ const goalWords = (g: string) => (g.charAt(0).toUpperCase() + g.slice(1)).replac
 
 export function SummaryPart({ pack }: { pack: ContextPack }) {
   const s = pack.snapshot;
-  const { onOpen } = usePack();
+  const { onOpen, evidence } = usePack();
   const i = pack.brief.interpreted;
   const goal = i.intent;  // V11: the confirmed goals in plain words (filled in code, never guessed)
   const findings = s.findings ?? [];
-  const head = "mb-2 text-xs font-semibold uppercase tracking-wide text-ink-3";
+  const head = "t-label mb-3 text-xs font-semibold uppercase tracking-wide text-ink-3";
+  const block = "mt-5 border-t border-line pt-4";   // the blocks of the Summary card: a thin rule, a little room (owner: tighter)
   const [allMoves, setAllMoves] = useState(false);
   return (
-    <div className="space-y-4">
-      {/* owner 2026-10-11: who it is for, the goals and what each goal means, in full on one white card */}
-      <div className="panel space-y-3 p-4 text-sm">
-        <div className="space-y-1">
-          <p className="text-ink"><span className="text-ink-3">For: </span>{i.audience}<span className="text-ink-3"> · {i.market}</span></p>
-          {goal && <p className="text-ink"><span className="text-ink-3">Goals: </span>{goal}</p>}
-          <div className="flex flex-wrap items-baseline gap-x-3">
-            {s.represents && <p className="text-ink-2">{s.represents}</p>}
-            <HowToRead />
+    // owner 2026-10-11: the whole Summary is one white card, like every section below it; its blocks are split by
+    // the same thin rule and label style the sections use
+    <div className="panel p-5 text-sm sm:p-8">
+      <div className="space-y-1">
+        <p className="t-body text-ink"><span className="t-lead">For: </span>{i.audience}<span className="text-ink-3"> · {i.market}</span></p>
+        {goal && <p className="t-body text-ink"><span className="t-lead">Goals: </span>{goal}</p>}
+        <div className="flex flex-wrap items-baseline gap-x-3">
+          {s.represents && <p className="t-explain text-ink-2">{s.represents}</p>}
+          <HowToRead />
+        </div>
+      </div>
+      {(s.for_goals ?? []).length > 0 && (
+        <ul className="mt-4 space-y-2 border-l-2 border-ink pl-3" aria-label="For your goals">
+          {s.for_goals.map((g, n) => (
+            <li key={g.goal} className="t-body text-ink">
+              <span className="t-lead font-semibold">For your {n === 0 ? "main " : ""}goal - {goalWords(g.goal)}:</span> {g.headline}
+              {g.first_moves.length > 0 && <span className="text-ink-3"> · first moves {g.first_moves.map((m) => Number(m.slice(3))).join(", ")}</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* owner 2026-10-11: the recommended position across the card, then what we heard and the plan side by side */}
+      {s.position && (
+        <div className={block}>
+          <h3 className={head}>Recommended position</h3>
+          <div className="featured p-4">
+            <p className="t-finding text-base font-semibold leading-snug text-ink">{s.position.statement}</p>
+            <div className="mt-2"><Clamp className="t-explain text-sm text-ink-2">
+              For {s.position.for_whom} - answering: {s.position.against_doubt}</Clamp></div>
+            <LegalNote folded words={flaggedWords(s.position.statement, pack.guardrails.never_claim, pack.compliance_flags)} />
           </div>
         </div>
-        {(s.for_goals ?? []).length > 0 && (
-          <ul className="space-y-1.5 border-l-2 border-ink pl-3" aria-label="For your goals">
-            {s.for_goals.map((g, n) => (
-              <li key={g.goal} className="text-ink">
-                <span className="font-semibold">For your {n === 0 ? "main " : ""}goal - {goalWords(g.goal)}:</span> {g.headline}
-                {g.first_moves.length > 0 && <span className="text-ink-3"> · first moves {g.first_moves.map((m) => Number(m.slice(3))).join(", ")}</span>}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      )}
 
-      <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className={`${block} grid gap-8 lg:grid-cols-2`}>
         <div>
           <h3 className={head}>What we heard most clearly</h3>
-          <ol className="space-y-2">
+          <ol className="space-y-3">
             {findings.map((f, n) => (
-              <li key={f.text} className="rounded-lg border border-line p-2.5">
+              <li key={f.text} className="border border-line p-4">
                 <div className="flex items-start gap-2">
-                  <p className="flex min-w-0 flex-1 gap-2 text-[0.95rem] font-medium leading-snug text-ink"><span className="shrink-0 font-mono text-sm text-ink-3">{n + 1}.</span>{f.text}</p>
+                  <p className="t-finding flex min-w-0 flex-1 gap-2 text-[0.95rem] font-medium leading-snug text-ink"><span className="shrink-0 font-mono text-sm text-ink-3">{n + 1}.</span>{f.text}</p>
                   <button type="button" onClick={() => onOpen?.(f.item_ids[0])} aria-label={`See the posts behind ${f.item_ids[0]}`}
-                          className="mt-0.5 shrink-0 whitespace-nowrap text-xs text-ink-2 underline underline-offset-2 hover:text-ink">See the posts</button>
+                          className="mt-0.5 shrink-0 whitespace-nowrap text-[0.8125rem] text-ink-2 underline underline-offset-2 hover:text-ink">See the posts</button>
                 </div>
                 {f.quote && (
-                  <blockquote className="mt-1.5 border-l-2 border-line-strong pl-2.5">
-                    <Clamp className="font-serif text-sm text-ink" subClassName="text-xs text-ink-3"
-                           sub={f.quote_en && <>In English: {f.quote_en}</>}>“{f.quote.text}”</Clamp>
-                  </blockquote>
+                  <div className="mt-2">
+                    <Quote text={f.quote.text} evidence={evidence[f.quote.evidence_id]} translation={f.quote_en} size="sm" details={false} />
+                  </div>
                 )}
-                <p className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-2">
+                <p className="t-meta mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-2">
                   <ConfidenceBadge label={f.label} />
                   <span>{f.people} {f.people === 1 ? "person" : "people"}, {f.communities} {f.communities === 1 ? "community" : "communities"}</span>
                   {/* UX audit: each piece wraps as a whole, never leaving one word alone on a line */}
@@ -103,41 +116,30 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
               </li>
             ))}
             {!findings.length && s.five_truths.slice(0, 3).map((t) => (
-              <li key={t.text} className="rounded-lg border border-line p-3 text-ink">{t.text} <IdLink id={t.item_ids[0]} /></li>
+              <li key={t.text} className="border border-line p-4 text-ink">{t.text} <IdLink id={t.item_ids[0]} /></li>
             ))}
           </ol>
         </div>
-
-        <div className="space-y-3">
-          {s.position && (
-            <div className="rounded-lg border border-ink px-2.5 py-2">
-              <h3 className="sr-only">Recommended position</h3>
-              <p className="leading-snug text-ink"><span aria-hidden="true" className="mr-1.5 text-xs font-semibold uppercase tracking-wide text-ink-3">
-                Recommended position</span><span className="font-semibold">{s.position.statement}</span></p>
-              <div className="mt-1"><Clamp className="text-sm text-ink-2">
-                For {s.position.for_whom} - answering: {s.position.against_doubt}</Clamp></div>
-              <LegalNote folded words={flaggedWords(s.position.statement, pack.guardrails.never_claim, pack.compliance_flags)} />
-            </div>
-          )}
+        <div className="space-y-6">
           <div>
-            <div className="flex items-baseline justify-between gap-2">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3">
               <h3 className={head}>Your plan: do this first</h3>
-              <p className="mb-2 flex gap-3 text-xs text-ink-2">
+              <p className="t-meta mb-2 flex gap-3 text-xs text-ink-2">
                 <button type="button" onClick={() => setAllMoves(!allMoves)} aria-expanded={allMoves} aria-controls="first-moves"
                         className="underline underline-offset-2 hover:text-ink">{allMoves ? "Show shorter" : "Show the full moves"}</button>
                 {(pack.post_briefs ?? []).length > 0 && <a href="#plan" className="underline underline-offset-2 hover:text-ink">The full 4-week plan</a>}
               </p>
             </div>
-            <ol className="space-y-1.5" id="first-moves">
+            <ol className="space-y-2" id="first-moves">
               {pack.do_first.map((d, n) => (
-                <li key={d.id} className="flex items-start gap-2 rounded-lg border border-line px-2 py-1.5 text-sm">
+                <li key={d.id} className="flex items-start gap-2 border border-line p-3 text-sm">
                   <span className="shrink-0 font-mono text-ink-3">{n + 1}.</span>
                   <div className="min-w-0 flex-1">
-                    {/* fits the first screen (PRD 6.1f); the whole move is one click away, never lost */}
-                    <Clamp clamp="line-clamp-2" open={allMoves} className="text-ink" subClassName="mt-0.5 text-xs text-ink-2"
+                    {/* two lines per move; the whole move is one click away, never lost */}
+                    <Clamp clamp="line-clamp-2" open={allMoves} className="t-body text-ink" subClassName="t-meta mt-0.5 text-xs text-ink-2"
                            sub={(d.goal || d.success_measure) && <>
                              {d.goal && <span className="text-ink-3">for: {goalWords(d.goal)}{d.success_measure ? " · " : ""}</span>}
-                             {d.success_measure && <><span className="font-medium text-ink">How you'll know:</span> {d.success_measure}</>}</>}>
+                             {d.success_measure && <><span className="t-lead font-medium text-ink">How you'll know:</span> {d.success_measure}</>}</>}>
                       {d.action}</Clamp>
                     <LegalNote folded flags={flagsFor(pack, d.id)} />
                   </div>
@@ -149,12 +151,12 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
           {(pack.news_hooks ?? []).length > 0 && (
             <div>
               <h3 className={head}>Ride this now</h3>
-              <ul className="space-y-1.5">
+              <ul className="space-y-2">
                 {pack.news_hooks.slice(0, 1).map((h) => {
                   const url = safeUrl(h.source_url);
                   return (
-                    <li key={h.id} className="rounded-lg border border-dashed border-ink-3 px-2.5 py-1.5 text-sm">
-                      <Clamp className="font-medium text-ink" subClassName="text-xs text-ink-3"
+                    <li key={h.id} className="border border-dashed border-ink-3 p-3 text-sm">
+                      <Clamp className="t-body font-medium text-ink" subClassName="t-meta text-xs text-ink-3"
                              sub={<>{h.date} · outside source: {url
                                ? <a href={url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{new URL(url).hostname}</a>
                                : "source"}</>}>{h.headline}</Clamp>

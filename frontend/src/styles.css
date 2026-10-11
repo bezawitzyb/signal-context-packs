@@ -69,12 +69,28 @@ h1 { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em
            border-top: 8px solid var(--strip, var(--line)); }
   /* Owner 2026-10-11: each main part has its own strip colour on its cards (the part's heading always says it too,
      so colour is never the only sign); each part after the Summary opens with a thick black divider. */
-  .part-summary { --strip: var(--mint); }
+  .part-summary { --strip: #ffc49b; }   /* pastel orange, owner 2026-10-11 (the bright orange stays for the main action) */
   .part-understand { --strip: var(--pink); }
   .part-act { --strip: var(--yellow); }
   .part-research { --strip: #a3a3a3; }
+  /* the one box that matters most on a card (the recommended position): black outline, small black shadow */
+  .featured { background: var(--paper); border: 1px solid var(--ink); box-shadow: 3px 3px 0 0 var(--ink); }
   .part-break { border-top: 6px solid var(--ink); padding-top: 1.75rem; margin-top: 5rem; }
 }
+
+/* Text roles (owner 2026-10-11, step 1 of the type system): seven roles, one look each. Components carry the
+   role names; the rules apply only inside .typeset, so a section can be switched over on its own.
+   Roles: label, finding, body, explanation, lead-in, quote, details. Bold = titles, findings and lead-ins only; italic = real quotes from posts (and their translations) only;
+   three text colours (ink, ink-2, ink-3). */
+.typeset .t-label { font-size: 0.8125rem; line-height: 1.4; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--ink-3); }
+.typeset .t-finding { font-size: 1.125rem; line-height: 1.4; font-weight: 500; color: var(--ink); }
+.typeset .t-body { font-size: 1rem; line-height: 1.6; font-weight: 400; color: var(--ink); }   /* main text in lists and boxes */
+.typeset .t-explain { font-size: 1rem; line-height: 1.6; font-weight: 400; color: var(--ink-2); max-width: 68ch; }
+.typeset .t-lead { font-weight: 600; color: var(--ink); }
+.typeset .t-quote { font-family: var(--font-serif); font-size: 1.0625rem; line-height: 1.55; font-style: italic; color: var(--ink); }
+.typeset .t-meta { font-size: 0.8125rem; line-height: 1.4; font-weight: 400; color: var(--ink-3); }
+.typeset h3.t-label { margin-top: 0.5rem; }   /* more space above a label than below it */
 
 /* Visible keyboard focus everywhere (PRD 10.6). */
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
@@ -90,7 +106,7 @@ h1 { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em
 
 @media print {
   html, body { background: #fff; }
-  .neo, .panel { box-shadow: none !important; transform: none !important; }
+  .neo, .panel, .featured { box-shadow: none !important; transform: none !important; }
   .part-break { margin-top: 0; }
   button, dialog, nav[aria-label="Pack parts"] { display: none !important; }
   main { max-width: none !important; padding: 0 !important; }
