@@ -19,7 +19,7 @@ from sqlalchemy import DateTime, Engine, UniqueConstraint, delete, func, inspect
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import JSON, Field, Session, SQLModel, create_engine, select
 
-from ctxpack.config import REPO_DIR, get_settings, load_yaml, sqlalchemy_url
+from ctxpack.config import REPO_DIR, featured_rank, get_settings, load_yaml, sqlalchemy_url
 from ctxpack.schemas.document import Document
 from ctxpack.schemas.enums import EventType, Mode, Requester, RunStage, RunStatus
 from ctxpack.schemas.pack import ContextPack
@@ -620,7 +620,8 @@ def latest_pack_for_brief(brief_text: str) -> PackRow | None:
 
 def list_featured_packs() -> list[PackRow]:
     with session() as s:
-        return list(s.exec(select(PackRow).where(PackRow.featured == True).order_by(PackRow.created_at)))  # noqa: E712
+        rows = s.exec(select(PackRow).where(PackRow.featured == True).order_by(PackRow.created_at))  # noqa: E712
+        return sorted(rows, key=lambda r: featured_rank(r.id))   # config/featured.yaml first, then oldest first
 
 
 # --------------------------------------------------------------------------

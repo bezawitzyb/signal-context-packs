@@ -91,6 +91,12 @@ def load_yaml(name: str) -> dict[str, Any]:
         return yaml.safe_load(f)
 
 
+def featured_rank(pack_id: str) -> int:
+    """Where a featured pack goes in the list: its place in config/featured.yaml `first`, else after them all."""
+    first = (load_yaml("featured") or {}).get("first") or []
+    return first.index(pack_id) if pack_id in first else len(first)
+
+
 def model_for(role: str) -> str:
     """Model name for a role (reasoner, worker, verifier, evaluator, synth)."""
     return load_yaml("models")["roles"][role]

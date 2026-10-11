@@ -1,0 +1,4 @@
+# Featured packs shown first, in this order (owner 2026-10-11: the Gen Z pack leads). Any other featured
+# pack follows, oldest first. `feature NEW_ID --replaces OLD_ID` swaps the id here too. Ids only.
+first:
+  - pk_-ACqqf-R8ubD   # Gen Z and meal prep

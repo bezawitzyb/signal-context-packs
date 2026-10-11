@@ -1,5 +1,5 @@
 // S1 ASK + PLAN arrives in Step 4.2. For now: what this is, and the featured packs.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { friendlyError, listPacks, LIVE_URL, MIRROR, type FeaturedPack } from "../lib/api";
@@ -53,11 +53,51 @@ export function useFeatured() {
   return { packs, error };
 }
 
+const STEPS = ["Write a brief", "Answer quick questions", "Check the plan", "Start research", "Get your Context Pack"];
+
+/** Owner 2026-10-11: how it works; once in view, one step at a time is highlighted, in a loop (always visible). */
+function HowItWorks() {
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.dataset.play = "done";
+      return;
+    }
+    const seen = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { el.dataset.play = "on"; seen.disconnect(); }
+    }, { rootMargin: "0px 0px -15% 0px" });
+    seen.observe(el);
+    return () => seen.disconnect();
+  }, []);
+  return (
+    <div ref={box} className="how mb-6" style={{ "--n": STEPS.length + 1 } as React.CSSProperties}>
+      <ol className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6" aria-label="How it works">
+        {STEPS.map((s, n) => (
+          <li key={s} className="how-step flex items-center gap-2 rounded-lg border border-line px-3 py-2.5 text-sm text-ink"
+              style={{ "--i": n } as React.CSSProperties}>
+            <span className="how-dot flex size-6 shrink-0 items-center justify-center rounded-full border border-ink font-mono text-xs">{n + 1}</span>
+            {s}
+          </li>
+        ))}
+        <li className="how-step flex items-center gap-2 rounded-lg border border-dashed border-line-strong px-3 py-2.5 text-sm text-ink-3"
+            style={{ "--i": STEPS.length, "--how-fg": "var(--ink-3)" } as React.CSSProperties}>
+          <span aria-hidden="true" className="how-dot flex size-6 shrink-0 items-center justify-center rounded-full border border-dashed border-line-strong font-mono text-xs">+</span>
+          Optional: ask the pack/share
+        </li>
+      </ol>
+      <p className="mt-2 text-xs text-ink-3">
+        The pack also works with AI tools: Claude, ChatGPT and agents (MCP).</p>
+    </div>
+  );
+}
+
 export function Home() {
   const { packs, error } = useFeatured();
   return (
     <div className="space-y-10">
-      <section className="max-w-3xl">
+      <section>
         <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           What your audience actually says - in their words.
         </h1>
@@ -73,15 +113,6 @@ export function Home() {
             Start your research <ArrowRight aria-hidden="true" size={16} />
           </a>
         )}
-        <ol className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-2" aria-label="How it works">
-          {["Write a brief", "Answer 2 quick questions", "Check the plan", "Get your pack in about 7 minutes"].map((s, n) => (
-            <li key={s} className="flex items-center gap-2">
-              <span className="flex size-6 items-center justify-center rounded-full border border-line-strong font-mono text-xs text-ink">{n + 1}</span>
-              {s}
-            </li>
-          ))}
-        </ol>
-        <p className="mt-3 text-xs text-ink-3">The pack also works with AI tools: Claude, ChatGPT and agents (MCP).</p>
       </section>
       {myPacks().length > 0 && (
         <section aria-labelledby="mine">
@@ -106,12 +137,12 @@ export function Home() {
       </section>
       <section aria-labelledby="ask">
         <h2 id="ask" className="mb-1 scroll-mt-20 text-lg font-semibold text-ink">Research your own brief</h2>
-        {!MIRROR && <p className="mb-4 text-sm text-ink-2">Running new research needs an access key. No key? The example
-          packs above are open to everyone - every finding and every post behind it.</p>}
+        {!MIRROR && <p className="mb-4 text-sm text-ink-2">Running new research needs an access key. No access key yet?
+          Explore the example packs above to see what's included in the Context Packs.</p>}
         {MIRROR
           ? <p className="text-ink-2">This is the read-only mirror of the featured packs. Research your own brief on
               the <a href={LIVE_URL} className="text-ink underline">live app</a>.</p>
-          : <AskFlow />}
+          : <><HowItWorks /><AskFlow /></>}
       </section>
     </div>
   );

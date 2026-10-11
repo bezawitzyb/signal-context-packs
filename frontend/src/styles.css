@@ -124,3 +124,17 @@ h1 { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em
   a.print-url::after { content: " " attr(href); font-size: 0.68rem; word-break: break-all; }
   a.print-url[data-host]::after { content: " (" attr(data-host) ")"; word-break: normal; }   /* the site, not the link */
 }
+
+/* Home "How it works": the steps are always visible; once in view, one step at a time is highlighted (dark fill,
+   light text), in a loop - each step lights up for 2 s, then hands over to the next. Reduced motion: no highlight. */
+.how[data-play="on"] .how-step, .how[data-play="on"] .how-dot {
+  animation-duration: calc(var(--n) * 2s); animation-delay: calc(var(--i) * 2s);
+  animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+.how[data-play="on"] .how-step { animation-name: how-step; }
+.how[data-play="on"] .how-dot { animation-name: how-dot; }
+@keyframes how-step {
+  0%, 17%, 100% { background: transparent; color: var(--how-fg, var(--ink)); }
+  3%, 14% { background: var(--ink); color: var(--paper); } }
+@keyframes how-dot {
+  0%, 17%, 100% { background: transparent; color: var(--how-fg, var(--ink)); }
+  3%, 14% { background: var(--paper); color: var(--ink); } }

@@ -1124,6 +1124,12 @@ def feature(pack_id: str = typer.Argument(..., help="A finished pack to publish 
         (FEATURED_DIR / f"{replaces}.json").unlink(missing_ok=True)
         db.set_featured(replaces, False)
         console.print(f"  replaced      {replaces} (file removed, no longer featured; still readable by id)")
+        from ctxpack.config import CONFIG_DIR
+
+        order = CONFIG_DIR / "featured.yaml"   # the new pack takes the old one's place in the list
+        if order.is_file() and replaces in (text := order.read_text(encoding="utf-8")):
+            order.write_text(text.replace(replaces, pack_id), encoding="utf-8")
+            console.print(f"  order         config/featured.yaml now lists {pack_id}", highlight=False)
     for kind, path in paths.items():
         console.print(f"  {kind:<13} {path}", highlight=False)
 

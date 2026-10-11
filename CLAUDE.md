@@ -120,7 +120,8 @@ Read the relevant step before working. Do only that step.
   per UTC day, shared with the live site) blocks every paid call once reached;
   Claude raises it only with the owner's OK, inline for local commands
   (DAILY_SPEND_CAP_USD=30 uv run ...), never in .env; Render is the owner's
-- Featured swap: ... feature NEW_ID --replaces OLD_ID (privacy check), then set
+- Featured swap: ... feature NEW_ID --replaces OLD_ID (privacy check; also swaps the id in
+  config/featured.yaml, which packs are listed first), then set
   reuse_pack in backend/evals/briefs.yaml and delete examples/ files of an old
   slug; tests must not depend on the featured pack's words (use tests/fixtures/packs)
 - Actor health (free, public Apify API, no key): ... actor-check (health, prices, inputs vs schemas;

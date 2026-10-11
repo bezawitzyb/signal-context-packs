@@ -31,11 +31,14 @@ FRONTEND = REPO_DIR / "frontend"
 
 
 def featured_packs() -> list[dict]:
-    """featured/pk_*.json (evals.json and evals_human.json are not packs)."""
+    """featured/pk_*.json (evals.json and evals_human.json are not packs), config/featured.yaml ones first."""
     from ctxpack.schemas.migrate import current
 
-    return [current(json.loads(p.read_text(encoding="utf-8"))) for p in sorted(FEATURED.glob("*.json"))
-            if not p.stem.startswith("evals")]
+    from ctxpack.config import featured_rank
+
+    packs = [current(json.loads(p.read_text(encoding="utf-8"))) for p in sorted(FEATURED.glob("*.json"))
+             if not p.stem.startswith("evals")]
+    return sorted(packs, key=lambda p: featured_rank(p["pack_id"]))   # same order as the live site
 
 
 def card(p: dict) -> dict:

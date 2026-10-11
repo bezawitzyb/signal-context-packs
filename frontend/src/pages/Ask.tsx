@@ -15,10 +15,10 @@ import { BRIEF_TEMPLATE, BriefGuide, BriefGuideButton } from "../components/Brie
 import { isEmptyTemplate } from "../lib/title";
 import { platformName } from "../lib/unitWords";
 
-const EXAMPLES = [
-  "Launching a snack brand in the Netherlands",
-  "Gen Z and meal prep",
-  "Heat pumps for homeowners in Germany",
+const EXAMPLES = [   // never a featured pack's brief (owner 2026-10-11)
+  "Electric cargo bikes for parents in Copenhagen",
+  "Plant-based skincare for men in the UK",
+  "Second-hand designer fashion in France",
   "Protein supplements for women in the Netherlands",
   "Bouldering gyms for beginners",
 ];
@@ -689,28 +689,6 @@ export function PlanReview({ run, onReplanned }: { run: RunStatus; onReplanned: 
   );
 }
 
-/** UX audit: where the user is in the journey - brief, questions, plan, then research on its own page. */
-function FlowSteps({ step }: { step: number }) {
-  const steps = ["Brief", "Questions", "Plan", "Research"];
-  return (
-    <ol className="flex flex-wrap items-center gap-1 text-sm" aria-label="Steps">
-      {steps.map((s, n) => {
-        const state = n + 1 < step ? "done" : n + 1 === step ? "now" : "next";
-        return (
-          <li key={s} className="flex items-center gap-1" aria-current={state === "now" ? "step" : undefined}>
-            <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 ${
-              state === "done" ? "border-ink bg-ink text-paper" : state === "now" ? "border-ink font-medium text-ink"
-                : "border-line text-ink-3"}`}>
-              <span className="font-mono text-xs">{n + 1}</span>{s}
-            </span>
-            {n < steps.length - 1 && <span aria-hidden="true" className="text-ink-3">›</span>}
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
 /** Once planning starts, the brief folds into one line; "Edit brief" brings the form back (the draft is kept). */
 function BriefSummary({ run, onEdit }: { run: RunStatus; onEdit: () => void }) {
   return (
@@ -732,10 +710,8 @@ export function AskFlow() {
   useEffect(() => {
     if (run) result.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [run]);
-  const step = !run ? 1 : run.status === "needs_clarification" ? 2 : 3;
   return (
     <div className="space-y-6">
-      <FlowSteps step={step} />
       {run ? <BriefSummary run={run} onEdit={() => setRun(null)} /> : <AskForm onRun={setRun} />}
       <div ref={result} className="scroll-mt-20">
         {run?.status === "needs_clarification" && run.clarifying_questions?.length > 0 && <QuestionCards run={run} onPlanned={setRun} />}

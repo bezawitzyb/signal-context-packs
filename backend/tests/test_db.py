@@ -83,6 +83,22 @@ def test_load_featured_inserts_once(temp_db, tmp_path):
     assert [p.id for p in temp_db.list_featured_packs()] == [json.loads(EXAMPLE.read_text())["pack_id"]]
 
 
+def test_featured_order_puts_configured_packs_first(temp_db, tmp_path, monkeypatch):
+    from ctxpack.config import featured_rank
+
+    folder = tmp_path / "featured"
+    folder.mkdir()
+    base = json.loads(EXAMPLE.read_text(encoding="utf-8"))
+    for pid in ("pk_older", "pk_newer"):                              # loaded oldest first
+        (folder / f"{pid}.json").write_text(json.dumps({**base, "pack_id": pid}), encoding="utf-8")
+    assert temp_db.load_featured(folder) == 2
+    monkeypatch.setattr(temp_db, "featured_rank", lambda pid: 0 if pid == "pk_newer" else 1)
+    assert [p.id for p in temp_db.list_featured_packs()][0] == "pk_newer"
+    monkeypatch.setattr(temp_db, "featured_rank", lambda pid: 0 if pid == "pk_older" else 1)
+    assert [p.id for p in temp_db.list_featured_packs()][0] == "pk_older"
+    assert featured_rank("pk_-ACqqf-R8ubD") == 0 and featured_rank("pk_unknown") >= 1   # config/featured.yaml
+
+
 def test_stale_running_run_is_interrupted(temp_db):
     stale = temp_db.create_run("stale")
     fresh = temp_db.create_run("fresh")
