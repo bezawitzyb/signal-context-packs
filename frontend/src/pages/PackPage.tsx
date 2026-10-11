@@ -625,6 +625,18 @@ export function PackBody({ pack }: { pack: ContextPack }) {
     window.addEventListener("beforeprint", open);
     return () => window.removeEventListener("beforeprint", open);
   }, []);
+  useEffect(() => {   // owner 2026-10-11: section panels below the first screen fade up once as they scroll into view
+    if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const panels = [...document.querySelectorAll<HTMLElement>("main .pack-section, main .research.panel")]
+      .filter((el) => el.getBoundingClientRect().top > window.innerHeight);   // on screen already: left as it is
+    const seen = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      (e.target as HTMLElement).dataset.reveal = "in";
+      seen.unobserve(e.target);
+    }), { rootMargin: "0px 0px -8% 0px" });
+    panels.forEach((el) => { el.dataset.reveal = "wait"; seen.observe(el); });
+    return () => { seen.disconnect(); panels.forEach((el) => { delete el.dataset.reveal; }); };
+  }, [pack.pack_id]);
 
   return (
     <GuideContext.Provider value={guide}>

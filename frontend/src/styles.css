@@ -76,6 +76,10 @@ h1 { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em
   /* the one box that matters most on a card (the recommended position): black outline, small black shadow */
   .featured { background: var(--paper); border: 1px solid var(--ink); box-shadow: 3px 3px 0 0 var(--ink); }
   .part-break { border-top: 6px solid var(--ink); padding-top: 1.75rem; margin-top: 5rem; }
+  /* Owner 2026-10-11: pack panels below the first screen fade up once on scroll (set by PackBody; without the
+     script, with reduced motion or in print they simply show) */
+  [data-reveal] { transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+  [data-reveal="wait"] { opacity: 0; transform: translateY(16px); }
 }
 
 /* Text roles (owner 2026-10-11, step 1 of the type system): seven roles, one look each. Components carry the
@@ -107,6 +111,7 @@ h1 { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em
 @media print {
   html, body { background: #fff; }
   .neo, .panel, .featured { box-shadow: none !important; transform: none !important; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
   .part-break { margin-top: 0; }
   button, dialog, nav[aria-label="Pack parts"] { display: none !important; }
   main { max-width: none !important; padding: 0 !important; }

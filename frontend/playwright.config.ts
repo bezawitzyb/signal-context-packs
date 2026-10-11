@@ -8,6 +8,8 @@ process.env.E2E_RUN_KEY ??= randomUUID();
 export default defineConfig({
   testDir: "e2e",
   timeout: 120_000,
-  use: { baseURL: "http://127.0.0.1:8767", channel: "chrome", headless: true, viewport: { width: 1300, height: 900 } },
+  use: { baseURL: "http://127.0.0.1:8767", channel: "chrome", headless: true, viewport: { width: 1300, height: 900 },
+         // the pack panels fade in on scroll; axe must check them finished, as a reader sees them
+         contextOptions: { reducedMotion: "reduce" } },
   webServer: { command: "./e2e/server.sh", url: "http://127.0.0.1:8767/ping", reuseExistingServer: false, timeout: 60_000 },
 });
