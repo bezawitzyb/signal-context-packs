@@ -13,7 +13,8 @@ favour the simplest working solution.
   catalog.yaml). If a document disagrees,
   config wins - tell the owner about the mismatch.
 - docs/01_Product_Requirements_Document.txt (what to build)
-- docs/02_Development_Phases.txt (when: day plan, exit tests, cut order)
+- CHANGELOG.md (what changed in each version and why; add an entry for
+  every release)
 - docs/03_Technical_Implementation_Guide.txt (how: Part B
   architecture, Part D steps, Appendix F4 prompts)
 Read the relevant step before working. Do only that step.

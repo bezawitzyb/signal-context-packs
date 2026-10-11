@@ -1,4 +1,4 @@
-"""RSS and Atom feeds (change V13, docs/07_RSS_Feeds_Plan.md).
+"""RSS and Atom feeds (change V13, CHANGELOG.md 1.4.0).
 
 read(): one site or feed URL -> the feed's newest items. A page URL is read once to find the feed it
 announces (<link rel="alternate" type="application/rss+xml">) on the same site; no address is guessed.

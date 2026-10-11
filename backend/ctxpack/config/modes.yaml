@@ -207,7 +207,7 @@ collection:
   probe_trusted_min_searches: 2       # ... over at least this many searches (NL rerun: one 79% search let a 16% in)
   groups_listed_max: 5          # public Facebook groups a search result lists for read_facebook_group
 
-# Forum and blog feeds (change V13, docs/07_RSS_Feeds_Plan.md). Same for every mode. read_feed reads a feed only
+# Forum and blog feeds (change V13, CHANGELOG.md 1.4.0). Same for every mode. read_feed reads a feed only
 # on a site this run's web_search returned; items count towards item_budget and unit_share_max like any source.
 feeds:
   feeds_per_call_max: 3         # feeds read in one read_feed call

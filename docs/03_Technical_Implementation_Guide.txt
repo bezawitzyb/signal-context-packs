@@ -5,8 +5,8 @@
 ================================================================================
 
 Documents: 01 PRD = WHAT to build (requirements, content model,
-           schema); 02 Development Phases = WHEN (day plan, exit tests,
-           cut order); 03 Implementation Guide = HOW (architecture, build
+           schema); CHANGELOG.md = what changed in each version (the
+           7-day plan and changes V1-V13); 03 Implementation Guide = HOW (architecture, build
            steps, prompts). NUMBERS (limits, budgets, queue size, scoring
            weights) live only in config/modes.yaml and config/scoring.yaml;
            where a document and config disagree, config wins.
@@ -50,7 +50,7 @@ A2. The loop for every step
   4. When Claude Code says it is done, run the CHECK items yourself.
   5. Check failed? Say: "Check 2 failed. I did X and saw Y. Fix it."
   6. All checks pass? Say: "All checks pass. Commit as 'Step 2.3 loop'."
-  7. End of day: the pencils-down check (02_Development_Phases.txt).
+  7. End of day: the pencils-down check (CHANGELOG.md 1.0.0, in git history).
 
 A3. Golden rules
   - One step at a time. Speed comes from not breaking things.
@@ -1740,7 +1740,7 @@ CHECK
 --------------------------------------------------------------------------------
 STEP 5.6  Rehearse, freeze, submit                    (Day 7)
 --------------------------------------------------------------------------------
-  - Rehearse the 7-step demo (02_Development_Phases.txt) twice.
+  - Rehearse the 7-step demo twice.
   - Before every rehearsal and the real demo: enter the run key in the
     masked field BEFORE sharing the screen.
   - 15:00 FREEZE: only fix what is broken.
@@ -1879,7 +1879,7 @@ F2. CLAUDE.md (the Day-0 starting version; the CLAUDE.md in the repo root
     config/modes.yaml and config/scoring.yaml. If a document disagrees,
     config wins - tell the owner about the mismatch.
   - docs/01_Product_Requirements_Document.txt (what to build)
-  - docs/02_Development_Phases.txt (when: day plan, exit tests, cut order)
+  - CHANGELOG.md (what changed in each version, and why)
   - docs/03_Technical_Implementation_Guide.txt (how: Part B
     architecture, Part D steps, Appendix F4 prompts)
   Read the relevant step before working. Do only that step.

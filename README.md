@@ -14,7 +14,9 @@ skill, MCP) - and you can ask it questions.
 | **Read-only mirror** (works even if the live service is down) | https://bezawitzyb.github.io/signal-context-packs/ |
 | **Code** | https://github.com/bezawitzyb/signal-context-packs |
 | **Evaluations** | https://signal-l2w5.onrender.com/evals |
+| **API for developers** | https://signal-l2w5.onrender.com/docs (open "How to use the API" at the top) |
 | **Pack format** | [docs/SCHEMA.md](docs/SCHEMA.md) - JSON schema in [docs/schema/](docs/schema/) |
+| **Version** | 1.5.0 (2026-10-11) - what changed: [CHANGELOG.md](CHANGELOG.md) |
 
 ## Try it
 
@@ -51,23 +53,31 @@ do first, channel plan, opportunities, post briefs, drafts, content calendar, pl
 risks, guardrails and instructions for agents. Each finding appears once, in the section where it fits
 best, with links to related findings elsewhere.
 
-## What is new (changes V1-V12)
+## Features
 
-| Change | What you get |
-|---|---|
-| **V1 Never lose a run** | Any run with enough relevant posts ends with a pack, whatever fails later; a step that fails twice still gives an evidence-only pack. Too few posts ends on a screen that says why, with one-click re-runs. Runs survive server restarts. |
-| **V2 Markets and languages** | Several markets per brief, with weights; languages chosen in code from those markets (plus English), with the left-out ones and the reason shown. |
-| **V3 Smart clarifying questions** | 0-3 brief-specific questions with answer chips (audience roles, goal, offer, channels, competitors); named competitors are always searched. |
-| **V4 Condensed content** | Every finding once, in its best place; a "so what" line per section; pain points as their own section. |
-| **V5 Opportunities you can trust** | One list: "supported" (enough people in enough communities) or "early signal - check before acting", with existing solutions found by web search. |
-| **V6 LinkedIn as a source** (and **X**, 2026-10-07) | Keyword search only - never a person or profile - with no login of ours. |
-| **V7 News hooks and timing** | "Ride this now": dated news and events, each with its source link; timing chips on channels (from posts or a cited source, never from memory). |
-| **V8 Post briefs, drafts, calendar** | 5-8 post briefs whose key points cite real posts; full drafts for the first 3 (labelled "Draft - review before posting"; unsupported numbers and guardrail phrases are removed in code); a 4-week calendar as a Notion CSV. |
-| **V9 Revised pack page and hand-off** | Summary / Understand your audience / Act on it / The research; plain-language strength labels ("good enough to: test a post / brief creative / commit budget"); a generic AI answer checked point by point against the posts; hand-off options described by purpose and length. |
-| **V10 Ask this pack** | A read-only chat over one pack: answers cite real posts, invented references are removed, and "no evidence" is said plainly. Asking needs the access key (typed on the start page or in the Ask panel; kept only in that browser tab). |
-| **V12 A pack that follows your goals** | Up to 3 goals, main first: the pack's sections, Summary and first moves follow them ("For your goal" blocks; each action says which goal it serves). **Brand perception** gets its own analysis: your brand and its parent are searched by name, and code counts mentions, mentions made unasked (an awareness signal), share of voice, how people feel, what they praise and criticise, and whether they tell your brand apart from the parent - with 2-5 verified findings and an honest "online mentions, not a survey" label. |
-| **V13 Forum feeds** | When web search finds an active forum, the agent can read its RSS or Atom feed: the newest dated threads, cheap and fast. Teaser-only feeds point it to the threads to read in full. Only sites web search returned in the same run; every download passes a guard that allows only ordinary public websites. Google News search feeds add dated candidates for news hooks. |
-| **V11 Understand the brief** | The agent reads the brief for the five things only you know (goals, offer, who, markets, key question), each tied to your own words. It never guesses your goal or offer: when the brief does not say them, it asks (goals ranked, main first; "no offer of my own" is an answer), then only the other gaps that would change the research. One editable "Here's what I understood" box shows where each item came from. A "How to write a brief" guide and template sit next to the brief box. |
+- **Never lose a run.** Any run with enough relevant posts ends with a pack, whatever fails later. Too few
+  posts ends on a screen that says why, with one-click re-runs. Runs survive server restarts.
+- **Understands your brief.** It reads the brief for the five things only you know (goals, offer, who,
+  markets, key question). It never guesses your goal or offer: when the brief leaves them out it asks,
+  then only about gaps that change the research (at most 4 questions). One editable "Here's what I understood" box shows where each item came from.
+- **A pack that follows your goals.** Up to 3 goals, main first, from 8 (content plan, positioning, market
+  entry, brand perception, ...). The Summary, first moves and section order follow them.
+- **Brand perception.** Your brand and its parent are searched by name. Code counts mentions, unprompted
+  mentions, share of voice, stance and whether people tell the two apart. Labelled "online mentions, not a survey".
+- **Markets and languages.** Several markets per brief, with weights. Languages are chosen in code from those
+  markets, plus English; left-out languages are shown with the reason.
+- **Many sources, no login of ours.** Reddit, TikTok, YouTube, Instagram, LinkedIn, X and Facebook (keyword
+  search only, never a person or profile), the open web, forum feeds and Google Trends.
+- **Every finding once, with proof.** Each finding sits in its best section, linked from the others. Every
+  quote is an exact copy of its post, and every claim is re-checked against its posts.
+- **Opportunities you can trust.** "Supported" (enough people in enough communities) or "early signal - check
+  before acting", with existing solutions found by web search.
+- **Ready to act.** News hooks with source links, 5-8 post briefs, full drafts of the first 3, and a 4-week
+  content calendar for Notion.
+- **Ask this pack.** A chat that answers only from the pack, with numbered links to the real posts (needs the
+  access key).
+
+How each feature came about, version by version: [CHANGELOG.md](CHANGELOG.md).
 
 ## How the agent chooses sources and stays within limits
 
@@ -116,10 +126,20 @@ best, with links to related findings elsewhere.
 - **Exports:** quick brief (half a page), brief for your AI writer, full report (`brief.md`, same order as
   the page; prints with the Summary as page 1), content calendar (`content_calendar.csv`, UTF-8 for
   Notion, formula-safe cells), JSON.
-- **MCP** (read-only, no key): `claude mcp add --transport http signal https://signal-l2w5.onrender.com/mcp`.
+
+## API and MCP
+
+- **REST API** at `/api/v1`. The interactive docs at
+  [signal-l2w5.onrender.com/docs](https://signal-l2w5.onrender.com/docs) group the endpoints by what they do
+  (Create a pack, Read packs, Use a pack, Reference, Status). **How to use the API** at the top explains each
+  endpoint with copy-paste examples. Reading packs is public; creating a pack and Ask need the run key in the
+  `X-API-Key` header.
+- **MCP** (read tools need no key): `claude mcp add --transport http signal https://signal-l2w5.onrender.com/mcp`.
   Tools: `list_packs`, `get_pack_view`, `get_insight`, `search_evidence`, `get_post_briefs`, `get_calendar`;
   with the run key also `create_context_pack` (agents are never asked questions, so `goals` is required,
   main goal first, e.g. `["positioning", "content_plan"]`), `get_pack_status` and `ask_pack`.
+- Same data everywhere: the web page, API, MCP and every export read one `context_pack.json`, with the same
+  item IDs.
 
 ## Data handling and privacy
 
@@ -264,5 +284,26 @@ backend/scripts/      demo agent, static mirror builder
 frontend/             React + TypeScript + Tailwind web app
 featured/             featured packs (loaded at startup) and eval results
 examples/             packs as JSON + Markdown, skills, demo agent output
-docs/                 product requirements, phases, implementation guide, changes plan, SCHEMA.md, DEPLOY.md
+docs/                 product requirements, implementation guide, user research, SCHEMA.md, DEPLOY.md
+index.html            the 4-slide project presentation (open it in a browser; arrow keys move)
+CHANGELOG.md          what changed in each version, and why
 ```
+
+## Documentation
+
+| Document | What it is for |
+|---|---|
+| [CHANGELOG.md](CHANGELOG.md) | Every version (1.0.0 - 1.5.0): what changed, why, and the owner's decisions |
+| [docs/01_Product_Requirements_Document.txt](docs/01_Product_Requirements_Document.txt) | What the product does: requirements, content model, scoring formulas |
+| [docs/03_Technical_Implementation_Guide.txt](docs/03_Technical_Implementation_Guide.txt) | How it is built: architecture, build steps, prompts |
+| [docs/SCHEMA.md](docs/SCHEMA.md) | Every field of a pack (generated from the code; do not edit by hand) |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Hosting on Render + Neon, environment variables, guest keys |
+| [docs/USER_RESEARCH.md](docs/USER_RESEARCH.md) | Four user tests and the marketing use cases behind the changes |
+| [CLAUDE.md](CLAUDE.md) | The rules Claude Code follows in this repo (security, stack, commands) |
+
+Limits, budgets and scoring weights live only in `backend/ctxpack/config/*.yaml`; where a document and the
+config disagree, the config is right.
+
+## License
+
+[MIT](LICENSE) - free to use, change and share, with credit.

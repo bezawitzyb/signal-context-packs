@@ -14,8 +14,8 @@ Stack:         Anthropic API (reasoning + open-web collection) + Apify API
                (social collection). Everything else free, no credit card:
                Render Free web service, Neon Free, GitHub (Actions, Pages).
 Documents:     01 PRD = WHAT to build (requirements, content model,
-               schema); 02 Development Phases = WHEN (day plan, exit tests,
-               cut order); 03 Implementation Guide = HOW (architecture, build
+               schema); CHANGELOG.md = what changed in each version (the
+               7-day plan and changes V1-V13); 03 Implementation Guide = HOW (architecture, build
                steps, prompts). NUMBERS (limits, budgets, queue size, scoring
                weights) live only in config/modes.yaml and config/scoring.yaml;
                where a document and config disagree, config wins.
@@ -452,7 +452,7 @@ Definition:
     "calendar"; MCP: get_post_briefs(pack_id), get_calendar(pack_id).
 
 6.1f Pack page and hand-off (change V9, schema 1.1; revised after a
-     marketing-director audit, docs/04_Changes_Plan.md)
+     marketing-director audit, CHANGELOG.md 1.1.0)
   - Page in three parts plus the research: SUMMARY (who it is for,
     snapshot.represents, snapshot.findings - the
     top 3 with one quote, its English translation, plain strength words
