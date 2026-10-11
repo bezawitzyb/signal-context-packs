@@ -57,7 +57,7 @@
 
   /* Header: badge, title, claim; rings ornament on the right */
   .head { position: relative; padding-right: 180px; margin-bottom: 18px; }
-  .badge { display: inline-flex; align-items: center; gap: 8px; font: 400 11.5px/16px var(--mono); text-transform: uppercase; letter-spacing: .05em;
+  .badge { display: inline-flex; align-items: center; gap: 8px; font: 400 12px/16px var(--mono); text-transform: uppercase; letter-spacing: .05em;
            color: #000; background: #fff; border: 1px solid #000; border-radius: 9999px; padding: 4px 14px 4px 5px; }
   .badge .sp { width: 20px; height: 20px; border-radius: 9999px; background: #000; display: grid; place-items: center; }
   .badge .sp svg { width: 11px; height: 11px; fill: #fff; }
@@ -74,7 +74,7 @@
   .tiles svg.sp { width: 18px; height: 18px; fill: #000; }
 
   .footer { position: absolute; left: 48px; right: 48px; bottom: 15px; display: flex; justify-content: space-between;
-            font: 500 11px/1 var(--sans); color: var(--ink-muted); }
+            font: 500 12px/1 var(--sans); color: var(--ink-muted); }
 
   /* Card within a card: a surface shell holding a raised inner card */
   .grid { display: grid; gap: 16px; min-height: 0; }
@@ -104,7 +104,7 @@
             font: 600 13px/1 var(--mono); color: var(--ink-card); flex: none; }
   .tile-n.accent { background: var(--accent); color: #000; border: 1px solid #000; box-shadow: var(--hard-sm); }
   .tile-n.pink { background: var(--pink); } .tile-n.yellow { background: var(--yellow); } .tile-n.mint { background: var(--mint); }
-  .pill { display: inline-block; font: 500 10.5px/1 var(--sans); padding: 4px 9px; border-radius: 9999px; border: 1px solid var(--border);
+  .pill { display: inline-block; font: 500 11.5px/1 var(--sans); padding: 4px 9px; border-radius: 9999px; border: 1px solid var(--border);
           background: var(--raised); color: var(--ink-card); letter-spacing: .02em; }
   .pill.ai { background: var(--raised); }
   .pill.code { background: var(--yellow); }
@@ -137,7 +137,7 @@
   .step::before { content: ""; position: absolute; right: -20px; top: calc(50% - 4px); border: 4.5px solid transparent; border-left: 6px solid #000; border-right: 0; }
   .step:last-child::after, .step:last-child::before { display: none; }
   .step b { display: block; font: 600 14.5px/1.2 var(--sans); margin: 6px 0 2px; }
-  .step span.s { font-size: 11.5px; line-height: 1.3; color: #2b2b2b; display: block; }
+  .step span.s { font-size: 12.5px; line-height: 1.3; color: #2b2b2b; display: block; }
   .step.code { background: var(--yellow); }
   .step.input { background: var(--raised); }
   .s2 { grid-template-columns: 1.15fr 1fr 0.85fr; flex: 1; margin-bottom: 14px; align-items: start; }
@@ -147,25 +147,25 @@
   .rules p { font-size: 12.5px; line-height: 1.42; }
   .rules b { font-weight: 600; }
   ol.chain { list-style: none; counter-reset: c; display: flex; flex-direction: column; gap: 3px; }
-  ol.chain li { counter-increment: c; display: flex; gap: 9px; font-size: 12px; line-height: 1.32; }
+  ol.chain li { counter-increment: c; display: flex; gap: 9px; font-size: 12.5px; line-height: 1.32; }
   ol.chain li::before { content: counter(c); font: 600 10px/20px var(--mono); width: 20px; height: 20px; background: var(--tile); border-radius: 9999px;
                         text-align: center; flex: none; color: var(--ink-card); }
-  .sees { font: 400 10.5px/1.4 var(--mono); background: var(--night); color: #fff; border-radius: 12px; padding: 8px 10px; margin-top: 8px; }
+  .sees { font: 400 12px/1.4 var(--mono); background: var(--night); color: #fff; border-radius: 12px; padding: 8px 10px; margin-top: 8px; }
 
   /* Slide 3 */
   .gates { display: grid; grid-template-columns: repeat(8, 1fr) 1.2fr; gap: 6px; margin-bottom: 14px; }
   .gate { border-radius: 12px; padding: 9px 10px 10px; display: flex; flex-direction: column; gap: 5px; background: var(--pink); border: 1px solid #000; }
   .gate.code { background: var(--yellow); }
-  .gate .n { font: 600 10px/1 var(--mono); }
+  .gate .n { font: 600 11.5px/1 var(--mono); }
   .gate b { font: 600 14px/1.15 var(--sans); }
-  .gate span { font-size: 11px; line-height: 1.3; color: #2b2b2b; }
+  .gate span { font-size: 12px; line-height: 1.3; color: #2b2b2b; }
   .gate.safe { background: var(--raised); box-shadow: var(--hard); margin-left: 8px; }
   .gate.safe span { color: var(--ink-card); }
   .check { width: 22px; height: 22px; border-radius: 9999px; background: var(--accent); border: 1px solid #000; display: inline-grid; place-items: center; }
   .check svg { width: 12px; height: 12px; stroke: var(--ink); fill: none; stroke-width: 2.4; }
   .s3 { grid-template-columns: 1fr 1fr 1fr; flex: 1; align-items: start; }
   .bar { display: flex; height: 28px; border-radius: 9999px; overflow: hidden; margin: 4px 0 6px; }
-  .bar div { display: grid; place-items: center; font: 600 10px/1 var(--mono); }
+  .bar div { display: grid; place-items: center; font: 600 12px/1 var(--mono); }
   .big { font: 900 36px/1 var(--display); letter-spacing: -0.02em; color: var(--ink); }
   .proof { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .proof .in { padding: 12px; }
@@ -243,7 +243,7 @@
         <div class="in tight" style="display:flex; gap:14px; align-items:flex-start">
           <span class="pill" style="flex:none; margin-top:2px">Today</span>
           <p>Marketers scroll Reddit and TikTok by hand, or ask a generic AI that guesses how the audience talks.
-            <span class="muted">A freelance B2B marketer in testing would use it as <span class="quote" style="font-size:14.5px">"a contractor who can't go deep on every industry."</span></span></p>
+            <span class="muted">A freelance B2B marketer in testing would use it to get up to speed fast on each new client's industry.</span></p>
         </div>
       </div>
 
@@ -261,13 +261,11 @@
       </div>
 
       <div class="shell">
-        <span class="label cap" style="margin:0">One pack, three parts. The order follows your goal.</span>
-        <div class="structure">
-          <div class="in"><h3>Summary</h3><p class="muted">One card: position, what we heard most clearly, do this first.</p></div>
-          <div class="in"><h3>Understand your audience</h3><p class="muted">Their words · What they want and what stops them · Segments · Landscape · Brand</p></div>
-          <div class="in"><h3>Act on it</h3><p class="muted">Creative brief · Your plan · Channels · What performs · Opportunities · Guardrails</p></div>
+        <div class="in tight" style="display:flex; gap:14px; align-items:flex-start">
+          <span class="pill" style="flex:none; margin-top:2px">For agents too</span>
+          <p>Every pack is also JSON and an MCP server, so Claude can write with the audience's words and follow its guardrails.
+            <span class="muted">The same research reorders itself around your goal: a content plan opens on the plan, positioning on what they want and what stops them.</span></p>
         </div>
-        <p class="small muted cap" style="padding-bottom:4px">A content plan opens on <b>Your plan</b>. Positioning opens on <b>What they want and what stops them</b>. The research sits folded at the end.</p>
       </div>
     </div>
 
@@ -311,7 +309,7 @@
   <div class="head">
     <span class="badge"><span class="sp"><svg><use href="#spark"/></svg></span>How it collects</span>
     <h1>The agent chooses. The tools enforce.</h1>
-    <p class="claim">The agent decides where the audience talks. <b>The tools hold the data and enforce every limit</b>; the agent never sees a raw post.</p>
+    <p class="claim">A model is good at deciding where to look next, and bad at counting and at not inventing quotes. <b>So the agent picks the sources, and the tools hold the data and enforce every limit.</b> It never sees a raw post and never writes a number.</p>
     <div class="tiles" aria-hidden="true"><i style="background:var(--mint)"></i><i><svg class="ring"><use href="#ring"/></svg></i><i style="background:var(--pink)"></i><i></i><i style="background:var(--yellow)"></i><i><svg class="sp"><use href="#spark"/></svg></i></div>
   </div>
 
@@ -328,13 +326,9 @@
     <div class="shell">
       <span class="label cap" style="margin:0">Source selection</span>
       <div class="in">
-        <div class="tools">
-          <span>search_reddit</span><span>search_tiktok</span><span>search_youtube</span><span>search_instagram</span><span>search_linkedin</span>
-          <span>search_x</span><span>search_facebook</span><span>read_facebook_group</span><span>web_search</span><span>fetch_and_segment</span>
-          <span>read_feed</span><span>get_trends</span><span>coverage_report</span><span>finish</span>
-        </div>
+        <p style="margin-bottom:10px"><b style="font-weight:600">14 tools:</b> 8 for 7 social platforms, web search and fetch, forum feeds, Trends, a coverage report and <span class="mono">finish</span>.</p>
         <div class="rules">
-          <p><b>Markets decide languages.</b> English always joins; a country the brief names keeps its language. No platform takes more than half the starting sources.</p>
+          <p><b>Markets decide languages.</b> English always joins; a country the brief names keeps its language. No platform gets more than half of the starting plan.</p>
           <p><b>Explore small, then exploit.</b> A new search starts at 20 posts (40 Standard) and gets full size once 30% of it proves relevant.</p>
           <p><b>Keyword search only, no account of ours.</b> Never a person or profile. Every platform has a backup actor; both fail → a blind spot.</p>
           <p><b>Fall back, never repeat.</b> Crash → untried starting sources. Thin evidence → top up from kept ones. A dropped source is never called again.</p>
@@ -366,14 +360,14 @@
           <tr><th></th><th>Quick</th><th>Standard</th></tr>
           <tr><td>Tool calls</td><td class="num">15</td><td class="num">30</td></tr>
           <tr><td>Time</td><td class="num">8 min</td><td class="num">10 min</td></tr>
-          <tr><td>Raw items</td><td class="num">600</td><td class="num">2,000</td></tr>
-          <tr><td>Per source</td><td class="num">30%</td><td class="num">30%</td></tr>
-          <tr><td>Apify</td><td class="num">$1.80</td><td class="num">$4.00</td></tr>
-          <tr><td>LLM budget</td><td class="num">$1.40+1.40</td><td class="num">$3.50+2.50</td></tr>
+          <tr><td>Raw posts</td><td class="num">600</td><td class="num">2,000</td></tr>
+          <tr><td>Max share per search</td><td class="num">30%</td><td class="num">30%</td></tr>
+          <tr><td>Scraping (Apify)</td><td class="num">$1.80</td><td class="num">$4.00</td></tr>
+          <tr><td>LLM · collection</td><td class="num">$1.40</td><td class="num">$3.50</td></tr>
+          <tr><td>LLM · analysis</td><td class="num">$1.40</td><td class="num">$2.50</td></tr>
         </table>
       </div>
-      <p class="small cap">The tools refuse a call once a limit is reached, and never start one that can't finish in the time left.</p>
-      <p class="small muted cap" style="padding-bottom:4px">Plus a daily spend cap, one live run and a FIFO queue of 3. LLM budget = collection + analysis.</p>
+      <p class="small cap" style="padding-bottom:4px">Tools refuse a call past a limit or one that can't finish in time. Real runs cost <b class="mono">$1.90–5.67</b>; plus a daily cap and a FIFO queue.</p>
     </div>
   </div>
 
@@ -411,6 +405,7 @@
   </div>
 
   <div class="grid s3">
+    <div>
     <div class="shell">
       <span class="label cap" style="margin:0">How strength is computed</span>
       <div class="in">
@@ -422,14 +417,17 @@
           <div style="width:10%; background:#d3d8d4; color:#141414">10</div>
           <div style="width:5%; background:#eff1ef; color:#141414">5</div>
         </div>
-        <p class="mono" style="font-size:10.5px; line-height:1.5; color:var(--ink-soft)">volume 30 · authors 25 · platforms 20 · engagement 10 · recency 10 · verifier 5</p>
+        <p class="mono" style="font-size:12px; line-height:1.5; color:var(--ink-soft)">volume 30 · authors 25 · platforms 20 · engagement 10 · recency 10 · verifier 5</p>
         <p style="margin-top:10px"><b style="font-weight:600">Strong</b> needs a score of 0.75+, 8+ posts, 5+ authors, 2+ platforms and a "supported" verdict.</p>
-        <ul class="list small" style="margin-top:8px">
-          <li>One author above 50% of the posts → at most emerging</li>
-          <li>Mostly undated posts → at most moderate</li>
-          <li>Thin evidence → at most emerging</li>
-          <li>Partly supported → one level down, marked "inferred"</li>
-        </ul>
+        <p class="small muted" style="margin-top:6px">Caps: one author above 50% or thin evidence → at most emerging; mostly undated → at most moderate; partly supported → one level down, marked "inferred".</p>
+      </div>
+    </div>
+      <div class="shell" style="margin-top:10px">
+        <span class="label cap" style="margin:0">What the evals changed</span>
+        <div class="in tight">
+          <p class="small">Haiku passed claims Opus found only partly supported → <b style="font-weight:600">checker switched to Sonnet</b>.</p>
+          <p class="small" style="margin-top:4px">Hand labels retuned relevance: <b style="font-weight:600">recall 0.67 → 0.85</b>.</p>
+        </div>
       </div>
     </div>
 
@@ -444,31 +442,27 @@
         </div>
       </div>
       <div class="in">
-        <table>
-          <tr><th>Same model, same task</th><th>Without</th><th>With pack</th></tr>
-          <tr><td>Audience terms used</td><td class="num">0</td><td class="num">8</td></tr>
-          <tr><td>Pack items cited</td><td class="num">0</td><td class="num">16</td></tr>
-        </table>
+        <span class="label">Tested on a downstream agent</span>
+        <p class="small">Even with the pack and its rules, the agent's scripts still stated <b class="mono">4</b> audience facts that weren't marked safe. <b style="font-weight:600">The code check caught them.</b> Prompts alone don't hold, so the next step is enforcing it in the skill.</p>
       </div>
     </div>
 
     <div class="grid" style="gap:10px; align-content:start">
       <div class="shell">
-        <span class="label cap" style="margin:0">Proof · 5 eval briefs</span>
-        <div class="proof">
-          <div class="in mint"><div class="big">100%</div><p class="small muted" style="margin-top:4px">quotes match their post exactly</p></div>
-          <div class="in mint"><div class="big">100%</div><p class="small muted" style="margin-top:4px">claims cite evidence in the pack</p></div>
-          <div class="in"><div class="big">91%</div><p class="small muted" style="margin-top:4px">claims entailed (Opus re-check; target 95%)</p></div>
+        <span class="label cap" style="margin:0">Measured · 5 eval briefs</span>
+        <div class="proof" style="grid-template-columns:1fr 1fr">
+          <div class="in"><div class="big">91%</div><p class="small muted" style="margin-top:4px">claims entailed: 137 of 150, re-checked by Opus, not the writer. Target 95%.</p></div>
+          <div class="in"><div class="big">0.97</div><p class="small muted" style="margin-top:4px">relevance precision (recall 0.85) on 99 posts I labelled by hand</p></div>
         </div>
+        <p class="small muted cap" style="padding-bottom:4px"><b style="font-weight:600; color:var(--ink-card)">Guaranteed by code, not measured:</b> every quote is an exact substring of its post; every claim cites its posts.</p>
       </div>
       <div class="night">
         <div class="in">
           <span class="label" style="color:#c9cec9">The bar is deliberately high</span>
           <p>Across the 3 featured packs: <b class="mono">129</b> findings, <b class="mono">6</b> strong, <b class="mono">3</b> safe to state as fact.</p>
-          <p class="small muted" style="margin-top:6px">Everything else is framed as an observation or a hypothesis.</p>
+          <p class="small muted" style="margin-top:6px">The other 126 are still usable: each is labelled an observation or a hypothesis, with its strength and its posts. If a step fails twice, the run still ships an evidence-only pack.</p>
         </div>
       </div>
-      <p class="small muted" style="padding:0 8px">If any step fails twice, the run still ships an evidence-only pack.</p>
     </div>
   </div>
 
@@ -479,7 +473,8 @@
     <li>Step 04: the generic answer is written with no evidence. Findings it already covers aren't marked "non-obvious".</li>
     <li>Entailment is checked by Opus, a stronger model than the writer: 137 of 150 sampled claims.</li>
     <li>"Even a strong finding isn't safe to state if it's our interpretation. The student-budget theme on slide 1 scores 0.82 and is strong, but it's inferred, so it isn't marked safe."</li>
-    <li>Only if asked about the with/without demo: the with-pack scripts still stated 4 audience facts not marked safe. The code check caught it. Next step: enforce it in the skill.</li>
+    <li>The downstream test (scripts/demo_agent): with the pack, the scripts used 8 audience terms and cited 16 pack items, but still stated 4 facts not marked safe. Say it plainly: rules in a prompt aren't enough, which is why the pipeline enforces everything in code.</li>
+    <li>If asked "isn't 100% quotes trivially true?": yes, that's the point. It's a guarantee, not a score, so it isn't counted as an eval result.</li>
     <li>"Why not RAG or embeddings?" Clustering with a membership check plus exact-substring quotes keeps every claim traceable. Local ML models also don't fit a free 512 MB server (peak 201 MB).</li>
   </aside>
 </section>
@@ -488,7 +483,7 @@
 <section class="slide" aria-label="Slide 4 of 4: What I learned and what's next">
   <div class="head">
     <span class="badge"><span class="sp"><svg><use href="#spark"/></svg></span>What I learned</span>
-    <h1>4 marketers. 13 changes. Next.</h1>
+    <h1>Tested with 4 marketers. Changed 13 things.</h1>
     <p class="claim">I tested it with <b>four marketers</b> in moderated sessions, <b>shipped 13 changes</b> from what they said, and know exactly what's left.</p>
     <div class="tiles" aria-hidden="true"><i style="background:var(--pink)"></i><i></i><i style="background:var(--mint)"></i><i><svg class="sp"><use href="#spark"/></svg></i><i style="background:var(--yellow)"></i><i><svg class="ring"><use href="#ring"/></svg></i></div>
   </div>
@@ -499,12 +494,12 @@
       <div class="in">
         <table>
           <tr><th>They said</th><th>I built</th></tr>
-          <tr><td>The pack failed at the last step (3 of 4 sessions)</td><td><b>V1</b> Any run with enough posts ends in a pack</td></tr>
-          <tr><td>Market defaulted to global; who is the audience?</td><td><b>V2 · V3 · V11</b> Markets and languages, clarifying questions, goal and offer</td></tr>
-          <tr><td>Hooks aren't actionable yet</td><td><b>V8</b> Post briefs, 3 drafts, a 4-week calendar</td></tr>
-          <tr><td>Too much Reddit, no LinkedIn</td><td><b>V6 · V13</b> LinkedIn (plus X and Facebook), forum feeds</td></tr>
-          <tr><td>Sections repeat; labels unclear</td><td><b>V4 · V9</b> One-card Summary, merged sections, plain labels</td></tr>
-          <tr><td>Messaging differs by goal</td><td><b>V12</b> Goal-driven order, brand perception</td></tr>
+          <tr><td>The pack failed at the last step (3 of 4 sessions)</td><td>Any run with enough posts ends in a pack</td></tr>
+          <tr><td>Market defaulted to global; who is the audience?</td><td>Markets and languages, clarifying questions, goal and offer</td></tr>
+          <tr><td>Hooks aren't actionable yet</td><td>Post briefs, 3 drafts, a 4-week calendar</td></tr>
+          <tr><td>Too much Reddit, no LinkedIn</td><td>LinkedIn (plus X and Facebook), forum feeds</td></tr>
+          <tr><td>Sections repeat; labels unclear</td><td>One-card Summary, merged sections, plain labels</td></tr>
+          <tr><td>Messaging differs by goal</td><td>Goal-driven order, brand perception</td></tr>
         </table>
       </div>
       <div class="in tight pink">
@@ -519,7 +514,7 @@
         <ul class="list">
           <li><b style="font-weight:600">Relevance</b> is below 60% on 3 of 5 briefs (34–80%). Off-topic posts never become evidence, but they cost collection time.</li>
           <li><b style="font-weight:600">Quick runs</b> often run out of their $1.40 analysis budget and end as evidence-only packs.</li>
-          <li><b style="font-weight:600">Speed:</b> 14–17 min in the latest Quick runs, against a 7-minute target.</li>
+          <li><b style="font-weight:600">Speed:</b> 14–17 min in the latest Quick runs, against a 7-minute target. (The 69–102 min on /evals includes analysis I finished later with extra budget.)</li>
           <li><b style="font-weight:600">Forum feeds</b> (V13) are not yet proven in a full run.</li>
           <li><b style="font-weight:600">Not re-tested</b> with users since the 13 changes shipped.</li>
         </ul>
@@ -547,9 +542,9 @@
   <div class="footer"><span>SIGNAL · Context Packs</span><span>04 / 04 · What I learned</span></div>
   <aside class="notes">
     <li>Product thinking: "I'm not a marketer, so I tested early with four who are: a freelance B2B marketer, a lifecycle marketer, a former CMO and a B2B SaaS marketer."</li>
-    <li>The changes are numbered V1–V13; X and Facebook were added alongside V6. Keep the full list ready in case someone asks.</li>
+    <li>Internally the changes are numbered V1–V13 (in CHANGELOG.md); X and Facebook were added alongside V6. Keep the full list ready in case someone asks.</li>
     <li>Present the open questions as hypotheses I'm testing, not unknowns.</li>
-    <li>Timing: use 14–17 min (README). Don't quote the eval file's latency (69–102 min), which includes analysis finished later with extra budget.</li>
+    <li>Timing: 14–17 min is the real Quick run. The slide explains the 69–102 min on /evals so nobody finds it and thinks it was hidden.</li>
     <li>"Isn't scraping a privacy problem?" Public posts only, keyword search only, names hashed on arrival, 30-day expiry, 280-character excerpts, quotes not for public reuse.</li>
   </aside>
 </section>
