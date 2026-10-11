@@ -17,7 +17,7 @@ export function SectionTitle({ id, title, note, level = 2 }: { id?: string; titl
   return (
     <header className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
       <H id={id} className={`scroll-mt-20 tracking-tight ${level === 3
-        ? "text-sm font-semibold uppercase tracking-wide text-ink-3" : "text-lg font-semibold text-ink"}`}>{title}</H>
+        ? "text-sm font-semibold uppercase tracking-wide text-ink-3" : "font-display text-xl font-black text-ink"}`}>{title}</H>
       {note && <p className="text-sm text-ink-3">{note}</p>}
     </header>
   );

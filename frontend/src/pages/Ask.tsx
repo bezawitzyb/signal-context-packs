@@ -177,7 +177,7 @@ export function AskForm({ onRun }: { onRun: (run: RunStatus) => void }) {
           {errorAt === "key" && <div className="mt-2"><FormError text={error} /></div>}
         </div>
         <button type="submit" disabled={busy}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
+                className="inline-flex items-center justify-center gap-2 neo rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
           {busy ? <Loader2 aria-hidden="true" size={16} className="animate-spin" /> : <ArrowRight aria-hidden="true" size={16} />}
           {busy ? "Reading your brief…" : "Plan the research"}
         </button>
@@ -326,7 +326,7 @@ export function QuestionCards({ run, onPlanned }: { run: RunStatus; onPlanned: (
       ))}
       <div className="flex flex-wrap items-center gap-3">
         <button type="button" onClick={() => send(false)} disabled={busy}
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
+                className="inline-flex items-center gap-2 neo rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
           {busy ? <Loader2 aria-hidden="true" size={15} className="animate-spin" /> : <ArrowRight aria-hidden="true" size={15} />}
           Plan with my answers
         </button>
@@ -679,7 +679,7 @@ export function PlanReview({ run, onReplanned }: { run: RunStatus; onReplanned: 
           itself.
         </p>
         <button type="button" onClick={start} disabled={busy}
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
+                className="inline-flex items-center gap-2 neo rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95 disabled:opacity-60">
           {busy ? <Loader2 aria-hidden="true" size={16} className="animate-spin" /> : <ArrowRight aria-hidden="true" size={16} />}
           Start research
         </button>

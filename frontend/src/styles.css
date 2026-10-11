@@ -3,15 +3,20 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #fafaf7;
-  --ink: #16161a;
-  --ink-2: #45454d;      /* secondary text: 9.1:1 on paper */
-  --ink-3: #6b6b74;      /* tertiary text: 5.05:1 on paper, 4.66:1 on wash (AA) */
-  --line: #e4e4dd;       /* borders over shadows */
-  --line-strong: #c9c9c0;
-  --wash: #f1f1ec;       /* quiet fills */
-  --accent: #e8590c;     /* one accent, < 5% of the screen */
-  --accent-ink: #b8460a; /* accent as text: 5.1:1 on paper (AA) */
+  /* Loudio look, step 1 (2026-10-11): white page, pure black ink, black strong borders,
+     square corners, Loudio orange. Contrast checked on white and on wash. */
+  --paper: #ffffff;
+  --ink: #000000;
+  --ink-2: #45454d;      /* secondary text: 9.5:1 on paper */
+  --ink-3: #6b6b74;      /* tertiary text: 5.3:1 on paper, 4.7:1 on wash (AA) */
+  --line: #e5e5e5;       /* quiet dividers stay light */
+  --line-strong: #000000; /* Loudio: black outlines do the structure */
+  --wash: #f4f4f4;       /* quiet fills */
+  --accent: #ff6600;     /* Loudio orange, black text on it (7.2:1); one per screen */
+  --accent-ink: #b8460a; /* accent as text: 5.4:1 on paper (AA) */
+  --pink: #f9d4f4;       /* Loudio fills, black text only (not used yet) */
+  --yellow: #ffe730;
+  --mint: #49ffcb;
   --focus: #1d4ed8;
 }
 
@@ -25,16 +30,54 @@
   --color-wash: var(--wash);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-pink: var(--pink);
+  --color-yellow: var(--yellow);
+  --color-mint: var(--mint);
+  /* Loudio: square or fully round, nothing in between (rounded-full is untouched) */
+  --radius: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Newsreader Variable", ui-serif, Georgia, serif;
+  --font-display: "Google Sans Flex Variable", "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 html { background: var(--paper); color: var(--ink); }
 body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
 
+/* Loudio step 3: page titles in the heavy display face (our work, so a sans; quotes keep the serif). */
+h1 { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em; }
+
+/* Loudio step 2: hard, zero-blur shadow on the main action and pack cards; pressing moves it into its shadow. */
+@layer components {
+  .neo {
+    border: 1px solid var(--ink);
+    box-shadow: 4px 4px 0 0 var(--ink);
+    transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+  }
+  .neo:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 0 var(--ink); }
+  .neo:active { transform: translate(4px, 4px); box-shadow: 0 0 0 0 var(--ink); }
+  .neo:disabled { transform: none; box-shadow: 4px 4px 0 0 var(--ink); }
+}
+
+/* Owner 2026-10-11: a white panel with a grey hard shadow holds the Summary's intro and each pack section. */
+@layer components {
+  .panel { background: var(--paper); border: 1px solid var(--line); box-shadow: 4px 4px 0 0 #d4d4d4;
+           border-top: 8px solid var(--strip, var(--line)); }
+  /* Owner 2026-10-11: each main part has its own strip colour on its cards (the part's heading always says it too,
+     so colour is never the only sign); each part after the Summary opens with a thick black divider. */
+  .part-summary { --strip: var(--mint); }
+  .part-understand { --strip: var(--pink); }
+  .part-act { --strip: var(--yellow); }
+  .part-research { --strip: #a3a3a3; }
+  .part-break { border-top: 6px solid var(--ink); padding-top: 1.75rem; margin-top: 5rem; }
+}
+
 /* Visible keyboard focus everywhere (PRD 10.6). */
-:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
@@ -47,6 +90,8 @@ body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
 
 @media print {
   html, body { background: #fff; }
+  .neo, .panel { box-shadow: none !important; transform: none !important; }
+  .part-break { margin-top: 0; }
   button, dialog, nav[aria-label="Pack parts"] { display: none !important; }
   main { max-width: none !important; padding: 0 !important; }
   .pack-layout { display: block !important; }                     /* the section menu is hidden: one column */

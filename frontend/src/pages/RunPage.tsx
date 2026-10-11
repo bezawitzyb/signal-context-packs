@@ -150,7 +150,7 @@ function LiveRun({ runId }: { runId: string }) {
       {finished && thin && run.inputs && <ThinScreen thin={thin} inputs={run.inputs} />}
       <div className="flex flex-wrap gap-2">
         {packId && (
-          <Link to={`/packs/${packId}`} className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-ink">
+          <Link to={`/packs/${packId}`} className="inline-flex items-center gap-2 neo rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-ink">
             Open the pack <ArrowRight aria-hidden="true" size={15} />
           </Link>
         )}

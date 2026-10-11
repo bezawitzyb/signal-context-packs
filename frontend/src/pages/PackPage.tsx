@@ -55,9 +55,9 @@ function Section({ id, title, agent, agentData, name, version, children, note }:
   children: React.ReactNode; note?: React.ReactNode;
 }) {
   return (
-    <section aria-labelledby={id} className="pack-section mb-14">
+    <section aria-labelledby={id} className="pack-section panel mb-10 p-5 sm:p-8">
       <header className="mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-2">
-        <h2 id={id} className="scroll-mt-24 text-xl font-semibold tracking-tight text-ink">{title}</h2>
+        <h2 id={id} className="scroll-mt-24 font-display text-2xl font-black tracking-tight text-ink">{title}</h2>
         {note && <p className="text-sm text-ink-3">{note}</p>}
       </header>
       {agent ? <AgentJson name={name} data={agentData} schemaVersion={version} /> : children}
@@ -549,8 +549,8 @@ function PartNav({ order, hasBrand, hasCreative }: { order: string[]; hasBrand: 
 
 function Part({ id, title, children, lead }: { id: string; title: string; children: React.ReactNode; lead?: string }) {
   return (
-    <section aria-labelledby={id} className={`pack-part mb-16 ${id === "summary" ? "" : "max-w-[760px]"}`}>
-      <h2 id={id} className="mb-1 scroll-mt-24 text-2xl font-semibold tracking-tight text-ink">{title}</h2>
+    <section aria-labelledby={id} className={`pack-part part-${id} mb-16 ${id === "summary" ? "" : "part-break"}`}>
+      <h2 id={id} className="mb-2 scroll-mt-24 font-display text-4xl font-black leading-tight tracking-tight text-ink md:text-5xl">{title}</h2>
       {lead && <p className="mb-6 text-sm text-ink-3">{lead}</p>}
       {children}
     </section>
@@ -633,7 +633,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
             </p>
             <div className="flex flex-wrap gap-2 print:hidden">
               <button type="button" onClick={() => setHandoff(true)}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink hover:brightness-95">
+                      className="inline-flex items-center gap-1.5 neo rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink hover:brightness-95">
                 <Share2 aria-hidden="true" size={14} /> Share &amp; export
               </button>
               <button type="button" onClick={() => setAsking(true)} aria-expanded={asking}
@@ -742,7 +742,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                   <ul className="mb-4 space-y-2">
                     {pack.performance_takeaways.map((t) => (
                       <li key={t.id} className="rounded-lg border border-ink p-4">
-                        <p className="font-medium text-ink">{t.takeaway}</p>
+                        <p className="text-lg font-medium leading-snug text-ink">{t.takeaway}</p>
                         <p className="mt-1 text-sm text-ink-2">{t.why} <span className="text-ink-3">(our reading)</span></p>
                       </li>
                     ))}
@@ -783,7 +783,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                           <span className="rounded border border-line px-1.5 py-0.5 text-xs text-ink-2">{o.kind.replace(/_/g, " ")}</span>
                           <span className="ml-auto"><IdButton id={o.id} /></span>
                         </div>
-                        <p className="mt-2 text-ink">{o.opportunity}</p>
+                        <p className="mt-2 text-lg font-medium leading-snug text-ink">{o.opportunity}</p>
                         <p className="mt-1 text-xs text-ink-3">
                           {o.distinct_authors} {o.distinct_authors === 1 ? "person" : "people"} in {o.communities.length}{" "}
                           {o.communities.length === 1 ? "community" : "communities"}
@@ -808,10 +808,10 @@ export function PackBody({ pack }: { pack: ContextPack }) {
             ])}
           </Part>
 
-          <section aria-labelledby="research" className="pack-part mb-16">
-            <details className="research group rounded-lg border border-line">
+          <section aria-labelledby="research" className="pack-part part-research part-break mb-16">
+            <details className="research panel group">
               <summary className="cursor-pointer px-4 py-3">
-                <h2 id="research" className="inline scroll-mt-24 text-2xl font-semibold tracking-tight text-ink">The research</h2>
+                <h2 id="research" className="inline scroll-mt-24 font-display text-4xl font-black leading-tight tracking-tight text-ink md:text-5xl">The research</h2>
                 <span className="ml-2 text-sm text-ink-3">sources, method, hypotheses, blind spots, a generic AI answer checked, every post</span>
               </summary>
               <div className="space-y-8 px-4 pb-4">

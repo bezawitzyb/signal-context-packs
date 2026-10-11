@@ -116,7 +116,7 @@ export function AskPanel({ pack, open, onClose }: { pack: ContextPack; open: boo
             <div className="flex gap-2">
               <input id="ask-key" ref={keyInput} type="password" autoComplete="off" spellCheck={false}
                      placeholder="Access key" className="min-w-0 flex-1 rounded-lg border border-line bg-paper px-3 py-1.5 font-mono text-sm" />
-              <button type="submit" className="rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink hover:brightness-95">Use key</button>
+              <button type="submit" className="neo rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink hover:brightness-95">Use key</button>
             </div>
             <p className="text-xs text-ink-2">It stays in this browser tab only. No key? Everything in this pack stays
               open to read.</p>

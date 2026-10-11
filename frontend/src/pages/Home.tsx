@@ -27,7 +27,7 @@ export function PackCards({ packs }: { packs: FeaturedPack[] }) {
         return (
           <li key={p.pack_id} className="flex">
             <Link to={`/packs/${p.pack_id}`}
-                  className="group flex w-full flex-col rounded-lg border border-line p-4 hover:border-line-strong">
+                  className="neo group flex w-full flex-col rounded-lg bg-paper p-4">
               <p className="font-medium text-ink">{packTitle(p.brief, p.topic)}</p>
               {p.top_finding
                 ? <p className="mt-1 line-clamp-3 flex-1 text-sm text-ink-2"><span className="text-ink-3">Heard most: </span>{p.top_finding}</p>
@@ -69,7 +69,7 @@ export function Home() {
           report to read and share, plus a file your AI tools can use to write in your audience's words.</p>
         {!MIRROR && (
           <a href="#ask" onClick={() => window.setTimeout(() => document.getElementById("brief")?.focus({ preventScroll: true }), 0)}
-             className="mt-5 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95">
+             className="mt-5 inline-flex items-center gap-2 neo rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-95">
             Start your research <ArrowRight aria-hidden="true" size={16} />
           </a>
         )}

@@ -55,27 +55,27 @@ export function SummaryPart({ pack }: { pack: ContextPack }) {
   const [allMoves, setAllMoves] = useState(false);
   return (
     <div className="space-y-4">
-      <div className="space-y-0.5 text-sm">
-        <Clamp clamp="line-clamp-2 sm:line-clamp-1" className="text-ink"><span className="text-ink-3">For </span>{i.audience}
-          {goal && <><span className="text-ink-3"> · goals: </span>{goal}</>}<span className="text-ink-3"> · {i.market}</span></Clamp>
-        <div className="flex flex-wrap items-baseline gap-x-3">
-          {s.represents && <p className="text-ink-2">{s.represents}</p>}
-          <HowToRead />
+      {/* owner 2026-10-11: who it is for, the goals and what each goal means, in full on one white card */}
+      <div className="panel space-y-3 p-4 text-sm">
+        <div className="space-y-1">
+          <p className="text-ink"><span className="text-ink-3">For: </span>{i.audience}<span className="text-ink-3"> · {i.market}</span></p>
+          {goal && <p className="text-ink"><span className="text-ink-3">Goals: </span>{goal}</p>}
+          <div className="flex flex-wrap items-baseline gap-x-3">
+            {s.represents && <p className="text-ink-2">{s.represents}</p>}
+            <HowToRead />
+          </div>
         </div>
-      </div>
-
-      {(s.for_goals ?? []).length > 0 && (
-        <ul className="space-y-0.5 border-l-2 border-ink pl-3" aria-label="For your goals">
-          {s.for_goals.map((g, n) => (
-            <li key={g.goal} className="text-sm">
-              <Clamp clamp="line-clamp-2 sm:line-clamp-1" className="text-ink">
+        {(s.for_goals ?? []).length > 0 && (
+          <ul className="space-y-1.5 border-l-2 border-ink pl-3" aria-label="For your goals">
+            {s.for_goals.map((g, n) => (
+              <li key={g.goal} className="text-ink">
                 <span className="font-semibold">For your {n === 0 ? "main " : ""}goal - {goalWords(g.goal)}:</span> {g.headline}
                 {g.first_moves.length > 0 && <span className="text-ink-3"> · first moves {g.first_moves.map((m) => Number(m.slice(3))).join(", ")}</span>}
-              </Clamp>
-            </li>
-          ))}
-        </ul>
-      )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
         <div>

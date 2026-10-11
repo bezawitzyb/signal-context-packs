@@ -109,7 +109,7 @@ export function Handoff({ packId, open, onClose }: { packId: string; open: boole
                     const url = window.location.href.split("#")[0];
                     navigator.clipboard.writeText(url).then(() => say("Link copied"), () => say("Could not copy - copy the address bar instead"));
                   }}
-                  className="rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink hover:brightness-95">Copy link</button>
+                  className="neo rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-ink hover:brightness-95">Copy link</button>
         </div>
         {options === null && <p className="text-sm text-ink-3">Loading the options…</p>}
         <div className="grid gap-2 sm:grid-cols-2">

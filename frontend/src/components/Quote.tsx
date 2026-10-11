@@ -19,7 +19,7 @@ export function Quote({ text, evidence, size = "md" }: {
     <figure className="border-l-2 border-line-strong pl-3">
       <blockquote
         lang={english ? "en" : lang}
-        className={`font-serif text-ink ${size === "sm" ? "text-[0.95rem]" : "text-[1.05rem]"} leading-snug`}
+        className={`font-serif text-ink ${size === "sm" ? "text-[1.0625rem]" : "text-[1.125rem]"} leading-relaxed`}
       >
         “{shown}”
       </blockquote>

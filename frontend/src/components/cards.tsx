@@ -89,11 +89,11 @@ export function ClaimCard({ item, title, maxQuotes = 1 }: { item: InsightLike; t
         <div className="min-w-0">
           {/* UX audit: the label is a quiet eyebrow, the claim is what you read */}
           {title && <p className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-3">{title}</p>}
-          <p className="text-[0.98rem] leading-snug text-ink">{item.claim}</p>
+          <p className="text-lg font-medium leading-snug text-ink">{item.claim}</p>
         </div>
         <OpenEvidence id={item.id} />
       </div>
-      {item.summary_for_humans && <p className="mb-2 text-sm text-ink-2">{item.summary_for_humans}</p>}
+      {item.summary_for_humans && <p className="mb-3 text-base text-ink-2">{item.summary_for_humans}</p>}
       <Meta item={item} />
       {shown.map((q) => (
         <div key={q.evidence_id + q.text} className="mt-3">
@@ -117,18 +117,18 @@ export function TensionCard({ item }: { item: InsightLike & { want: Side; but: S
   return (
     <article className="rounded-lg border border-line bg-paper p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
-        <p className="text-[0.98rem] font-medium leading-snug text-ink">{item.claim}</p>
+        <p className="text-lg font-medium leading-snug text-ink">{item.claim}</p>
         <OpenEvidence id={item.id} />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-3">They want</p>
-          <p className="mb-2 font-serif text-[1rem] text-ink">{item.want.text}</p>
+          <p className="mb-2 font-serif text-[1.0625rem] text-ink">{item.want.text}</p>
           {firstQuote(item.want, "want")}
         </div>
         <div className="sm:border-l sm:border-line sm:pl-4">
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-3">But</p>
-          <p className="mb-2 font-serif text-[1rem] text-ink">{item.but.text}</p>
+          <p className="mb-2 font-serif text-[1.0625rem] text-ink">{item.but.text}</p>
           {firstQuote(item.but, "but")}
         </div>
       </div>
