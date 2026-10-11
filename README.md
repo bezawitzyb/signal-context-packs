@@ -286,7 +286,7 @@ frontend/             React + TypeScript + Tailwind web app
 featured/             featured packs (loaded at startup) and eval results
 examples/             packs as JSON + Markdown, skills, demo agent output
 docs/                 product requirements, implementation guide, user research, SCHEMA.md, DEPLOY.md
-index.html            the 4-slide project presentation (published as presentation.html on the mirror)
+presentation.html     the 4-slide project presentation (also published on the mirror; press N for notes)
 CHANGELOG.md          what changed in each version, and why
 ```
 

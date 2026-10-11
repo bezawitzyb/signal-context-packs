@@ -7,7 +7,7 @@ Builds the same web app in read-only mode (VITE_MIRROR=1) and writes the data it
   mirror/data/packs/<id>/brief.md, prompt_block.txt, digest.json, content_calendar.csv, skill.zip
   mirror/data/evals.json                         eval results + human ratings (as GET /api/v1/evals)
   mirror/404.html                                the app again, so deep links work on GitHub Pages
-  mirror/presentation.html                       the project presentation (index.html in the repo root)
+  mirror/presentation.html                       the project presentation (copied from the repo root)
 
 Only finished, featured packs (already privacy-checked, no cost events) go in; never documents,
 secrets or keys. Free: no database, no network, no paid API.
@@ -78,7 +78,7 @@ def build_app(out: Path, base: str) -> None:
                    cwd=FRONTEND, env=env, check=True)
     shutil.copyfile(out / "index.html", out / "404.html")   # GitHub Pages: deep links load the app
     (out / ".nojekyll").write_text("", encoding="utf-8")
-    slides = REPO_DIR / "index.html"
+    slides = REPO_DIR / "presentation.html"
     if slides.is_file():
         shutil.copyfile(slides, out / "presentation.html")
 

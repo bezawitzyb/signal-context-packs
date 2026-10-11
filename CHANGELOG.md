@@ -34,7 +34,7 @@ What changed in each version of SIGNAL - Context Packs, why, and the decisions b
 - The docs are merged into this changelog and [docs/USER_RESEARCH.md](docs/USER_RESEARCH.md).
 - The README is up to date.
 - MIT licence added.
-- `index.html` (in the repo root) holds the 4-slide project presentation.
+- `presentation.html` holds the 4-slide project presentation, also published on GitHub Pages.
 
 ## 1.4.0 - 2026-10-10 - V13 Forum feeds
 
