@@ -398,7 +398,11 @@ Definition:
     collection, in the brief's languages, for the last 30 and next 90
     days (modes.yaml news), tied to the top themes and pain points.
     Kept only when the URL came back from the search and the date is in
-    that span: no URL -> dropped; never from model memory.
+    that span: no URL -> dropped; never from model memory. Since V13 the
+    step also gets up to 15 dated headlines from Google News search feeds
+    (free; the plan's core term in the main market language, modes.yaml
+    feeds); their URLs count as returned, and the headline is written in
+    the model's own English words, never copied.
   - channel_plan[].timing[]: {label, when, why, evidence_ids, claim_type
     observed | external, source_url, item_id}. Observed: the pack's
     moments, and weekdays / seasons / times of day named in at least 2
@@ -923,6 +927,12 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
                                               review or article URLs
   fetch_and_segment(urls, reason)             reads pages, keeps posts that
                                               are exact substrings
+  read_feed(urls, reason)                     RSS / Atom feed of a sub-forum
+                                              or category page that the same
+                                              run's web_search returned
+                                              (V13, DH13): newest dated
+                                              threads; teasers come back as
+                                              threads_to_read
   get_trends(terms, geo, reason)              Google Trends (external)
   coverage_report()                           evidence per research
                                               question and per source unit;
@@ -1069,6 +1079,13 @@ EPIC H - DEPLOYMENT AND REPRODUCIBILITY
       (requires_login = false) when an equally strong quote exists;
       otherwise the drawer says "you may need to log in to LinkedIn to
       view this".
+ DH13 Server downloads (V13 feeds): the server itself downloads only feeds
+      of sites the same run's web search returned, and Google News search
+      feeds. A URL guard allows public websites only (never local, private
+      or cloud-metadata addresses; the connection goes to the checked
+      address and every redirect is checked again), standard ports, web
+      pages and feeds only, at most 2 MB and 15 seconds. Feed authors are
+      hashed like every other author.
 
 
 ================================================================================

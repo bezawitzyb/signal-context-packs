@@ -1,7 +1,7 @@
 {
  "status": "ok",
- "date": "2026-10-10",
- "generated_at": "2026-10-10T13:59:09+00:00",
+ "date": "2026-10-11",
+ "generated_at": "2026-10-11T08:47:58+00:00",
  "targets": {
   "quote_groundedness": 1.0,
   "claim_entailment": 0.95,
@@ -22,10 +22,10 @@
    "detail": "lowest of the briefs"
   },
   "claim_entailment": {
-   "value": 0.8867,
+   "value": 0.9133,
    "target": 0.95,
    "pass": false,
-   "detail": "133 of 150 sampled claims, all briefs"
+   "detail": "137 of 150 sampled claims, all briefs"
   },
   "claims_with_evidence": {
    "value": 1.0,
@@ -52,7 +52,7 @@
    "detail": "1 of 77 distinct source units are used by more than one brief: reddit:r/thenetherlands"
   },
   "allocation_efficiency": {
-   "value": 1.11,
+   "value": 1.08,
    "target": "agent >= equal split",
    "pass": true,
    "detail": "median ratio over briefs",
@@ -94,94 +94,94 @@
    "id": "genz_meal_prep",
    "brief": "Gen Z and meal prep",
    "mode": "quick",
-   "pack_id": "pk_YhJR9A6FtugV",
-   "run_id": "run_-BFWVx9v37YGNniC",
+   "pack_id": "pk_-ACqqf-R8ubD",
+   "run_id": "run_-zTN0_I4fayj2Gyz",
    "reused": true,
    "note": "",
    "interpreted": {
-    "topic": "meal prep habits, motivations and struggles among Gen Z",
+    "topic": "Gen Z and meal prep: how young people plan, cook and share batch-cooked meals",
     "market": "global",
     "languages": [
      "en"
     ]
    },
-   "coverage_grade": "b",
-   "relevant_posts": 183,
-   "thin_evidence": false,
-   "thin_evidence_note": "",
+   "coverage_grade": "c",
+   "relevant_posts": 227,
+   "thin_evidence": true,
+   "thin_evidence_note": "below the content bar or the minimum relevant posts for quick (60); the pack says so instead of padding",
    "metrics": {
     "quote_groundedness": {
      "value": 1.0,
      "target": 1.0,
      "pass": true,
-     "detail": "100 of 100 quotes are exact substrings of their evidence"
+     "detail": "83 of 83 quotes are exact substrings of their evidence"
     },
     "claim_entailment": {
-     "value": 0.8667,
+     "value": 1.0,
      "target": 0.95,
-     "pass": false,
-     "detail": "26 of 30 sampled claims entailed (strictly supported: 67%); not entailed: CUL-06, CUL-01, CUL-04, CUL-02"
+     "pass": true,
+     "detail": "30 of 30 sampled claims entailed (strictly supported: 73%)"
     },
     "claims_with_evidence": {
      "value": 1.0,
      "target": 1.0,
      "pass": true,
-     "detail": "50 of 50 claims cite evidence that is in the pack"
+     "detail": "45 of 45 claims cite evidence that is in the pack"
     },
     "relevance_rate": {
-     "value": 0.627,
+     "value": 0.796,
      "target": 0.6,
      "pass": true,
-     "detail": "183 relevant of 292 kept posts"
+     "detail": "227 relevant of 285 kept posts"
     },
     "source_diversity": {
-     "value": 5,
+     "value": 4,
      "target": 3,
      "pass": true,
-     "detail": "instagram, reddit, tiktok, x, youtube"
+     "detail": "instagram, reddit, tiktok, youtube"
     },
     "allocation_efficiency": {
-     "value": 1.11,
+     "value": 1.06,
      "target": "agent >= equal split",
      "pass": true,
-     "detail": "agent 183 relevant posts vs. equal split ~165 from 328 items over 11 units; per USD 154.6 vs. 139.7",
+     "detail": "agent 227 relevant posts vs. equal split ~213 from 337 items over 11 units; per USD 166.1 vs. 156.1",
      "simulated": true,
      "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
      "relevant_per_usd": {
-      "agent": 154.6,
-      "equal_split": 139.7
+      "agent": 166.1,
+      "equal_split": 156.1
      },
      "units": 11
     },
     "loop_health": {
      "value": {
-      "tool_calls": 14,
-      "finish_reason": "finish",
+      "tool_calls": 15,
+      "finish_reason": "tool_call_limit",
       "fallback_used": false,
       "top_up_used": false,
       "max_tool_calls": 15
      },
      "target": "finish, no fallback",
-     "pass": true,
-     "detail": "14 tool calls, finished by 'finish'"
+     "pass": false,
+     "detail": "15 tool calls, finished by 'tool_call_limit' - the agent did not finish on its own; the pack is still valid but collection was cut short"
     },
     "cost_usd": {
-     "value": 2.59,
+     "value": 4.55,
      "target": 4.6,
      "pass": true,
-     "detail": "Apify $0.82 + Anthropic $1.77; typical $1.50-3.00, hard cap $4.60 (NFR2)"
+     "detail": "Apify $0.98 + Anthropic $3.57; typical $1.50-3.00, hard cap $4.60 (NFR2)"
     },
     "latency_min": {
-     "value": 15.5,
+     "value": 101.6,
      "target": 7,
      "pass": false,
-     "detail": "15.5 min end to end (NFR1: about 7 min)"
+     "detail": "101.6 min end to end (NFR1: about 7 min); includes a 55 min pause between 'pack_ready' and 'cost' (stages re-run by hand later), so about 46.7 min of work"
     },
     "peak_mem_mb": {
-     "value": 194.0,
+     "value": 195.1,
      "target": 400,
      "pass": null,
-     "detail": "194.0 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
+     "detail": "195.1 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
     },
     "schema_valid": {
      "value": 1.0,
@@ -204,7 +204,7 @@
     {
      "check": "en posts in the corpus",
      "pass": true,
-     "detail": "97% of kept posts"
+     "detail": "99% of kept posts"
     },
     {
      "check": "linkedin at most 34% of the plan",
@@ -214,12 +214,12 @@
     {
      "check": "at most 4 question(s)",
      "pass": true,
-     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [market] Which countries or regions matter most?; Q4 [audience_roles] Which Gen Z group should we listen to?"
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [market] Which country or countries should we listen to?; Q4 [audience_roles] Which Gen Z group matters most?"
     },
     {
      "check": "asks about goal, offer",
      "pass": true,
-     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [market] Which countries or regions matter most?; Q4 [audience_roles] Which Gen Z group should we listen to?"
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [market] Which country or countries should we listen to?; Q4 [audience_roles] Which Gen Z group matters most?"
     },
     {
      "check": "never asks what the brief already says",
@@ -257,25 +257,26 @@
      },
      {
       "id": "Q3",
-      "question": "Which countries or regions matter most?",
+      "question": "Which country or countries should we listen to?",
       "fills": "market",
       "options": [
        "US",
        "UK",
        "Netherlands",
        "Germany",
-       "Global, English-speaking"
+       "Global, English-language"
       ]
      },
      {
       "id": "Q4",
-      "question": "Which Gen Z group should we listen to?",
+      "question": "Which Gen Z group matters most?",
       "fills": "audience_roles",
       "options": [
-       "Students on a tight budget",
+       "Students on a budget",
        "Young professionals starting work",
-       "Fitness and gym-goers",
-       "Everyone aged 18-27"
+       "Gym and fitness-focused people",
+       "Gen Z who rarely cook but want to start",
+       "All of them"
       ]
      }
     ]
@@ -284,245 +285,245 @@
     "checked": 30,
     "sampled": 30,
     "counts": {
-     "supported": 20,
-     "partially_supported": 10,
+     "supported": 22,
+     "partially_supported": 8,
      "not_supported": 0,
      "unchecked": 0
     },
-    "entailed": 26,
-    "rate": 0.8667,
-    "strict_rate": 0.6667,
+    "entailed": 30,
+    "rate": 1.0,
+    "strict_rate": 0.7333,
     "rows": [
-     {
-      "id": "LEX-02",
-      "verdict": "partially_supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "The post pairs the phrase with #easymealprep, but it doesn't say it is a TikTok post or that the phrase is a title."
-     },
-     {
-      "id": "SEG-01",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "The posts describe college cooking with just a microwave or a rice cooker, and one says no stove or oven."
-     },
-     {
-      "id": "MOT-05",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0040 preps a week of dinners because deciding dinner every night is a full-time job."
-     },
-     {
-      "id": "TEN-02",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0004 is about eating like an athlete on a broke college student budget."
-     },
-     {
-      "id": "LEX-06",
-      "verdict": "partially_supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "The hashtags appear together, but no post says it is a video."
-     },
-     {
-      "id": "OBJ-02",
-      "verdict": "supported",
-      "claim_type": "observed",
-      "entailed": true,
-      "reason": "EV-0069 states this word for word."
-     },
-     {
-      "id": "MOM-01",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "Several posts describe Sunday prep for the whole week."
-     },
-     {
-      "id": "TEN-01",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0051 describes the trade-off between time and variety, and EV-0052 eats a big pot until hating it."
-     },
-     {
-      "id": "LEX-10",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0038 expresses gratitude for the mod cons in their place."
-     },
-     {
-      "id": "LEX-03",
-      "verdict": "supported",
-      "claim_type": "observed",
-      "entailed": true,
-      "reason": "EV-0032 calls stuffed peppers a lazy girl dinner that is easy to throw together."
-     },
-     {
-      "id": "MOM-03",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "Several posts tie meal prep to dorm or uni life."
-     },
-     {
-      "id": "LEX-01",
-      "verdict": "partially_supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "#GymTok appears on both posts, but no post says they are videos."
-     },
-     {
-      "id": "LEX-04",
-      "verdict": "supported",
-      "claim_type": "observed",
-      "entailed": true,
-      "reason": "EV-0033 describes a Sunday reset of chopping and packing containers for the week."
-     },
      {
       "id": "MOT-01",
       "verdict": "supported",
       "claim_type": "inferred",
       "entailed": true,
-      "reason": "EV-0059 (breakfast prep cheaper than cafés) and EV-0037 (avoiding expensive fast food) cover the parts."
+      "reason": "Posts describe refusing meal deals, cooking without spending a fortune, and not affording eating out."
      },
      {
-      "id": "MOT-04",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0062 doesn't know what's freezable and EV-0063 stresses choosing recipes that freeze and reheat well."
-     },
-     {
-      "id": "THM-04",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0004 says no stove, no oven, just a microwave for college students, and EV-0012 shows dorm cooking."
-     },
-     {
-      "id": "CUL-06",
-      "verdict": "partially_supported",
-      "claim_type": "observed",
-      "entailed": false,
-      "reason": "Only one post uses #dormlife, and it doesn't say it is a video."
-     },
-     {
-      "id": "THM-08",
-      "verdict": "partially_supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "The small space (EV-0017) and the reduced batch to fit the kitchen setup (EV-0018) come from different posts."
-     },
-     {
-      "id": "TEN-04",
+      "id": "CUL-05",
       "verdict": "supported",
       "claim_type": "observed",
       "entailed": true,
-      "reason": "EV-0058 says with a mini fridge they wish they could store more and prep big meals but can't."
+      "reason": "EV-0008 says to look up Chef Moe for a 5-buck meal that lasts 2 days."
      },
      {
-      "id": "PAIN-01",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0048 and EV-0049 describe little free time to cook because of work."
-     },
-     {
-      "id": "CUL-01",
-      "verdict": "partially_supported",
-      "claim_type": "observed",
-      "entailed": false,
-      "reason": "Two posts tag #GymTok on meal prep and dorm high-protein content, but they don't say it's a video."
-     },
-     {
-      "id": "CUL-04",
-      "verdict": "partially_supported",
-      "claim_type": "observed",
-      "entailed": false,
-      "reason": "Posts show the weekly title format with week numbers, but no post says it's Reddit."
-     },
-     {
-      "id": "THM-02",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0001 explicitly mentions filling meals that make the food budget stretch further."
-     },
-     {
-      "id": "PHR-03",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0041 and EV-0016 both use 'sick of' about tiring of prepped food."
-     },
-     {
-      "id": "MOM-04",
-      "verdict": "supported",
-      "claim_type": "inferred",
-      "entailed": true,
-      "reason": "EV-0081 frames breakfast prep for weekday mornings, and EV-0078 and EV-0074 describe making breakfasts ahead to heat up in the morning."
-     },
-     {
-      "id": "PHR-01",
+      "id": "CUL-02",
       "verdict": "partially_supported",
       "claim_type": "inferred",
       "entailed": true,
-      "reason": "Both captions contain the phrase, but one is about a grocery trip rather than a lazy or easy meal, and neither post says it is from TikTok."
+      "reason": "Posts use reset hashtags with weekly prep, but TikTok is not named and cleaning is only hinted at by one hashtag."
+     },
+     {
+      "id": "LEX-06",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0043 uses cba for a lazy evening when not wanting to cook."
      },
      {
       "id": "THM-10",
       "verdict": "supported",
       "claim_type": "inferred",
       "entailed": true,
-      "reason": "EV-0021 asks for realistic meals with no fancy cooking, and EV-0022 says 'no aesthetic meal prep here'."
+      "reason": "Several commenters ask creators for recipes after liking their food."
+     },
+     {
+      "id": "THM-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0006 and EV-0009 explicitly discuss meal prepping on a budget."
+     },
+     {
+      "id": "CUL-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The posts cite a price and a college budget, but these are in the captions; nothing shows they are in the video itself."
+     },
+     {
+      "id": "CUL-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0045 recommends the Brokie Budget Meals creator for cheap meals with leftovers."
+     },
+     {
+      "id": "LEX-10",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0007 refuses a meal deal and offers a day of food under £3."
+     },
+     {
+      "id": "TEN-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0057 says cooked food lasts 3-4 days, but no post states a desire to prep a whole week at once."
+     },
+     {
+      "id": "MOT-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0059 describes an easy meal for when tired but still needing to hit protein."
+     },
+     {
+      "id": "LEX-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Multiple posts mention macros in the context of meeting nutrition targets."
+     },
+     {
+      "id": "SEG-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Several posts describe meal prepping to hit macros or nutrition goals."
+     },
+     {
+      "id": "THM-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0002, EV-0003 and EV-0004 describe high-protein meals made for lazy, low-effort days."
+     },
+     {
+      "id": "THM-09",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0027 and EV-0026 show frustration when others ate the person's meal prep."
+     },
+     {
+      "id": "THM-05",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0020 asks directly how the food stays fresh by the end of the week."
+     },
+     {
+      "id": "LEX-08",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0044 says they have app fatigue and now use only a few free tools for tracking."
      },
      {
       "id": "OBJ-01",
       "verdict": "supported",
       "claim_type": "observed",
       "entailed": true,
-      "reason": "EV-0067 says 'i hate soup so much'."
+      "reason": "EV-0017 says this almost word for word."
      },
      {
-      "id": "THM-05",
+      "id": "OBJ-03",
       "verdict": "partially_supported",
       "claim_type": "inferred",
       "entailed": true,
-      "reason": "The parts come from different posts: 'takes minutes' is in EV-0015 and 'little washing up' is in EV-0014, so no single post says both."
+      "reason": "Two different posts are joined as if one person said both: the 'bestest app' doubt (EV-0071) and the 'same tricks' line (EV-0072)."
      },
      {
-      "id": "CUL-02",
+      "id": "PAIN-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0050 says they work long hours, so the less time spent cooking the better."
+     },
+     {
+      "id": "TEN-01",
       "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Not wanting boring meals is stated, but no post clearly says that coming up with new recipes each week is tiring; EV-0055 is cut off."
+     },
+     {
+      "id": "THM-06",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0022 describes freezing individually wrapped portions so you can grab one and reheat it."
+     },
+     {
+      "id": "THM-07",
+      "verdict": "supported",
       "claim_type": "observed",
-      "entailed": false,
-      "reason": "The caption says 'meal prep with me for the week', but the post does not say it is from TikTok."
+      "entailed": true,
+      "reason": "EV-0025 says a mini fridge limits you but is workable with staples and containers that fit."
+     },
+     {
+      "id": "SEG-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Several students and first-time solo cooks ask for cheap, beginner-friendly meal prep."
+     },
+     {
+      "id": "THM-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0010 and EV-0014 describe a weekend/Sunday reset with meal prep to get ready for the week."
+     },
+     {
+      "id": "OBJ-06",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0074 describes green patches on prepped portions and asks if they are mold."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "All three posts tag #highproteinmeals on meals described as easy, quick or lazy."
+     },
+     {
+      "id": "LEX-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Only EV-0011 links Sunday reset to cleaning and meal prep; EV-0013 just mentions a Sunday reset."
+     },
+     {
+      "id": "CUL-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Comments ask for recipes, but nothing says they are under meal prep videos."
+     },
+     {
+      "id": "SEG-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Only EV-0050 asks for meal prep that suits long work hours; the others want fast or replacement meals, not prepped meals for long days."
      }
     ],
-    "usd": 0.1637
+    "usd": 0.1309
    },
    "units": [
-    "instagram:#mealprepsunday",
-    "instagram:meal prep ideas students",
-    "reddit:r/college",
+    "instagram:#mealprepideas",
+    "instagram:gen z meal prep ideas",
     "reddit:r/eatcheapandhealthy",
+    "reddit:r/mealprep",
     "reddit:r/mealprepsunday",
-    "reddit:search:meal prep stopped quitting gen z young adult first apartment food boredom",
-    "tiktok:#whatieatinaweek budget student meal prep",
-    "tiktok:gen z meal prep",
-    "tiktok:search:dorm meal prep no oven",
-    "tiktok:search:lazy girl meal prep",
-    "tiktok:search:meal prep for the week college student",
-    "web:gen z meal prep survey habits",
-    "x:search:meal prep college broke",
-    "youtube:meal prep for beginners students budget",
-    "youtube:search:college meal prep week realistic budget",
-    "youtube:search:meal prep for beginners on a budget comments"
+    "tiktok:#girldinner meal prep",
+    "tiktok:meal prep for college students",
+    "tiktok:search:lazy meal prep high protein",
+    "tiktok:search:meal prep college student budget",
+    "tiktok:search:meal prep fails soggy boring week gen z",
+    "tiktok:search:sunday reset meal prep",
+    "web:meal prep student forum reviews",
+    "web:search:meal prep as a student is it worth it forum",
+    "youtube:meal prep for beginners college students",
+    "youtube:search:meal prep for beginners students cheap groceries",
+    "youtube:search:realistic meal prep week college student"
    ]
   },
   {
@@ -2221,7 +2222,7 @@
    ]
   }
  ],
- "eval_cost_usd": 0.1684,
+ "eval_cost_usd": 0.1867,
  "notes": [
   "Allocation efficiency is SIMULATED (see each brief's assumption).",
   "Cost and latency come from the run record; a run whose analysis was redone later includes that extra time and spend."

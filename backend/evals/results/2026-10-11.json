@@ -1,0 +1,2230 @@
+{
+ "status": "ok",
+ "date": "2026-10-11",
+ "generated_at": "2026-10-11T08:47:58+00:00",
+ "targets": {
+  "quote_groundedness": 1.0,
+  "claim_entailment": 0.95,
+  "claims_with_evidence": 1.0,
+  "relevance_rate": 0.6,
+  "source_diversity_platforms": 3,
+  "plan_divergence_max_shared": 0.5,
+  "peak_mem_mb_standard": 400,
+  "schema_valid": 1.0,
+  "expected_language_min_share": 0.05,
+  "entailment_sample": 30
+ },
+ "headline": {
+  "quote_groundedness": {
+   "value": 1.0,
+   "target": 1.0,
+   "pass": true,
+   "detail": "lowest of the briefs"
+  },
+  "claim_entailment": {
+   "value": 0.9133,
+   "target": 0.95,
+   "pass": false,
+   "detail": "137 of 150 sampled claims, all briefs"
+  },
+  "claims_with_evidence": {
+   "value": 1.0,
+   "target": 1.0,
+   "pass": true,
+   "detail": "lowest of the briefs"
+  },
+  "relevance_rate": {
+   "value": 0.338,
+   "target": 0.6,
+   "pass": false,
+   "detail": "lowest of the briefs; failing: nl_snack_brand, snacks_vague, uk_brand_range"
+  },
+  "source_diversity": {
+   "value": 3,
+   "target": 4,
+   "pass": false,
+   "detail": "briefs with >= 3 platforms (the vague brief is exempt)"
+  },
+  "plan_divergence": {
+   "value": 0.013,
+   "target": 0.5,
+   "pass": true,
+   "detail": "1 of 77 distinct source units are used by more than one brief: reddit:r/thenetherlands"
+  },
+  "allocation_efficiency": {
+   "value": 1.08,
+   "target": "agent >= equal split",
+   "pass": true,
+   "detail": "median ratio over briefs",
+   "simulated": true
+  },
+  "schema_valid": {
+   "value": 1.0,
+   "target": 1.0,
+   "pass": true,
+   "detail": "lowest of the briefs"
+  },
+  "peak_mem_mb": {
+   "value": 201.3,
+   "target": 400,
+   "pass": true,
+   "detail": "highest of the briefs"
+  }
+ },
+ "plan_divergence": {
+  "value": 0.013,
+  "target": 0.5,
+  "pass": true,
+  "detail": "1 of 77 distinct source units are used by more than one brief: reddit:r/thenetherlands",
+  "pairwise_jaccard": {
+   "genz_meal_prep / nl_snack_brand": 0.0,
+   "genz_meal_prep / de_heat_pumps": 0.0,
+   "genz_meal_prep / snacks_vague": 0.0,
+   "genz_meal_prep / uk_brand_range": 0.0,
+   "nl_snack_brand / de_heat_pumps": 0.0,
+   "nl_snack_brand / snacks_vague": 0.042,
+   "nl_snack_brand / uk_brand_range": 0.0,
+   "de_heat_pumps / snacks_vague": 0.0,
+   "de_heat_pumps / uk_brand_range": 0.0,
+   "snacks_vague / uk_brand_range": 0.0
+  }
+ },
+ "briefs": [
+  {
+   "id": "genz_meal_prep",
+   "brief": "Gen Z and meal prep",
+   "mode": "quick",
+   "pack_id": "pk_-ACqqf-R8ubD",
+   "run_id": "run_-zTN0_I4fayj2Gyz",
+   "reused": true,
+   "note": "",
+   "interpreted": {
+    "topic": "Gen Z and meal prep: how young people plan, cook and share batch-cooked meals",
+    "market": "global",
+    "languages": [
+     "en"
+    ]
+   },
+   "coverage_grade": "c",
+   "relevant_posts": 227,
+   "thin_evidence": true,
+   "thin_evidence_note": "below the content bar or the minimum relevant posts for quick (60); the pack says so instead of padding",
+   "metrics": {
+    "quote_groundedness": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "83 of 83 quotes are exact substrings of their evidence"
+    },
+    "claim_entailment": {
+     "value": 1.0,
+     "target": 0.95,
+     "pass": true,
+     "detail": "30 of 30 sampled claims entailed (strictly supported: 73%)"
+    },
+    "claims_with_evidence": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "45 of 45 claims cite evidence that is in the pack"
+    },
+    "relevance_rate": {
+     "value": 0.796,
+     "target": 0.6,
+     "pass": true,
+     "detail": "227 relevant of 285 kept posts"
+    },
+    "source_diversity": {
+     "value": 4,
+     "target": 3,
+     "pass": true,
+     "detail": "instagram, reddit, tiktok, youtube"
+    },
+    "allocation_efficiency": {
+     "value": 1.06,
+     "target": "agent >= equal split",
+     "pass": true,
+     "detail": "agent 227 relevant posts vs. equal split ~213 from 337 items over 11 units; per USD 166.1 vs. 156.1",
+     "simulated": true,
+     "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
+     "relevant_per_usd": {
+      "agent": 166.1,
+      "equal_split": 156.1
+     },
+     "units": 11
+    },
+    "loop_health": {
+     "value": {
+      "tool_calls": 15,
+      "finish_reason": "tool_call_limit",
+      "fallback_used": false,
+      "top_up_used": false,
+      "max_tool_calls": 15
+     },
+     "target": "finish, no fallback",
+     "pass": false,
+     "detail": "15 tool calls, finished by 'tool_call_limit' - the agent did not finish on its own; the pack is still valid but collection was cut short"
+    },
+    "cost_usd": {
+     "value": 4.55,
+     "target": 4.6,
+     "pass": true,
+     "detail": "Apify $0.98 + Anthropic $3.57; typical $1.50-3.00, hard cap $4.60 (NFR2)"
+    },
+    "latency_min": {
+     "value": 101.6,
+     "target": 7,
+     "pass": false,
+     "detail": "101.6 min end to end (NFR1: about 7 min); includes a 55 min pause between 'pack_ready' and 'cost' (stages re-run by hand later), so about 46.7 min of work"
+    },
+    "peak_mem_mb": {
+     "value": 195.1,
+     "target": 400,
+     "pass": null,
+     "detail": "195.1 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
+    },
+    "schema_valid": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "valid Context Pack 1.3"
+    }
+   },
+   "expectations": [
+    {
+     "check": "market is global",
+     "pass": true,
+     "detail": "interpreted market: global"
+    },
+    {
+     "check": "brief languages chosen",
+     "pass": true,
+     "detail": "chosen: en"
+    },
+    {
+     "check": "en posts in the corpus",
+     "pass": true,
+     "detail": "99% of kept posts"
+    },
+    {
+     "check": "linkedin at most 34% of the plan",
+     "pass": true,
+     "detail": "instagram 17%, reddit 33%, tiktok 17%, web 17%, youtube 17%"
+    },
+    {
+     "check": "at most 4 question(s)",
+     "pass": true,
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [market] Which country or countries should we listen to?; Q4 [audience_roles] Which Gen Z group matters most?"
+    },
+    {
+     "check": "asks about goal, offer",
+     "pass": true,
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [market] Which country or countries should we listen to?; Q4 [audience_roles] Which Gen Z group matters most?"
+    },
+    {
+     "check": "never asks what the brief already says",
+     "pass": true,
+     "detail": "ok"
+    }
+   ],
+   "clarifying_question": {
+    "questions": [
+     {
+      "id": "Q1",
+      "question": "What will you use this research for?",
+      "fills": "goal",
+      "options": [
+       "Content plan",
+       "Campaign launch",
+       "Positioning",
+       "Product validation",
+       "Market entry",
+       "Brand perception",
+       "Sales",
+       "Just understand the audience"
+      ]
+     },
+     {
+      "id": "Q2",
+      "question": "What do you offer, and how far along is it?",
+      "fills": "offer",
+      "options": [
+       "An idea - testing demand",
+       "Launching soon",
+       "Already selling",
+       "No offer of my own (agency, client work or exploring)"
+      ]
+     },
+     {
+      "id": "Q3",
+      "question": "Which country or countries should we listen to?",
+      "fills": "market",
+      "options": [
+       "US",
+       "UK",
+       "Netherlands",
+       "Germany",
+       "Global, English-language"
+      ]
+     },
+     {
+      "id": "Q4",
+      "question": "Which Gen Z group matters most?",
+      "fills": "audience_roles",
+      "options": [
+       "Students on a budget",
+       "Young professionals starting work",
+       "Gym and fitness-focused people",
+       "Gen Z who rarely cook but want to start",
+       "All of them"
+      ]
+     }
+    ]
+   },
+   "entailment": {
+    "checked": 30,
+    "sampled": 30,
+    "counts": {
+     "supported": 22,
+     "partially_supported": 8,
+     "not_supported": 0,
+     "unchecked": 0
+    },
+    "entailed": 30,
+    "rate": 1.0,
+    "strict_rate": 0.7333,
+    "rows": [
+     {
+      "id": "MOT-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts describe refusing meal deals, cooking without spending a fortune, and not affording eating out."
+     },
+     {
+      "id": "CUL-05",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0008 says to look up Chef Moe for a 5-buck meal that lasts 2 days."
+     },
+     {
+      "id": "CUL-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts use reset hashtags with weekly prep, but TikTok is not named and cleaning is only hinted at by one hashtag."
+     },
+     {
+      "id": "LEX-06",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0043 uses cba for a lazy evening when not wanting to cook."
+     },
+     {
+      "id": "THM-10",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Several commenters ask creators for recipes after liking their food."
+     },
+     {
+      "id": "THM-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0006 and EV-0009 explicitly discuss meal prepping on a budget."
+     },
+     {
+      "id": "CUL-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The posts cite a price and a college budget, but these are in the captions; nothing shows they are in the video itself."
+     },
+     {
+      "id": "CUL-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0045 recommends the Brokie Budget Meals creator for cheap meals with leftovers."
+     },
+     {
+      "id": "LEX-10",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0007 refuses a meal deal and offers a day of food under £3."
+     },
+     {
+      "id": "TEN-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0057 says cooked food lasts 3-4 days, but no post states a desire to prep a whole week at once."
+     },
+     {
+      "id": "MOT-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0059 describes an easy meal for when tired but still needing to hit protein."
+     },
+     {
+      "id": "LEX-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Multiple posts mention macros in the context of meeting nutrition targets."
+     },
+     {
+      "id": "SEG-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Several posts describe meal prepping to hit macros or nutrition goals."
+     },
+     {
+      "id": "THM-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0002, EV-0003 and EV-0004 describe high-protein meals made for lazy, low-effort days."
+     },
+     {
+      "id": "THM-09",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0027 and EV-0026 show frustration when others ate the person's meal prep."
+     },
+     {
+      "id": "THM-05",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0020 asks directly how the food stays fresh by the end of the week."
+     },
+     {
+      "id": "LEX-08",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0044 says they have app fatigue and now use only a few free tools for tracking."
+     },
+     {
+      "id": "OBJ-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0017 says this almost word for word."
+     },
+     {
+      "id": "OBJ-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Two different posts are joined as if one person said both: the 'bestest app' doubt (EV-0071) and the 'same tricks' line (EV-0072)."
+     },
+     {
+      "id": "PAIN-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0050 says they work long hours, so the less time spent cooking the better."
+     },
+     {
+      "id": "TEN-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Not wanting boring meals is stated, but no post clearly says that coming up with new recipes each week is tiring; EV-0055 is cut off."
+     },
+     {
+      "id": "THM-06",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0022 describes freezing individually wrapped portions so you can grab one and reheat it."
+     },
+     {
+      "id": "THM-07",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0025 says a mini fridge limits you but is workable with staples and containers that fit."
+     },
+     {
+      "id": "SEG-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Several students and first-time solo cooks ask for cheap, beginner-friendly meal prep."
+     },
+     {
+      "id": "THM-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0010 and EV-0014 describe a weekend/Sunday reset with meal prep to get ready for the week."
+     },
+     {
+      "id": "OBJ-06",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0074 describes green patches on prepped portions and asks if they are mold."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "All three posts tag #highproteinmeals on meals described as easy, quick or lazy."
+     },
+     {
+      "id": "LEX-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Only EV-0011 links Sunday reset to cleaning and meal prep; EV-0013 just mentions a Sunday reset."
+     },
+     {
+      "id": "CUL-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Comments ask for recipes, but nothing says they are under meal prep videos."
+     },
+     {
+      "id": "SEG-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Only EV-0050 asks for meal prep that suits long work hours; the others want fast or replacement meals, not prepped meals for long days."
+     }
+    ],
+    "usd": 0.1309
+   },
+   "units": [
+    "instagram:#mealprepideas",
+    "instagram:gen z meal prep ideas",
+    "reddit:r/eatcheapandhealthy",
+    "reddit:r/mealprep",
+    "reddit:r/mealprepsunday",
+    "tiktok:#girldinner meal prep",
+    "tiktok:meal prep for college students",
+    "tiktok:search:lazy meal prep high protein",
+    "tiktok:search:meal prep college student budget",
+    "tiktok:search:meal prep fails soggy boring week gen z",
+    "tiktok:search:sunday reset meal prep",
+    "web:meal prep student forum reviews",
+    "web:search:meal prep as a student is it worth it forum",
+    "youtube:meal prep for beginners college students",
+    "youtube:search:meal prep for beginners students cheap groceries",
+    "youtube:search:realistic meal prep week college student"
+   ]
+  },
+  {
+   "id": "nl_snack_brand",
+   "brief": "Launching a snack brand in the Netherlands",
+   "mode": "quick",
+   "pack_id": "pk_3I8-9eTZflyz",
+   "run_id": "run_oGPWvoGN3eyB1yK1",
+   "reused": true,
+   "note": "",
+   "interpreted": {
+    "topic": "snacking habits and attitudes toward new snack brands in the Netherlands",
+    "market": "NL",
+    "languages": [
+     "nl",
+     "en"
+    ]
+   },
+   "coverage_grade": "c",
+   "relevant_posts": 71,
+   "thin_evidence": true,
+   "thin_evidence_note": "below the content bar or the minimum relevant posts for quick (60); the pack says so instead of padding",
+   "metrics": {
+    "quote_groundedness": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "66 of 66 quotes are exact substrings of their evidence"
+    },
+    "claim_entailment": {
+     "value": 0.9333,
+     "target": 0.95,
+     "pass": false,
+     "detail": "28 of 30 sampled claims entailed (strictly supported: 60%); not entailed: PHR-03, LEX-01"
+    },
+    "claims_with_evidence": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "38 of 38 claims cite evidence that is in the pack"
+    },
+    "relevance_rate": {
+     "value": 0.514,
+     "target": 0.6,
+     "pass": false,
+     "detail": "71 relevant of 138 kept posts; weakest kept sources: tiktok:search:snack haul albert heijn jumbo nieuwe snacks (35% of 20), tiktok:search:snack proeven nederland (40% of 20)"
+    },
+    "source_diversity": {
+     "value": 6,
+     "target": 3,
+     "pass": true,
+     "detail": "instagram, reddit, tiktok, web_forum, web_review, youtube"
+    },
+    "allocation_efficiency": {
+     "value": 0.91,
+     "target": "agent >= equal split",
+     "pass": false,
+     "detail": "agent 59 relevant posts vs. equal split ~65 from 139 items over 6 units; per USD 72.5 vs. 79.3",
+     "simulated": true,
+     "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
+     "relevant_per_usd": {
+      "agent": 72.5,
+      "equal_split": 79.3
+     },
+     "units": 6
+    },
+    "loop_health": {
+     "value": {
+      "tool_calls": 13,
+      "finish_reason": "time_limit",
+      "fallback_used": true,
+      "top_up_used": false,
+      "max_tool_calls": 15
+     },
+     "target": "finish, no fallback",
+     "pass": false,
+     "detail": "13 tool calls, finished by 'time_limit', fallback used - the agent did not finish on its own; the pack is still valid but collection was cut short"
+    },
+    "cost_usd": {
+     "value": 1.96,
+     "target": 4.6,
+     "pass": true,
+     "detail": "Apify $0.37 + Anthropic $1.60; typical $1.50-3.00, hard cap $4.60 (NFR2)"
+    },
+    "latency_min": {
+     "value": 18.3,
+     "target": 7,
+     "pass": false,
+     "detail": "18.3 min end to end (NFR1: about 7 min)"
+    },
+    "peak_mem_mb": {
+     "value": 188.9,
+     "target": 400,
+     "pass": null,
+     "detail": "188.9 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
+    },
+    "schema_valid": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "valid Context Pack 1.3"
+    }
+   },
+   "expectations": [
+    {
+     "check": "market is NL",
+     "pass": true,
+     "detail": "interpreted market: NL"
+    },
+    {
+     "check": "brief languages chosen",
+     "pass": true,
+     "detail": "chosen: nl, en"
+    },
+    {
+     "check": "nl posts in the corpus",
+     "pass": true,
+     "detail": "76% of kept posts"
+    },
+    {
+     "check": "en posts in the corpus",
+     "pass": true,
+     "detail": "23% of kept posts"
+    },
+    {
+     "check": "at most 4 question(s)",
+     "pass": true,
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [audience_roles] Who should we listen to?; Q4 [key_question] When is the launch, and what decision should this research help with?"
+    },
+    {
+     "check": "asks about goal, offer",
+     "pass": true,
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [audience_roles] Who should we listen to?; Q4 [key_question] When is the launch, and what decision should this research help with?"
+    },
+    {
+     "check": "never asks what the brief already says",
+     "pass": true,
+     "detail": "ok"
+    }
+   ],
+   "clarifying_question": {
+    "questions": [
+     {
+      "id": "Q1",
+      "question": "What will you use this research for?",
+      "fills": "goal",
+      "options": [
+       "Content plan",
+       "Campaign launch",
+       "Positioning",
+       "Product validation",
+       "Market entry",
+       "Brand perception",
+       "Sales",
+       "Just understand the audience"
+      ]
+     },
+     {
+      "id": "Q2",
+      "question": "What do you offer, and how far along is it?",
+      "fills": "offer",
+      "options": [
+       "An idea - testing demand",
+       "Launching soon",
+       "Already selling",
+       "No offer of my own (agency, client work or exploring)"
+      ]
+     },
+     {
+      "id": "Q3",
+      "question": "Who should we listen to?",
+      "fills": "audience_roles",
+      "options": [
+       "Students and young adults (18-25)",
+       "Young professionals (25-35)",
+       "Parents buying for the family",
+       "Health- and fitness-minded snackers",
+       "All snack buyers"
+      ]
+     },
+     {
+      "id": "Q4",
+      "question": "When is the launch, and what decision should this research help with?",
+      "fills": "key_question",
+      "options": [
+       "Within 3 months, choosing launch message",
+       "Within 6 months, choosing product range or flavours",
+       "Later this year, choosing retail vs online",
+       "No fixed date yet"
+      ]
+     }
+    ]
+   },
+   "entailment": {
+    "checked": 30,
+    "sampled": 30,
+    "counts": {
+     "supported": 18,
+     "partially_supported": 12,
+     "not_supported": 0,
+     "unchecked": 0
+    },
+    "entailed": 28,
+    "rate": 0.9333,
+    "strict_rate": 0.6,
+    "rows": [
+     {
+      "id": "LEX-04",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0015 says they love roze koeken as a childhood nostalgia thing."
+     },
+     {
+      "id": "SEG-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts are a gym brand's trainer tips about protein after training and fullness, not people saying they snack for these reasons."
+     },
+     {
+      "id": "MOT-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show enthusiastic tasting and testing of new snacks and products."
+     },
+     {
+      "id": "MOM-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0044 describes one weekly shop where new items were tried; a single event is turned into a habit."
+     },
+     {
+      "id": "LEX-05",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0011 uses snoep in a taste test and EV-0022 in a school rule."
+     },
+     {
+      "id": "SEG-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show creators doing taste tests of new products, but nothing about people watching or joining them."
+     },
+     {
+      "id": "LEX-06",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Snack haul is used, but no post states it is a video."
+     },
+     {
+      "id": "PAIN-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0031 says sweets, cookies and chips gave them a huge energy dip."
+     },
+     {
+      "id": "PHR-03",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "EV-0023 asks YAY or NAY on plopkoeken but TikTok is not stated."
+     },
+     {
+      "id": "CUL-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Two fitfactory posts share trainer snack tips with #snacktip."
+     },
+     {
+      "id": "LEX-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0020 mentions tussendoortjes sold in most supermarkets."
+     },
+     {
+      "id": "THM-08",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0015 links loving roze koeken to childhood nostalgia, and EV-0016 misses an old favourite snack."
+     },
+     {
+      "id": "PAIN-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The commenter says 'de eiwitrepen vallen mij meestal tegen', meaning protein bars usually disappoint them."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The title reads 'LIDL: NIEUWE PRODUCTEN TESTEN', announcing a test of new products at Lidl."
+     },
+     {
+      "id": "LEX-01",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Snacktip is used for trainers' recommendations, but neither post says the recommendations are 'quick'."
+     },
+     {
+      "id": "THM-05",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The posts praise the packaging and one is curious about the new flavour, but none says these make them want to try it."
+     },
+     {
+      "id": "MOM-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The parent says the school rules are vague and asks the teacher whether certain snacks are allowed, but the stated need is only implied."
+     },
+     {
+      "id": "CUL-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Snack unboxing and haul posts appear, and one comment debates whether 'junk' belongs in a snack haul."
+     },
+     {
+      "id": "CUL-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The post asks YAY or NAY on plopkoeken, but nothing says it is on TikTok."
+     },
+     {
+      "id": "LEX-10",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The commenter uses 'stropfwaffel' and calls it really good."
+     },
+     {
+      "id": "OBJ-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The post says 'jammer genoeg' (sadly) the Lidl explosion protein bar contains beef collagen."
+     },
+     {
+      "id": "LEX-11",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The post says 'Bakleverworst is echt Twents'."
+     },
+     {
+      "id": "LEX-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "'Lekker' is used for tasty things, and EV-0005 uses 'zin in iets lekkers' for craving a treat."
+     },
+     {
+      "id": "OBJ-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The commenter says the bars in the healthy snack overview also contain a lot of sugar."
+     },
+     {
+      "id": "LEX-07",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0023 asks whether you want plopkoeken, YAY or NAY, with a cookie emoji."
+     },
+     {
+      "id": "LEX-09",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "In EV-0025 the commenter says they are also team Hüttenkäse and would like it with naan bread."
+     },
+     {
+      "id": "MOT-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0035 is a trainer's tip saying fruit is easy to take along, not a person saying they want such a snack."
+     },
+     {
+      "id": "MOT-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Only EV-0033 hints at this (hungry again after an hour); the other posts are promotional claims, not someone saying what they want."
+     },
+     {
+      "id": "TEN-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0032 describes having to choose between getting fat and keeping chocolate (sugar) on bread, and calls it a terrible decision."
+     },
+     {
+      "id": "THM-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The posts show creators taste-testing new products, but none says viewers watch to decide what is worth trying."
+     }
+    ],
+    "usd": 0.1216
+   },
+   "units": [
+    "instagram:#snacktip",
+    "instagram:nieuwe snack nederland",
+    "reddit:r/thenetherlands",
+    "tiktok:search:snack haul albert heijn jumbo nieuwe snacks",
+    "tiktok:search:snack proeven nederland",
+    "tiktok:search:snack review nederland",
+    "tiktok:snack review nederland",
+    "web:gathering.tweakers.net",
+    "web:happyhealthy.nl",
+    "web:makkelijkafvallen.nl",
+    "web:puurfiguur.nl",
+    "web:search:site:gathering.tweakers.net nieuwe snacks supermarkt ervaring",
+    "web:search:snack review smaakt vies te zoet",
+    "web:search:snacks supermarkt ervaring gezonde snack tips forum",
+    "web:snack reviews albert heijn jumbo reviews",
+    "youtube:nederlandse snacks proeven reactie",
+    "youtube:search:gezonde snacks review supermarkt eiwit reep proeven",
+    "youtube:search:nederlandse snacks proeven reactie"
+   ]
+  },
+  {
+   "id": "de_heat_pumps",
+   "brief": "Heat pumps for homeowners in Germany",
+   "mode": "quick",
+   "pack_id": "pk_n-QlY1xrqi0x",
+   "run_id": "run_qif3EAmeJTQ5mRSX",
+   "reused": true,
+   "note": "B2B-like; energy and green claims. Becomes the third example (feature it after a privacy check).",
+   "interpreted": {
+    "topic": "Heat pump (Wärmepumpe) purchase and installation decisions by homeowners in Germany",
+    "market": "DE",
+    "languages": [
+     "de",
+     "en"
+    ]
+   },
+   "coverage_grade": "b",
+   "relevant_posts": 171,
+   "thin_evidence": false,
+   "thin_evidence_note": "",
+   "metrics": {
+    "quote_groundedness": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "119 of 119 quotes are exact substrings of their evidence"
+    },
+    "claim_entailment": {
+     "value": 1.0,
+     "target": 0.95,
+     "pass": true,
+     "detail": "30 of 30 sampled claims entailed (strictly supported: 57%)"
+    },
+    "claims_with_evidence": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "67 of 67 claims cite evidence that is in the pack"
+    },
+    "relevance_rate": {
+     "value": 0.737,
+     "target": 0.6,
+     "pass": true,
+     "detail": "171 relevant of 232 kept posts"
+    },
+    "source_diversity": {
+     "value": 5,
+     "target": 3,
+     "pass": true,
+     "detail": "facebook, reddit, tiktok, x, youtube"
+    },
+    "allocation_efficiency": {
+     "value": 1.08,
+     "target": "agent >= equal split",
+     "pass": true,
+     "detail": "agent 171 relevant posts vs. equal split ~159 from 248 items over 10 units; per USD 149.6 vs. 138.8",
+     "simulated": true,
+     "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
+     "relevant_per_usd": {
+      "agent": 149.6,
+      "equal_split": 138.8
+     },
+     "units": 10
+    },
+    "loop_health": {
+     "value": {
+      "tool_calls": 14,
+      "finish_reason": "finish",
+      "fallback_used": false,
+      "top_up_used": false,
+      "max_tool_calls": 15
+     },
+     "target": "finish, no fallback",
+     "pass": true,
+     "detail": "14 tool calls, finished by 'finish'"
+    },
+    "cost_usd": {
+     "value": 5.67,
+     "target": 4.6,
+     "pass": false,
+     "detail": "Apify $0.59 + Anthropic $5.08; typical $1.50-3.00, hard cap $4.60 (NFR2); over the cap because analysis stages were re-run on the saved corpus"
+    },
+    "latency_min": {
+     "value": 68.7,
+     "target": 7,
+     "pass": false,
+     "detail": "68.7 min end to end (NFR1: about 7 min); includes a 17 min pause between 'pack_ready' and 'cost' (stages re-run by hand later), so about 51.4 min of work"
+    },
+    "peak_mem_mb": {
+     "value": 194.3,
+     "target": 400,
+     "pass": null,
+     "detail": "194.3 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
+    },
+    "schema_valid": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "valid Context Pack 1.3"
+    }
+   },
+   "expectations": [
+    {
+     "check": "market is DE",
+     "pass": true,
+     "detail": "interpreted market: DE"
+    },
+    {
+     "check": "brief languages chosen",
+     "pass": true,
+     "detail": "chosen: de, en"
+    },
+    {
+     "check": "de posts in the corpus",
+     "pass": true,
+     "detail": "100% of kept posts"
+    },
+    {
+     "check": "compliance area energy_environmental",
+     "pass": true,
+     "detail": "interpreted: energy_environmental; 30 compliance flag(s) in the pack"
+    },
+    {
+     "check": "at most 4 question(s)",
+     "pass": true,
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [audience_roles] Which homeowners matter most?; Q4 [key_question] Is there a decision or date this research should support?"
+    },
+    {
+     "check": "asks about goal, offer",
+     "pass": true,
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [audience_roles] Which homeowners matter most?; Q4 [key_question] Is there a decision or date this research should support?"
+    },
+    {
+     "check": "never asks what the brief already says",
+     "pass": true,
+     "detail": "ok"
+    }
+   ],
+   "clarifying_question": {
+    "questions": [
+     {
+      "id": "Q1",
+      "question": "What will you use this research for?",
+      "fills": "goal",
+      "options": [
+       "Content plan",
+       "Campaign launch",
+       "Positioning",
+       "Product validation",
+       "Market entry",
+       "Brand perception",
+       "Sales",
+       "Just understand the audience"
+      ]
+     },
+     {
+      "id": "Q2",
+      "question": "What do you offer, and how far along is it?",
+      "fills": "offer",
+      "options": [
+       "An idea - testing demand",
+       "Launching soon",
+       "Already selling",
+       "No offer of my own (agency, client work or exploring)"
+      ]
+     },
+     {
+      "id": "Q3",
+      "question": "Which homeowners matter most?",
+      "fills": "audience_roles",
+      "options": [
+       "Owners of older houses replacing a gas or oil boiler",
+       "New-build owners and builders",
+       "Owners who already have a heat pump",
+       "Owners comparing installers and quotes",
+       "All of them"
+      ]
+     },
+     {
+      "id": "Q4",
+      "question": "Is there a decision or date this research should support?",
+      "fills": "key_question",
+      "options": [
+       "A launch or campaign in the next 3 months",
+       "Planning content for the coming season",
+       "Choosing our message against competitors",
+       "No fixed date"
+      ]
+     }
+    ]
+   },
+   "entailment": {
+    "checked": 30,
+    "sampled": 30,
+    "counts": {
+     "supported": 17,
+     "partially_supported": 13,
+     "not_supported": 0,
+     "unchecked": 0
+    },
+    "entailed": 30,
+    "rate": 1.0,
+    "strict_rate": 0.5667,
+    "rows": [
+     {
+      "id": "LEX-09",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0017 says the Geschwindigkeitsbonus fell to 16%."
+     },
+     {
+      "id": "LEX-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Both posts use JAZ values (2.6, 4.3) to judge heat pump performance."
+     },
+     {
+      "id": "MOT-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show scepticism about a quote and a request to check it, but none mentions whether the price is fair."
+     },
+     {
+      "id": "MOT-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts say a heat load calculation is needed and should come before choosing a model, but none says outright that it is for sizing the pump correctly."
+     },
+     {
+      "id": "SEG-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0056 asks about a DIY installation and EV-0057 says the poster did the installation themselves."
+     },
+     {
+      "id": "PHR-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0021 answers the 41°C flow temperature question with 'Heizkurve zu hoch'."
+     },
+     {
+      "id": "MOM-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The portal closure and the rate change come from two different posts, joined as one person's concern."
+     },
+     {
+      "id": "LEX-04",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Both posts use WP in place of Wärmepumpe."
+     },
+     {
+      "id": "THM-12",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The joke and the distrust come from two different posts, joined as if one person said both."
+     },
+     {
+      "id": "THM-14",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0027 says this almost word for word."
+     },
+     {
+      "id": "CUL-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0043 says it wants to use the knowledge 'in diesem Sub' for assessing offers and devices."
+     },
+     {
+      "id": "THM-06",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Cycling and odd flow temperatures appear across several posts, but no post literally asks others what to change."
+     },
+     {
+      "id": "SEG-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The post describes changing the 'Externe Pumpe' setting after the heating kept cycling, but it never says the device is a heat pump (the title mentions a Frischwasserstation)."
+     },
+     {
+      "id": "MOM-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Two different posts each report on one year of results, but neither describes judging after a year as a general practice, and only one is clearly about electricity use."
+     },
+     {
+      "id": "SEG-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The posters share quotes and ask for a review, but none literally asks whether the quote is fair."
+     },
+     {
+      "id": "OBJ-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0073 says the poster keeps hearing this statement and calls it a 'Denkfehler' (a mistaken idea)."
+     },
+     {
+      "id": "CUL-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0029 says exactly this."
+     },
+     {
+      "id": "LEX-12",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0051 says the offer includes a Kombispeicher that the commenter would rather leave out."
+     },
+     {
+      "id": "LEX-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Both posts use Heizungsbauer when talking about what the installer should have said or judged."
+     },
+     {
+      "id": "THM-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The deadline and rules questions come from different posters joined as one 'I', and no post states fear of losing the grant."
+     },
+     {
+      "id": "THM-09",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0031 says the balancing is needed for the grant and must actually be done, not just certified."
+     },
+     {
+      "id": "LEX-16",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0052 mentions Geizbetrieb while reading the electricity use on a wattwächter."
+     },
+     {
+      "id": "OBJ-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0077 says exactly this, citing the data sheet."
+     },
+     {
+      "id": "OBJ-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0076 says exactly this."
+     },
+     {
+      "id": "THM-11",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Responders question why such a large buffer or stratified tank is needed, but no post has the offer holder questioning their own offer."
+     },
+     {
+      "id": "MOT-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0066 says their old gas heating has aged, leaves the house lukewarm in winter, and so they want to install a WP."
+     },
+     {
+      "id": "TEN-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts call a hybrid uneconomic and a half measure, but no post states a wish for a hybrid or backup for safety; EV-0061 only mentions a generator for emergencies."
+     },
+     {
+      "id": "TEN-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0010 is a skeptic predicting 17-degree rooms, not someone wanting a heat pump and fearing cold rooms; the other posts report success."
+     },
+     {
+      "id": "MOT-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The question appears as the framing of a video description, not as a person's own wish to know what they will pay."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0002 quotes the myth 'Wärmepumpe im Altbau geht nicht' as one an interview claims to have cleared up."
+     }
+    ],
+    "usd": 0.1308
+   },
+   "units": [
+    "facebook:group:5462833997116825",
+    "facebook:search:wärmepumpe erfahrungen altbau angebot handwerker",
+    "facebook:search:wärmepumpe zu laut nachbar förderung kfw antrag",
+    "facebook:wärmepumpe erfahrungen hausbesitzer",
+    "reddit:r/de",
+    "reddit:r/waermepumpe",
+    "reddit:search:r/wärmepumpe",
+    "tiktok:search:wärmepumpe altbau erfahrung",
+    "web:bau.net",
+    "web:haustechnikdialog.de",
+    "web:heizungsforum.de",
+    "web:photovoltaikforum.com",
+    "web:search:wärmepumpe altbau erfahrungen jaz stromverbrauch forum",
+    "web:urbia.de",
+    "web:wärmepumpe installateur bewertungen erfahrungen mängel",
+    "x:search:wärmepumpe heizungsgesetz förderung hausbesitzer",
+    "youtube:search:wärmepumpe altbau vorlauftemperatur heizkörper hydraulischer abgleich",
+    "youtube:search:wärmepumpe erfahrungsbericht nach einem jahr altbau",
+    "youtube:search:wärmepumpe kosten förderung einfamilienhaus lohnt sich",
+    "youtube:wärmepumpe erfahrungsbericht altbau kosten"
+   ]
+  },
+  {
+   "id": "snacks_vague",
+   "brief": "snacks",
+   "mode": "quick",
+   "pack_id": "pk_r5nbddoJzHFK",
+   "run_id": "run_jYQh2iFILJrXGTYg",
+   "reused": true,
+   "note": "Vague and thin on purpose. The clarifying questions are recorded; a new run answers goal and offer from answers, the rest with the first chip.",
+   "interpreted": {
+    "topic": "snacking habits, preferences and attitudes toward snacks (sweet, salty, healthy)",
+    "market": "NL",
+    "languages": [
+     "nl",
+     "en"
+    ]
+   },
+   "coverage_grade": "b",
+   "relevant_posts": 117,
+   "thin_evidence": true,
+   "thin_evidence_note": "below the content bar or the minimum relevant posts for quick (60); the pack says so instead of padding",
+   "metrics": {
+    "quote_groundedness": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "104 of 104 quotes are exact substrings of their evidence"
+    },
+    "claim_entailment": {
+     "value": 0.8,
+     "target": 0.95,
+     "pass": false,
+     "detail": "24 of 30 sampled claims entailed (strictly supported: 53%); not entailed: THM-04, THM-06, LEX-05, THM-03, THM-09, LEX-02"
+    },
+    "claims_with_evidence": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "57 of 57 claims cite evidence that is in the pack"
+    },
+    "relevance_rate": {
+     "value": 0.502,
+     "target": 0.6,
+     "pass": false,
+     "detail": "117 relevant of 233 kept posts; weakest kept sources: youtube:search:snacks proeven review nederland (30% of 30), reddit:r/thenetherlands (33% of 18)"
+    },
+    "source_diversity": {
+     "value": 4,
+     "target": 3,
+     "pass": null,
+     "detail": "reddit, tiktok, web_forum, youtube (this brief is exempt, PRD 14.3)"
+    },
+    "allocation_efficiency": {
+     "value": 1.55,
+     "target": "agent >= equal split",
+     "pass": true,
+     "detail": "agent 117 relevant posts vs. equal split ~76 from 256 items over 4 units; per USD 105.3 vs. 68.1",
+     "simulated": true,
+     "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
+     "relevant_per_usd": {
+      "agent": 105.3,
+      "equal_split": 68.1
+     },
+     "units": 4
+    },
+    "loop_health": {
+     "value": {
+      "tool_calls": 8,
+      "finish_reason": "finish",
+      "fallback_used": false,
+      "top_up_used": false,
+      "max_tool_calls": 15
+     },
+     "target": "finish, no fallback",
+     "pass": true,
+     "detail": "8 tool calls, finished by 'finish'"
+    },
+    "cost_usd": {
+     "value": 1.9,
+     "target": 4.6,
+     "pass": true,
+     "detail": "Apify $0.46 + Anthropic $1.44; typical $1.50-3.00, hard cap $4.60 (NFR2)"
+    },
+    "latency_min": {
+     "value": 11.3,
+     "target": 7,
+     "pass": false,
+     "detail": "11.3 min end to end (NFR1: about 7 min)"
+    },
+    "peak_mem_mb": {
+     "value": 191.6,
+     "target": 400,
+     "pass": null,
+     "detail": "191.6 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
+    },
+    "schema_valid": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "valid Context Pack 1.3"
+    }
+   },
+   "expectations": [
+    {
+     "check": "asks about goal, offer, market, audience_roles",
+     "pass": true,
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [market] Which country or region should we listen in?; Q4 [audience_roles] Whose conversations matter most?"
+    },
+    {
+     "check": "never asks what the brief already says",
+     "pass": true,
+     "detail": "ok"
+    }
+   ],
+   "clarifying_question": {
+    "questions": [
+     {
+      "id": "Q1",
+      "question": "What will you use this research for?",
+      "fills": "goal",
+      "options": [
+       "Content plan",
+       "Campaign launch",
+       "Positioning",
+       "Product validation",
+       "Market entry",
+       "Brand perception",
+       "Sales",
+       "Just understand the audience"
+      ]
+     },
+     {
+      "id": "Q2",
+      "question": "What do you offer, and how far along is it?",
+      "fills": "offer",
+      "options": [
+       "An idea - testing demand",
+       "Launching soon",
+       "Already selling",
+       "No offer of my own (agency, client work or exploring)"
+      ]
+     },
+     {
+      "id": "Q3",
+      "question": "Which country or region should we listen in?",
+      "fills": "market",
+      "options": [
+       "Netherlands",
+       "Germany",
+       "UK",
+       "US",
+       "Several European countries"
+      ]
+     },
+     {
+      "id": "Q4",
+      "question": "Whose conversations matter most?",
+      "fills": "audience_roles",
+      "options": [
+       "Teens and students",
+       "Young adults 18-30",
+       "Parents buying for kids",
+       "Health-conscious adults",
+       "Everyone who buys snacks"
+      ]
+     }
+    ]
+   },
+   "entailment": {
+    "checked": 30,
+    "sampled": 30,
+    "counts": {
+     "supported": 16,
+     "partially_supported": 14,
+     "not_supported": 0,
+     "unchecked": 0
+    },
+    "entailed": 24,
+    "rate": 0.8,
+    "strict_rate": 0.5333,
+    "rows": [
+     {
+      "id": "THM-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Several posters name specific brands and flavours they go for (e.g., Lays Oven Baked Paprika, Walkers Salt & Vinegar)."
+     },
+     {
+      "id": "MOT-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Posters lament favourite snacks no longer found or removed from shelves (Golden Wonder, Bruine Beertjes, Cheetos Frites)."
+     },
+     {
+      "id": "WSP-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts show speculation about ownership (Smiths bought by Lays, three giants), but 'people wonder' and lack of clear answer are only loosely shown."
+     },
+     {
+      "id": "OBJ-02",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Some posts call prices high (airport, Lays ribbelchips 'wel duur'), but not snacks in general being far too expensive."
+     },
+     {
+      "id": "LEX-20",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The post simply names 'Borrelnoten' as an answer to the snack question."
+     },
+     {
+      "id": "THM-04",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Bruine Beertjes poster explicitly still misses it; others note items gone or hard to find, but not all say they still miss them."
+     },
+     {
+      "id": "THM-06",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts complain about changed recipes making chips/snacks worse, but not that the poster's own favourites no longer taste right in the generalized sense."
+     },
+     {
+      "id": "WSP-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One post says veg isn't comparable to a savoury chip and asks for healthy ideas, but the claim that nobody serves it isn't shown."
+     },
+     {
+      "id": "SEG-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Posters say their favourite chip changed (recipe, shrinkflation, replaced) and they no longer have a favourite."
+     },
+     {
+      "id": "PHR-04",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A post says 'Belachelijke prijzen' about Schiphol."
+     },
+     {
+      "id": "CUL-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts answer with brief lists such as 'Lays Pickles / Lays Cheese Onion / Kettle Black Pepper'."
+     },
+     {
+      "id": "LEX-05",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "The poster says paprika ribbel chips are hard to find and only available at one shop, but 'people' hunting is just one poster."
+     },
+     {
+      "id": "SEG-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts praise Lidl items and cheapness (salami, ice cream, surimi), but only Lidl is named, and not all are snacks; Aldi value isn't shown."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A user writes 'Croky Saté RIP' alongside favourites, using RIP for a snack; fits discontinued sense though only one instance."
+     },
+     {
+      "id": "SEG-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A poster asks for responsible snacks as chip alternatives and gets suggestions."
+     },
+     {
+      "id": "OBJ-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Multiple posts say new recipes ruined Doritos, Smiths, Duyvis, Lays etc."
+     },
+     {
+      "id": "LEX-17",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "A user calls Pringles 'meuk'."
+     },
+     {
+      "id": "THM-08",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts cite ridiculous prices and bad quality at Schiphol."
+     },
+     {
+      "id": "MOM-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Evidence mentions evening couch snacking and a pre-dinner snack meal, though in third-person/other voices."
+     },
+     {
+      "id": "THM-03",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Posts praise tasty Lidl items and some cheap prices, but Aldi barely covered and items aren't all snacks."
+     },
+     {
+      "id": "THM-09",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Kipcordonbleu from the freezer is praised, but 'easy go-to' is only implied."
+     },
+     {
+      "id": "MOT-06",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts mention frozen oven snacks but don't state the desire for minimal effort."
+     },
+     {
+      "id": "WSP-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "People ask about discontinued items, but the evidence doesn't show that nobody answered or brands being quiet; one brand did reply."
+     },
+     {
+      "id": "LEX-13",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Pomtips and Sun Moon Stars are called 'verslavend' and described as light, crunchy and salty."
+     },
+     {
+      "id": "THM-05",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts mention childhood lunchbox favourite hagelslag, nostalgic dinosaur chips, and snacks tasting like 1996."
+     },
+     {
+      "id": "LEX-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Kaassticks are called zoutjes and 'japanse zoutjes' appears, but no post defines zoutjes as the general word for salty snacks."
+     },
+     {
+      "id": "MOT-01",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts ask for responsible snacks and note veggies don't compare to chips, implying craving satisfaction, but not stated as a personal requirement exactly."
+     },
+     {
+      "id": "LEX-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One user uses 'beknibbelflatie' about Lays after changes, but evidence doesn't show people generally use it for shrinkflation."
+     },
+     {
+      "id": "LEX-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "Posts use 'A-merk' for big-brand chips/food companies, implicitly versus others."
+     },
+     {
+      "id": "LEX-12",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Post says lots of paprika on Croky chips gives 'rode klauwen' after one chip."
+     }
+    ],
+    "usd": 0.0405
+   },
+   "units": [
+    "reddit:r/thenetherlands",
+    "tiktok:#snacktok",
+    "web:ah.nl",
+    "web:forum.fok.nl",
+    "web:search:forum.fok.nl favoriete snack chips zoutjes",
+    "youtube:search:snacks proeven review nederland",
+    "youtube:snack review nederland proeven"
+   ]
+  },
+  {
+   "id": "uk_brand_range",
+   "brief": "How do UK shoppers see Lidl's Deluxe range?",
+   "mode": "quick",
+   "pack_id": "pk_sa3D-ysf4nCb",
+   "run_id": "run_eFobNT6e_HyEYmMd",
+   "reused": true,
+   "note": "Change V12 - brand perception on a public own-label range with a parent brand. Needs a paid Quick run (Anthropic up to 2.80 USD, Apify up to 1.80 USD; cost shown first).",
+   "interpreted": {
+    "topic": "How UK shoppers perceive Lidl's Deluxe premium own-label range (quality, value, vs. other supermarket premium ranges)",
+    "market": "GB",
+    "languages": [
+     "en"
+    ]
+   },
+   "coverage_grade": "c",
+   "relevant_posts": 66,
+   "thin_evidence": true,
+   "thin_evidence_note": "below the content bar or the minimum relevant posts for quick (60); the pack says so instead of padding",
+   "metrics": {
+    "quote_groundedness": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "82 of 82 quotes are exact substrings of their evidence"
+    },
+    "claim_entailment": {
+     "value": 0.8333,
+     "target": 0.95,
+     "pass": false,
+     "detail": "25 of 30 sampled claims entailed (strictly supported: 77%); not entailed: MOT-01, LEX-02, THM-06, OBJ-04, SEG-02"
+    },
+    "claims_with_evidence": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "43 of 43 claims cite evidence that is in the pack"
+    },
+    "relevance_rate": {
+     "value": 0.338,
+     "target": 0.6,
+     "pass": false,
+     "detail": "66 relevant of 195 kept posts; weakest kept sources: tiktok:search:lidl deluxe taste test uk (45% of 38), web:mumsnet.com (53% of 92)"
+    },
+    "source_diversity": {
+     "value": 2,
+     "target": 3,
+     "pass": false,
+     "detail": "tiktok, web_forum"
+    },
+    "allocation_efficiency": {
+     "value": 1.39,
+     "target": "agent >= equal split",
+     "pass": true,
+     "detail": "agent 66 relevant posts vs. equal split ~47 from 196 items over 4 units; per USD 78.7 vs. 56.6",
+     "simulated": true,
+     "assumption": "Same total items spread equally over the units the agent tried, each unit keeping the relevant-per-item rate it actually showed. Diminishing returns and units never tried are not modelled.",
+     "relevant_per_usd": {
+      "agent": 78.7,
+      "equal_split": 56.6
+     },
+     "units": 4
+    },
+    "loop_health": {
+     "value": {
+      "tool_calls": 10,
+      "finish_reason": "time_limit",
+      "fallback_used": true,
+      "top_up_used": false,
+      "max_tool_calls": 15
+     },
+     "target": "finish, no fallback",
+     "pass": false,
+     "detail": "10 tool calls, finished by 'time_limit', fallback used - the agent did not finish on its own; the pack is still valid but collection was cut short"
+    },
+    "cost_usd": {
+     "value": 2.12,
+     "target": 4.6,
+     "pass": true,
+     "detail": "Apify $0.35 + Anthropic $1.77; typical $1.50-3.00, hard cap $4.60 (NFR2)"
+    },
+    "latency_min": {
+     "value": 23.4,
+     "target": 7,
+     "pass": false,
+     "detail": "23.4 min end to end (NFR1: about 7 min)"
+    },
+    "peak_mem_mb": {
+     "value": 201.3,
+     "target": 400,
+     "pass": null,
+     "detail": "201.3 MB peak (NFR9 applies to Standard runs); Quick run, shown only"
+    },
+    "schema_valid": {
+     "value": 1.0,
+     "target": 1.0,
+     "pass": true,
+     "detail": "valid Context Pack 1.3"
+    }
+   },
+   "expectations": [
+    {
+     "check": "brand perception section",
+     "pass": true,
+     "detail": "11 posts, 1 unasked, 4 finding(s)"
+    },
+    {
+     "check": "brand searched by name",
+     "pass": true,
+     "detail": "tiktok:search:lidl deluxe taste test uk"
+    },
+    {
+     "check": "brand first in the pack",
+     "pass": true,
+     "detail": "brand, landscape, want-stops"
+    },
+    {
+     "check": "asks about goal, offer",
+     "pass": true,
+     "detail": "Q1 [goal] What will you use this research for?; Q2 [offer] What do you offer, and how far along is it?; Q3 [key_question] Is there a decision or date this should feed into?"
+    },
+    {
+     "check": "never asks what the brief already says",
+     "pass": true,
+     "detail": "ok"
+    }
+   ],
+   "clarifying_question": {
+    "questions": [
+     {
+      "id": "Q1",
+      "question": "What will you use this research for?",
+      "fills": "goal",
+      "options": [
+       "Content plan",
+       "Campaign launch",
+       "Positioning",
+       "Product validation",
+       "Market entry",
+       "Brand perception",
+       "Sales",
+       "Just understand the audience"
+      ]
+     },
+     {
+      "id": "Q2",
+      "question": "What do you offer, and how far along is it?",
+      "fills": "offer",
+      "options": [
+       "An idea - testing demand",
+       "Launching soon",
+       "Already selling",
+       "No offer of my own (agency, client work or exploring)"
+      ]
+     },
+     {
+      "id": "Q3",
+      "question": "Is there a decision or date this should feed into?",
+      "fills": "key_question",
+      "options": [
+       "Christmas / seasonal range planning",
+       "A campaign or launch in the next few months",
+       "Positioning against Lidl Deluxe",
+       "No specific decision, just understanding"
+      ]
+     }
+    ]
+   },
+   "entailment": {
+    "checked": 30,
+    "sampled": 30,
+    "counts": {
+     "supported": 23,
+     "partially_supported": 7,
+     "not_supported": 0,
+     "unchecked": 0
+    },
+    "entailed": 25,
+    "rate": 0.8333,
+    "strict_rate": 0.7667,
+    "rows": [
+     {
+      "id": "BRP-04",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The posts show taste tests framing Deluxe as cheaper luxury, but three posts cannot show that it is 'mostly' discussed this way."
+     },
+     {
+      "id": "THM-10",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "One shopper names 'everything Christmas' and another names the stollen cake at Lidl."
+     },
+     {
+      "id": "MOT-01",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "The posts say Lidl meat is as good as Tesco's and great quality, but none speaks of trusting it."
+     },
+     {
+      "id": "CUL-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Two videos show creators eating only Lidl Deluxe food for 24 or 48 hours."
+     },
+     {
+      "id": "MOT-05",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0033 says limited choice means not spending hours shopping, and EV-0012 praises having the basics."
+     },
+     {
+      "id": "LEX-04",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The video title asks 'A Deluxe yogurt on the cheap?'."
+     },
+     {
+      "id": "LEX-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "'Fizzy' does describe veg, cut fruit and soup, but the fruit was in date, so the posts do not show it always means food that has gone off."
+     },
+     {
+      "id": "PHR-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Three Lidl videos carry the #tastetest tag."
+     },
+     {
+      "id": "BRP-01",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One commenter calls Deluxe Lidl's own brand and another calls it the name of the company."
+     },
+     {
+      "id": "BRP-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The post calls the scones next level: soft, buttery and packed with fruit."
+     },
+     {
+      "id": "THM-06",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "The posts show cheaper premium dupes being tested, but they do not show this is what draws shoppers in."
+     },
+     {
+      "id": "LEX-11",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "#fyp is the last hashtag in the Lidl Deluxe caption."
+     },
+     {
+      "id": "LEX-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Both posts call Lidl's cheaper versions of the viral M&S loaded dips 'dupes'."
+     },
+     {
+      "id": "THM-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The posts include Deluxe taste-test videos and challenges eating only Deluxe food for 24 or 48 hours."
+     },
+     {
+      "id": "LEX-03",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "EV-0013 opens by quoting \"cloying\" and then defends the quality of Lidl's food."
+     },
+     {
+      "id": "THM-05",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Several shoppers say Lidl is much or significantly cheaper than Tesco."
+     },
+     {
+      "id": "MOM-02",
+      "verdict": "supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "One post names 'everything Christmas' and another mentions buying stollen cake when it is in at Lidl."
+     },
+     {
+      "id": "OBJ-04",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "EV-0029 says the poster's fussy family members can't do a full shop there because the range is hit and miss, which is not quite the poster saying the choice is too limited."
+     },
+     {
+      "id": "PAIN-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0019 says it can be annoying when you need a specific ingredient, and EV-0014 says some items are hard to find there."
+     },
+     {
+      "id": "OBJ-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0041 says the poster is completely baffled that people claim Lidl's food is good quality."
+     },
+     {
+      "id": "PHR-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "One post says fresh bread is the main reason they go, and the other says the bakery items are the main reason."
+     },
+     {
+      "id": "LEX-09",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The series title 'SUPERMARKETS FINEST #3' spells it 'Lidl Delux'."
+     },
+     {
+      "id": "LEX-06",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "The post spells out STP as sticky toffee pudding when talking about a Lidl Deluxe one."
+     },
+     {
+      "id": "MOM-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Two posters say they do their weekly shop at Lidl."
+     },
+     {
+      "id": "SEG-03",
+      "verdict": "partially_supported",
+      "claim_type": "inferred",
+      "entailed": true,
+      "reason": "The posts show the creators asking whether Lidl's cheaper Deluxe dupes are as good as M&S, not viewers asking."
+     },
+     {
+      "id": "CUL-03",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0041 states Lidl are really popular on mumsnet."
+     },
+     {
+      "id": "LEX-07",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0027 says the shopper buys Aldi's 'specially selected' range, especially for cheese."
+     },
+     {
+      "id": "PHR-02",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "EV-0012 and EV-0013 both call Lidl much or so much cheaper."
+     },
+     {
+      "id": "SEG-01",
+      "verdict": "supported",
+      "claim_type": "observed",
+      "entailed": true,
+      "reason": "Each post shows or implies experience of both shops and a preference for Aldi."
+     },
+     {
+      "id": "SEG-02",
+      "verdict": "partially_supported",
+      "claim_type": "observed",
+      "entailed": false,
+      "reason": "Only EV-0018 says both weekly shop at Lidl and love; the others give only one of the two."
+     }
+    ],
+    "usd": 0.1111
+   },
+   "units": [
+    "reddit:lidl deluxe worth it",
+    "reddit:r/casualuk",
+    "reddit:search:lidl deluxe worth it",
+    "reddit:search:lidl deluxe worth it uk",
+    "tiktok:lidl deluxe taste test",
+    "tiktok:search:lidl deluxe christmas",
+    "tiktok:search:lidl deluxe taste test",
+    "tiktok:search:lidl deluxe taste test uk",
+    "web:forums.moneysavingexpert.com",
+    "web:moneysavingexpert.com",
+    "web:mumsnet.com",
+    "web:search:lidl deluxe vs aldi specially selected tesco finest mumsnet",
+    "web:search:site:moneysavingexpert.com lidl deluxe",
+    "x:search:lidl deluxe",
+    "youtube:lidl deluxe review uk",
+    "youtube:search:lidl deluxe review uk",
+    "youtube:search:lidl deluxe vs aldi specially selected christmas review"
+   ]
+  }
+ ],
+ "eval_cost_usd": 0.1867,
+ "notes": [
+  "Allocation efficiency is SIMULATED (see each brief's assumption).",
+  "Cost and latency come from the run record; a run whose analysis was redone later includes that extra time and spend."
+ ]
+}

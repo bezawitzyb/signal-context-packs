@@ -124,7 +124,7 @@ B1. The big picture
   |   TOOLS (Python; own the data and the limits)                        |
   |     search_reddit  search_tiktok  search_youtube  [search_instagram] |
   |     search_linkedin  search_x  search_facebook  read_facebook_group  |
-  |     web_search  fetch_and_segment  get_trends                        |
+  |     web_search  fetch_and_segment  read_feed  get_trends             |
   |     coverage_report  finish                                          |
   |        |  inside every collection tool:                              |
   |        |  fetch -> normalise -> hash authors -> redact -> dates +    |
@@ -380,6 +380,16 @@ B8. The agent loop (collect/loop.py, tools.py, fallback.py)
                                            page; segmenter (F4-4) returns
                                            exact substrings; code keeps
                                            only exact matches
+  read_feed(urls, reason)                  V13: RSS / Atom feed of a site
+                                           this run's web_search returned
+                                           (a page's own feed, closest path
+                                           first); downloaded by the server
+                                           through collect/safe_fetch.py
+                                           (URL guard), parsed with
+                                           feedparser from a stream; items
+                                           with enough words -> web_forum
+                                           drafts, teasers -> threads_to_read;
+                                           limits in modes.yaml feeds
   get_trends(terms, geo, reason)           Google Trends; stored as
                                            external signal
   coverage_report()                        docs per research question
@@ -1994,6 +2004,11 @@ F3. Sources (verify in Step 1.4; actor IDs and inputs change)
                                                 country and language
  fetch_and_segment   worker + web fetch tool +  word-for-word posts and
                      segmenter                  reviews from those pages
+ read_feed (V13)     server download (URL       newest dated threads of a topic
+                     guard) + feedparser        sub-forum or category; teasers
+                                                point to threads to read
+ Google News feeds   server download (URL       dated headline candidates for
+ (V13, news hooks)   guard) + feedparser        the news hooks step (free)
  Pricing: web search about USD 10 per 1,000 searches + tokens; web fetch
  tokens only (check current prices). Fetch cannot render JavaScript or
  read login pages - those are skipped and logged.

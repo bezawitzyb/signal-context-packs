@@ -142,11 +142,11 @@ best, with links to related findings elsewhere.
 
 ## Evaluation results
 
-Five test briefs, scored on 2026-10-10 on the current featured packs (details and reasons on
-[/evals](https://signal-l2w5.onrender.com/evals)): Gen Z meal prep (Standard), snack brand NL and heat pumps
-DE (both Quick), a vague "snacks" brief (pack from 2026-10-06) and a brand-perception brief (Lidl Deluxe, UK,
-Quick). A sixth brief (B2B, several markets) is in [`backend/evals/briefs.yaml`](backend/evals/briefs.yaml)
-and needs a paid Standard run.
+Five test briefs, scored on the current featured packs (details and reasons on
+[/evals](https://signal-l2w5.onrender.com/evals); last scored 2026-10-11): Gen Z meal prep, snack brand NL and heat
+pumps DE (all three Quick runs), a vague "snacks" brief and a brand-perception brief (Lidl Deluxe, UK, Quick). A sixth
+brief (B2B, several markets) is in [`backend/evals/briefs.yaml`](backend/evals/briefs.yaml) and needs a paid
+Standard run.
 
 | Metric | Result | Target |
 |---|---|---|
@@ -154,15 +154,15 @@ and needs a paid Standard run.
 | Claims with evidence | **100%** | 100% |
 | Schema valid | **100%** | 100% |
 | Source diversity | **3 of 4** briefs with ≥ 3 platforms (UK brand brief: 2) | all (vague brief exempt) |
-| Plan divergence | **2.7%** of source units shared | < 50% |
-| Allocation efficiency (SIMULATED) | **1.1×** an equal split | ≥ 1× |
+| Plan divergence | **1.3%** of source units shared | < 50% |
+| Allocation efficiency (SIMULATED) | **1.08×** an equal split | ≥ 1× |
 | Peak memory | **201 MB** | < 400 MB |
-| Claim entailment (Opus re-check of 30 claims per pack) | **87%** (heat pumps 97%, Gen Z 90%, NL 87%) | ≥ 95% - not met |
-| Relevance rate | **34-78%** (heat pumps 78%, Gen Z 56%, NL 46%) | ≥ 60% - met by 1 of 5 |
+| Claim entailment (Opus re-check of 30 claims per pack) | **91%** (Gen Z 100%, heat pumps 100%, NL 93%, UK 83%, vague 80%) | ≥ 95% - not met |
+| Relevance rate | **34-80%** (Gen Z 80%, heat pumps 74%, NL 51%, vague 50%, UK 34%) | ≥ 60% - met by 2 of 5 |
 
-The 2026-10-06 scores (older packs, Sonnet re-check): claim entailment 81%, relevance 33-54%. The NL and
-heat-pump packs are now Quick runs with few relevant posts (32 and 46), so their high scores rest on little
-evidence (coverage grade d).
+Earlier scores: 2026-10-10 claim entailment 88%, relevance 34-78%; 2026-10-06 (older packs, Sonnet re-check)
+81% and 33-54%. Cost and latency come from the run record, so the Gen Z and heat-pump packs, whose analysis was
+redone by hand, show more time and spend than a single run takes.
 
 ## Run locally without keys
 
@@ -196,15 +196,21 @@ More in [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Known limitations
 
-- **Claim entailment is 87%, not 95%.** The re-check model (Opus) often finds a claim slightly broader
-  than its posts. Such claims are labelled "inferred", not "safe to state".
-- **Relevance is below 60%** for most runs (current featured packs: NL 46%, Gen Z 56%, heat pumps 78%;
+- **Claim entailment is 91%, not 95%.** The re-check model (Opus) still finds some claims slightly broader
+  than their posts (most in the vague and UK brand packs). Such claims are labelled "inferred", not "safe to state".
+- **Relevance is below 60%** for three of five briefs (NL 51%, vague 50%, UK 34%; Gen Z 80%, heat pumps 74%;
   single runs vary a lot with the searches the agent picks). Relevance is checked per post, so off-topic
   posts never become evidence, but they cost collection time.
-- **Every featured pack is marked "thin evidence"** when a section falls short of the content bar (for
-  example, no verified tension). The NL and heat-pump packs are Quick runs with few relevant posts
-  (32 and 46), so their findings are "emerging" or "speculative". Each pack says so instead of padding.
-- **Standard runs take 15-20 minutes**, not 12. Quick runs take 7-17 minutes, not 7.
+- **Two of the three featured packs are marked "thin evidence"** (Gen Z and NL): a section falls short of the
+  content bar, for example fewer than 2 tensions backed by 3 posts from 2 sources. The NL pack is a Quick run with
+  71 relevant posts, so most of its findings are "emerging" or "speculative". Each pack says so instead of padding.
+- **Quick runs often run out of analysis budget** ($1.40 in `modes.yaml`): three Quick runs on 2026-10-10/11 did,
+  and ended as an evidence-only pack that the owner finished with a one-off extra budget. Richer runs (more
+  relevant posts) need more extraction and writing.
+- **Forum feeds (V13) are new and not yet proven in a full run.** In two paid heat-pump runs the agent preferred
+  social searches and reading forum pages; a site-wide forum feed tested at 10% relevant, a topic category feed
+  at 100%, so the agent is told to use only sub-forum or category feeds.
+- **Standard runs take 15-20 minutes**, not 12. Quick runs take 7-17 minutes, not 7 (2026-10-10/11: 14-17).
 - **The free server can sleep.** GitHub runs the keep-alive less often than scheduled, so the first visit
   after a quiet hour can take about a minute. The mirror is the backup.
 - One live run at a time (later runs queue, up to 3 waiting).
