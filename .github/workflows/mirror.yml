@@ -16,6 +16,7 @@ on:
       - "backend/ctxpack/evaluation.py"
       - "backend/scripts/build_mirror.py"
       - ".github/workflows/mirror.yml"
+      - "index.html"                       # the presentation, published as presentation.html
   workflow_dispatch:
 
 permissions:

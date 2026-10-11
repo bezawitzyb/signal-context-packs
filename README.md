@@ -13,6 +13,7 @@ skill, MCP) - and you can ask it questions.
 | **Live app** | https://signal-l2w5.onrender.com |
 | **Read-only mirror** (works even if the live service is down) | https://bezawitzyb.github.io/signal-context-packs/ |
 | **Code** | https://github.com/bezawitzyb/signal-context-packs |
+| **Presentation** (4 slides; press N for speaker notes) | https://bezawitzyb.github.io/signal-context-packs/presentation.html |
 | **Evaluations** | https://signal-l2w5.onrender.com/evals |
 | **API for developers** | https://signal-l2w5.onrender.com/docs (open "How to use the API" at the top) |
 | **Pack format** | [docs/SCHEMA.md](docs/SCHEMA.md) - JSON schema in [docs/schema/](docs/schema/) |
@@ -285,7 +286,7 @@ frontend/             React + TypeScript + Tailwind web app
 featured/             featured packs (loaded at startup) and eval results
 examples/             packs as JSON + Markdown, skills, demo agent output
 docs/                 product requirements, implementation guide, user research, SCHEMA.md, DEPLOY.md
-index.html            the 4-slide project presentation (open it in a browser; arrow keys move)
+index.html            the 4-slide project presentation (published as presentation.html on the mirror)
 CHANGELOG.md          what changed in each version, and why
 ```
 
