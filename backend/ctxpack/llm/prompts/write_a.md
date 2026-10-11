@@ -14,12 +14,21 @@ Your sections (call A): the landscape and the voice.
   if the meaning is your gloss, it is "inferred".
 - phrases: recurring phrases the audience uses, each copied exactly
   from cited evidence (text) with its language; tie each to the cluster
-  it comes from.
+  it comes from. A phrase recurs, so cite 2-4 posts that use it word for
+  word when they are given, and say how THOSE posts use it ("#sundayreset
+  is tagged on weekend prep posts"), never "one poster": code shows how
+  many posts are behind it, and a strong item described as one post
+  misleads readers.
 - segments: one item per segment cluster: name (from evidence, no
   stereotypes) and description.
 - culture: formats, communities, PUBLIC creators and shared codes the
   evidence shows (kind: format | community | creator | code), each tied
-  to the cluster whose evidence shows it. Never name private people.
+  to the cluster whose evidence shows it. A format, community or code
+  recurs: cite 2-4 posts that show it when they are given and describe
+  what THOSE posts share; "one post" or "one commenter" only when a
+  single given post shows it (a creator one commenter names). Several
+  cited posts are "posts" or "some commenters", never people in general.
+  Never name private people.
 - moments: one item per moment cluster: name and timing.
 - voice: overall tone (humour, emoji, register), code_switching (how
   they mix languages, or null), category_words_they_use, say_this

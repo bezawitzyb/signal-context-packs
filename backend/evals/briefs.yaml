@@ -16,7 +16,7 @@ briefs:
     expect: {market: global, languages: [en], questions_max: 4, questions_fill: [goal, offer],
              platform_share_max: {linkedin: 0.34}}
     answers: {goals: [content_plan], offer_stage: no_offer}
-    reuse_pack: pk_YhJR9A6FtugV   # Quick rerun 2026-10-10, relevance cut 0.35 (was pk_Jeoz-fO2CzAm, Standard)
+    reuse_pack: pk_-ACqqf-R8ubD   # Quick rerun 2026-10-11, culture/phrase pattern rule (was pk_YhJR9A6FtugV)
 
   - id: nl_snack_brand
     brief: Launching a snack brand in the Netherlands

@@ -90,13 +90,13 @@ Memory test: both Standard runs peak below 400 MB, so Step 2.6 (Modal) is not ne
 
 ## Featured packs (since 2026-10-10)
 
-The newest run per brief (all three: 2026-10-10 Quick reruns with the relevance cut 0.35; `featured/`, also in `backend/evals/briefs.yaml`).
+The newest run per brief (all three Quick reruns with the relevance cut 0.35, 2026-10-10; Gen Z 2026-10-11; `featured/`, also in `backend/evals/briefs.yaml`).
 Older featured packs are in the git history; the 2026-10-06 NL pack is kept as test data
 (`backend/tests/fixtures/packs/pk_i4iFso1HnLWR.json`).
 
 | Pack | Brief | Mode, goals | Relevant / kept | Labels |
 |------|-------|-------------|-----------------|--------|
-| `pk_YhJR9A6FtugV` | Gen Z and meal prep | quick, content plan | 183 / 293 | strong 7, moderate 10, emerging 18, speculative 15 |
+| `pk_-ACqqf-R8ubD` | Gen Z and meal prep (2026-10-11) | quick, content plan | 227 / 285 | strong 4, moderate 8, emerging 18, speculative 15 |
 | `pk_n-QlY1xrqi0x` | Heat pumps for homeowners in Germany | quick, content plan + sales enablement | 171 / 232 | strong 3, moderate 7, emerging 32, speculative 25 |
 | `pk_3I8-9eTZflyz` | Launching a snack brand in the Netherlands | quick, positioning + content plan | 71 / 138 | moderate 5, emerging 11, speculative 22 |
 
