@@ -115,7 +115,7 @@ function IdButton({ id, label = "posts" }: { id: string; label?: string }) {
   return (
     <button type="button" onClick={() => onOpen?.(id)} title={`Open the posts behind this (${id})`}
             aria-label={`Open the posts behind ${id}`}
-            className="inline-flex items-center gap-0.5 rounded px-0.5 text-[0.8125rem] text-ink-3 underline decoration-line-strong underline-offset-2 hover:text-ink">
+            className="inline-flex items-center gap-0.5 whitespace-nowrap rounded px-0.5 text-[0.8125rem] text-ink-3 underline decoration-line-strong underline-offset-2 hover:text-ink">
       <TextQuote aria-hidden="true" size={11} />{label}
     </button>
   );
@@ -316,8 +316,9 @@ function Voice({ pack, filter }: { pack: ContextPack; filter: Filter }) {
       </div>
       <Sub title="Their words">
         <TableSection caption="Lexicon" rowKey={(r) => r.id} rows={lexicon} columns={[
-          { header: "Their word", cell: (r) => <span lang={r.language}>{r.term}</span>, kind: "their" },
-          { header: "Meaning", cell: (r) => r.meaning },
+          { header: "Their word", cell: (r) => <span lang={r.language}>{r.term}</span>, kind: "their",
+            className: "min-w-[9rem] hyphens-auto" },
+          { header: "Meaning", cell: (r) => r.meaning, className: "min-w-[11rem]" },   // on a phone the table scrolls sideways
           { header: "Confidence", cell: (r) => <ConfidenceBadge label={r.confidence.label} matching={r.counts.matching} ofTotal={r.counts.of_total} /> },
           { header: "", cell: (r) => <IdButton id={r.id} />, kind: "data" },
         ]} />

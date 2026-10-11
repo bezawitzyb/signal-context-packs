@@ -23,7 +23,7 @@ export function ConfidenceBadge({ label, matching, ofTotal, score }: {
     : `${l.word}${counts ? ` - ${counts}` : ""}${score !== undefined ? ` (score ${score.toFixed(2)})` : ""}`;
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[0.8125rem] ${l.tone}`}
+      className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-2 py-0.5 text-[0.8125rem] ${l.tone}`}
       title={title} data-badge="confidence"
     >
       <span aria-hidden="true" className="text-[1.05em] font-bold leading-none">{l.glyph}</span>
