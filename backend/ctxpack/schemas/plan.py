@@ -103,6 +103,8 @@ def section_order(goals: list, has_brand: bool = False) -> list[str]:
     for g in goals:
         order += [x for x in cfg["goals"][getattr(g, "value", g)].get("lead", []) if x not in order]
     order += [x for x in cfg["default_order"] if x not in order]
+    order = [x for x in order if x not in ("guardrails", "opportunities")] + ["guardrails"]  # closes Act on it
+    order.insert(order.index("channels") + 1, "opportunities")   # always right after Channels (owner, 2026-10-11)
     return [x for x in order if x != "brand" or has_brand]
 
 

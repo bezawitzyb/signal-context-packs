@@ -93,13 +93,38 @@ def test_prompt_block_fits_and_never_drops_the_guardrails(pack):
     assert "safe_to_assert" not in text and "voice.lexicon" not in text                  # no field names
 
 
+def test_guardrails_always_close_act_on_it(pack):
+    """Owner, 2026-10-11: whatever a goal leads with (or an old pack saved), Guardrails come last in Act on it."""
+    from ctxpack.schemas.plan import section_order
+
+    for goals in (["positioning"], ["sales_enablement", "content_plan"], ["understand_audience"]):
+        assert section_order(goals)[-1] == "guardrails"
+    old = copy.deepcopy(pack)
+    old["section_order"] = ["guardrails", "opportunities", "plan", "channels", "performs"]   # saved before the rule
+    md = to_markdown(old)
+    act = md[md.index("## Act on it"):md.index("## The research")]
+    assert act.index("### Guardrails") > max(act.index(h) for h in ("### Channels", "### Opportunities"))
+    # Opportunities right after Channels, though the saved order put them first (owner, 2026-10-11)
+    assert act.index("### Channels") < act.index("### Opportunities") < act.index("### What performs")
+    for goals in (["positioning"], ["product_validation"], ["content_plan"]):
+        o = section_order(goals)
+        assert o.index("opportunities") == o.index("channels") + 1
+    # the rest of the playbook closes Your plan, before the next section (owner, 2026-10-11)
+    plan = md.index("### Your plan")
+    assert plan < md.index("### Hooks") < md.index("### Channels")
+    # the creative brief opens Act on it, whatever the saved order, with keywords and communities at its end
+    cb = act.index("### Creative brief")
+    assert cb < act.index("**Keywords**") < act.index("### Your plan")
+    assert md.count("### Creative brief") == 1 and "**Creative brief**" not in md
+
+
 def test_markdown_follows_the_pack_page_and_states_confidence_in_words(pack):
     md = to_markdown(pack)
     order = ["## Summary", "### What we heard most clearly", "### Your plan: do this first",       # V9: page order
              "## Understand your audience", "### Their words", "### What they want", "### What stops them",
-             "### Tensions", "### Segments", "### A generic AI answer", "### Landscape",
-             "## Act on it", "### Channels", "### What performs", "### Opportunities", "### Guardrails",
-             "## The research", "### Blind spots", "### How the posts were collected"]
+             "### Tensions", "### Segments", "### Landscape",
+             "## Act on it", "### Channels", "### Opportunities", "### What performs", "### Guardrails",
+             "## The research", "### Blind spots", "### A generic AI answer", "### How the posts were collected"]
     assert "White space" not in md                                       # V5: called Opportunities
     positions = [md.index(h) for h in order]
     assert positions == sorted(positions)

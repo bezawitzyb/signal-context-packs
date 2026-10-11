@@ -4,12 +4,13 @@
 # this file when the planning call leaves them out. No sources, markets or numbers live here.
 #
 # V12: lead = the pack sections that come first for the goal, in order (section ids as on the pack page:
-# their-words, want-stops, segments, generic, landscape, brand, plan, channels, performs, opportunities,
-# guardrails). Code builds the pack's section_order from the ranked goals (main goal's lead first, then the
+# their-words, want-stops, segments, landscape, brand, plan, channels, performs, opportunities, guardrails).
+# The generic-AI comparison sits in The research (2026-10-11), outside this order; guardrails always close
+# Act on it and opportunities always follow channels, whatever a goal leads with (2026-10-11). Code builds the pack's section_order from the ranked goals (main goal's lead first, then the
 # next goal's, then the rest in default_order). needs = work only this goal pays for.
 
-default_order: [their-words, want-stops, segments, generic, landscape, brand, plan, channels, performs,
-                opportunities, guardrails]
+default_order: [their-words, want-stops, segments, landscape, brand, plan, channels, opportunities,
+                performs, guardrails]
 
 goals:
   content_plan:
@@ -23,11 +24,11 @@ goals:
   positioning:
     chip: Positioning
     description: a clear message and how you compare with competitors
-    lead: [want-stops, their-words, landscape, opportunities, guardrails]
+    lead: [want-stops, their-words, landscape, opportunities]
   product_validation:
     chip: Product validation
     description: whether there is real demand or an unserved need
-    lead: [opportunities, want-stops, segments, generic]
+    lead: [opportunities, want-stops, segments]
   market_entry:
     chip: Market entry
     description: how a new country or region talks, buys and decides
@@ -40,11 +41,11 @@ goals:
   sales_enablement:
     chip: Sales
     description: objections and buyer language for sales conversations
-    lead: [want-stops, segments, their-words, guardrails]
+    lead: [want-stops, segments, their-words]
   understand_audience:
     chip: Just understand the audience
     description: a broad picture of the audience with no specific output in mind
-    lead: [their-words, want-stops, segments, generic, landscape]
+    lead: [their-words, want-stops, segments, landscape]
 
 offer_stages:
   idea:

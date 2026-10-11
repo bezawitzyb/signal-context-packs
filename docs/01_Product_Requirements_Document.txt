@@ -467,12 +467,14 @@ Definition:
     as an unrelated sentence under a quote from later in the post);
     UNDERSTAND YOUR AUDIENCE
     (their words; what they want / what stops them with tensions as the
-    bridge; segments; generic answer vs. the posts with a status per
-    generic point - confirmed | contradicted | not_seen - from the
-    non-obvious check, no new call; landscape); ACT ON IT (one plan:
-    post briefs + 4-week calendar, this week = week 1; channels; what
-    performs; opportunities; guardrails, with the rest of the playbook
-    folded away); THE RESEARCH (collapsed).
+    bridge; segments; landscape); ACT ON IT (the creative brief first;
+    one plan: post briefs + 4-week calendar, this week = week 1, with the
+    rest of the playbook - hooks, keywords, communities - folded away at
+    its end; channels; what performs; opportunities; guardrails always
+    last - owner, 2026-10-11); THE RESEARCH (collapsed; since 2026-10-11 it also holds
+    the generic answer vs. the posts, with a status per generic point -
+    confirmed | contradicted | not_seen - from the non-obvious check, no
+    new call; a menu link to it opens the part).
   - Trust: a thin-evidence pack shows the coverage grade at most
     scoring.yaml grade_cap_thin (c) with snapshot.grade_note, and no
     finding in it is "good enough to commit budget". Every strength

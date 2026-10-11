@@ -28,17 +28,16 @@ import { cleanSayThis, flagsFor as legalFlags } from "../lib/legal";
 import { LegalNote } from "../components/legal";
 import { platformName } from "../lib/unitWords";
 
-const DEFAULT_ORDER = ["their-words", "want-stops", "segments", "generic", "landscape", "brand", "plan", "channels",
+const DEFAULT_ORDER = ["their-words", "want-stops", "segments", "landscape", "brand", "plan", "channels",
   "performs", "opportunities", "guardrails"];
 
 const PARTS: { id: string; title: string; sections: [string, string][] }[] = [
   { id: "summary", title: "Summary", sections: [] },
   { id: "understand", title: "Understand your audience", sections: [["brand", "Your brand"], ["their-words", "Their words"],
-    ["want-stops", "Want / what stops them"], ["segments", "Segments"], ["generic", "Generic AI vs. people"],
-    ["landscape", "Landscape"]] },
-  { id: "act", title: "Act on it", sections: [["plan", "Your plan"], ["channels", "Channels"], ["performs", "What performs"],
+    ["want-stops", "Want / what stops them"], ["segments", "Segments"], ["landscape", "Landscape"]] },
+  { id: "act", title: "Act on it", sections: [["creative-brief", "Creative brief"], ["plan", "Your plan"], ["channels", "Channels"], ["performs", "What performs"],
     ["opportunities", "Opportunities"], ["guardrails", "Guardrails"]] },
-  { id: "research", title: "The research", sections: [] },
+  { id: "research", title: "The research", sections: [["generic", "Generic AI vs. people"]] },
 ];
 const GLYPH: Record<Label, string> = { strong: "●", moderate: "◐", emerging: "○", speculative: "◌" };
 const STOPPED: Record<string, string> = {
@@ -379,36 +378,13 @@ function Landscape({ pack, filter }: { pack: ContextPack; filter: Filter }) {
   );
 }
 
-function Playbook({ pack }: { pack: ContextPack }) {
-  const pb = pack.playbook;
-  const flagsFor = (id: string) => pack.compliance_flags.filter((f) => f.item_id === id);
+/** The creative brief: its own section, first in Act on it, with keywords and public communities and creators at
+    its end (owner, 2026-10-11; all three were inside the playbook fold-out). */
+function CreativeBrief({ pb }: { pb: ContextPack["playbook"] }) {
   const cb = pb.creative_brief;
-  const cbText = cb ? ["objective", "audience", "insight", "message", "tone"].map((k) => `${k}: ${(cb as Record<string, unknown>)[k]}`)
-    .concat(cb.mandatories.length ? [`mandatories: ${cb.mandatories.join("; ")}`] : [], cb.avoid.length ? [`avoid: ${cb.avoid.join("; ")}`] : [])
-    .join("\n") : "";
   return (
-    <>
-      <Sub title={`Hooks (${pb.hooks.length})`}>
-        <p className="mb-3 text-sm text-ink-3">Drafts written by AI from the research. Review before use; items marked
-          "check with legal" need sign-off.</p>
-        <div className="space-y-3">{pb.hooks.map((h) => <HookCard key={h.id} hook={h} flags={flagsFor(h.id)} />)}</div>
-      </Sub>
-      {cb && (
-        <Sub title="Creative brief">
-          <div className="rounded-lg border border-line p-4">
-            <div className="mb-2 flex justify-end"><CopyButton text={cbText} label="Copy brief" /></div>
-            <dl className="space-y-2 text-sm">
-              {(["objective", "audience", "insight", "message", "tone"] as const).map((k) => (
-                <div key={k}><dt className="text-xs font-medium uppercase tracking-wide text-ink-3">{k}</dt><dd className="text-ink">{cb[k]}</dd></div>
-              ))}
-              {cb.mandatories.length > 0 && <div><dt className="text-xs font-medium uppercase tracking-wide text-ink-3">Must include</dt>
-                <dd><ul className="list-disc pl-4 text-ink">{cb.mandatories.map((m) => <li key={m}>{m}</li>)}</ul></dd></div>}
-              {cb.avoid.length > 0 && <div><dt className="text-xs font-medium uppercase tracking-wide text-ink-3">Avoid</dt>
-                <dd><ul className="list-disc pl-4 text-ink">{cb.avoid.map((m) => <li key={m}>{m}</li>)}</ul></dd></div>}
-            </dl>
-          </div>
-        </Sub>
-      )}
+    <div className="space-y-6">
+      {cb && <BriefCard cb={cb} />}
       <Sub title="Keywords">
         <dl className="grid gap-3 text-sm md:grid-cols-2">
           {(["seo", "paid", "negatives", "hashtags"] as const).map((k) => (
@@ -430,6 +406,43 @@ function Playbook({ pack }: { pack: ContextPack }) {
           </ul>
         </Sub>
       )}
+    </div>
+  );
+}
+
+function BriefCard({ cb }: { cb: NonNullable<ContextPack["playbook"]["creative_brief"]> }) {
+  const cbText = ["objective", "audience", "insight", "message", "tone"].map((k) => `${k}: ${(cb as Record<string, unknown>)[k]}`)
+    .concat(cb.mandatories.length ? [`mandatories: ${cb.mandatories.join("; ")}`] : [], cb.avoid.length ? [`avoid: ${cb.avoid.join("; ")}`] : [])
+    .join("\n");
+  return (
+    <div className="rounded-lg border border-line p-4">
+      <div className="mb-2 flex justify-end"><CopyButton text={cbText} label="Copy brief" /></div>
+      <dl className="space-y-2 text-sm">
+        {(["objective", "audience", "insight", "message", "tone"] as const).map((k) => (
+          <div key={k}><dt className="text-xs font-medium uppercase tracking-wide text-ink-3">{k}</dt><dd className="text-ink">{cb[k]}</dd></div>
+        ))}
+        {cb.mandatories.length > 0 && <div><dt className="text-xs font-medium uppercase tracking-wide text-ink-3">Must include</dt>
+          <dd><ul className="list-disc pl-4 text-ink">{cb.mandatories.map((m) => <li key={m}>{m}</li>)}</ul></dd></div>}
+        {cb.avoid.length > 0 && <div><dt className="text-xs font-medium uppercase tracking-wide text-ink-3">Avoid</dt>
+          <dd><ul className="list-disc pl-4 text-ink">{cb.avoid.map((m) => <li key={m}>{m}</li>)}</ul></dd></div>}
+      </dl>
+    </div>
+  );
+}
+
+const hasCreative = (pack: ContextPack) => Boolean(pack.playbook.creative_brief || pack.playbook.targets.length
+  || Object.values(pack.playbook.keywords).some((k) => k.length));
+
+function Playbook({ pack }: { pack: ContextPack }) {
+  const pb = pack.playbook;
+  const flagsFor = (id: string) => pack.compliance_flags.filter((f) => f.item_id === id);
+  return (
+    <>
+      <Sub title={`Hooks (${pb.hooks.length})`}>
+        <p className="mb-3 text-sm text-ink-3">Drafts written by AI from the research. Review before use; items marked
+          "check with legal" need sign-off.</p>
+        <div className="space-y-3">{pb.hooks.map((h) => <HookCard key={h.id} hook={h} flags={flagsFor(h.id)} />)}</div>
+      </Sub>
     </>
   );
 }
@@ -500,16 +513,22 @@ function Method({ pack }: { pack: ContextPack }) {
 
 // --- the page ----------------------------------------------------------------------------------
 
-function PartNav({ order, hasBrand }: { order: string[]; hasBrand: boolean }) {
-  const rank = (id: string) => (order.indexOf(id) < 0 ? order.length : order.indexOf(id));
+function PartNav({ order, hasBrand, hasCreative }: { order: string[]; hasBrand: boolean; hasCreative: boolean }) {
+  // In "Act on it" the creative brief opens, Opportunities follow Channels and Guardrails close (owner, 2026-10-11),
+  // whatever the goals put first
+  const pos = (id: string) => (order.indexOf(id) < 0 ? order.length : order.indexOf(id));
+  const rank = (id: string): number => (id === "creative-brief" ? -1 : id === "guardrails" ? order.length + 1
+    : id === "opportunities" ? pos("channels") + 0.5 : pos(id));
   const links = PARTS.map((part) => (
     <li key={part.id}>
       <a href={`#${part.id}`} className="block rounded px-2 py-1 font-medium text-ink hover:bg-wash">{part.title}</a>
       {part.sections.length > 0 && (
         <ul className="mb-1 ml-2 border-l border-line pl-2">
-          {part.sections.filter(([id]) => id !== "brand" || hasBrand)
+          {part.sections.filter(([id]) => (id !== "brand" || hasBrand) && (id !== "creative-brief" || hasCreative))
             .sort((a, b) => rank(a[0]) - rank(b[0])).map(([id, label]) => (
-            <li key={id}><a href={`#${id}`} className="block rounded px-2 py-0.5 text-ink-2 hover:bg-wash hover:text-ink">{label}</a></li>
+            <li key={id}><a href={`#${id}`} className="block rounded px-2 py-0.5 text-ink-2 hover:bg-wash hover:text-ink"
+                            // a section inside a folded part (The research) opens it before the jump
+                            onClick={() => document.getElementById(id)?.closest("details")?.setAttribute("open", "")}>{label}</a></li>
           ))}
         </ul>
       )}
@@ -557,7 +576,11 @@ export function PackBody({ pack }: { pack: ContextPack }) {
   const sec = (id: string, title: string, name: string, data: unknown, children: React.ReactNode, note?: React.ReactNode) =>
     <Section id={id} title={title} agent={agent} agentData={data} name={name} version={v} note={note}>{children}</Section>;
   const order = pack.section_order?.length ? pack.section_order : DEFAULT_ORDER;   // V12: the user's goals decide it
-  const rank = (id: string) => (order.indexOf(id) < 0 ? order.length : order.indexOf(id));
+  // In "Act on it" the creative brief opens, Opportunities follow Channels and Guardrails close (owner, 2026-10-11),
+  // whatever the goals put first
+  const pos = (id: string) => (order.indexOf(id) < 0 ? order.length : order.indexOf(id));
+  const rank = (id: string): number => (id === "creative-brief" ? -1 : id === "guardrails" ? order.length + 1
+    : id === "opportunities" ? pos("channels") + 0.5 : pos(id));
   const ordered = (items: [string, React.ReactNode][]) =>
     [...items].sort((a, b) => rank(a[0]) - rank(b[0])).map(([id, node]) => <Fragment key={id}>{node}</Fragment>);
   const title = packTitle(pack.brief.text, pack.brief.interpreted.topic);
@@ -588,7 +611,8 @@ export function PackBody({ pack }: { pack: ContextPack }) {
     <GuideContext.Provider value={guide}>
     <PackContext.Provider value={{ evidence: index.evidence, onOpen: setDrawer, claims, picks }}>
       <div className="pack-layout lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
-        <PartNav order={pack.section_order?.length ? pack.section_order : DEFAULT_ORDER} hasBrand={!!pack.brand_perception} />
+        <PartNav order={pack.section_order?.length ? pack.section_order : DEFAULT_ORDER} hasBrand={!!pack.brand_perception}
+                 hasCreative={hasCreative(pack)} />
         <div className="min-w-0 max-w-[760px] xl:max-w-[920px]">
           <header className="mb-4 space-y-2">
             <h1 className="text-2xl font-semibold tracking-tight text-ink md:text-3xl">{title}</h1>
@@ -689,8 +713,6 @@ export function PackBody({ pack }: { pack: ContextPack }) {
               ["segments", sec("segments", "Segments", "segments", pack.segments,
               <ItemSection level={3} title="Who they are" items={asItems(pack.segments)} filter={filter} titleKey={"name" as keyof InsightLike}
                            meta={meta("segments")} />)],
-              ["generic", sec("generic", "A generic AI answer vs. what people actually say", "generic_vs_found",
-              pack.snapshot.generic_vs_found, <Generic pack={pack} />)],
               ["landscape", sec("landscape", "Landscape: by platform and over time", "landscape", { landscape: pack.landscape, culture: pack.culture },
               <Landscape pack={pack} filter={filter} />)],
             ])}
@@ -698,9 +720,19 @@ export function PackBody({ pack }: { pack: ContextPack }) {
 
           <Part id="act" title="Act on it" lead="One plan: post briefs and a 4-week calendar, where to show up, and what to avoid.">
             {ordered([
+              ["creative-brief", hasCreative(pack) ? sec("creative-brief", "Creative brief", "creative_brief",
+                { creative_brief: pack.playbook.creative_brief, keywords: pack.playbook.keywords, targets: pack.playbook.targets },
+                <CreativeBrief pb={pack.playbook} />) : null],
               ["plan", sec("plan", "Your plan", "post_briefs",
               { post_briefs: pack.post_briefs, drafts: pack.drafts, content_calendar: pack.content_calendar, this_week: pack.playbook.this_week },
-              <PlanPart pack={pack} fallback={<ThisWeek pack={pack} />} />)],
+              <>
+                <PlanPart pack={pack} fallback={<ThisWeek pack={pack} />} />
+                {/* the rest of the playbook closes Your plan (owner, 2026-10-11; was under Guardrails) */}
+                <details className="mt-6 rounded-lg border border-line p-3">
+                  <summary className="cursor-pointer text-sm text-ink-2">More from the playbook: hooks</summary>
+                  <div className="mt-4"><Playbook pack={pack} /></div>
+                </details>
+              </>)],
               ["channels", sec("channels", "Channels", "channel_plan", pack.channel_plan, <Channels pack={pack} />)],
               ["performs", sec("performs", "What performs", "what_performs", pack.what_performs,
               pack.what_performs.length ? (
@@ -772,13 +804,7 @@ export function PackBody({ pack }: { pack: ContextPack }) {
                 </>
               ) : <EmptyNote meta={meta("opportunities")} fallback="No opportunities stood out in this evidence." />)],
               ["guardrails", sec("guardrails", "Guardrails", "guardrails", { guardrails: pack.guardrails, compliance_flags: pack.compliance_flags },
-              <>
-                <Guardrails pack={pack} />
-                <details className="mt-6 rounded-lg border border-line p-3">
-                  <summary className="cursor-pointer text-sm text-ink-2">More from the playbook: hooks, creative brief, keywords, communities</summary>
-                  <div className="mt-4"><Playbook pack={pack} /></div>
-                </details>
-              </>)],
+              <Guardrails pack={pack} />)],
             ])}
           </Part>
 
@@ -786,13 +812,16 @@ export function PackBody({ pack }: { pack: ContextPack }) {
             <details className="research group rounded-lg border border-line">
               <summary className="cursor-pointer px-4 py-3">
                 <h2 id="research" className="inline scroll-mt-24 text-2xl font-semibold tracking-tight text-ink">The research</h2>
-                <span className="ml-2 text-sm text-ink-3">sources, method, hypotheses, blind spots, every post</span>
+                <span className="ml-2 text-sm text-ink-3">sources, method, hypotheses, blind spots, a generic AI answer checked, every post</span>
               </summary>
               <div className="space-y-8 px-4 pb-4">
                 <CoverageStrip pack={pack} />
                 <Sub title="Blind spots">
                   <ul className="list-disc space-y-1.5 pl-5 text-ink">{pack.blind_spots.map((b) => <li key={b.id}>{b.text}</li>)}</ul>
                 </Sub>
+                {/* 2026-10-11: moved here from Understand your audience - a check of the method, not a finding */}
+                {sec("generic", "A generic AI answer vs. what people actually say", "generic_vs_found",
+                     pack.snapshot.generic_vs_found, <Generic pack={pack} />)}
                 <Method pack={pack} />
               </div>
             </details>

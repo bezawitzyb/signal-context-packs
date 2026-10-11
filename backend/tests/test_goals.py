@@ -91,7 +91,8 @@ async def test_the_same_brief_with_other_goals_gives_another_order_and_summary(f
     assert {d["goal"] for d in pos["do_first"]} == {"positioning"}
     assert pos["post_briefs"] and plan["post_briefs"]                          # owner's decision: always kept
     md_pos, md_plan = to_markdown(pos), to_markdown(plan)
-    assert md_pos.index("### Opportunities") < md_pos.index("### Channels")   # positioning: opportunities first
+    # owner, 2026-10-11: Opportunities always follow Channels, also when the goal leads with them
+    assert md_pos.index("### Channels") < md_pos.index("### Opportunities")
     assert md_plan.index("### Channels") < md_plan.index("### Opportunities")
     assert "### For your goal: Positioning" in md_pos and pos["brand_perception"] is None
 

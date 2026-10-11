@@ -212,26 +212,6 @@ def to_markdown(pack: dict) -> str:
     if pack["segments"] or not (pack.get("sections_meta") or {}).get("segments", {}).get("empty_reason"):
         L += _claims(pack["segments"], "name")
 
-    L, add = section("generic")
-    add("\n### A generic AI answer vs. what people actually say")
-    gvf = snap["generic_vs_found"]
-    if gvf.get("comparison"):
-        add("| A generic answer says | What the posts show |")
-        add("|---|---|")
-        for row in gvf["comparison"]:
-            add(f"| {cell(row['generic_point'])} | {STATUS_WORDS[row['status']]} |")
-        if gvf["what_we_found"]:
-            add("\n**New - what a generic answer misses:**")
-            L += [f"- {inline(f['text'])}" for f in gvf["what_we_found"]]
-    else:
-        add("| Generic answer | What we found |")
-        add("|---|---|")
-        gp, found = gvf["generic_points"][:6], gvf["what_we_found"]
-        for n in range(max(len(gp), len(found))):
-            left = cell(gp[n]) if n < len(gp) else ""
-            right = cell(found[n]["text"]) if n < len(found) else ""
-            add(f"| {left} | {right} |")
-
     L, add = section("landscape")
     add("\n### Landscape")
     L += _meta(pack, "themes")
@@ -267,6 +247,25 @@ def to_markdown(pack: dict) -> str:
     # ---- ACT ON IT --------------------------------------------------------------------------
     add("\n## Act on it\n")
     blocks = {}
+    # The creative brief opens Act on it, keywords and communities at its end (owner, 2026-10-11; were in the playbook)
+    k = pb["keywords"]
+    if pb.get("creative_brief") or pb["targets"] or any(k.values()):
+        L, add = section("creative-brief")
+        add("### Creative brief")
+        if cb := pb.get("creative_brief"):
+            for key in ("objective", "audience", "insight", "message", "tone"):
+                add(f"- **{key.capitalize()}:** {inline(cb[key])}")
+            if cb["mandatories"]:
+                add(f"- **Mandatories:** {inline('; '.join(cb['mandatories']))}")
+            if cb["avoid"]:
+                add(f"- **Avoid:** {inline('; '.join(cb['avoid']))}")
+        add("\n**Keywords**")
+        for key in ("seo", "paid", "negatives", "hashtags"):
+            add(f"- **{'SEO' if key == 'seo' else key.capitalize()}:** {inline(', '.join(k[key])) or '-'}")
+        if pb["targets"]:
+            add("\n**Public communities and creators**")
+            L += [f"- {inline(t['name'])} ({t['kind']}, {channel(t['platform'])}){' ' + t['url'] if t.get('url') else ''}"
+                  for t in pb["targets"]]
     L, add = section("plan")
     if pack.get("post_briefs"):
         L.extend(posts_section(pack, compact=True))
@@ -278,6 +277,15 @@ def to_markdown(pack: dict) -> str:
         for w in pb["this_week"]:
             add(f"| {w['day']} | {channel(w['platform'])} | {cell(w['format'])} | {cell(hooks[w['hook_id']]['text'])} "
                 f"| {cell(w['angle'])} | {cell(w['why_now'])} |")
+
+    # The rest of the playbook closes Your plan (owner, 2026-10-11; was under Guardrails)
+    add("\n### Hooks")
+    add(f"*{HOOKS_NOTE}*")
+    for h in pb["hooks"][:8]:
+        add(f"- {inline(h['text'])}")
+        if note := legal_note(pack, h["id"], h["text"]):
+            add(f"  - *{note}*")
+
 
     L, add = section("channels")
     add("\n### Channels")
@@ -335,37 +343,19 @@ def to_markdown(pack: dict) -> str:
         if terms := named_terms(flags):
             add(f"- Wording flagged most: {', '.join(terms[:8])}")
         L += [f"- {area} ({n})" for area, n in sorted(areas.items(), key=lambda x: -x[1])[:4]]
-    add("\n### Hooks, creative brief and keywords")
-    add(f"*{HOOKS_NOTE}*")
-    for h in pb["hooks"][:8]:
-        add(f"- {inline(h['text'])}")
-        if note := legal_note(pack, h["id"], h["text"]):
-            add(f"  - *{note}*")
-    if cb := pb.get("creative_brief"):
-        add("\n**Creative brief**")
-        for key in ("objective", "audience", "insight", "message", "tone"):
-            add(f"- **{key.capitalize()}:** {inline(cb[key])}")
-        if cb["mandatories"]:
-            add(f"- **Mandatories:** {inline('; '.join(cb['mandatories']))}")
-        if cb["avoid"]:
-            add(f"- **Avoid:** {inline('; '.join(cb['avoid']))}")
-    k = pb["keywords"]
-    add("\n**Keywords**")
-    for key in ("seo", "paid", "negatives", "hashtags"):
-        add(f"- **{'SEO' if key == 'seo' else key.capitalize()}:** {inline(', '.join(k[key])) or '-'}")
-    if pb["targets"]:
-        add("\n**Public communities and creators**")
-        L += [f"- {inline(t['name'])} ({t['kind']}, {channel(t['platform'])}){' ' + t['url'] if t.get('url') else ''}"
-              for t in pb["targets"]]
-
     L, add = main, main.append
-    for sid in sorted(blocks, key=lambda x: order.index(x) if x in order else len(order)):
+    # The creative brief opens, Opportunities follow Channels and Guardrails close Act on it (owner, 2026-10-11)
+    def pos(x: str) -> float:
+        return order.index(x) if x in order else len(order)
+    pinned = {"creative-brief": -1, "guardrails": len(order) + 1, "opportunities": pos("channels") + 0.5}
+    for sid in sorted(blocks, key=lambda x: pinned.get(x, pos(x))):
         L += blocks[sid]
 
     # ---- THE RESEARCH (method and limits) ---------------------------------------------------
     add("\n## The research: method and limits\n")
     add("### Blind spots")
     L += [f"- {inline(s['text'])}" for s in pack["blind_spots"]]
+    L += _generic(snap)
     add("\n### How the posts were collected")
     n = cov["counts"]
     add(f"{n['collected']} posts collected; {n['duplicates']} duplicates, {n['spam']} spam and {n['out_of_window']} "
@@ -396,6 +386,31 @@ def to_markdown(pack: dict) -> str:
             + f"; code {prov['code_version']}. Pack {pack['pack_id']}.")
     add(f"\n*{DISCLAIMER}*")
     return "\n".join(L) + "\n"
+
+
+
+def _generic(snap: dict) -> list[str]:
+    """A generic AI answer checked against the posts (moved to The research, 2026-10-11)."""
+    L: list[str] = ["\n### A generic AI answer vs. what people actually say"]
+    add = L.append
+    gvf = snap["generic_vs_found"]
+    if gvf.get("comparison"):
+        add("| A generic answer says | What the posts show |")
+        add("|---|---|")
+        for row in gvf["comparison"]:
+            add(f"| {cell(row['generic_point'])} | {STATUS_WORDS[row['status']]} |")
+        if gvf["what_we_found"]:
+            add("\n**New - what a generic answer misses:**")
+            L += [f"- {inline(f['text'])}" for f in gvf["what_we_found"]]
+    else:
+        add("| Generic answer | What we found |")
+        add("|---|---|")
+        gp, found = gvf["generic_points"][:6], gvf["what_we_found"]
+        for n in range(max(len(gp), len(found))):
+            left = cell(gp[n]) if n < len(gp) else ""
+            right = cell(found[n]["text"]) if n < len(found) else ""
+            add(f"| {left} | {right} |")
+    return L
 
 
 def brand_section(bp: dict) -> list[str]:
