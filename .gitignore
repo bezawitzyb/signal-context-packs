@@ -44,3 +44,5 @@ mirror/
 # --- Local research reports and notes (deep research; kept off the public repo) ---
 /reports/
 /research_notes/
+
+test.html
