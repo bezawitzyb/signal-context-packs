@@ -90,7 +90,16 @@ async def lifespan(app: FastAPI):
     task.cancel()
 
 
-app = FastAPI(title="SIGNAL - Context Packs", version=VERSION, lifespan=lifespan)
+# Sections of the /docs page, in this order (each route names its section with tags=[...]).
+API_SECTIONS = [
+    {"name": "Create a pack", "description": "Start a research run (needs a run key), answer its questions, follow it live."},
+    {"name": "Read packs", "description": "List packs, open one, open single items and search its evidence posts."},
+    {"name": "Use a pack", "description": "Turn a pack into work: post briefs, calendar, questions, hand-offs, downloads."},
+    {"name": "Reference", "description": "Form options, how to read a pack, test results and the JSON schema."},
+    {"name": "Status", "description": "Is the service up."},
+]
+app = FastAPI(title="SIGNAL - Context Packs", version=VERSION, lifespan=lifespan, openapi_tags=API_SECTIONS,
+              description=(Path(__file__).parent / "api_guide.md").read_text(encoding="utf-8"))
 app.include_router(router)
 app.mount("/mcp", mcp_app)
 
@@ -147,7 +156,7 @@ async def mcp_without_slash(request, call_next):
     return await call_next(request)
 
 
-@app.get("/ping", response_class=PlainTextResponse)
+@app.get("/ping", response_class=PlainTextResponse, tags=["Status"])
 async def ping() -> str:
     """Keep-alive target. Never touches the database or a paid API."""
     return "ok"
@@ -162,7 +171,7 @@ def _database_reachable() -> bool:
         return False
 
 
-@app.get("/health")
+@app.get("/health", tags=["Status"])
 def health() -> dict:
     """App status + version + whether the database answers SELECT 1, and whether new runs are accepted
     today (false once the daily spend cap is reached). No amounts: those stay private."""

@@ -85,13 +85,13 @@ async def owner_run_cost(run_id: str, x_api_key: str | None = Header(default=Non
 # --------------------------------------------------------------------------
 
 
-@router.get("/packs")
+@router.get("/packs", tags=["Read packs"])
 async def list_packs() -> list[dict[str, Any]]:
     """Featured packs (any other pack is readable by its link)."""
     return await asyncio.to_thread(service.featured)
 
 
-@router.get("/packs/{pack_id}")
+@router.get("/packs/{pack_id}", tags=["Read packs"])
 async def get_pack(pack_id: str, view: Literal["digest", "full"] = "full",
                    fields: str | None = Query(default=None, description="Comma-separated top-level sections")) -> Any:
     """A pack: digest (<= ~500 tokens) or full; fields selects sections. Guardrails and agent rules always."""
@@ -99,32 +99,32 @@ async def get_pack(pack_id: str, view: Literal["digest", "full"] = "full",
     return await _call(asyncio.to_thread, service.pack_view, pack_id, view, names)
 
 
-@router.get("/packs/{pack_id}/items/{item_id}")
+@router.get("/packs/{pack_id}/items/{item_id}", tags=["Read packs"])
 async def get_item(pack_id: str, item_id: str, evidence: int = Query(default=3, ge=0, le=20)) -> Any:
     """One item (e.g. TEN-01) with up to `evidence` of its posts."""
     return await _call(asyncio.to_thread, service.insight, pack_id, item_id, evidence)
 
 
-@router.get("/packs/{pack_id}/evidence")
+@router.get("/packs/{pack_id}/evidence", tags=["Read packs"])
 async def get_evidence(pack_id: str, q: str = "", platform: str | None = None, language: str | None = None,
                        limit: int = Query(default=20, ge=1, le=50)) -> Any:
     """Search the pack's evidence posts (untrusted quoted data)."""
     return await _call(asyncio.to_thread, service.search_evidence, pack_id, q, platform, language, limit)
 
 
-@router.get("/packs/{pack_id}/inputs")
+@router.get("/packs/{pack_id}/inputs", tags=["Read packs"])
 async def get_pack_inputs(pack_id: str) -> Any:
     """The brief, mode, time window, brand voice and clarifying answer behind a pack ("Run again")."""
     return await _call(asyncio.to_thread, service.pack_inputs, pack_id)
 
 
-@router.get("/packs/{pack_id}/post-briefs")
+@router.get("/packs/{pack_id}/post-briefs", tags=["Use a pack"])
 async def get_post_briefs(pack_id: str) -> Any:
     """Post briefs and drafts (V8), with the guardrails that apply to every post."""
     return await _call(asyncio.to_thread, service.post_briefs, pack_id)
 
 
-@router.get("/packs/{pack_id}/calendar")
+@router.get("/packs/{pack_id}/calendar", tags=["Use a pack"])
 async def get_calendar(pack_id: str) -> Any:
     """The 4-week content calendar (V8): post ideas by week, day and channel."""
     return await _call(asyncio.to_thread, service.calendar, pack_id)
@@ -135,7 +135,7 @@ class AskRequest(BaseModel):
     history: list[dict[str, str]] = Field(default_factory=list, description="Earlier turns: {role, text}.")
 
 
-@router.post("/packs/{pack_id}/ask")
+@router.post("/packs/{pack_id}/ask", tags=["Use a pack"])
 async def ask_pack(pack_id: str, body: AskRequest, request: Request,
                    x_api_key: str | None = Header(default=None)) -> Any:
     """Ask this pack (V10): an answer from this pack only, with numbered citations that open the posts.
@@ -147,13 +147,13 @@ async def ask_pack(pack_id: str, body: AskRequest, request: Request,
                        service.visitor_key(address))
 
 
-@router.get("/packs/{pack_id}/handoff")
+@router.get("/packs/{pack_id}/handoff", tags=["Use a pack"])
 async def get_handoff(pack_id: str) -> Any:
     """The hand-off options (V9): purpose, length in pages and a one-line preview."""
     return await _call(asyncio.to_thread, service.handoff, pack_id)
 
 
-@router.get("/packs/{pack_id}/export/{kind}")
+@router.get("/packs/{pack_id}/export/{kind}", tags=["Use a pack"])
 async def get_export(pack_id: str, kind: Literal["json", "md", "prompt", "skill", "calendar", "quick"]) -> Response:
     """Download: json (context_pack.json), md (brief.md), prompt (prompt_block.txt), skill (zip), calendar
     (content_calendar.csv, Notion import) or quick (quick_brief.txt, V9)."""
@@ -161,7 +161,7 @@ async def get_export(pack_id: str, kind: Literal["json", "md", "prompt", "skill"
     return Response(content=data, media_type=media, headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
 
-@router.get("/options")
+@router.get("/options", tags=["Reference"])
 async def get_options() -> dict[str, Any]:
     """What the Ask form offers, from modes.yaml and goals.yaml: modes with time and cost estimates, time
     windows, and the goal and offer-stage chips (V11)."""
@@ -176,13 +176,13 @@ async def get_options() -> dict[str, Any]:
             "default_time_window_days": cfg["default_time_window_days"], "brand_voice_max_chars": 200}
 
 
-@router.get("/reading-guide")
+@router.get("/reading-guide", tags=["Reference"])
 async def get_reading_guide() -> dict[str, Any]:
     """V9: plain words for every strength label and claim type ("How to read this"), from scoring.yaml."""
     return service.reading_guide()
 
 
-@router.get("/evals")
+@router.get("/evals", tags=["Reference"])
 async def get_evals() -> dict[str, Any]:
     """Evaluation results (featured/evals.json from the eval command) plus the human ratings file.
     Before the first eval it says so plainly."""
@@ -191,7 +191,7 @@ async def get_evals() -> dict[str, Any]:
     return await asyncio.to_thread(published)
 
 
-@router.get("/schema")
+@router.get("/schema", tags=["Reference"])
 async def get_schema() -> JSONResponse:
     """The Context Pack 1.1 JSON schema."""
     from ctxpack.schemas.pack import ContextPack
@@ -257,7 +257,7 @@ class StartRequest(BaseModel):
     removed_questions: list[str] = Field(default_factory=list, description="Research question ids to drop.")
 
 
-@router.post("/runs", status_code=201)
+@router.post("/runs", status_code=201, tags=["Create a pack"])
 async def create_run(body: RunRequest, request: Request, x_api_key: str | None = Header(default=None)) -> Any:
     """Interpret + plan now; returns the plan (or one clarifying question). auto_approve queues it at once."""
     _key(x_api_key)
@@ -266,7 +266,7 @@ async def create_run(body: RunRequest, request: Request, x_api_key: str | None =
                        body.auto_approve, requester, body.intake)
 
 
-@router.post("/runs/{run_id}/answer")
+@router.post("/runs/{run_id}/answer", tags=["Create a pack"])
 async def answer(run_id: str, body: AnswerRequest, x_api_key: str | None = Header(default=None)) -> Any:
     """Answer the clarifying questions (or skip some or all); returns the plan."""
     _key(x_api_key)
@@ -276,7 +276,7 @@ async def answer(run_id: str, body: AnswerRequest, x_api_key: str | None = Heade
                        body.answer)
 
 
-@router.post("/runs/{run_id}/replan")
+@router.post("/runs/{run_id}/replan", tags=["Create a pack"])
 async def replan(run_id: str, body: EditsRequest, x_api_key: str | None = Header(default=None)) -> Any:
     """Edited goals, offer, key question, topic, markets, languages, audience, roles or competitors -> a new
     plan in place (one paid call)."""
@@ -284,7 +284,7 @@ async def replan(run_id: str, body: EditsRequest, x_api_key: str | None = Header
     return await _call(service.replan, run_id, body.model_dump(exclude_none=True))
 
 
-@router.post("/runs/{run_id}/start")
+@router.post("/runs/{run_id}/start", tags=["Create a pack"])
 async def start(run_id: str, body: StartRequest | None = None, x_api_key: str | None = Header(default=None)) -> Any:
     """Approve the plan (optionally with sources switched off) - the run joins the queue."""
     _key(x_api_key)
@@ -292,14 +292,14 @@ async def start(run_id: str, body: StartRequest | None = None, x_api_key: str | 
     return await _call(asyncio.to_thread, service.start_run, run_id, body.disabled_units, body.removed_questions)
 
 
-@router.post("/runs/{run_id}/stop")
+@router.post("/runs/{run_id}/stop", tags=["Create a pack"])
 async def stop(run_id: str, x_api_key: str | None = Header(default=None)) -> Any:
     """Stop: a queued run is cancelled; a working run is packaged from what exists."""
     _key(x_api_key)
     return await _call(asyncio.to_thread, service.stop_run, run_id)
 
 
-@router.get("/runs/{run_id}")
+@router.get("/runs/{run_id}", tags=["Create a pack"])
 async def get_run(run_id: str) -> Any:
     """Status, stage, queue position, plan and pack_id when done. No secrets, no costs."""
     return await _call(asyncio.to_thread, service.run_status, run_id)
@@ -343,7 +343,7 @@ def _last_id(value: str | None) -> int:
         return 0
 
 
-@router.get("/runs/{run_id}/events")
+@router.get("/runs/{run_id}/events", tags=["Create a pack"])
 async def run_events(run_id: str, after: int = Query(default=0, ge=0),
                      last_event_id: str | None = Header(default=None)) -> EventSourceResponse:
     """Live events for one run (SSE). Reconnects resume after Last-Event-ID (or ?after=N)."""
