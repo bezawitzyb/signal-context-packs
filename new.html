@@ -150,40 +150,62 @@
   .flow-arrow span::after { content: ""; position: absolute; right: -8px; top: -5px; border: 6px solid transparent; border-left: 9px solid #000; border-right: 0; }
 
   /* Slide 2 */
-  .pipe { display: flex; align-items: stretch; margin-bottom: 14px; }
-  .step { flex: 1; border-radius: 12px; padding: 8px 11px; margin-right: 24px; position: relative; background: var(--pink); border: 1px solid #000; }
+  .pipe { display: flex; align-items: stretch; margin-bottom: 10px; }
+  .step { flex: 1; border-radius: 10px; padding: 5px 9px 6px; margin-right: 20px; position: relative; background: var(--pink); border: 1px solid #000; }
   .step:last-child { margin-right: 0; }
-  .step::after { content: ""; position: absolute; right: -19px; top: 50%; width: 14px; height: 2px; background: #000; }
-  .step::before { content: ""; position: absolute; right: -20px; top: calc(50% - 4px); border: 4.5px solid transparent; border-left: 6px solid #000; border-right: 0; }
+  .step::after { content: ""; position: absolute; right: -16px; top: 50%; width: 11px; height: 1.5px; background: #000; }
+  .step::before { content: ""; position: absolute; right: -17px; top: calc(50% - 3.5px); border: 4px solid transparent; border-left: 5px solid #000; border-right: 0; }
   .step:last-child::after, .step:last-child::before { display: none; }
-  .step b { display: block; font: 600 14.5px/1.2 var(--sans); margin: 6px 0 2px; }
-  .step span.s { font-size: 12.5px; line-height: 1.3; color: #2b2b2b; display: block; }
+  .step .pill { font-size: 10px; padding: 2px 7px; }
+  .step b { display: inline; font: 600 13px/1.2 var(--sans); margin-left: 4px; }
+  .step span.s { font-size: 11px; line-height: 1.25; color: #2b2b2b; display: block; margin-top: 3px; }
   .step.code { background: var(--yellow); }
   .step.input { background: var(--raised); }
-  .s2 { grid-template-columns: 1.15fr 1fr 0.85fr; flex: 1; margin-bottom: 14px; align-items: start; }
-  .tools { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0 10px; }
-  .tools span { font: 400 10px/1 var(--mono); background: var(--muted); border-radius: 9999px; padding: 4px 7px; color: var(--ink-card); }
-  .rules { display: flex; flex-direction: column; gap: 6px; }
-  .rules p { font-size: 12.5px; line-height: 1.42; }
-  .rules b { font-weight: 600; }
-  ol.chain { list-style: none; counter-reset: c; display: flex; flex-direction: column; gap: 3px; }
-  ol.chain li { counter-increment: c; display: flex; gap: 9px; font-size: 12.5px; line-height: 1.32; }
-  ol.chain li::before { content: counter(c); font: 600 10px/20px var(--mono); width: 20px; height: 20px; background: var(--tile); border-radius: 9999px;
-                        text-align: center; flex: none; color: var(--ink-card); }
-  .sees { font: 400 12px/1.4 var(--mono); background: var(--night); color: #fff; border-radius: 12px; padding: 8px 10px; margin-top: 8px; }
+  .t2 { display: grid; grid-template-columns: 340px 1fr 236px; grid-template-rows: auto 1fr; gap: 12px; flex: 1; min-height: 0; margin-bottom: 4px; }
+  .t2 .srcbox { grid-column: 1; grid-row: 1 / 3; }
+  .t2 .loopbox { grid-column: 2; grid-row: 1; }
+  .t2 .fbbox { grid-column: 2; grid-row: 2; }
+  .t2 .limbox { grid-column: 3; grid-row: 1 / 3; }
+  .fb { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .fb .c { border: 1px solid #000; border-radius: 12px; padding: 7px 9px; background: var(--raised); }
+  .fb .c .if { font: 600 10.5px/1.2 var(--mono); text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); display: block; }
+  .fb .c b { font: 600 12.5px/1.25 var(--sans); display: block; margin-top: 3px; }
+  .fb .c.y { background: var(--yellow); }
+  .cap2 { font: 500 11.5px/1.2 var(--sans); color: var(--ink-soft); text-transform: uppercase; letter-spacing: .06em; padding: 4px 8px 0; display: flex; justify-content: space-between; }
+  svg.dia { display: block; width: 100%; height: auto; overflow: visible; }
+  svg.dia text { font-family: var(--sans); fill: var(--ink-card); }
+  svg.dia .mono { font-family: var(--mono); }
+  .lim { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .meter { display: grid; grid-template-columns: 62px 1fr; gap: 4px 6px; align-items: center; }
+  .meter .k { font-size: 11.5px; color: var(--ink-card); }
+  .meter .bars { display: flex; flex-direction: column; gap: 2px; }
+  .meter .bars i { display: flex; justify-content: flex-end; align-items: center; height: 13px; border-radius: 4px; font: 600 10px/1 var(--mono);
+                   padding-right: 4px; border: 1px solid #000; font-style: normal; }
+  .meter .bars i.q { background: var(--yellow); }
+  .meter .bars i.s { background: var(--raised); }
+  .legend { display: flex; gap: 10px; font-size: 11px; color: var(--ink-soft); align-items: center; text-transform: none; letter-spacing: 0; }
+  .legend i { display: inline-block; width: 11px; height: 9px; border: 1px solid #000; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
 
   /* Slide 3 */
-  .gates { display: grid; grid-template-columns: repeat(8, 1fr) 1.2fr; gap: 6px; margin-bottom: 14px; }
-  .gate { border-radius: 12px; padding: 9px 10px 10px; display: flex; flex-direction: column; gap: 5px; background: var(--pink); border: 1px solid #000; }
+  .gates { display: grid; grid-template-columns: repeat(8, 1fr) 1.2fr; gap: 6px; margin-bottom: 8px; }
+  .gate { border-radius: 12px; padding: 6px 9px 7px; display: flex; flex-direction: column; gap: 3px; background: var(--pink); border: 1px solid #000; }
   .gate.code { background: var(--yellow); }
-  .gate .n { font: 600 11.5px/1 var(--mono); }
-  .gate b { font: 600 14px/1.15 var(--sans); }
-  .gate span { font-size: 12px; line-height: 1.3; color: #2b2b2b; }
+  .gate .n { font: 600 10.5px/1 var(--mono); }
+  .gate b { font: 600 13px/1.15 var(--sans); }
+  .gate span { font-size: 11px; line-height: 1.25; color: #2b2b2b; }
   .gate.safe { background: var(--raised); box-shadow: var(--hard); margin-left: 8px; }
   .gate.safe span { color: var(--ink-card); }
   .check { width: 22px; height: 22px; border-radius: 9999px; background: var(--accent); border: 1px solid #000; display: inline-grid; place-items: center; }
   .check svg { width: 12px; height: 12px; stroke: var(--ink); fill: none; stroke-width: 2.4; }
-  .s3 { grid-template-columns: 1fr 1fr 1fr; flex: 1; align-items: start; }
+  .s3 { grid-template-columns: 1fr 1fr 1fr; flex: 1; align-items: start; gap: 12px; }
+  .s3 .in { padding: 10px 13px; }
+  .s3 p { font-size: 12.5px; line-height: 1.42; }
+  .s3 .small { font-size: 11.5px; line-height: 1.38; }
+  .s3 .shell { padding: 6px; gap: 6px; }
+  .s3 .big { font-size: 30px; }
+  .s3 .night { padding: 6px; }
+  .s3 p.mono { font-size: 11.5px !important; line-height: 1.45 !important; }
+  .s3 .night .in { padding: 9px 13px; }
   .bar { display: flex; height: 28px; border-radius: 9999px; overflow: hidden; margin: 4px 0 6px; }
   .bar div { display: grid; place-items: center; font: 600 12px/1 var(--mono); }
   .big { font: 900 36px/1 var(--display); letter-spacing: -0.02em; color: var(--ink); }
@@ -339,66 +361,159 @@
   <div class="head">
     <span class="badge"><span class="sp"><svg><use href="#spark"/></svg></span>How it collects</span>
     <h1>The agent chooses. The tools enforce.</h1>
-    <p class="claim">A model is good at deciding where to look next, and bad at counting and at not inventing quotes. <b>So the agent picks the sources, and the tools hold the data and enforce every limit.</b> It never sees a raw post and never writes a number.</p>
+    <p class="claim">A model is good at choosing where to look and bad at counting. <b>So the agent picks; the tools hold the data and enforce every limit.</b></p>
     <div class="tiles" aria-hidden="true"><i style="background:var(--mint)"></i><i><svg class="ring"><use href="#ring"/></svg></i><i style="background:var(--pink)"></i><i></i><i style="background:var(--yellow)"></i><i><svg class="sp"><use href="#spark"/></svg></i></div>
   </div>
 
   <div class="pipe">
     <div class="step input"><span class="pill">Input</span><b>Brief</b><span class="s">One line from the marketer</span></div>
-    <div class="step"><span class="pill ai">AI · Sonnet</span><b>Questions</b><span class="s">Up to 4; goal and offer always covered</span></div>
-    <div class="step"><span class="pill ai">AI + code</span><b>Editable plan</b><span class="s">Hypotheses, questions, 3–6 starting sources</span></div>
-    <div class="step"><span class="pill ai">AI · Sonnet</span><b>Agent loop</b><span class="s">14 tools, a reason per call, ≤ 3 at once</span></div>
-    <div class="step code"><span class="pill">Code + Haiku</span><b>Clean in every tool</b><span class="s">Before anything returns</span></div>
-    <div class="step code"><span class="pill">Code</span><b>Postgres</b><span class="s">Every stage saved; posts expire in 30 days</span></div>
+    <div class="step"><span class="pill ai">AI · Sonnet</span><b>Questions</b><span class="s">≤ 4; goal and offer covered</span></div>
+    <div class="step"><span class="pill ai">AI + code</span><b>Editable plan</b><span class="s">Hypotheses + 3–6 sources</span></div>
+    <div class="step"><span class="pill ai">AI · Sonnet</span><b>Agent loop</b><span class="s">14 tools, ≤ 3 at once</span></div>
+    <div class="step code"><span class="pill">Code + Haiku</span><b>Clean</b><span class="s">Before anything returns</span></div>
+    <div class="step code"><span class="pill">Code</span><b>Postgres</b><span class="s">Every stage saved</span></div>
   </div>
 
-  <div class="grid s2">
-    <div class="shell">
-      <span class="label cap" style="margin:0">Source selection</span>
-      <div class="in">
-        <p style="margin-bottom:10px"><b style="font-weight:600">14 tools:</b> 8 for 7 social platforms, web search and fetch, forum feeds, Trends, a coverage report and <span class="mono">finish</span>.</p>
-        <div class="rules">
-          <p><b>Markets decide languages.</b> English always joins; a country the brief names keeps its language. No platform gets more than half of the starting plan.</p>
-          <p><b>Explore small, then exploit.</b> A new search starts at 20 posts (40 Standard) and gets full size once 30% of it proves relevant.</p>
-          <p><b>Keyword search only, no account of ours.</b> Never a person or profile. Every platform has a backup actor; both fail → a blind spot.</p>
-          <p><b>Fall back, never repeat.</b> Crash → untried starting sources. Thin evidence → top up from kept ones. A dropped source is never called again.</p>
+  <div class="t2">
+    <div class="shell srcbox">
+      <span class="cap2">Source selection</span>
+      <div class="in" style="flex:1; padding:10px 12px">
+        <svg class="dia" viewBox="0 0 310 372" role="img" aria-label="Source selection. The agent has 14 tools: 8 search 7 social platforms, each through an Apify actor with a backup, plus web search, page fetch, forum feeds, Google Trends, a coverage report and finish. It writes a starting plan of 3 to 6 sources with a reason each, no platform over half the plan, in English plus the languages of the markets named. Each new search starts as a small keyword probe of 20 posts (40 in Standard), never a person or profile. If at least 30% is relevant it gets full size when repeated; otherwise it stays small or is dropped and never called again.">
+          <defs><marker id="ahS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#000"/></marker></defs>
+          <rect x="40" y="0" width="230" height="84" rx="10" fill="#fff" stroke="#000"/>
+          <text x="51" y="18" font-size="12.5" font-weight="600">14 tools</text>
+          <text x="51" y="33" font-size="11">8 search 7 social platforms,</text>
+          <text x="51" y="48" font-size="11">each through an Apify actor + a backup</text>
+          <text x="51" y="63" font-size="11">web search · page fetch · forum feeds</text>
+          <text x="51" y="78" font-size="11">Trends · coverage report · finish</text>
+          <path d="M155 84 V98" stroke="#000" stroke-width="1.5" marker-end="url(#ahS)"/>
+          <rect x="40" y="100" width="230" height="70" rx="10" fill="#f9d4f4" stroke="#000"/>
+          <text x="51" y="118" font-size="12.5" font-weight="600">Agent writes the starting plan</text>
+          <text x="51" y="133" font-size="11">3–6 sources, a reason for each</text>
+          <text x="51" y="148" font-size="11">no platform over half the plan</text>
+          <text x="51" y="163" font-size="11">English + the markets' languages</text>
+          <path d="M155 170 V184" stroke="#000" stroke-width="1.5" marker-end="url(#ahS)"/>
+          <rect x="40" y="186" width="230" height="56" rx="10" fill="#ffe730" stroke="#000"/>
+          <text x="51" y="204" font-size="12.5" font-weight="600">Probe: keyword search</text>
+          <text x="51" y="219" font-size="11">20 posts (40 in Standard)</text>
+          <text x="51" y="234" font-size="11">never a person or a profile</text>
+          <path d="M155 242 V254" stroke="#000" stroke-width="1.5" marker-end="url(#ahS)"/>
+          <path d="M155 256 L222 281 L155 306 L88 281 Z" fill="#fff" stroke="#000" stroke-width="1.5"/>
+          <text x="155" y="285" text-anchor="middle" font-size="12" font-weight="600">≥ 30% relevant?</text>
+          <path d="M88 281 H85 V318" fill="none" stroke="#000" stroke-width="1.5" marker-end="url(#ahS)"/>
+          <text x="64" y="276" font-size="10.5" font-weight="600">yes</text>
+          <path d="M222 281 H225 V318" fill="none" stroke="#000" stroke-width="1.5" marker-end="url(#ahS)"/>
+          <text x="230" y="276" font-size="10.5" font-weight="600">no</text>
+          <rect x="20" y="320" width="130" height="50" rx="10" fill="#49ffcb" stroke="#000"/>
+          <text x="85" y="338" text-anchor="middle" font-size="12.5" font-weight="600">Full size</text>
+          <text x="85" y="353" text-anchor="middle" font-size="11">when repeated</text>
+          <rect x="160" y="320" width="130" height="50" rx="10" fill="#f5f5f5" stroke="#000" stroke-dasharray="4 3"/>
+          <text x="225" y="338" text-anchor="middle" font-size="12.5" font-weight="600">Stays small</text>
+          <text x="225" y="353" text-anchor="middle" font-size="11">or dropped for good</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="shell loopbox">
+      <span class="cap2">The agent loop</span>
+      <div class="in" style="padding:6px 8px">
+        <svg class="dia" viewBox="0 0 540 282" role="img" aria-label="The agent loop. Above a fence, Claude Sonnet picks the next tool and gives a reason. Below the fence, code checks limits, collects, cleans and stores the posts, then sends a short summary back up. The agent never sees a raw post and never writes a number.">
+          <defs><marker id="ahL" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#000"/></marker></defs>
+          <rect x="0" y="0" width="540" height="128" rx="12" fill="#f9d4f4" fill-opacity=".45"/>
+          <rect x="0" y="142" width="540" height="140" rx="12" fill="#ffe730" fill-opacity=".35"/>
+          <text x="10" y="16" font-size="10.5" class="mono" font-weight="600">THE MODEL DECIDES</text>
+          <text x="530" y="274" text-anchor="end" font-size="10.5" class="mono" font-weight="600">CODE ENFORCES</text>
+
+          <!-- plan -->
+          <rect x="10" y="32" width="136" height="58" rx="10" fill="#fff" stroke="#000"/>
+          <text x="20" y="52" font-size="12.5" font-weight="600">Starting plan</text>
+          <text x="20" y="67" font-size="11">3–6 sources, with reasons</text>
+          <text x="20" y="81" font-size="11">languages set by markets</text>
+          <path d="M146 61 H166" stroke="#000" stroke-width="1.5" marker-end="url(#ahL)"/>
+
+          <!-- agent -->
+          <rect x="174" y="26" width="196" height="70" rx="12" fill="#000"/>
+          <rect x="170" y="22" width="196" height="70" rx="12" fill="#f9d4f4" stroke="#000" stroke-width="1.5"/>
+          <text x="184" y="44" font-size="13.5" font-weight="700">Claude Sonnet · agent</text>
+          <text x="184" y="61" font-size="11.5">picks the next tool + a reason</text>
+          <text x="184" y="79" font-size="10.5" class="mono">14 tools · ≤ 3 at once</text>
+
+          <!-- real log -->
+          <rect x="384" y="12" width="148" height="98" rx="10" fill="#1f2420"/>
+          <text x="394" y="29" font-size="9.5" class="mono" fill="#c9cec9" style="fill:#c9cec9">REAL LOG · GEN Z RUN</text>
+          <text x="394" y="47" font-size="10" class="mono" style="fill:#fff">#1 tiktok  20 → 78%</text>
+          <text x="394" y="62" font-size="10" class="mono" style="fill:#fff">#2 reddit  20 → 95%</text>
+          <text x="394" y="77" font-size="10" class="mono" style="fill:#49ffcb">#5 reddit  40 → 85%</text>
+          <text x="394" y="97" font-size="9.5" style="fill:#c9cec9">test small, then go full size</text>
+
+          <!-- fence -->
+          <line x1="0" y1="135" x2="540" y2="135" stroke="#000" stroke-width="1.5" stroke-dasharray="6 5"/>
+          <rect x="384" y="120" width="148" height="31" rx="8" fill="#fff" stroke="#000"/>
+          <text x="458" y="132" text-anchor="middle" font-size="10.5" font-weight="600">never sees a raw post</text>
+          <text x="458" y="145" text-anchor="middle" font-size="10.5" font-weight="600">never writes a number</text>
+
+          <!-- down: tool call -->
+          <path d="M210 92 V166 H62 V186" fill="none" stroke="#000" stroke-width="1.5" marker-end="url(#ahL)"/>
+          <text x="92" y="160" font-size="11" font-weight="600">tool call + reason</text>
+          <!-- up: summary -->
+          <path d="M330 188 V96" fill="none" stroke="#000" stroke-width="1.5" marker-end="url(#ahL)"/>
+          <text x="338" y="166" font-size="11" font-weight="600">short summary only</text>
+          <text x="338" y="180" font-size="10" class="mono">kept · % relevant · new terms</text>
+
+          <!-- code row -->
+          <g font-size="11">
+            <rect x="8" y="190" width="108" height="56" rx="10" fill="#ffe730" stroke="#000"/>
+            <text x="18" y="209" font-size="12.5" font-weight="600">Check limits</text>
+            <text x="18" y="224">calls · $ · time</text>
+            <text x="18" y="238" class="mono" font-size="9.5">limit_reached</text>
+            <path d="M116 218 H134" stroke="#000" stroke-width="1.5" marker-end="url(#ahL)"/>
+            <rect x="138" y="190" width="116" height="56" rx="10" fill="#ffe730" stroke="#000"/>
+            <text x="148" y="209" font-size="12.5" font-weight="600">Collect</text>
+            <text x="148" y="224">Apify · web search</text>
+            <text x="148" y="238">forum feeds</text>
+            <path d="M254 218 H272" stroke="#000" stroke-width="1.5" marker-end="url(#ahL)"/>
+            <rect x="276" y="190" width="120" height="56" rx="10" fill="#ffe730" stroke="#000"/>
+            <text x="286" y="209" font-size="12.5" font-weight="600">Clean</text>
+            <text x="286" y="224">hash · redact · dedupe</text>
+            <text x="286" y="238">spam · relevance</text>
+            <path d="M396 218 H414" stroke="#000" stroke-width="1.5" marker-end="url(#ahL)"/>
+            <rect x="418" y="190" width="114" height="56" rx="10" fill="#fff" stroke="#000"/>
+            <text x="428" y="209" font-size="12.5" font-weight="600">Postgres</text>
+            <text x="428" y="224">every stage saved</text>
+            <text x="428" y="238">posts expire in 30 d</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="shell fbbox">
+      <span class="cap2">When things go wrong</span>
+      <div class="fb">
+        <div class="c"><span class="if">If an actor fails</span><b>Backup actor; both fail → a blind spot</b></div>
+        <div class="c"><span class="if">If the agent crashes</span><b>Run the plan's untried sources</b></div>
+        <div class="c y"><span class="if">If evidence is thin</span><b>Top up from kept sources</b></div>
+      </div>
+    </div>
+
+    <div class="shell limbox">
+      <span class="cap2">Limits live in code</span>
+      <div class="in" style="flex:1; padding:12px 14px">
+        <div class="legend" style="margin-bottom:10px"><span><i style="background:var(--yellow)"></i>Quick</span><span><i style="background:#fff"></i>Standard</span></div>
+        <div class="lim">
+          <div class="meter">
+            <span class="k">Tool calls</span><span class="bars"><i class="q" style="width:50%">15</i><i class="s" style="width:100%">30</i></span>
+            <span class="k">Minutes</span><span class="bars"><i class="q" style="width:80%">8</i><i class="s" style="width:100%">10</i></span>
+          </div>
+          <div class="meter">
+            <span class="k">Raw posts</span><span class="bars"><i class="q" style="width:30%">600</i><i class="s" style="width:100%">2,000</i></span>
+            <span class="k">Max $ / run</span><span class="bars"><i class="q" style="width:46%">4.60</i><i class="s" style="width:100%">10.00</i></span>
+          </div>
         </div>
+        <p class="small" style="margin-top:12px">Past a limit, a tool <b style="font-weight:600">does nothing</b> and answers <span class="mono">limit_reached</span>.</p>
+        <p class="small muted" style="margin-top:6px">Plus a daily cap across all runs and a FIFO queue. Numbers from <span class="mono">modes.yaml</span>.</p>
       </div>
     </div>
 
-    <div class="shell">
-      <span class="label cap" style="margin:0">Data handling, inside every tool</span>
-      <div class="in">
-        <ol class="chain">
-          <li>Hash the author name with a salt, in the same function that receives it</li>
-          <li>Redact emails, phones, handles and names; strip handles from post links</li>
-          <li>Parse dates in 12 languages; drop posts outside the window (180 days)</li>
-          <li>De-duplicate with MinHash (0.8), keeping the more engaged copy</li>
-          <li>Filter spam: link-only, hashtag floods, promos, repeated templates</li>
-          <li>Haiku relevance check, also tagging language and market</li>
-          <li>Engagement percentile within each platform</li>
-        </ol>
-        <div class="sees">The agent sees only: collected · kept · relevant % · dropped and why · new terms · 3 samples · budget left</div>
-        <p class="small muted" style="margin-top:8px">Scraped text reaches a model only inside <span class="mono">&lt;untrusted_user_content&gt;</span>.</p>
-      </div>
-    </div>
-
-    <div class="shell">
-      <span class="label cap" style="margin:0">Limits live in code (modes.yaml)</span>
-      <div class="in">
-        <table>
-          <tr><th></th><th>Quick</th><th>Standard</th></tr>
-          <tr><td>Tool calls</td><td class="num">15</td><td class="num">30</td></tr>
-          <tr><td>Time</td><td class="num">8 min</td><td class="num">10 min</td></tr>
-          <tr><td>Raw posts</td><td class="num">600</td><td class="num">2,000</td></tr>
-          <tr><td>Max share per search</td><td class="num">30%</td><td class="num">30%</td></tr>
-          <tr><td>Scraping (Apify)</td><td class="num">$1.80</td><td class="num">$4.00</td></tr>
-          <tr><td>LLM · collection</td><td class="num">$1.40</td><td class="num">$3.50</td></tr>
-          <tr><td>LLM · analysis</td><td class="num">$1.40</td><td class="num">$2.50</td></tr>
-        </table>
-      </div>
-      <p class="small cap" style="padding-bottom:4px">Tools refuse a call past a limit or one that can't finish in time. Real runs cost <b class="mono">$1.90–5.67</b>; plus a daily cap and a FIFO queue.</p>
-    </div>
   </div>
 
   <div class="footer"><span>SIGNAL · Context Packs</span><span>02 / 04 · How it collects</span></div>
@@ -415,11 +530,58 @@
 
 <!-- ============================ SLIDE 3 ============================ -->
 <section class="slide" aria-label="Slide 3 of 4: From posts to a claim you can trust">
-  <div class="head">
+  <div class="head" style="margin-bottom:12px">
     <span class="badge"><span class="sp"><svg><use href="#spark"/></svg></span>From posts to a claim</span>
     <h1>Nothing is a fact until code checks it.</h1>
     <p class="claim">Models read and write. <b>Code counts, scores and checks every quote and claim</b>, and only then lets a finding be stated as fact.</p>
     <div class="tiles" aria-hidden="true"><i><svg class="ring"><use href="#ring"/></svg></i><i style="background:var(--yellow)"></i><i style="background:var(--mint)"></i><i style="background:var(--pink)"></i><i><svg class="sp"><use href="#spark"/></svg></i><i></i></div>
+  </div>
+
+  <div class="shell" style="margin-bottom:8px; padding:6px; gap:5px">
+    <span class="cap2">00 · Data handling, inside every collection tool <span style="text-transform:none; letter-spacing:0">Scraped text reaches a model only inside <span class="mono">&lt;untrusted_user_content&gt;</span></span></span>
+    <div class="in" style="padding:6px 8px">
+        <svg class="dia" viewBox="0 0 1147 36" role="img" aria-label="Data handling inside every collection tool. Raw posts pass seven steps: hash the author name, redact personal details, drop posts outside the date window, remove near-duplicates with MinHash, filter spam, a Haiku relevance check that also tags market, and an engagement percentile within each platform.">
+          <defs><marker id="ahD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#000"/></marker></defs>
+          <rect x="0" y="0" width="104" height="36" rx="9" fill="#fff" stroke="#000"/>
+          <text x="9" y="15" font-size="11.5" font-weight="600">Raw posts in</text>
+          <text x="9" y="29" font-size="10" style="fill:#6b7280">Apify · web · feeds</text>
+          <path d="M104 18 H116" stroke="#000" stroke-width="1.5" marker-end="url(#ahD)"/>
+          <rect x="117" y="0" width="136" height="36" rx="9" fill="#ffe730" stroke="#000"/>
+          <text x="126" y="15" font-size="10" class="mono" font-weight="600">1</text>
+          <text x="138" y="15" font-size="11.5" font-weight="600">Hash names</text>
+          <text x="126" y="29" font-size="10">salted, on arrival</text>
+          <path d="M253 18 H265" stroke="#000" stroke-width="1.5" marker-end="url(#ahD)"/>
+          <rect x="266" y="0" width="136" height="36" rx="9" fill="#ffe730" stroke="#000"/>
+          <text x="275" y="15" font-size="10" class="mono" font-weight="600">2</text>
+          <text x="287" y="15" font-size="11.5" font-weight="600">Redact</text>
+          <text x="275" y="29" font-size="10">emails · phones · handles</text>
+          <path d="M402 18 H414" stroke="#000" stroke-width="1.5" marker-end="url(#ahD)"/>
+          <rect x="415" y="0" width="136" height="36" rx="9" fill="#ffe730" stroke="#000"/>
+          <text x="424" y="15" font-size="10" class="mono" font-weight="600">3</text>
+          <text x="436" y="15" font-size="11.5" font-weight="600">Date window</text>
+          <text x="424" y="29" font-size="10">− older than 180 d</text>
+          <path d="M551 18 H563" stroke="#000" stroke-width="1.5" marker-end="url(#ahD)"/>
+          <rect x="564" y="0" width="136" height="36" rx="9" fill="#ffe730" stroke="#000"/>
+          <text x="573" y="15" font-size="10" class="mono" font-weight="600">4</text>
+          <text x="585" y="15" font-size="11.5" font-weight="600">De-duplicate</text>
+          <text x="573" y="29" font-size="10">− near-copies (MinHash)</text>
+          <path d="M700 18 H712" stroke="#000" stroke-width="1.5" marker-end="url(#ahD)"/>
+          <rect x="713" y="0" width="136" height="36" rx="9" fill="#ffe730" stroke="#000"/>
+          <text x="722" y="15" font-size="10" class="mono" font-weight="600">5</text>
+          <text x="734" y="15" font-size="11.5" font-weight="600">Spam filter</text>
+          <text x="722" y="29" font-size="10">− link-only · promos</text>
+          <path d="M849 18 H861" stroke="#000" stroke-width="1.5" marker-end="url(#ahD)"/>
+          <rect x="862" y="0" width="136" height="36" rx="9" fill="#f9d4f4" stroke="#000"/>
+          <text x="871" y="15" font-size="10" class="mono" font-weight="600">6</text>
+          <text x="883" y="15" font-size="11.5" font-weight="600">Haiku relevance</text>
+          <text x="871" y="29" font-size="10">− off topic; tags market</text>
+          <path d="M998 18 H1010" stroke="#000" stroke-width="1.5" marker-end="url(#ahD)"/>
+          <rect x="1011" y="0" width="136" height="36" rx="9" fill="#ffe730" stroke="#000"/>
+          <text x="1020" y="15" font-size="10" class="mono" font-weight="600">7</text>
+          <text x="1032" y="15" font-size="11.5" font-weight="600">Engagement</text>
+          <text x="1020" y="29" font-size="10">percentile per platform</text>
+        </svg>
+    </div>
   </div>
 
   <div class="gates">
@@ -499,6 +661,7 @@
   <div class="footer"><span>SIGNAL · Context Packs</span><span>03 / 04 · From posts to a claim</span></div>
   <aside class="notes">
     <li>"This is the part the demo can't show you: how a scraped post becomes something the tool will call a fact."</li>
+    <li>Row 00 runs inside every collection tool, before the agent sees anything: names hashed with a salt in the same function that receives them, personal details redacted, then date, duplicate, spam and Haiku relevance filters.</li>
     <li>Walk the gates left to right: pink = a model step, yellow = a code step. The model never outputs a count (metrics.py); quotes are checked as exact substrings (verify.py); safe_to_assert = strong + observed + supported (confidence.py).</li>
     <li>Step 04: the generic answer is written with no evidence. Findings it already covers aren't marked "non-obvious".</li>
     <li>Entailment is checked by Opus, a stronger model than the writer: 137 of 150 sampled claims.</li>
